@@ -172,25 +172,25 @@
         if [[ $bits = 64 ]]; then 
             case "$ver" in
                 16.04)
-                    execute_sub_master_installer "apt"
+                    execute_master_installer "apt"
                     ;;
                 # TODO: Possibly drop support
                 #16.10)
-                #    execute_sub_master_installer "apt"
+                #    execute_master_installer "apt"
                 #    ;;
                 # TODO: Possibly drop support
                 #17.04)
-                #    execute_sub_master_installer "apt"
+                #    execute_master_installer "apt"
                 #    ;;
                 # TODO: Possibly drop support
                 #17.10)
-                #    execute_sub_master_installer "apt"
+                #    execute_master_installer "apt"
                 #    ;;
                 18.04)
-                    execute_sub_master_installer "apt"
+                    execute_master_installer "apt"
                     ;;
                 20.04)
-                    execute_sub_master_installer "apt"
+                    execute_master_installer "apt"
                     ;;
                 *)
                     supported="false"
@@ -203,13 +203,13 @@
         if [[ $bits = 64 ]]; then # B.1.
             case "$sver" in
                 8)
-                    execute_sub_master_installer "apt"
+                    execute_master_installer "apt"
                     ;;
                 9)
-                    execute_sub_master_installer "apt"
+                    execute_master_installer "apt"
                     ;;
                 10)
-                    execute_sub_master_installer "apt"
+                    execute_master_installer "apt"
                     ;;
                 *)
                     supported="false"
@@ -223,13 +223,13 @@
         if [[ $bits = 64 ]]; then # B.1.
             case "$sver" in
                 18)
-                    execute_sub_master_installer "apt"
+                    execute_master_installer "apt"
                     ;;
                 19)
-                    execute_sub_master_installer "apt"
+                    execute_master_installer "apt"
                     ;;
                 20)
-                    execute_sub_master_installer "apt"
+                    execute_master_installer "apt"
                     ;;
                 *)
                     supported="false"
@@ -241,7 +241,7 @@
     #    if [[ $bits = 64 ]]; then # B.1.
     #        case "$sver" in
     #            7)
-    #                execute_sub_master_installer "yum"
+    #                execute_master_installer "yum"
     #                ;;
     #            *)
     #                supported="false"
@@ -260,7 +260,7 @@
         echo "$choice"
         case "$choice" in
             Y|YES)
-                execute_sub_master_installer "apt"
+                execute_master_installer "apt"
                 ;;
             N|NO)
                 clean_exit "0" "Exiting"
