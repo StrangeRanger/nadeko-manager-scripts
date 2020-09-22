@@ -133,7 +133,7 @@
         supported="true"
         export pkg_mng=$1
         while true; do
-            wget -N https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_master_installer.sh || {
+            wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_master_installer.sh || {
                 failed_download "nadeko_master_installer.sh"
             }
             break
@@ -256,14 +256,10 @@
         echo "${red}Your OS is not an officially supported /Linux" \
             "Distribtuion${nc}" >&2
         read -p "Would you like to continue with the installation? [y|N]" choice
-        choice=$(echo "$choice" | tr '[a-z]' '[A-Z]')
-        echo "$choice"
+        choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in
-            Y|YES)
-                execute_master_installer "apt"
-                ;;
-            N|NO)
-                clean_exit "0" "Exiting"
-                ;;
+            y|yes) execute_master_installer "apt";;
+            n|no) clean_exit "0" "Exiting";;
+            *) clean_exit "0" "Exiting";;
         esac
     fi
