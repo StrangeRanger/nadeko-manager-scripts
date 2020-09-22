@@ -22,8 +22,8 @@
 
     echo "Downloading the latest installer..."
     wget -N https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/installer_prep.sh || {
-        echo "Failed to download 'nadeko_master_installer.sh'..." >&2
+        echo "Failed to download 'installer_prep.sh'..." >&2
         echo -e "\nExiting..."
         exit 1
     }
-    chmod +x nadeko_master_installer.sh && ./nadeko_master_installer.sh
+    chmod +x installer_prep.sh && ./installer_prep.sh
