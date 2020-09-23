@@ -122,7 +122,7 @@
 					continue
 				fi
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh
-				sudo chmod +x credentials_setup.sh && ./credentials_setup
+				sudo chmod +x credentials_setup.sh && ./credentials_setup.sh
 				clear -x
 				;;
 			6)
