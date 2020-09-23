@@ -14,7 +14,7 @@ case "$choice" in
 		echo ""
 		wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/NadekoARN.sh 
 		echo "Starting Nadeko in pm2 with auto-restart and no auto-update..."
-		pm2 start NadekoARN.sh --interpreter=bash --name=Nadeko --user="$USER"
+		sudo pm2 start NadekoARN.sh --interpreter=bash --name=Nadeko --user="$USER"
 		sudo chown -R "$USER":"$USER" "$HOME"/.pm2
 		pm2 startup
 		pm2 save
@@ -25,7 +25,7 @@ case "$choice" in
 		echo ""
 		wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/NadekoARU_Latest.sh 
 		echo "Starting Nadeko in pm2 with auto-restart and auto-update..."
-		pm2 start NadekoARU_Latest.sh --interpreter=bash --name=Nadeko --user="$USER"
+		sudo pm2 start NadekoARU_Latest.sh --interpreter=bash --name=Nadeko --user="$USER"
 		sudo chown -R "$USER":"$USER" "$HOME"/.pm2
 		pm2 startup
 		pm2 save
@@ -36,7 +36,7 @@ case "$choice" in
 		echo ""
 		wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadeko_run.sh
 		echo "Starting Nadeko in pm2 normally without any auto update or restart.."
-		pm2 start nadeko_run.sh --interpreter=bash --name=Nadeko --user="$USER"
+		sudo pm2 start nadeko_run.sh --interpreter=bash --name=Nadeko --user="$USER"
 		sudo chown -R "$USER":"$USER" "$HOME"/.pm2
 		pm2 startup
 		pm2 save
