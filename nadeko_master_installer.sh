@@ -30,7 +30,7 @@
 			disabled_1="false"
 		fi
 		
-		if ! -d NadekoBot/src/NadekoBot/ || (! hash git || ! hash dotnet || ! hash node || ! hash pm2) &>/dev/null || ! -d NadekoBot/src/NadekoBot/credentials.json; then
+		if [[ ! -d NadekoBot/src/NadekoBot/ || ! -d NadekoBot/src/NadekoBot/credentials.json ]] || (! hash git || ! hash dotnet || ! hash node || ! hash pm2) &>/dev/null; then
 			echo "2. Run Nadeko (Normally) ${red}(Disabled until credentials.json, Nadeko, and prerequisites are installed)${nc}"
 			echo "3. Run Nadeko with Auto Restart in this session ${red}(Disabled until credentials.json, Nadeko, and prerequisites are installed)${nc}"
 			disabled_23="true"
@@ -48,7 +48,7 @@
 			disabled_4="false"
 		fi
 
-		if [[ ! -d NadekoBot/src/NadekoBot/ ]]
+		if [[ ! -d NadekoBot/src/NadekoBot/ ]]; then
 			echo "5. Set up credentials.json ${red}(Disabled until Nadeko hash been downloaded)${nc}"
 			disabled_5="true"
 		else
@@ -64,7 +64,7 @@
 			disabled_6="false"
 		fi
 		
-		if [[ ! -d NadekoBot/src/NadekoBot/ || (! hash git || ! hash dotnet || ! hash node || ! hash pm2) &>/dev/null || ! -d NadekoBot/src/NadekoBot/credentials.json ]]; then
+		if [[ ! -d NadekoBot/src/NadekoBot/ || ! -d NadekoBot/src/NadekoBot/credentials.json ]] || (! hash git || ! hash dotnet || ! hash node || ! hash pm2) &>/dev/null; then
 			echo "7. Start Nadeko in pm2 ${red}(Disabled until credentials.json, Nadeko, and prerequisites are installed)${nc}"
 			disabled_7="true"
 		else
