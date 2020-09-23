@@ -13,8 +13,13 @@
     export installer_branch="dev" # Determines which installer branch is used
     export installer_repo="StrangeRanger/NadekoBot-BashScript" # Determines which repo is used
 
+    # Dictates whether or not the installer can be run as the root user:
+    # true = can be run with root privilege
+    # false = cannot be run with root privilege (recommended)
+    allow_run_as_root="false"
+
     # Checks to see if this script was executed with root privilege
-    if ((EUID == 0)); then 
+    if ((EUID == 0)) && [[ $allow_run_as_root = "false" ]]; then 
         echo "Please run this script without root privilege" >&2
         echo "While you will be required to enter your password to perform" \
             "tasks requiring root privilege, running the installer as root" \
