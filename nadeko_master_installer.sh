@@ -30,7 +30,7 @@
 			disabled_1="false"
 		fi
 		
-		if [[ ! -d NadekoBot/src/NadekoBot/ || (! hash git || ! hash dotnet || ! hash node || ! hash pm2) &>/dev/null || ! -d NadekoBot/src/NadekoBot/credentials.json ]]; then
+		if ! -d NadekoBot/src/NadekoBot/ || (! hash git || ! hash dotnet || ! hash node || ! hash pm2) &>/dev/null || ! -d NadekoBot/src/NadekoBot/credentials.json; then
 			echo "2. Run Nadeko (Normally) ${red}(Disabled until credentials.json, Nadeko, and prerequisites are installed)${nc}"
 			echo "3. Run Nadeko with Auto Restart in this session ${red}(Disabled until credentials.json, Nadeko, and prerequisites are installed)${nc}"
 			disabled_23="true"
