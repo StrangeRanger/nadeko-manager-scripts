@@ -142,7 +142,8 @@
 					continue
 				fi
 				wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadekobotpm2start.sh
-				sudo chmod +x nadekobotpm2start.sh && ./nadekobotpm2start.sh
+				sudo chmod +x nadekobotpm2start.sh
+				./nadekobotpm2start.sh
 				clear -x
 				;;
 			8)
