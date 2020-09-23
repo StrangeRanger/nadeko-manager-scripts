@@ -79,7 +79,7 @@ read -n 1 -s -p "Press any key to continue..."
 	echo ""
 	echo "Starting.."
 	echo "Installing node/npm. Please wait.."
-	curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+	curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 	sudo apt-get install -y build-essential
 	sudo npm i -g npm
@@ -94,7 +94,7 @@ read -n 1 -s -p "Press any key to continue..."
 	echo ""
 	echo "Starting.."
 	echo "Installing node/npm. Please wait.."
-	curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+	curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 	sudo apt-get install -y build-essential
 	sudo npm i -g npm
@@ -109,7 +109,7 @@ read -n 1 -s -p "Press any key to continue..."
 	echo ""
 	echo "Starting.."
 	echo "Installing node/npm. Please wait.."
-	curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+	curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 	sudo apt-get install -y build-essential
 	sudo npm i -g npm
@@ -124,7 +124,7 @@ read -n 1 -s -p "Press any key to continue..."
 	echo ""
 	echo "Starting.."
 	echo "Installing node/npm. Please wait.."
-	curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
+	curl --silent --location https://rpm.nodesource.com/setup_14.x | sudo bash -
 	sudo yum -y install nodejs
 	sudo yum install gcc-c++ make
 	sudo npm i -g npm
