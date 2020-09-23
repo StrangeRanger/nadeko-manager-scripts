@@ -30,7 +30,7 @@
     clean_exit() {
         local installer_files=("installer_prep.sh" "nadeko_installer_latest.sh"
             "nadeko_master_installer.sh" "nadekoautoinstaller.sh" "nadekopm2setup.sh"
-            "nadekobotpm2start.sh" "NadekoAutoRestartAndUpdate.sh")
+            "nadekobotpm2start.sh" "NadekoAutoRestartAndUpdate.sh" "credentials_setup.sh")
 
         if [[ $3 = "true" ]]; then echo "Cleaning up..."; else echo -e "\nCleaning up..."; fi
         for file in "${installer_files[@]}"; do
