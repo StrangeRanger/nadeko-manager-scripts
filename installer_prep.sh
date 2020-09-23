@@ -52,12 +52,6 @@
 #
 ################################################################################
 #
-    # Checks to see if this script was executed with root privilege
-    if ((EUID != 0)); then 
-        echo "${red}Please run this script as root or with root privilege${nc}" >&2
-        clean_exit "1" "Exiting" "true"
-    fi
-
     # Changes the working directory to that of where the executed script is
     # located
     cd "$(dirname "$0")" || {
