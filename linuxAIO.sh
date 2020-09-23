@@ -14,8 +14,11 @@
     export installer_repo="StrangeRanger/NadekoBot-BashScript" # Determines which repo is used
 
     # Checks to see if this script was executed with root privilege
-    if ((EUID != 0)); then 
-        echo "Please run this script as root or with root privilege" >&2
+    if ((EUID == 0)); then 
+        echo "Please run this script without root privilege" >&2
+        echo "While you will be required to enter your password to perform" \
+            "tasks requiring root privilege, running the installer as root" \
+            "is not recommended"
         echo -e "\nExiting..."
         exit 1 
     fi
@@ -26,4 +29,4 @@
         echo -e "\nExiting..."
         exit 1
     }
-    chmod +x installer_prep.sh && ./installer_prep.sh
+    sudo chmod +x installer_prep.sh && ./installer_prep.sh

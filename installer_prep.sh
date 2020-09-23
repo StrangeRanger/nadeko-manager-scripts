@@ -139,7 +139,7 @@
             break
         done
 
-        chmod +x nadeko_master_installer.sh && ./nadeko_master_installer.sh || {
+        sudo chmod +x nadeko_master_installer.sh && ./nadeko_master_installer.sh || {
             echo "${red}Failed to execute 'nadeko_master_installer.sh'${nc}" >&2
             clean_exit "1" "Exiting" "true"
         }

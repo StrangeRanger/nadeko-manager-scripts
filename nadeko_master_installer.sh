@@ -82,7 +82,7 @@
 					continue
 				fi
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_installer_latest.sh
-				chmod +x nadeko_installer_latest.sh && ./nadeko_installer_latest.sh
+				sudo chmod +x nadeko_installer_latest.sh && ./nadeko_installer_latest.sh
 				clear -x
 				;;
 			2)
@@ -92,17 +92,17 @@
 					continue
 				fi
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_run.sh
-				chmod +x nadeko_run.sh && ./nadeko_run.sh
+				sudo chmod +x nadeko_run.sh && ./nadeko_run.sh
 				clear -x
 				;;
 			3)
+				clear -x
 				if [[ $disabled_23 = "true" ]]; then
 					echo "${red}Option 3 is currently disabled${nc}"
 					continue
 				fi
-				clear -x
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoAutoRestartAndUpdate.sh
-				chmod +x NadekoAutoRestartAndUpdate.sh && ./NadekoAutoRestartAndUpdate.sh
+				sudo chmod +x NadekoAutoRestartAndUpdate.sh && ./NadekoAutoRestartAndUpdate.sh
 				clear -x
 				;;
 			4)
@@ -112,7 +112,7 @@
 					continue
 				fi
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadekoautoinstaller.sh
-				chmod +x nadekoautoinstaller.sh && ./nadekoautoinstaller.sh
+				sudo chmod +x nadekoautoinstaller.sh && ./nadekoautoinstaller.sh
 				clear -x
 				;;
 			5)
@@ -122,7 +122,7 @@
 					continue
 				fi
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh
-				chmod +x credentials_setup.sh && ./credentials_setup
+				sudo chmod +x credentials_setup.sh && ./credentials_setup
 				clear -x
 				;;
 			6)
@@ -132,7 +132,7 @@
 					continue
 				fi
 				wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadekopm2setup.sh
-				chmod +x nadekopm2setup.sh && ./nadekopm2setup.sh
+				sudo chmod +x nadekopm2setup.sh && ./nadekopm2setup.sh
 				clear -x	
 				;;
 			7)
@@ -142,7 +142,7 @@
 					continue
 				fi
 				wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadekobotpm2start.sh
-				chmod +x nadekobotpm2start.sh && ./nadekobotpm2start.sh
+				sudo chmod +x nadekobotpm2start.sh && ./nadekobotpm2start.sh
 				clear -x
 				;;
 			8)
