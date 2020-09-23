@@ -20,7 +20,7 @@ if [ $choice -eq 1 ] ; then
 	wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/NadekoARN.sh 
 	cd "$root"
 	echo "Starting Nadeko in pm2 with auto-restart and no auto-update..."
-	pm2 start "$root/NadekoARN.sh" --interpreter=bash --name=Nadeko
+	pm2 start "$root/NadekoARN.sh" --interpreter=bash --name=Nadeko --user="$USER"
 	pm2 startup
 	pm2 save
 	echo ""
@@ -31,7 +31,7 @@ else
 		wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/NadekoARU_Latest.sh 
 		cd "$root"
 		echo "Starting Nadeko in pm2 with auto-restart and auto-update..."
-		pm2 start "$root/NadekoARU_Latest.sh" --interpreter=bash --name=Nadeko
+		pm2 start "$root/NadekoARU_Latest.sh" --interpreter=bash --name=Nadeko --user="$USER"
 		pm2 startup
 		pm2 save
 		echo ""
@@ -42,7 +42,7 @@ else
 		wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadeko_run.sh
 		cd "$root"
 		echo "Starting Nadeko in pm2 normally without any auto update or restart.."
-		pm2 start "$root/nadeko_run.sh" --interpreter=bash --name=Nadeko
+		pm2 start "$root/nadeko_run.sh" --interpreter=bash --name=Nadeko --user="$USER"
 		pm2 startup
 		pm2 save
 		echo ""
