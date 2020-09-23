@@ -141,7 +141,7 @@
 					echo "${red}Option 7 is currently disabled${nc}"
 					continue
 				fi
-				wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadekobotpm2start.sh
+				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadekobotpm2start.sh
 				sudo chmod +x nadekobotpm2start.sh
 				./nadekobotpm2start.sh
 				clear -x
