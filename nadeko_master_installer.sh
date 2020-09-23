@@ -59,7 +59,7 @@
 		echo "6. Install pm2"
 		
 		if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ]] || (! hash git || ! hash dotnet || ! hash node || ! hash pm2) &>/dev/null; then
-			echo "7. Start Nadeko in pm2 ${red}(Disabled until credentials.json, Nadeko, and prerequisites are installed)${nc}"
+			echo "7. Start Nadeko in pm2 ${red}(Disabled until credentials.json, Nadeko, and pm2 are installed)${nc}"
 			disabled_7="true"
 		else
 			echo "7. Start Nadeko in pm2"
@@ -121,12 +121,18 @@
 				;;
 			6)
 				clear -x
-				if [[ $disabled_6 = "true" ]]; then
-					echo "${red}Option 6 is currently disabled${nc}"
-					continue
-				fi
-				wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadekopm2setup.sh
-				sudo chmod +x nadekopm2setup.sh && ./nadekopm2setup.sh
+				read -p "We will now setup pm2. Press [Enter] to continue."
+	
+				echo "Installing node/npm..."
+				curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+				sudo apt-get install -y nodejs
+				sudo apt-get install -y build-essential
+
+				sudo npm install -g npm
+				echo "Installing pm2..."
+				sudo npm install -g pm2
+
+				read -p "Press [Enter] to return to the installer menu"
 				clear -x	
 				;;
 			7)
