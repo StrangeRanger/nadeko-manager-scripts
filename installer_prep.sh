@@ -28,9 +28,9 @@
 ################################################################################
 #
     clean_exit() {
-        local installer_files=("installer_prep.sh" "nadeko_installer_latest.sh"
-            "nadeko_master_installer.sh" "nadekoautoinstaller.sh" "nadekopm2setup.sh"
-            "nadekobotpm2start.sh" "NadekoAutoRestartAndUpdate.sh" "credentials_setup.sh")
+        local installer_files=("credentials_setup.sh" "installer_prep.sh"
+            "nadeko_installer_latest.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
+            "NadekoARBU.sh" "NadekoB.sh" "prereqs_installer.sh")
 
         if [[ $3 = "true" ]]; then echo "Cleaning up..."; else echo -e "\nCleaning up..."; fi
         for file in "${installer_files[@]}"; do
@@ -95,37 +95,22 @@
 
         # Identifying bit type
         case $(uname -m) in
-            x86_64)
-                bits="64"
-                ;;
-            i*86)
-                bits="32"
-                ;;
-            armv*)
-                bits="32"
-                ;;
-            *)
-                bits="?"
-                ;;
+            x86_64) bits="64" ;;
+            i*86) bits="32" ;;
+            armv*) bits="32" ;;
+            *) bits="?" ;;
         esac
 
         # Identifying architecture type
         case $(uname -m) in
-            x86_64)
-                arch="x64"  # or AMD64 or Intel64 or whatever
-                ;;
-            i*86)
-                arch="x86"  # or IA32 or Intel32 or whatever
-                ;;
-            *)
-                arch="?"
-                ;;
+            x86_64) arch="x64" ;;
+            i*86) arch="x86" ;;
+            *) arch="?" ;;
         esac
     }
 
     execute_master_installer(){
         supported="true"
-        export pkg_mng=$1
         while true; do
             wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_master_installer.sh || {
                 failed_download "nadeko_master_installer.sh"
@@ -165,30 +150,10 @@
         # B.1. Forcing 64 bit architecture
         if [[ $bits = 64 ]]; then 
             case "$ver" in
-                16.04)
-                    execute_master_installer "apt"
-                    ;;
-                # TODO: Possibly drop support
-                #16.10)
-                #    execute_master_installer "apt"
-                #    ;;
-                # TODO: Possibly drop support
-                #17.04)
-                #    execute_master_installer "apt"
-                #    ;;
-                # TODO: Possibly drop support
-                #17.10)
-                #    execute_master_installer "apt"
-                #    ;;
-                18.04)
-                    execute_master_installer "apt"
-                    ;;
-                20.04)
-                    execute_master_installer "apt"
-                    ;;
-                *)
-                    supported="false"
-                    ;;
+                16.04) execute_master_installer ;;
+                18.04) execute_master_installer ;;
+                20.04) execute_master_installer ;;
+                *) supported="false" ;;
             esac
         else
             supported="false"
@@ -196,18 +161,10 @@
     elif [[ $distro = "debian" ]]; then
         if [[ $bits = 64 ]]; then # B.1.
             case "$sver" in
-                8)
-                    execute_master_installer "apt"
-                    ;;
-                9)
-                    execute_master_installer "apt"
-                    ;;
-                10)
-                    execute_master_installer "apt"
-                    ;;
-                *)
-                    supported="false"
-                    ;;
+                8) execute_master_installer ;;
+                9) execute_master_installer ;;
+                10) execute_master_installer ;;
+                *) supported="false" ;;
             esac
         else
             supported="false"
@@ -216,44 +173,23 @@
     elif [[ $distro = "linuxmint" ]]; then
         if [[ $bits = 64 ]]; then # B.1.
             case "$sver" in
-                18)
-                    execute_master_installer "apt"
-                    ;;
-                19)
-                    execute_master_installer "apt"
-                    ;;
-                20)
-                    execute_master_installer "apt"
-                    ;;
-                *)
-                    supported="false"
-                    ;;
+                18) execute_master_installer ;;
+                19) execute_master_installer ;;
+                20) execute_master_installer ;;
+                *) supported="false" ;;
             esac
         fi
-    # TODO: Possibly drop support
-    #elif [[ $distro = "centos" ]]; then
-    #    if [[ $bits = 64 ]]; then # B.1.
-    #        case "$sver" in
-    #            7)
-    #                execute_master_installer "yum"
-    #                ;;
-    #            *)
-    #                supported="false"
-    #                ;;
-    #        esac
-    #    fi
     else
         supported="false"
     fi
         
     if [[ $supported = "false" ]]; then
-        echo "${red}Your OS is not an officially supported /Linux" \
-            "Distribtuion${nc}" >&2
+        echo "${red}Your OS is not an officially supported macOS/Linux Distribtuion${nc}" >&2
         read -p "Would you like to continue with the installation? [y|N]" choice
         choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in
-            y|yes) execute_master_installer "apt";;
-            n|no) clean_exit "0" "Exiting";;
-            *) clean_exit "0" "Exiting";;
+            y|yes) execute_master_installer ;;
+            n|no) clean_exit "0" "Exiting" ;;
+            *) clean_exit "0" "Exiting" ;;
         esac
     fi
