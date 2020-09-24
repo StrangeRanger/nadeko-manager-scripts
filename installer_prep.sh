@@ -19,7 +19,7 @@
     red=$'\033[1;31m'
     nc=$'\033[0m'
     clrln=$'\r\033[K'
-    current_linuxPMI_revision="2"
+    current_linuxAIO_revision="2"
 
 #
 ################################################################################
@@ -69,13 +69,13 @@
 #
 ################################################################################
 #
-# Makes sure that linuxPMI.sh is up to date
+# Makes sure that linuxAIO.sh is up to date
 #
 ################################################################################
 #
-    if [[ $linuxPMI_revision != $current_linuxPMI_revision ]]; then
-        echo "${yellow}'linuxPMI.sh' is not up to date${nc}"
-        echo "Downloading latest 'linuxPMI.sh'..."
+    if [[ $linuxAIO_revision != $current_linuxAIO_revision ]]; then
+        echo "${yellow}'linuxAIO.sh' is not up to date${nc}"
+        echo "Downloading latest 'linuxAIO.sh'..."
         wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh || {
             echo "${red}Failed to download latest 'linuxAIO.sh'...${nc}" >&2
             clean_exit "1" "Exiting" "true"
