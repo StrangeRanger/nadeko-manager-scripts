@@ -19,11 +19,12 @@
     red=$'\033[1;31m'
     nc=$'\033[0m'
     clrln=$'\r\033[K'
+    current_linuxPMI_revision="2"
 
 #
 ################################################################################
 #
-# Exported only [ variables ]
+# [ Error traps ]
 #
 ################################################################################
 #
@@ -62,6 +63,28 @@
     }
 
     export root_dir="$PWD"
+    export installer_prep="$root_dir/installer_prep.sh"
+    export installer_prep_pid=$$
+
+#
+################################################################################
+#
+# Makes sure that linuxPMI.sh is up to date
+#
+################################################################################
+#
+    if [[ $linuxPMI_revision != $current_linuxPMI_revision ]]; then
+        echo "${yellow}'linuxPMI.sh' is not up to date${nc}"
+        echo "Downloading latest 'linuxPMI.sh'..."
+        wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh || {
+            echo "${red}Failed to download latest 'linuxAIO.sh'...${nc}" >&2
+            clean_exit "1" "Exiting" "true"
+        }
+        chmod +x linuxAIO.sh
+        echo "${cyan}Re-execute 'linuxAIO.sh'${nc}"
+        clean_exit "0" "Exiting" "true"
+        # TODO: Figure out a way to get exec to work 
+    fi
 
 #
 ################################################################################

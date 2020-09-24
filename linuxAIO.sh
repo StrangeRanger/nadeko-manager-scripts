@@ -12,6 +12,7 @@
     # The exports below are for dev/testing purpouses (DO NOT MODIFY)
     export installer_branch="dev" # Determines which installer branch is used
     export installer_repo="StrangeRanger/NadekoBot-BashScript" # Determines which repo is used
+    export linuxPMI_revision="2" # Keeps track of changes to linuxPMI.sh
 
     # Dictates whether or not the installer can be run as the root user:
     # true = can be run with root privilege
