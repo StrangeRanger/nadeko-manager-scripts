@@ -113,8 +113,8 @@
 				;;
 			6)
 				clear -x
-				if [[ $disabled_5 = "true" ]]; then
-					echo "${red}Option 5 is currently disabled${nc}"
+				if [[ $disabled_6 = "true" ]]; then
+					echo "${red}Option 6 is currently disabled${nc}"
 					continue
 				fi
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh
