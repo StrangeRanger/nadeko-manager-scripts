@@ -107,8 +107,8 @@
 
     if [[ -d /tmp/NuGetScratch ]]; then
         echo "Modifying ownership of /tmp/NuGetScratch"
-        sudo chown -R "$USER":"$USER" /tmp/NuGetScratch || {
-            echo "${red}Failed to to modify ownership of /tmp/NuGetScratch" >&2
+        sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/$USER/.nuget|| {
+            echo "${red}Failed to to modify ownership of /tmp/NuGetScratch and/or /home/$USER/.nuget" >&2
             echo "${cyan}You can ignore this if you are not prompted about" \
                 "locked files/permission error while attempting to download" \
                 "dependencies${nc}"
@@ -162,7 +162,7 @@
         create_or_update="create"
     fi
     
-    echo -e "$nadeko_service_content" > "$nadeko_service" || {
+    echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" > /dev/null || {
         echo "${red}Failed to $create_or_update 'nadeko.service'${nc}" >&2
         b_s_update="Failed"
     }

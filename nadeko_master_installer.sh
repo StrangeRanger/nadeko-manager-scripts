@@ -129,8 +129,8 @@
 		fi
 
 		echo "7. Exit"
-		read -p "Choose [1] to Download, [2 or 3] to Run, [6 and 7] for pm2 setup/startup (see README) or [8] to Exit. " choice
-		case "$choice" in
+		read choice
+        case "$choice" in
 			1)
 				clear -x
 				if [[ $disabled_1 = "true" ]]; then
