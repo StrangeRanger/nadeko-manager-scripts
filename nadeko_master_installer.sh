@@ -24,7 +24,7 @@
 			\nDescription=Nadeko \
 			\n \
 			\n[Service] \
-			\nExecStart=/bin/bash $rootdir/NadekoRun.sh \
+			\nExecStart=/bin/bash $root_dir/NadekoRun.sh \
 			\nUser=$USER \
 			\nType=simple \
 			\nStandardOutput=syslog \
