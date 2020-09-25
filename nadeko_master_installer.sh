@@ -76,13 +76,13 @@
 		 # E.1. Creates 'nadeko.service', if it does not exist
         if [[ ! -f $nadeko_service ]]; then
             echo "Creating 'nadeko.service'..."
-            echo -e "$nadeko_service_content" > "$nadeko_service" || {
+            sudo echo -e "$nadeko_service_content" > "$nadeko_service" || {
                 echo "${red}Failed to create 'nadeko.service'" >&2
                 echo "${cyan}This service must exist for nadeko to work${nc}"
                 clean_exit "1" "Exiting"
             }
             # Reloads systemd daemons to account for the added service
-            systemctl daemon-reload
+            sudo systemctl daemon-reload
         fi
 
 		########################################################################
