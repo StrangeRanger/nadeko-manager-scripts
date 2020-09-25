@@ -20,18 +20,18 @@
 #	
 	if [[ $distro != "Darwin" ]]; then
 		nadeko_service="/lib/systemd/system/nadeko.service"
-		nadeko_service_content="[Unit]
-			\nDescription=Nadeko
-			\n
-			\n[Service]
-			\nExecStart=/bin/bash $rootdir/NadekoRun.sh
-			\nUser=$USER
-			\nType=simple
-			\nStandardOutput=syslog
-			\nStandardError=syslog
-			\nSyslogIdentifier=NadekoBot
-			\n
-			\n[Install]
+		nadeko_service_content="[Unit] \
+			\nDescription=Nadeko \
+			\n \
+			\n[Service] \
+			\nExecStart=/bin/bash $rootdir/NadekoRun.sh \
+			\nUser=$USER \
+			\nType=simple \
+			\nStandardOutput=syslog \
+			\nStandardError=syslog \
+			\nSyslogIdentifier=NadekoBot \
+			\n \
+			\n[Install] \
 			\nWantedBy=multi-user.target"
 	else
 		nadeko_service="/Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist"
