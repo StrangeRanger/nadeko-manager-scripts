@@ -141,7 +141,7 @@
         echo "Copping 'credentials.json' to new version..."
         cp -f NadekoBot.bak/src/NadekoBot/credentials.json NadekoBot/src/NadekoBot/credentials.json &>/dev/null
         echo "Copping database to the new version"
-        cp -RT NadekoBot_old/src/NadekoBot/bin/ NadekoBot/src/NadekoBot/bin/ &>/dev/null
+        cp -RT NadekoBot.bak/src/NadekoBot/bin/ NadekoBot/src/NadekoBot/bin/ &>/dev/null
         cp -RT NadekoBot/src/NadekoBot/bin/Release/netcoreapp1.0/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db &>/dev/null
         cp -RT NadekoBot/src/NadekoBot/bin/Release/netcoreapp1.1/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db &>/dev/null
         cp -RT NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.0/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db &>/dev/null
