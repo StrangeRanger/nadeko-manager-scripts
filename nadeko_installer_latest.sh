@@ -76,7 +76,7 @@
         # stopped and that they will need to start it
         nadeko_service_active="true"
         echo "Stopping 'nadeko.service'..."
-        systemctl stop nadeko.service || {
+        sudo systemctl stop nadeko.service || {
             echo "${red}Failed to stop 'nadeko.service'" >&2
             echo "${cyan}You will need to restart 'nadeko.service' to" \
                 "apply any updates to Nadeko${nc}"
@@ -104,6 +104,16 @@
         echo "${red}Failed to download NadekoBot${nc}" >&2
         clean_up "true"
     }
+
+    if [[ -d /tmp/NuGetScratch ]]; then
+        echo "Modifying ownership of /tmp/NuGetScratch"
+        sudo chown -R "$USER":"$USER" /tmp/NuGetScratch || {
+            echo "${red}Failed to to modify ownership of /tmp/NuGetScratch" >&2
+            echo "${cyan}You can ignore this if you are not prompted about" \
+                "locked files/permission error while attempting to download" \
+                "dependencies${nc}"
+        }
+    fi
     
     echo "Downloading Nadeko dependencies..."
     cd NadekoBot || {
