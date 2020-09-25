@@ -35,26 +35,26 @@
 			\nWantedBy=multi-user.target"
 	else
 		nadeko_service="/Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist"
-		nadeko_service_content="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
-			\n<plist version=\"1.0\">
-			\n<dict>
-			\n	<key>Disabled</key>
-			\n	<false/>
-			\n	<key>Label</key>
-			\n	<string>bot.nadeko.Nadeko</string>
-			\n	<key>ProgramArguments</key>
-			\n	<array>
-			\n		<string>$(which bash)</string>
-			\n		<string>$root_dir/NadekoRun.sh</string>
-			\n	</array>
-			\n	<key>RunAtLoad</key>
-			\n	<true/>
-			\n	<key>StandardErrorPath</key>
-			\n	<string>$root_dir/.bot.nadeko.Nadeko.stderr</string>
-			\n	<key>StandardOutPath</key>
-			\n	<string>$root_dir/.bot.nadeko.Nadeko.stdout</string>
-			\n</dict>
+		nadeko_service_content="<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+			\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
+			\n<plist version=\"1.0\"> \
+			\n<dict> \
+			\n	<key>Disabled</key> \
+			\n	<false/> \
+			\n	<key>Label</key> \
+			\n	<string>bot.nadeko.Nadeko</string> \
+			\n	<key>ProgramArguments</key> \
+			\n	<array> \
+			\n		<string>$(which bash)</string> \
+			\n		<string>$root_dir/NadekoRun.sh</string> \
+			\n	</array> \
+			\n	<key>RunAtLoad</key> \
+			\n	<true/> \
+			\n	<key>StandardErrorPath</key> \
+			\n	<string>$root_dir/.bot.nadeko.Nadeko.stderr</string> \
+			\n	<key>StandardOutPath</key> \
+			\n	<string>$root_dir/.bot.nadeko.Nadeko.stdout</string> \
+			\n</dict> \
 			\n</plist>"
 	fi
 
@@ -76,7 +76,7 @@
 		 # E.1. Creates 'nadeko.service', if it does not exist
         if [[ ! -f $nadeko_service ]]; then
             echo "Creating 'nadeko.service'..."
-            echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" || {
+            echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" > /dev/null || {
                 echo "${red}Failed to create 'nadeko.service'" >&2
                 echo "${cyan}This service must exist for nadeko to work${nc}"
                 clean_exit "1" "Exiting"
