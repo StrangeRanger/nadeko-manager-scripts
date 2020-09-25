@@ -2,7 +2,10 @@
 
 ################################################################################
 #
-# TODO: Add a file description
+# This installer looks at the operating system, architecture, bit type,
+# etc., to determine whether or not the system is supported by Nadeko. Once the
+# system is deemed as supported, the master installer will be downloaded and
+# executed. 
 #
 # Note: All variables not defined in this script, are exported from
 # 'linuxAIO.sh'.
@@ -28,6 +31,8 @@
 #
 ################################################################################
 #
+    # Makes it possible to cleanly exit the installer by cleaning up files that
+    # don't need to stay on the system unless currently being run
     clean_exit() {
         local installer_files=("credentials_setup.sh" "installer_prep.sh"
             "nadeko_installer_latest.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
@@ -56,12 +61,12 @@
     if [[ $linuxAIO_revision != $current_linuxAIO_revision ]]; then
         echo "${yellow}'linuxAIO.sh' is not up to date${nc}"
         echo "Downloading latest 'linuxAIO.sh'..."
-        wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh || {
+        wget -N https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh || {
             echo "${red}Failed to download latest 'linuxAIO.sh'...${nc}" >&2
             clean_exit "1" "Exiting" "true"
         }
         chmod +x linuxAIO.sh
-        echo "${cyan}Re-execute 'linuxAIO.sh'${nc}"
+        echo "${cyan}Re-execute 'linuxAIO.sh' to continue${nc}"
         clean_exit "0" "Exiting" "true"
         # TODO: Figure out a way to get exec to work 
     fi
@@ -188,7 +193,6 @@
     elif [[ $distro = "debian" ]]; then
         if [[ $bits = 64 ]]; then # B.1.
             case "$sver" in
-                8) execute_master_installer ;;
                 9) execute_master_installer ;;
                 10) execute_master_installer ;;
                 *) supported="false" ;;

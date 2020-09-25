@@ -3,7 +3,7 @@
 ################################################################################
 #
 # linuxAIO acts as the intermediary between the system Nadeko is being hosted
-# on and the 'instaler_prep.sh'. To prevent any conflict with updates to
+# on and the 'installer_prep.sh'. To prevent any conflicts with updates to
 # the installer, this script has as little code as deemed necessary. In
 # addition, linuxAIO is the only script that will remain on the system.
 #
@@ -19,12 +19,11 @@
     # false = cannot be run with root privilege (recommended)
     allow_run_as_root="false"
 
-    # Checks to see if this script was executed with root privilege
+    # Checks if this script was executed with root privilege
     if ((EUID == 0)) && [[ $allow_run_as_root = "false" ]]; then 
         echo "Please run this script without root privilege" >&2
-        echo "While you will be required to enter your password to perform" \
-            "tasks requiring root privilege, running the installer as root" \
-            "is not recommended"
+        echo "While you will be performing specific tasks with root privilege," \
+            "running the installer in it's entirety as root is not recommended"
         echo -e "\nExiting..."
         exit 1 
     fi

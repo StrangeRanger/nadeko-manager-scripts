@@ -108,7 +108,8 @@ export sub_master_installer_pid=$$
 		else
 			echo "2. Run Nadeko in the background"
 			echo "3. Run Nadeko in the background with auto-restart"
-			echo "4. Run Nadeko in the background with auto-restart and auto-update"																																												disabled_234="false"
+			echo "4. Run Nadeko in the background with auto-restart and auto-update"
+			disabled_234="false"
 		fi
 
 		if [[ $distro = "Darwin" ]]; then
@@ -137,6 +138,7 @@ export sub_master_installer_pid=$$
 					continue
 				fi
 				export nadeko_service
+				export nadeko_service_status
 				export nadeko_service_content
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_installer_latest.sh
 				sudo chmod +x nadeko_installer_latest.sh && ./nadeko_installer_latest.sh
