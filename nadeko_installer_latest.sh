@@ -161,7 +161,7 @@
         echo "Creating 'nadeko.service'..."
         create_or_update="create"
     fi
-    
+
     echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" > /dev/null || {
         echo "${red}Failed to $create_or_update 'nadeko.service'${nc}" >&2
         b_s_update="Failed"

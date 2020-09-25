@@ -9,7 +9,7 @@
 #
 ################################################################################
 #
-    export sub_master_installer_pid=$$
+export sub_master_installer_pid=$$
 
 #
 ################################################################################
@@ -35,7 +35,7 @@
 			\nWantedBy=multi-user.target"
 	else
 		nadeko_service="/Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist"
-		nadeko_service_content="<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+		nadeko_service_content=("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
 			\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
 			\n<plist version=\"1.0\"> \
 			\n<dict> \
@@ -55,7 +55,7 @@
 			\n	<key>StandardOutPath</key> \
 			\n	<string>$root_dir/.bot.nadeko.Nadeko.stdout</string> \
 			\n</dict> \
-			\n</plist>"
+			\n</plist>")
 	fi
 
 #
@@ -69,25 +69,25 @@
 
 	while true; do
 		# TODO: Numerics for $nadeko_service_status like $nadeko_service_startup???
-        nadeko_service_status=$(systemctl is-active nadeko.service)
-        nadeko_service_startup=$(systemctl is-enabled --quiet nadeko.service \
-            2>/dev/null; echo $?)
+		nadeko_service_status=$(systemctl is-active nadeko.service)
+		nadeko_service_startup=$(systemctl is-enabled --quiet nadeko.service \
+			2>/dev/null; echo $?)
 
-		 # E.1. Creates 'nadeko.service', if it does not exist
-        if [[ ! -f $nadeko_service ]]; then
-            echo "Creating 'nadeko.service'..."
-            echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" > /dev/null || {
-                echo "${red}Failed to create 'nadeko.service'" >&2
-                echo "${cyan}This service must exist for nadeko to work${nc}"
-                clean_exit "1" "Exiting"
-            }
-            # Reloads systemd daemons to account for the added service
-            sudo systemctl daemon-reload
-        fi
+		# E.1. Creates 'nadeko.service', if it does not exist
+		if [[ ! -f $nadeko_service ]]; then
+			echo "Creating 'nadeko.service'..."
+			echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" > /dev/null || {
+			echo "${red}Failed to create 'nadeko.service'" >&2
+				echo "${cyan}This service must exist for nadeko to work${nc}"
+				clean_exit "1" "Exiting"
+			}
+			# Reloads systemd daemons to account for the added service
+			sudo systemctl daemon-reload
+		fi
 
 		########################################################################
-        # User options for starting nadeko
-        ########################################################################
+		# User options for starting nadeko
+		########################################################################
 		if (! hash git || ! hash dotnet) &>/dev/null; then
 			echo "1. Download NadekoBot ${red}(Disabled until prerequisites are installed)${nc}"
 			disabled_1="true"
@@ -95,7 +95,7 @@
 			echo "1. Download NadekoBot"
 			disabled_1="false"
 		fi
-		
+
 		if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ]] || 
 				(! hash git || ! hash dotnet) &>/dev/null; then
 			echo "2. Run Nadeko in the background ${red}(Disabled until credentials.json," \
@@ -108,8 +108,7 @@
 		else
 			echo "2. Run Nadeko in the background"
 			echo "3. Run Nadeko in the background with auto-restart"
-			echo "4. Run Nadeko in the background with auto-restart and auto-update"
-			disabled_234="false"
+			echo "4. Run Nadeko in the background with auto-restart and auto-update"																																												disabled_234="false"
 		fi
 
 		if [[ $distro = "Darwin" ]]; then
@@ -130,7 +129,7 @@
 
 		echo "7. Exit"
 		read choice
-        case "$choice" in
+		case "$choice" in
 			1)
 				clear -x
 				if [[ $disabled_1 = "true" ]]; then
@@ -138,7 +137,7 @@
 					continue
 				fi
 				export nadeko_service
-                export nadeko_service_content
+				export nadeko_service_content
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_installer_latest.sh
 				sudo chmod +x nadeko_installer_latest.sh && ./nadeko_installer_latest.sh
 				exec "$installer_prep"
@@ -150,7 +149,7 @@
 					continue
 				fi
 				export nadeko_service_status
-                export nadeko_service_startup
+				export nadeko_service_startup
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoB.sh
 				sudo chmod +x NadekoB.sh && ./NadekoB.sh
 				clear -x
@@ -162,7 +161,7 @@
 					continue
 				fi
 				export nadeko_service_status
-                export nadeko_service_startup
+				export nadeko_service_startup
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARB.sh
 				sudo chmod +x NadekoARB.sh && ./NadekoARB.sh
 				clear -x
@@ -174,7 +173,7 @@
 					continue
 				fi
 				export nadeko_service_status
-                export nadeko_service_startup
+				export nadeko_service_startup
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARBU.sh
 				sudo chmod +x NadekoARBU.sh && ./NadekoARBU.sh
 				clear -x
@@ -196,7 +195,7 @@
 					continue
 				fi
 				export nadeko_service_status
-                export nadeko_service_startup
+				export nadeko_service_startup
 				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh
 				sudo chmod +x credentials_setup.sh && ./credentials_setup.sh
 				clear -x
@@ -208,6 +207,6 @@
 				clear -x
 				echo "${red}Invalid input: '$choice' is not a valid" \
 					"option${nc}" >&2
-				;;
-		esac
-	done
+			;;
+	esac
+done
