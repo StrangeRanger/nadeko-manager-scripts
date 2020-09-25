@@ -2,7 +2,7 @@
 
 ################################################################################
 #
-# The master/main installer script for macOS and Linux Distributions
+# The master/main installer script for macOS and Linux Distributions.
 #
 # Note: All variables not defined in this script, are exported from
 # 'linuxAIO.sh' and 'installer_prep.sh'.
