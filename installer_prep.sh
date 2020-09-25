@@ -49,26 +49,6 @@
 #
 ################################################################################
 #
-# Checks for root privilege and working directory
-#
-################################################################################
-#
-    # Changes the working directory to that of where the executed script is
-    # located
-    cd "$(dirname "$0")" || {
-        echo "${red}Failed to change working directories" >&2
-        echo "${cyan}Change your working directory to the same directory of" \
-            "the executed script${nc}"
-        clean_exit "1" "Exiting" "true"
-    }
-
-    export root_dir="$PWD"
-    export installer_prep="$root_dir/installer_prep.sh"
-    export installer_prep_pid=$$
-
-#
-################################################################################
-#
 # Makes sure that linuxAIO.sh is up to date
 #
 ################################################################################
@@ -89,6 +69,26 @@
 #
 ################################################################################
 #
+# Checks for root privilege and working directory
+#
+################################################################################
+#
+    # Changes the working directory to that of where the executed script is
+    # located
+    cd "$(dirname "$0")" || {
+        echo "${red}Failed to change working directories" >&2
+        echo "${cyan}Change your working directory to the same directory of" \
+            "the executed script${nc}"
+        clean_exit "1" "Exiting" "true"
+    }
+
+    export root_dir="$PWD"
+    export installer_prep="$root_dir/installer_prep.sh"
+    export installer_prep_pid=$$
+
+#
+################################################################################
+#
 # [ Functions ]
 #
 ################################################################################
@@ -103,14 +103,18 @@
             distro="$ID"
             # Version: x.x.x...
             ver="$VERSION_ID"
-            # Version: x (short handed version)
+            # Version: x
             sver=${ver//.*/}
             pname="$PRETTY_NAME"
             codename="$VERSION_CODENAME"
         else
             distro=$(uname -s)
                 if [[ $distro = "Darwin" ]]; then
+                    # Version: x.x.x
                     ver=$(sw_vers -productVersion)
+                    # Version: x.x
+                    sver=${ver%.*}
+                    pname="Mac OS X"
                 else
                     ver=$(uname -r)
                 fi
@@ -164,9 +168,9 @@
     echo "SYSTEM INFO"
     echo "Bit Type: $bits"
     echo "Architecture: $arch"
-    echo -n "OS/Distro: "
+    echo -n "Distro: "
     if [[ -n $pname ]]; then echo "$pname"; else echo "$distro"; fi
-    echo "OS/Distro Version: $ver"
+    echo "Distro Version: $ver"
     echo ""
 
     if [[ $distro = "ubuntu" ]]; then
@@ -202,12 +206,17 @@
                 *) supported="false" ;;
             esac
         fi
+    elif [[ $distro = "Darwin" ]]; then
+        case "$sver" in
+            10.15) execute_master_installer ;;
+        esac
     else
         supported="false"
     fi
         
     if [[ $supported = "false" ]]; then
-        echo "${red}Your OS is not an officially supported macOS/Linux Distribtuion${nc}" >&2
+        echo "${red}Your operating system/Linux Distribution is not OFFICIALLY" \
+            "supported by the installation, setup, and/or use of Nadeko${nc}" >&2
         read -p "Would you like to continue with the installation? [y|N]" choice
         choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in
