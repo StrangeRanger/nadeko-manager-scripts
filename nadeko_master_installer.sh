@@ -168,6 +168,7 @@
 					continue
 				fi
 				export nadeko_service
+				export -f service_actions
 				export nadeko_service_status
 				export nadeko_service_content
 				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_installer_latest.sh \
@@ -245,7 +246,7 @@
 				fi
 				export nadeko_service_status
 				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh \
-						-o nadeko_installer_latest.sh || {
+						-o credentials_setup.sh || {
 					echo "${red}Failed to download latest 'nadeko_installer_latest.sh'...${nc}" >&2
 					clean_exit "1" "Exiting" "true"
 				}
