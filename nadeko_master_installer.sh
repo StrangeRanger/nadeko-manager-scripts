@@ -18,7 +18,23 @@
 #
 ################################################################################
 #	
+	# Variables use when executed on 'macOS'
 	if [[ $distro != "Darwin" ]]; then
+		service_actions() {
+			case "$1" in
+				nadeko_service_status)
+					nadeko_service_status=$(systemctl is-active nadeko.service)
+					;;
+				stop_service)
+					sudo systemctl stop nadeko.service || {
+						echo "${red}Failed to stop 'nadeko.service'" >&2
+						echo "${cyan}You will need to restart 'nadeko.service' to" \
+							"apply any updates to Nadeko${nc}"
+					}
+					;;
+				
+			esac
+		}
 		nadeko_service="/lib/systemd/system/nadeko.service"
 		nadeko_service_content="[Unit] \
 			\nDescription=Nadeko \
@@ -33,7 +49,25 @@
 			\n \
 			\n[Install] \
 			\nWantedBy=multi-user.target"
+	# Variables use when executed on 'Linux Distributions'
 	else
+		service_actions() {
+			case "$1" in
+				nadeko_service_status)
+					nadeko_service_status=$(launchctl print gui/$UID/bot.nadeko.Nadeko | grep "state") &&
+					nadeko_service_status=${nadeko_service_status/[[:blank:]]state = /} || {
+						nadeko_service_status="inactive"
+					}
+					;;
+				stop_service)
+					launchctl stop bot.nadeko.Nadeko || {
+						echo "${red}Failed to stop 'bot.nadeko.Nadeko'" >&2
+						echo "${cyan}You will need to restart 'bot.nadeko.Nadeko' to" \
+							"apply any updates to Nadeko${nc}"
+					}
+					;;
+			esac
+		}
 		nadeko_service="/Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist"
 		nadeko_service_content=("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
 			\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
@@ -68,21 +102,17 @@
 	echo -e "Welcome to NadekoBot\n"
 
 	while true; do
-		# TODO: Numerics for $nadeko_service_status like $nadeko_service_startup???
-		nadeko_service_status=$(systemctl is-active nadeko.service)
-		nadeko_service_startup=$(systemctl is-enabled --quiet nadeko.service \
-			2>/dev/null; echo $?)
+		service_actions "nadeko_service_status"
 
 		# E.1. Creates 'nadeko.service', if it does not exist
 		if [[ ! -f $nadeko_service ]]; then
 			echo "Creating 'nadeko.service'..."
-			echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" > /dev/null || {
-			echo "${red}Failed to create 'nadeko.service'" >&2
+			echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" > /dev/null &&
+					if [[ $distro != "Darwin" ]]; then sudo systemctl daemon-reload; fi || {
+				echo "${red}Failed to create 'nadeko.service'" >&2
 				echo "${cyan}This service must exist for nadeko to work${nc}"
 				clean_exit "1" "Exiting"
 			}
-			# Reloads systemd daemons to account for the added service
-			sudo systemctl daemon-reload
 		fi
 
 		########################################################################
@@ -155,7 +185,6 @@
 					continue
 				fi
 				export nadeko_service_status
-				export nadeko_service_startup
 				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoB.sh \
 						-o NadekoB.sh || {
 					echo "${red}Failed to download latest 'NadekoB.sh'...${nc}" >&2
@@ -171,7 +200,6 @@
 					continue
 				fi
 				export nadeko_service_status
-				export nadeko_service_startup
 				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARB.sh \
 						-o NadekoARB.sh || {
 					echo "${red}Failed to download latest 'NadekoARB.sh'...${nc}" >&2
@@ -187,7 +215,6 @@
 					continue
 				fi
 				export nadeko_service_status
-				export nadeko_service_startup
 				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARBU.sh \
 						-o NadekoARBU.sh || {
 					echo "${red}Failed to download latest 'NadekoARBU.sh'...${nc}" >&2
@@ -217,7 +244,6 @@
 					continue
 				fi
 				export nadeko_service_status
-				export nadeko_service_startup
 				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh \
 						-o nadeko_installer_latest.sh || {
 					echo "${red}Failed to download latest 'nadeko_installer_latest.sh'...${nc}" >&2

@@ -70,17 +70,14 @@
     ############################################################################
     # Prepping
     ############################################################################
-    if [[ $nadeko_service_status = "active" ]]; then
+    # 'active' is used on Linux and 'running' is used on macOS
+    if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
         # B.1. $nadeko_service_active = true when 'nadeko.service' is
         # active, and is used to indicate to the user that the service was
         # stopped and that they will need to start it
         nadeko_service_active="true"
         echo "Stopping 'nadeko.service'..."
-        sudo systemctl stop nadeko.service || {
-            echo "${red}Failed to stop 'nadeko.service'" >&2
-            echo "${cyan}You will need to restart 'nadeko.service' to" \
-                "apply any updates to Nadeko${nc}"
-        }
+        service_actions "stop_service"
     fi
 
 
