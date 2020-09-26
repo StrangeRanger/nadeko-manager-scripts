@@ -2,14 +2,14 @@
 
 ################################################################################
 #
-# The master/main installer script for macOS and Linux Distributions.
+# The master/main installer for macOS and Linux Distributions.
 #
 # Note: All variables not defined in this script, are exported from
 # 'linuxAIO.sh' and 'installer_prep.sh'.
 #
 ################################################################################
 #
-export sub_master_installer_pid=$$
+	export sub_master_installer_pid=$$
 
 #
 ################################################################################
@@ -140,7 +140,11 @@ export sub_master_installer_pid=$$
 				export nadeko_service
 				export nadeko_service_status
 				export nadeko_service_content
-				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_installer_latest.sh
+				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_installer_latest.sh \
+						-o nadeko_installer_latest.sh || {
+					echo "${red}Failed to download latest 'nadeko_installer_latest.sh'...${nc}" >&2
+					clean_exit "1" "Exiting" "true"
+				}
 				sudo chmod +x nadeko_installer_latest.sh && ./nadeko_installer_latest.sh
 				exec "$installer_prep"
 				;;
@@ -152,7 +156,11 @@ export sub_master_installer_pid=$$
 				fi
 				export nadeko_service_status
 				export nadeko_service_startup
-				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoB.sh
+				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoB.sh \
+						-o NadekoB.sh || {
+					echo "${red}Failed to download latest 'NadekoB.sh'...${nc}" >&2
+					clean_exit "1" "Exiting" "true"
+				}
 				sudo chmod +x NadekoB.sh && ./NadekoB.sh
 				clear -x
 				;;
@@ -164,7 +172,11 @@ export sub_master_installer_pid=$$
 				fi
 				export nadeko_service_status
 				export nadeko_service_startup
-				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARB.sh
+				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARB.sh \
+						-o NadekoARB.sh || {
+					echo "${red}Failed to download latest 'NadekoARB.sh'...${nc}" >&2
+					clean_exit "1" "Exiting" "true"
+				}
 				sudo chmod +x NadekoARB.sh && ./NadekoARB.sh
 				clear -x
 				;;
@@ -176,7 +188,11 @@ export sub_master_installer_pid=$$
 				fi
 				export nadeko_service_status
 				export nadeko_service_startup
-				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARBU.sh
+				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARBU.sh \
+						-o NadekoARBU.sh || {
+					echo "${red}Failed to download latest 'NadekoARBU.sh'...${nc}" >&2
+					clean_exit "1" "Exiting" "true"
+				}
 				sudo chmod +x NadekoARBU.sh && ./NadekoARBU.sh
 				clear -x
 				;;
@@ -186,7 +202,11 @@ export sub_master_installer_pid=$$
 					echo "${red}Option 5 is currently disabled${nc}"
 					continue
 				fi
-				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/prereqs_installer.sh
+				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/prereqs_installer.sh \
+						-o prereqs_installer.sh || {
+					echo "${red}Failed to download latest 'prereqs_installer.sh'...${nc}" >&2
+					clean_exit "1" "Exiting" "true"
+				}
 				sudo chmod +x prereqs_installer.sh && ./prereqs_installer.sh
 				clear -x
 				;;
@@ -198,7 +218,11 @@ export sub_master_installer_pid=$$
 				fi
 				export nadeko_service_status
 				export nadeko_service_startup
-				wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh
+				curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh \
+						-o nadeko_installer_latest.sh || {
+					echo "${red}Failed to download latest 'nadeko_installer_latest.sh'...${nc}" >&2
+					clean_exit "1" "Exiting" "true"
+				}
 				sudo chmod +x credentials_setup.sh && ./credentials_setup.sh
 				clear -x
 				;;

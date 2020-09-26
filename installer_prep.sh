@@ -22,7 +22,7 @@
     red=$'\033[1;31m'
     nc=$'\033[0m'
     clrln=$'\r\033[K'
-    current_linuxAIO_revision="2"
+    current_linuxAIO_revision="3"
 
 #
 ################################################################################
@@ -61,7 +61,8 @@
     if [[ $linuxAIO_revision != $current_linuxAIO_revision ]]; then
         echo "${yellow}'linuxAIO.sh' is not up to date${nc}"
         echo "Downloading latest 'linuxAIO.sh'..."
-        wget -N https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh || {
+        curl https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh \
+                -o linuxAIO.sh || {
             echo "${red}Failed to download latest 'linuxAIO.sh'...${nc}" >&2
             clean_exit "1" "Exiting" "true"
         }
@@ -143,13 +144,11 @@
 
     execute_master_installer(){
         supported="true"
-        while true; do
-            wget -qN https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_master_installer.sh || {
-                failed_download "nadeko_master_installer.sh"
-            }
-            break
-        done
-
+        curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_master_installer.sh \
+                -o nadeko_master_installer.sh || {
+            echo "${red}Failed to download 'nadeko_master_installer.sh'" >&2
+            clean_exit "1" "Exiting" "true"
+        }
         sudo chmod +x nadeko_master_installer.sh && ./nadeko_master_installer.sh || {
             echo "${red}Failed to execute 'nadeko_master_installer.sh'${nc}" >&2
             clean_exit "1" "Exiting" "true"
@@ -213,6 +212,7 @@
     elif [[ $distro = "Darwin" ]]; then
         case "$sver" in
             10.15) execute_master_installer ;;
+            *) supported="false" ;;
         esac
     else
         supported="false"

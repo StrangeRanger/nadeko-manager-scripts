@@ -10,7 +10,7 @@
 ################################################################################
 #
     # The exports below are for dev/testing purpouses (DO NOT MODIFY)
-    export linuxAIO_revision="2" # Keeps track of changes to linuxPMI.sh
+    export linuxAIO_revision="3" # Keeps track of changes to linuxPMI.sh
     export installer_branch="dev" # Determines which installer branch is used
     export installer_repo="StrangeRanger/NadekoBot-BashScript" # Determines which repo is used
 
@@ -29,7 +29,8 @@
     fi
 
     echo "Downloading the latest installer..."
-    wget -N https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/installer_prep.sh || {
+    curl https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/installer_prep.sh \
+            -o installer_prep.sh || {
         echo "Failed to download 'installer_prep.sh'..." >&2
         echo -e "\nExiting..."
         exit 1

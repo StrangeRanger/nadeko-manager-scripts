@@ -13,7 +13,8 @@
 	dot_net_install() {
 		echo "Installing .NET Core..."
 		# Microsoft package signing key
-		wget https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+		wget https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb \
+			-O packages-microsoft-prod.deb
 		sudo dpkg -i packages-microsoft-prod.deb && sudo rm -f packages-microsoft-prod.deb
 		# Install the SDK
 		sudo apt-get update; \
@@ -22,8 +23,8 @@
 		sudo apt-get install -y dotnet-sdk-3.1
 
 		echo "Installing prerequisites..."
-		sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg tmux redis-server git -y
-		sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
+		sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg redis-server git -y
+		sudo curl -s https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 		sudo chmod a+rx /usr/local/bin/youtube-dl
 	}
 
@@ -59,7 +60,7 @@
 			# Microsoft package signing key
 			wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
 			sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
-			wget https://packages.microsoft.com/config/debian/9/prod.list
+			curl -s https://packages.microsoft.com/config/debian/9/prod.list
 			sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
 			sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
 			sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
@@ -70,8 +71,8 @@
 			sudo apt-get install -y dotnet-sdk-3.1
 
 			echo "Installing prerequisites..."
-			sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg tmux python3 python3-pip redis-server git -y
-			sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
+			sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg redis-server git -y
+			sudo curl -s https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 			sudo chmod a+rx /usr/local/bin/youtube-dl
 		elif [[ $sver = "10" ]]; then
 			dot_net_install "debian" "10"
