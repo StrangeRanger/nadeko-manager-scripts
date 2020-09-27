@@ -5,7 +5,7 @@
 # This installer looks at the operating system, architecture, bit type,
 # etc., to determine whether or not the system is supported by Nadeko. Once the
 # system is deemed as supported, the master installer will be downloaded and
-# executed. 
+# executed.
 #
 # Note: All variables not defined in this script, are exported from
 # 'linuxAIO.sh'.
@@ -69,8 +69,8 @@
         chmod +x linuxAIO.sh
         echo "${cyan}Re-execute 'linuxAIO.sh' to continue${nc}"
         clean_exit "0" "Exiting" "true"
-        # TODO: Figure out a way to get exec to work 
-    fi
+        # TODO: Figure out a way to get exec to work
+fi
 
 #
 ################################################################################
@@ -103,7 +103,7 @@
     # or 64), etc.
     detect_sys_info() {
         arch=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
-        
+
         if [[ -f /etc/os-release ]]; then
             . /etc/os-release
             distro="$ID"
@@ -115,15 +115,15 @@
             codename="$VERSION_CODENAME"
         else
             distro=$(uname -s)
-                if [[ $distro = "Darwin" ]]; then
-                    # Version: x.x.x
-                    ver=$(sw_vers -productVersion)
-                    # Version: x.x
-                    sver=${ver%.*}
-                    pname="Mac OS X"
-                else
-                    ver=$(uname -r)
-                fi
+            if [[ $distro = "Darwin" ]]; then
+                # Version: x.x.x
+                ver=$(sw_vers -productVersion)
+                # Version: x.x
+                sver=${ver%.*}
+                pname="Mac OS X"
+            else
+                ver=$(uname -r)
+            fi
         fi
 
         # Identifying bit type
@@ -142,7 +142,7 @@
         esac
     }
 
-    execute_master_installer(){
+    execute_master_installer() {
         supported="true"
         curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_master_installer.sh \
                 -o nadeko_master_installer.sh || {
@@ -179,7 +179,7 @@
 
     if [[ $distro = "ubuntu" ]]; then
         # B.1. Forcing 64 bit architecture
-        if [[ $bits = 64 ]]; then 
+        if [[ $bits = 64 ]]; then
             case "$ver" in
                 16.04) execute_master_installer ;;
                 18.04) execute_master_installer ;;
@@ -217,15 +217,15 @@
     else
         supported="false"
     fi
-        
+
     if [[ $supported = "false" ]]; then
         echo "${red}Your operating system/Linux Distribution is not OFFICIALLY" \
             "supported by the installation, setup, and/or use of Nadeko${nc}" >&2
         read -p "Would you like to continue with the installation? [y|N]" choice
         choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in
-            y|yes) execute_master_installer ;;
-            n|no) clean_exit "0" "Exiting" ;;
+            y | yes) execute_master_installer ;;
+            n | no) clean_exit "0" "Exiting" ;;
             *) clean_exit "0" "Exiting" ;;
         esac
     fi

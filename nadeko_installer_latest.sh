@@ -2,7 +2,7 @@
 
 ################################################################################
 #
-# Downloads and updates nadeko  
+# Downloads and updates nadeko
 #
 # Note: All variables not defined in this script, are exported from
 # 'linuxPMI.sh', 'installer-prep.sh', and 'linux-master-installer.sh'.
@@ -53,19 +53,17 @@
     printf "We will now download/update Nadeko. "
     read -p "Press [Enter] to begin."
 
-
     ############################################################################
     # Error trapping
     ############################################################################
     # TODO: Figure out how to silently kill a process
     trap "echo -e \"\n\nScript forcefully stopped\"
-        clean_up
-        echo \"Killing parent processes...\"
-        kill -9 \"$linux_master_installer_pid\" \"$installer_prep_pid\"
-        echo \"Exiting...\"
-        exit 1" \
+            clean_up
+            echo \"Killing parent processes...\"
+            kill -9 \"$linux_master_installer_pid\" \"$installer_prep_pid\"
+            echo \"Exiting...\"
+            exit 1" \
         SIGINT SIGTSTP SIGTERM
-
 
     ############################################################################
     # Prepping
@@ -80,12 +78,10 @@
         service_actions "stop_service"
     fi
 
-
     ############################################################################
     # Creating backups of current code in '/home/nadeko' then downloads/
     # updates Nadeko
     ############################################################################
-
 
     if [[ -d NadekoBot ]]; then
         echo "Backing up NadekoBot as 'NadekoBot.bak'..."
@@ -104,14 +100,15 @@
 
     if [[ -d /tmp/NuGetScratch ]]; then
         echo "Modifying ownership of /tmp/NuGetScratch"
-        sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/$USER/.nuget|| {
-            echo "${red}Failed to to modify ownership of /tmp/NuGetScratch and/or /home/$USER/.nuget" >&2
+        sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/$USER/.nuget || {
+            echo "${red}Failed to to modify ownership of /tmp/NuGetScratch and/or" \
+                "/home/$USER/.nuget" >&2
             echo "${cyan}You can ignore this if you are not prompted about" \
                 "locked files/permission error while attempting to download" \
                 "dependencies${nc}"
         }
     fi
-    
+
     echo "Downloading Nadeko dependencies..."
     cd NadekoBot || {
         echo "${red}Failed to change working directory${nc}" >&2
@@ -121,7 +118,7 @@
         echo "${red}Failed to download dependencies${nc}" >&2
         clean_up "true"
     }
-    
+
     echo "Building NadekoBot..."
     dotnet build --configuration Release || {
         echo "${red}Failed to build NadekoBot${nc}" >&2
@@ -134,9 +131,11 @@
     }
 
     # TODO: Find a way to make this smaller
-    if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot.bak ]]; then
+    if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d \
+            NadekoBot.bak ]]; then
         echo "Copping 'credentials.json' to new version..."
-        cp -f NadekoBot.bak/src/NadekoBot/credentials.json NadekoBot/src/NadekoBot/credentials.json &>/dev/null
+        cp -f NadekoBot.bak/src/NadekoBot/credentials.json \
+            NadekoBot/src/NadekoBot/credentials.json &>/dev/null
         echo "Copping database to the new version"
         cp -RT NadekoBot.bak/src/NadekoBot/bin/ NadekoBot/src/NadekoBot/bin/ &>/dev/null
         cp -RT NadekoBot/src/NadekoBot/bin/Release/netcoreapp1.0/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db &>/dev/null
@@ -159,17 +158,16 @@
         create_or_update="create"
     fi
 
-    echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" > /dev/null || {
+    echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null || {
         echo "${red}Failed to $create_or_update 'nadeko.service'${nc}" >&2
         b_s_update="Failed"
     }
-
 
     ############################################################################
     # Cleaning up and presenting results...
     ############################################################################
     echo -e "\n${green}Finished downloading/updating Nadeko${nc}"
-    
+
     if [[ $b_s_update ]]; then
         echo "${yellow}WARNING: Failed to $create_or_update 'nadeko.service'${nc}"
     fi

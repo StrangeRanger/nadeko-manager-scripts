@@ -1,12 +1,20 @@
 #!/bin/bash
 
+################################################################################
+#
+# ADD DESCRIPTION
+#
+# Note: ......
+#
+################################################################################
+#
     read -p "We will now create a new credentials.json. Press [Enter] to continue."
 
     echo -e "\n-------------"
     echo "${cyan}This field is required and cannot be left blank${nc}"
     while true; do
         read -p "Enter your bot token: " clientid
-        if [[ -n $clientid ]]; then 
+        if [[ -n $clientid ]]; then
             break
         fi
     done
@@ -30,7 +38,7 @@
     done
     echo "Owner ID: $ownerid"
     echo "-------------"
-    
+
     echo -e "\n-------------"
     read -p "Enter your Google API key: " googleapi
     echo "Google API Key: $googleapi"
@@ -50,7 +58,7 @@
     read -p "Enter your Cleverbot API Key: " cleverbot
     echo "Cleverbot API Key: $cleverbot"
     echo "-------------"
-    
+
     echo -e "\n-------------"
     read -p "Enter your Twitch Client ID: " twitchcid
     echo "Twitch Client ID: $twitchcid"
@@ -60,7 +68,7 @@
     read -p "Enter your Location IQ API Key: " locationiqapi
     echo "Location IQ API Key: $locationiqapi"
     echo "-------------"
-    
+
     echo -e "\n-------------"
     read -p "Enter your Timezone DB API Key: " timedbapi
     echo "Timezone DB API Key: $timedbapi"
@@ -70,21 +78,21 @@
     mv NadekoBot/src/NadekoBot/credentials.json NadekoBot/src/NadekoBot/credentials.json.bak
     echo "Creating 'credentials.json'..."
     echo "{
-    \"ClientId\": $clientid,
-    \"Token\": \"$token\",
-    \"OwnerIds\": [
-    $ownerid
-    ],
-    \"GoogleApiKey\": \"$googleapi\",
-    \"MashapeKey\": \"$mashapekey\",
-    \"OsuApiKey\": \"$osu\",
-    \"CleverbotApiKey\": \"$cleverbot\",
-    \"TwitchClientId\": \"$twitchcid\",
-    \"LocationIqApiKey\": \"$locationiqapi\",
-    \"TimezoneDbApiKey\": \"$timedbapi\",
-    \"Db\": null,
-    \"TotalShards\": 1
-}" | cat - > NadekoBot/src/NadekoBot/credentials.json
-    
+        \"ClientId\": $clientid,
+        \"Token\": \"$token\",
+        \"OwnerIds\": [
+        $ownerid
+        ],
+        \"GoogleApiKey\": \"$googleapi\",
+        \"MashapeKey\": \"$mashapekey\",
+        \"OsuApiKey\": \"$osu\",
+        \"CleverbotApiKey\": \"$cleverbot\",
+        \"TwitchClientId\": \"$twitchcid\",
+        \"LocationIqApiKey\": \"$locationiqapi\",
+        \"TimezoneDbApiKey\": \"$timedbapi\",
+        \"Db\": null,
+        \"TotalShards\": 1
+    }" | cat - >NadekoBot/src/NadekoBot/credentials.json
+
     echo "${green}Finished creating 'credentials.json'${nc}"
     read -p "Press [Enter] to return the the installer menu"
