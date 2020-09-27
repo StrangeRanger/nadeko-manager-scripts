@@ -14,9 +14,7 @@
     echo "${cyan}This field is required and cannot be left blank${nc}"
     while true; do
         read -p "Enter your bot token: " clientid
-        if [[ -n $clientid ]]; then
-            break
-        fi
+        if [[ -n $clientid ]]; then break; fi
     done
     echo "Client ID: $clientid"
     echo "-------------"

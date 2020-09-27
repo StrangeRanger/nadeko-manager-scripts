@@ -35,7 +35,7 @@
             }
         fi
 
-        if [[ $1 = "true" ]]; then
+        if [[ $1 = true ]]; then
             echo "Killing parent processes..."
             kill -9 "$nadeko_master_installer_pid" "$installer_prep_pid"
             echo "Exiting..."
@@ -53,16 +53,17 @@
     printf "We will now download/update Nadeko. "
     read -p "Press [Enter] to begin."
 
+
     ############################################################################
     # Error trapping
     ############################################################################
     # TODO: Figure out how to silently kill a process
     trap "echo -e \"\n\nScript forcefully stopped\"
-            clean_up
-            echo \"Killing parent processes...\"
-            kill -9 \"$linux_master_installer_pid\" \"$installer_prep_pid\"
-            echo \"Exiting...\"
-            exit 1" \
+        clean_up
+        echo \"Killing parent processes...\"
+        kill -9 \"$linux_master_installer_pid\" \"$installer_prep_pid\"
+        echo \"Exiting...\"
+        exit 1" \
         SIGINT SIGTSTP SIGTERM
 
     ############################################################################
@@ -73,7 +74,7 @@
         # B.1. $nadeko_service_active = true when 'nadeko.service' is
         # active, and is used to indicate to the user that the service was
         # stopped and that they will need to start it
-        nadeko_service_active="true"
+        nadeko_service_active=true
         echo "Stopping 'nadeko.service'..."
         service_actions "stop_service"
     fi
@@ -82,7 +83,6 @@
     # Creating backups of current code in '/home/nadeko' then downloads/
     # updates Nadeko
     ############################################################################
-
     if [[ -d NadekoBot ]]; then
         echo "Backing up NadekoBot as 'NadekoBot.bak'..."
         mv -f NadekoBot NadekoBot.bak || {

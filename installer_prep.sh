@@ -38,7 +38,7 @@
             "nadeko_installer_latest.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
             "NadekoARBU.sh" "NadekoB.sh" "prereqs_installer.sh")
 
-        if [[ $3 = "true" ]]; then echo "Cleaning up..."; else echo -e "\nCleaning up..."; fi
+        if [[ $3 = true ]]; then echo "Cleaning up..."; else echo -e "\nCleaning up..."; fi
         for file in "${installer_files[@]}"; do
             if [[ -f $file ]]; then rm "$file"; fi
         done
@@ -143,7 +143,7 @@ fi
     }
 
     execute_master_installer() {
-        supported="true"
+        supported=true
         curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_master_installer.sh \
                 -o nadeko_master_installer.sh || {
             echo "${red}Failed to download 'nadeko_master_installer.sh'" >&2
@@ -184,20 +184,20 @@ fi
                 16.04) execute_master_installer ;;
                 18.04) execute_master_installer ;;
                 20.04) execute_master_installer ;;
-                *) supported="false" ;;
+                *) supported=false ;;
             esac
         else
-            supported="false"
+            supported=false
         fi
     elif [[ $distro = "debian" ]]; then
         if [[ $bits = 64 ]]; then # B.1.
             case "$sver" in
                 9) execute_master_installer ;;
                 10) execute_master_installer ;;
-                *) supported="false" ;;
+                *) supported=false ;;
             esac
         else
-            supported="false"
+            supported=false
         fi
 
     elif [[ $distro = "linuxmint" ]]; then
@@ -206,26 +206,26 @@ fi
                 18) execute_master_installer ;;
                 19) execute_master_installer ;;
                 20) execute_master_installer ;;
-                *) supported="false" ;;
+                *) supported=false ;;
             esac
         fi
     elif [[ $distro = "Darwin" ]]; then
         case "$sver" in
             10.15) execute_master_installer ;;
-            *) supported="false" ;;
+            *) supported=false ;;
         esac
     else
-        supported="false"
+        supported=false
     fi
 
-    if [[ $supported = "false" ]]; then
+    if [[ $supported = false ]]; then
         echo "${red}Your operating system/Linux Distribution is not OFFICIALLY" \
             "supported by the installation, setup, and/or use of Nadeko${nc}" >&2
         read -p "Would you like to continue with the installation? [y|N]" choice
         choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in
-            y | yes) execute_master_installer ;;
-            n | no) clean_exit "0" "Exiting" ;;
+            y|yes) execute_master_installer ;;
+            n|no) clean_exit "0" "Exiting" ;;
             *) clean_exit "0" "Exiting" ;;
         esac
     fi

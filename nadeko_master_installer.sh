@@ -25,15 +25,15 @@
         ########################################################################
         service_actions() {
             case "$1" in
-            nadeko_service_status)
-                nadeko_service_status=$(systemctl is-active nadeko.service)
-                ;;
-            stop_service)
-                sudo systemctl stop nadeko.service || {
-                    echo "${red}Failed to stop 'nadeko.service'" >&2
-                    echo "${cyan}You will need to restart 'nadeko.service' to" \
-                        "apply any updates to Nadeko${nc}"
-                }
+                nadeko_service_status)
+                    nadeko_service_status=$(systemctl is-active nadeko.service)
+                    ;;
+                stop_service)
+                    sudo systemctl stop nadeko.service || {
+                        echo "${red}Failed to stop 'nadeko.service'" >&2
+                        echo "${cyan}You will need to restart 'nadeko.service'" \
+                            "to apply any updates to Nadeko${nc}"
+                    }
                 ;;
             esac
         }
@@ -62,19 +62,19 @@
         ########################################################################
         service_actions() {
             case "$1" in
-            nadeko_service_status)
-                nadeko_service_status=$(launchctl print gui/$UID/bot.nadeko.Nadeko | grep "state") &&
-                nadeko_service_status=${nadeko_service_status/[[:blank:]]state = /} || {
-                    nadeko_service_status="inactive"
-                }
-                ;;
-            stop_service)
-                launchctl stop bot.nadeko.Nadeko || {
-                    echo "${red}Failed to stop 'bot.nadeko.Nadeko'" >&2
-                    echo "${cyan}You will need to restart 'bot.nadeko.Nadeko' to" \
-                        "apply any updates to Nadeko${nc}"
-                }
-                ;;
+                nadeko_service_status)
+                    nadeko_service_status=$(launchctl print gui/$UID/bot.nadeko.Nadeko | grep "state") &&
+                    nadeko_service_status=${nadeko_service_status/[[:blank:]]state = /} || {
+                        nadeko_service_status="inactive"
+                    }
+                    ;;
+                stop_service)
+                    launchctl stop bot.nadeko.Nadeko || {
+                        echo "${red}Failed to stop 'bot.nadeko.Nadeko'" >&2
+                        echo "${cyan}You will need to restart 'bot.nadeko.Nadeko'" \
+                            "to apply any updates to Nadeko${nc}"
+                    }
+                    ;;
             esac
         }
 
@@ -83,26 +83,26 @@
         ########################################################################
         nadeko_service="/Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist"
         nadeko_service_content=("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
-                \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
-                \n<plist version=\"1.0\"> \
-                \n<dict> \
-                \n	<key>Disabled</key> \
-                \n	<false/> \
-                \n	<key>Label</key> \
-                \n	<string>bot.nadeko.Nadeko</string> \
-                \n	<key>ProgramArguments</key> \
-                \n	<array> \
-                \n		<string>$(which bash)</string> \
-                \n		<string>$root_dir/NadekoRun.sh</string> \
-                \n	</array> \
-                \n	<key>RunAtLoad</key> \
-                \n	<true/> \
-                \n	<key>StandardErrorPath</key> \
-                \n	<string>$root_dir/.bot.nadeko.Nadeko.stderr</string> \
-                \n	<key>StandardOutPath</key> \
-                \n	<string>$root_dir/.bot.nadeko.Nadeko.stdout</string> \
-                \n</dict> \
-                \n</plist>")
+            \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
+            \n<plist version=\"1.0\"> \
+            \n<dict> \
+            \n	<key>Disabled</key> \
+            \n	<false/> \
+            \n	<key>Label</key> \
+            \n	<string>bot.nadeko.Nadeko</string> \
+            \n	<key>ProgramArguments</key> \
+            \n	<array> \
+            \n		<string>$(which bash)</string> \
+            \n		<string>$root_dir/NadekoRun.sh</string> \
+            \n	</array> \
+            \n	<key>RunAtLoad</key> \
+            \n	<true/> \
+            \n	<key>StandardErrorPath</key> \
+            \n	<string>$root_dir/.bot.nadeko.Nadeko.stderr</string> \
+            \n	<key>StandardOutPath</key> \
+            \n	<string>$root_dir/.bot.nadeko.Nadeko.stdout</string> \
+            \n</dict> \
+            \n</plist>")
     fi
 
 #
@@ -121,7 +121,7 @@
         if [[ ! -f $nadeko_service ]]; then
             echo "Creating 'nadeko.service'..."
             echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null &&
-                if [[ $distro != "Darwin" ]]; then sudo systemctl daemon-reload; fi || {
+            if [[ $distro != "Darwin" ]]; then sudo systemctl daemon-reload; fi || {
                 echo "${red}Failed to create 'nadeko.service'" >&2
                 echo "${cyan}This service must exist for nadeko to work${nc}"
                 clean_exit "1" "Exiting"
@@ -133,10 +133,10 @@
         ########################################################################
         if (! hash git || ! hash dotnet) &>/dev/null; then
             echo "1. Download NadekoBot ${red}(Disabled until prerequisites are installed)${nc}"
-            disabled_1="true"
+            disabled_1=true
         else
             echo "1. Download NadekoBot"
-            disabled_1="false"
+            disabled_1=false
         fi
 
         if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ]] ||
@@ -148,29 +148,29 @@
             echo "4. Run Nadeko in the background with auto-restart and auto-update" \
                 "${red}(Disabled until credentials.json, Nadeko, and prerequisites" \
                 "are installed)${nc}"
-            disabled_234="true"
+            disabled_234=true
         else
             echo "2. Run Nadeko in the background"
             echo "3. Run Nadeko in the background with auto-restart"
             echo "4. Run Nadeko in the background with auto-restart and auto-update"
-            disabled_234="false"
+            disabled_234=false
         fi
 
         if [[ $distro = "Darwin" ]]; then
             echo "5. Install prerequisites ${red}(Disabled due to being run on macOS)${nc}"
-            disabled_5="true"
+            disabled_5=true
         else
             echo "5. Install prerequisites"
-            disabled_5="false"
+            disabled_5=false
         fi
 
         if [[ ! -d NadekoBot/src/NadekoBot/ ]]; then
             echo "6. Set up credentials.json ${red}(Disabled until Nadeko hash" \
                 "been downloaded)${nc}"
-            disabled_6="true"
+            disabled_6=true
         else
             echo "6. Set up credentials.json"
-            disabled_6="false"
+            disabled_6=false
         fi
 
         echo "7. Exit"
@@ -178,7 +178,7 @@
         case "$choice" in
         1)
             clear -x
-            if [[ $disabled_1 = "true" ]]; then
+            if [[ $disabled_1 = true ]]; then
                 echo "${red}Option 1 is currently disabled${nc}"
                 continue
             fi
@@ -187,7 +187,7 @@
             export nadeko_service_status
             export nadeko_service_content
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_installer_latest.sh \
-                -o nadeko_installer_latest.sh || {
+                    -o nadeko_installer_latest.sh || {
                 echo "${red}Failed to download latest 'nadeko_installer_latest.sh'...${nc}" >&2
                 clean_exit "1" "Exiting" "true"
             }
@@ -196,13 +196,13 @@
             ;;
         2)
             clear -x
-            if [[ $disabled_234 = "true" ]]; then
+            if [[ $disabled_234 = true ]]; then
                 echo "${red}Option 2 is currently disabled${nc}"
                 continue
             fi
             export nadeko_service_status
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoB.sh \
-                -o NadekoB.sh || {
+                    -o NadekoB.sh || {
                 echo "${red}Failed to download latest 'NadekoB.sh'...${nc}" >&2
                 clean_exit "1" "Exiting" "true"
             }
@@ -211,13 +211,13 @@
             ;;
         3)
             clear -x
-            if [[ $disabled_234 = "true" ]]; then
+            if [[ $disabled_234 = true ]]; then
                 echo "${red}Option 3 is currently disabled${nc}"
                 continue
             fi
             export nadeko_service_status
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARB.sh \
-                -o NadekoARB.sh || {
+                    -o NadekoARB.sh || {
                 echo "${red}Failed to download latest 'NadekoARB.sh'...${nc}" >&2
                 clean_exit "1" "Exiting" "true"
             }
@@ -226,13 +226,13 @@
             ;;
         4)
             clear -x
-            if [[ $disabled_234 = "true" ]]; then
+            if [[ $disabled_234 = true ]]; then
                 echo "${red}Option 4 is currently disabled${nc}"
                 continue
             fi
             export nadeko_service_status
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/NadekoARBU.sh \
-                -o NadekoARBU.sh || {
+                    -o NadekoARBU.sh || {
                 echo "${red}Failed to download latest 'NadekoARBU.sh'...${nc}" >&2
                 clean_exit "1" "Exiting" "true"
             }
@@ -241,12 +241,12 @@
             ;;
         5)
             clear -x
-            if [[ $disabled_5 = "true" ]]; then
+            if [[ $disabled_5 = true ]]; then
                 echo "${red}Option 5 is currently disabled${nc}"
                 continue
             fi
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/prereqs_installer.sh \
-                -o prereqs_installer.sh || {
+                    -o prereqs_installer.sh || {
                 echo "${red}Failed to download latest 'prereqs_installer.sh'...${nc}" >&2
                 clean_exit "1" "Exiting" "true"
             }
@@ -255,13 +255,13 @@
             ;;
         6)
             clear -x
-            if [[ $disabled_6 = "true" ]]; then
+            if [[ $disabled_6 = true ]]; then
                 echo "${red}Option 6 is currently disabled${nc}"
                 continue
             fi
             export nadeko_service_status
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh \
-                -o credentials_setup.sh || {
+                    -o credentials_setup.sh || {
                 echo "${red}Failed to download latest 'nadeko_installer_latest.sh'...${nc}" >&2
                 clean_exit "1" "Exiting" "true"
             }

@@ -17,10 +17,10 @@
     # Dictates whether or not the installer can be run as the root user:
     # true = can be run with root privilege
     # false = cannot be run with root privilege (recommended)
-    allow_run_as_root="false"
+    allow_run_as_root=false
 
     # Checks if this script was executed with root privilege
-    if ((EUID == 0)) && [[ $allow_run_as_root = "false" ]]; then
+    if ((EUID == 0)) && [[ $allow_run_as_root = false ]]; then
         echo "Please run this script without root privilege" >&2
         echo "While you will be performing specific tasks with root privilege," \
             "running the installer in it's entirety as root is not recommended"
