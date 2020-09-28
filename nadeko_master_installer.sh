@@ -9,7 +9,7 @@
 #
 ################################################################################
 #
-    export sub_master_installer_pid=$$
+    export nadeko_master_installer_pid=$$
 
 #
 ################################################################################
@@ -63,6 +63,7 @@
         service_actions() {
             case "$1" in
                 nadeko_service_status)
+                    launchctl load /Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist 2>/dev/null
                     nadeko_service_status=$(launchctl print gui/$UID/bot.nadeko.Nadeko | grep "state") &&
                     nadeko_service_status=${nadeko_service_status/[[:blank:]]state = /} || {
                         nadeko_service_status="inactive"
