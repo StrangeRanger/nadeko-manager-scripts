@@ -149,15 +149,17 @@
             disabled_1=false
         fi
 
-        if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ]] ||
-            (! hash git || ! hash dotnet) &>/dev/null; then
+        if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ||
+                ! -d NadekoBot/src/NadekoBot/bin/Release ]] || (! hash git ||
+                ! hash dotnet) &>/dev/null; then
             echo "2. Run Nadeko in the background ${red}(Disabled until credentials.json," \
-                "Nadeko, and prerequisites are installed)${nc}"
+                "prerequisites, and Nadeko is installed and compiled)${nc}"
             echo "3. Run Nadeko in the background with auto-restart ${red}(Disabled" \
-                "until credentials.json, Nadeko, and prerequisites are installed)${nc}"
+                "until credentials.json, prerequisites, and Nadeko is installed and" \
+                "compiled)${nc}"
             echo "4. Run Nadeko in the background with auto-restart and auto-update" \
-                "${red}(Disabled until credentials.json, Nadeko, and prerequisites" \
-                "are installed)${nc}"
+                "${red}(Disabled until credentials.json, prerequisites, and Nadeko" \
+                "is installed and compiled)${nc}"
             disabled_234=true
         else
             echo "2. Run Nadeko in the background"

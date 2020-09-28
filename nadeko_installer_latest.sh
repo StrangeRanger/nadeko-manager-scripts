@@ -21,12 +21,11 @@
 
         echo "Cleaning up files and directories..."
         if [[ -d tmp ]]; then rm -rf tmp; fi
-        if [[ -d NadekoBot ]]; then rm -rf NaadekoBot; fi
+        if [[ -d NadekoBot ]]; then rm -rf NadekoBot; fi
         for file in "${installer_files[@]}"; do
             if [[ -f $file ]]; then rm "$file"; fi
         done
 
-        # TODO: Rename NadekoBot.old to NadekoBot_Old (something like that)
         if [[ -d NadekoBot.bak ]]; then
             echo "Restoring from 'NadekoBot.bak'"
             mv -f NadekoBot.bak NadekoBot || {
