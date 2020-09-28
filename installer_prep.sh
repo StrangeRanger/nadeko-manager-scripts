@@ -181,9 +181,9 @@ fi
         # B.1. Forcing 64 bit architecture
         if [[ $bits = 64 ]]; then
             case "$ver" in
-                16.04) execute_master_installer ;;
-                18.04) execute_master_installer ;;
-                20.04) execute_master_installer ;;
+                16.04) export service_name="nadeko.service"; execute_master_installer ;;
+                18.04) export service_name="nadeko.service"; execute_master_installer ;;
+                20.04) export service_name="nadeko.service"; execute_master_installer ;;
                 *) supported=false ;;
             esac
         else
@@ -192,8 +192,8 @@ fi
     elif [[ $distro = "debian" ]]; then
         if [[ $bits = 64 ]]; then # B.1.
             case "$sver" in
-                9) execute_master_installer ;;
-                10) execute_master_installer ;;
+                9) export service_name="nadeko.service"; execute_master_installer ;;
+                10) export service_name="nadeko.service"; execute_master_installer ;;
                 *) supported=false ;;
             esac
         else
@@ -203,15 +203,15 @@ fi
     elif [[ $distro = "linuxmint" ]]; then
         if [[ $bits = 64 ]]; then # B.1.
             case "$sver" in
-                18) execute_master_installer ;;
-                19) execute_master_installer ;;
-                20) execute_master_installer ;;
+                18) export service_name="nadeko.service"; execute_master_installer ;;
+                19) export service_name="nadeko.service"; execute_master_installer ;;
+                20) export service_name="nadeko.service"; execute_master_installer ;;
                 *) supported=false ;;
             esac
         fi
     elif [[ $distro = "Darwin" ]]; then
         case "$sver" in
-            10.15) execute_master_installer ;;
+            10.15) export service_name="bot.nadeko.Nadeko"; execute_master_installer ;;
             *) supported=false ;;
         esac
     else

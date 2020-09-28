@@ -71,11 +71,11 @@
     ############################################################################
     # 'active' is used on Linux and 'running' is used on macOS
     if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
-        # B.1. $nadeko_service_active = true when 'nadeko.service' is
+        # B.1. $nadeko_service_active = true when '$nadeko_service_name' is
         # active, and is used to indicate to the user that the service was
         # stopped and that they will need to start it
         nadeko_service_active=true
-        echo "Stopping 'nadeko.service'..."
+        echo "Stopping '$nadeko_service_name'..."
         service_actions "stop_service"
     fi
 
@@ -151,15 +151,15 @@
     fi
 
     if [[ -f $nadeko_service ]]; then
-        echo "Updating 'nadeko.service'..."
+        echo "Updating '$nadeko_service_name'..."
         create_or_update="update"
     else
-        echo "Creating 'nadeko.service'..."
+        echo "Creating '$nadeko_service_name'..."
         create_or_update="create"
     fi
 
     echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null || {
-        echo "${red}Failed to $create_or_update 'nadeko.service'${nc}" >&2
+        echo "${red}Failed to $create_or_update '$nadeko_service_name'${nc}" >&2
         b_s_update="Failed"
     }
 
@@ -169,12 +169,12 @@
     echo -e "\n${green}Finished downloading/updating Nadeko${nc}"
 
     if [[ $b_s_update ]]; then
-        echo "${yellow}WARNING: Failed to $create_or_update 'nadeko.service'${nc}"
+        echo "${yellow}WARNING: Failed to $create_or_update '$nadeko_service_name'${nc}"
     fi
 
     # B.1.
     if [[ $nadeko_service_active ]]; then
-        echo "${cyan}NOTE: 'nadeko.service' was stopped to update" \
+        echo "${cyan}NOTE: '$nadeko_service_name' was stopped to update" \
             "Nadeko and has to be started using the run modes in the" \
             "installer menu${nc}"
     fi

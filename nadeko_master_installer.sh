@@ -14,7 +14,7 @@
 #
 ################################################################################
 #
-# Global [ variables ]
+# ??????????????? # TODO: privide description
 #
 ################################################################################
 #
@@ -117,12 +117,12 @@
     while true; do
         service_actions "nadeko_service_status"
 
-        # E.1. Creates 'nadeko.service', if it does not exist
+        # E.1. Creates '$nadeko_service_name', if it does not exist
         if [[ ! -f $nadeko_service ]]; then
-            echo "Creating 'nadeko.service'..."
+            echo "Creating '$nadeko_service_name'..."
             echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null &&
             if [[ $distro != "Darwin" ]]; then sudo systemctl daemon-reload; fi || {
-                echo "${red}Failed to create 'nadeko.service'" >&2
+                echo "${red}Failed to create '$nadeko_service_name'" >&2
                 echo "${cyan}This service must exist for nadeko to work${nc}"
                 clean_exit "1" "Exiting"
             }
