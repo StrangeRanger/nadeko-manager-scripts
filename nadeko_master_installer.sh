@@ -119,6 +119,15 @@
 
         # E.1. Creates '$nadeko_service_name', if it does not exist
         if [[ ! -f $nadeko_service ]]; then
+            # Usually only occures if the mac was just set up
+            if [[ ! -d /Users/$USER/Library/LaunchAgents/ ]]; then
+                echo "Creating '/Users/$USER/Library/LaunchAgents/'..."
+                mkdir /Users/$USER/Library/LaunchAgents || {
+                    echo "${red}Failed to create '/Users/$USER/Library/LaunchAgents'${nc}" >&2
+                    clean_exit "1" "Exiting" "true"
+                }
+            fi
+
             echo "Creating '$nadeko_service_name'..."
             echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null &&
             if [[ $distro != "Darwin" ]]; then sudo systemctl daemon-reload; fi || {
