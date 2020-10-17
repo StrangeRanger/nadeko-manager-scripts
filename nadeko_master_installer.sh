@@ -259,7 +259,7 @@
         fi
 
         if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ||
-                ! -d NadekoBot/src/NadekoBot/bin/Release || -z $(jq -r ".Token" \
+                ! -d NadekoBot/src/NadekoBot/bin/Release || -z $(jq -r ".Token"
                 NadekoBot/src/NadekoBot/credentials.json) ]] || (! hash git ||
                 ! hash dotnet || ! hash jq) &>/dev/null; then
             if [[ -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]]; then
