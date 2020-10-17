@@ -75,8 +75,12 @@
     if [[ -f NadekoBot/src/NadekoBot/credentials.json ]]; then
         echo "Backing up current 'credentials.json'..."
         mv NadekoBot/src/NadekoBot/credentials.json NadekoBot/src/NadekoBot/credentials.json.bak
+        echo "Updating 'credentials.json'..."
+    else
+        echo "Creating 'credentials.json'..."
+        touch NadekoBot/src/NadekoBot/credentials.json
+        sudo chmod +x NadekoBot/src/NadekoBot/credentials.json
     fi
-    echo "Creating 'credentials.json'..."
     echo "{
     \"ClientId\": $clientid,
     \"Token\": \"$token\",
@@ -92,7 +96,7 @@
     \"TimezoneDbApiKey\": \"$timedbapi\",
     \"Db\": null,
     \"TotalShards\": 1
-    }" | cat - >NadekoBot/src/NadekoBot/credentials.json
+    }" > NadekoBot/src/NadekoBot/credentials.json
 
     echo "${green}Finished creating 'credentials.json'${nc}"
     read -p "Press [Enter] to return the the installer menu"
