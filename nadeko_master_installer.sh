@@ -99,6 +99,13 @@
                 }
             fi
 
+            if [[ -f NadekoRun.sh ]]; then
+                echo "Updating 'NadekoRun.sh'..."
+            else
+                echo "Creating 'NadekoRun.sh'..."
+                touch NadekoRun.sh
+                chmod +x NadekoRun.sh
+            fi
             echo "Updating/creating 'NadekoRun.sh'..."
             echo -e "#\!bin/bash \
                 \n \
