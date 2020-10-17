@@ -65,7 +65,7 @@
                     nadeko_service_status=$(systemctl is-active nadeko.service)
                     ;;
                 nadeko_service_enabled)
-                    nadeko_service_enabled=$(systemctl is-enabled nadeko.servie \
+                    nadeko_service_enabled=$(systemctl is-enabled nadeko.service \
                         2>/dev/null; echo $?)
                     ;;
                 stop_service)
@@ -80,7 +80,7 @@
 
         nadeko_starter() {
             nadeko_service_status=$(systemctl is-active nadeko.service)
-            nadeko_service_enabled=$(systemctl is-enabled nadeko.servie \
+            nadeko_service_enabled=$(systemctl is-enabled nadeko.service \
                         2>/dev/null; echo $?)
             timer=60
 
