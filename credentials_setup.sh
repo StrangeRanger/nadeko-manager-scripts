@@ -72,8 +72,10 @@
     echo "Timezone DB API Key: $timedbapi"
     echo "-------------"
 
-    echo "Backing up current 'credentials.json'..."
-    mv NadekoBot/src/NadekoBot/credentials.json NadekoBot/src/NadekoBot/credentials.json.bak
+    if [[ -f NadekoBot/src/NadekoBot/credentials.json ]]; then
+        echo "Backing up current 'credentials.json'..."
+        mv NadekoBot/src/NadekoBot/credentials.json NadekoBot/src/NadekoBot/credentials.json.bak
+    fi
     echo "Creating 'credentials.json'..."
     echo "{
     \"ClientId\": $clientid,

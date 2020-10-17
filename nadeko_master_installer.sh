@@ -29,6 +29,7 @@
         # Variables
         #-------------------------------
         nadeko_service="/lib/systemd/system/nadeko.service"
+        nadeko_service_name="nadeko.service"
         nadeko_service_content="[Unit] \
             \nDescription=Nadeko \
             \n \
@@ -172,6 +173,7 @@
         # Variables
         #-------------------------------
         nadeko_service="/Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist"
+        nadeko_service_name="bot.nadeko.Nadeko"
         nadeko_service_content=("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
             \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
             \n<plist version=\"1.0\"> \
@@ -272,7 +274,7 @@
         fi
 
         if [[ $distro = "Darwin" ]]; then
-            echo "5. Install prerequisites ${red}(Disabled | 2)${nc}"
+            echo "5. Install prerequisites ${red}(Disabled | 3)${nc}"
             disabled_5=true
         else
             echo "5. Install prerequisites"
@@ -298,6 +300,7 @@
             fi
             export nadeko_service
             export -f service_actions
+            export nadeko_service_name
             export nadeko_service_status
             export nadeko_service_content
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_installer_latest.sh \
@@ -316,10 +319,9 @@
                 echo "${red}Option 2 is currently disabled${nc}"
                 continue
             fi
-            printf "We will now _______________________. "
+            printf "We will now run NadekoBot in the background. "
             read -p "Press [Enter] to begin."
-
-            nadeko_run_check
+            nadeko_starter
 
             clear -x
             ;;
@@ -329,10 +331,9 @@
                 echo "${red}Option 3 is currently disabled${nc}"
                 continue
             fi
-            printf "We will now _______________________. "
+            printf "We will now run NadekoBot in the background with auto restart. "
             read -p "Press [Enter] to begin."
-
-            nadeko_rrun_check
+            nadeko_rstarter
 
             clear -x
             ;;
@@ -364,6 +365,7 @@
                 echo "${red}Option 6 is currently disabled${nc}"
                 continue
             fi
+            export nadeko_service_name
             export nadeko_service_status
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh \
                     -o credentials_setup.sh || {

@@ -95,3 +95,6 @@
             read -p "Contact NadekoBot's support on Discord with screenshot."
         fi
     fi
+
+    echo "${green}Finished installing prerequisites${nc}"
+    read -p "Press [Enter] to return to the installer menu"
