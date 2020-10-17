@@ -76,20 +76,20 @@
     mv NadekoBot/src/NadekoBot/credentials.json NadekoBot/src/NadekoBot/credentials.json.bak
     echo "Creating 'credentials.json'..."
     echo "{
-        \"ClientId\": $clientid,
-        \"Token\": \"$token\",
-        \"OwnerIds\": [
-        $ownerid
-        ],
-        \"GoogleApiKey\": \"$googleapi\",
-        \"MashapeKey\": \"$mashapekey\",
-        \"OsuApiKey\": \"$osu\",
-        \"CleverbotApiKey\": \"$cleverbot\",
-        \"TwitchClientId\": \"$twitchcid\",
-        \"LocationIqApiKey\": \"$locationiqapi\",
-        \"TimezoneDbApiKey\": \"$timedbapi\",
-        \"Db\": null,
-        \"TotalShards\": 1
+    \"ClientId\": $clientid,
+    \"Token\": \"$token\",
+    \"OwnerIds\": [
+    $ownerid
+    ],
+    \"GoogleApiKey\": \"$googleapi\",
+    \"MashapeKey\": \"$mashapekey\",
+    \"OsuApiKey\": \"$osu\",
+    \"CleverbotApiKey\": \"$cleverbot\",
+    \"TwitchClientId\": \"$twitchcid\",
+    \"LocationIqApiKey\": \"$locationiqapi\",
+    \"TimezoneDbApiKey\": \"$timedbapi\",
+    \"Db\": null,
+    \"TotalShards\": 1
     }" | cat - >NadekoBot/src/NadekoBot/credentials.json
 
     echo "${green}Finished creating 'credentials.json'${nc}"

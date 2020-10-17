@@ -91,6 +91,12 @@ fi
     export root_dir="$PWD"
     export installer_prep="$root_dir/installer_prep.sh"
     export installer_prep_pid=$$
+    
+    # The '--no-hostname' flag for journalctl only works with systemd 230 and
+    # later
+    if (($(journalctl --version | grep -oP "[0-9]+" | head -1) >= 230)); then
+        export no_hostname="--no-hostname"
+    fi
 
 #
 ################################################################################
