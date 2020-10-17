@@ -106,10 +106,7 @@
                 touch NadekoRun.sh
                 chmod +x NadekoRun.sh
             fi
-            echo -e "#\!bin/bash \
-                \n \
-                \n# DO NOT MODIFY '_CODENAME'!!! \
-                \n_CODENAME=\"NadekoR\" \
+            echo -e "#!bin/bash \
                 \n \
                 \necho \"Running NadekoBot in the background\" \ 
                 \nyoutube-dl -U \
@@ -262,13 +259,19 @@
         fi
 
         if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ||
-                ! -d NadekoBot/src/NadekoBot/bin/Release ]] || (! hash git ||
-                ! hash dotnet) &>/dev/null; then
-            echo "2. Run Nadeko in the background ${red}(Disabled | 1)${nc}"
+                ! -d NadekoBot/src/NadekoBot/bin/Release || -z $(jq -r ".Token" \
+                NadekoBot/src/NadekoBot/credentials.json) ]] || (! hash git ||
+                ! hash dotnet || ! hash jq) &>/dev/null; then
+            if [[ -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]]; then
+                disable_code=2
+            else
+                disable_code=1
+            fi
+            echo "2. Run Nadeko in the background ${red}(Disabled | $disable_code)${nc}"
             echo "3. Run Nadeko in the background with auto-restart ${red}(Disabled" \
-                "| 1)${nc}"
+                "| $disable_code)${nc}"
             echo "4. Run Nadeko in the background with auto-restart and auto-update" \
-                "${red}(Disabled | 1)${nc}"
+                "${red}(Disabled | $disable_code)${nc}"
             disabled_234=true
         else
             echo "2. Run Nadeko in the background"
@@ -278,7 +281,7 @@
         fi
 
         if [[ $distro = "Darwin" ]]; then
-            echo "5. Install prerequisites ${red}(Disabled | 3)${nc}"
+            echo "5. Install prerequisites ${red}(Disabled | 4)${nc}"
             disabled_5=true
         else
             echo "5. Install prerequisites"
