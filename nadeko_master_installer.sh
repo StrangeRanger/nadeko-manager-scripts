@@ -80,11 +80,8 @@
 
         nadeko_starter() {
             nadeko_service_status=$(systemctl is-active nadeko.service)
-            timer=30
+            timer=60
 
-            clear
-            printf "We will now run NadekoBot in the background. "
-            read -p "Press [Enter] to begin."
 
             # Saves the current time and date, which will be used with journalctl
             start_time=$(date +"%F %H:%M:%S")
@@ -128,7 +125,7 @@
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
                 }
-                echo "Waiting 30 seconds for 'nadeko.service' to restart..."
+                echo "Waiting 60 seconds for 'nadeko.service' to restart..."
             else
                 echo "Starting 'nadeko.service'..."
                 systemctl start nadeko.service || {
@@ -136,7 +133,7 @@
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
                 }
-                echo "Waiting 30 seconds for 'nadeko.service' to start..."
+                echo "Waiting 60 seconds for 'nadeko.service' to start..."
             fi
 
             # Waits in order to give 'nadeko.service' enough time to (re)start
