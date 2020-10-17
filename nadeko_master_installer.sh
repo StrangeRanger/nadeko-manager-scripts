@@ -80,8 +80,9 @@
 
         nadeko_starter() {
             nadeko_service_status=$(systemctl is-active nadeko.service)
+            nadeko_service_enabled=$(systemctl is-enabled nadeko.servie \
+                        2>/dev/null; echo $?)
             timer=60
-
 
             # Saves the current time and date, which will be used with journalctl
             start_time=$(date +"%F %H:%M:%S")
