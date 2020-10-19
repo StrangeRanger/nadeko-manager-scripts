@@ -121,15 +121,20 @@
                     \necho \"Running NadekoBot in the background with auto restart\" \
                     \nyoutube-dl -U \
                     \n \
-                    \nsleep 5s \
+                    \nsleep 5 \
                     \ncd $root_dir/NadekoBot \
                     \ndotnet restore && dotnet build -c Release \
+                    \ncd $root_dir/NadekoBot/src/NadekoBot && \
+                    \ndotnet run -c Release && \
+                    \nyoutube-dl -U \
                     \n \
                     \nwhile true; do \
-                    \n    cd $root_dir/NadekoBot/src/NadekoBot && \
-                    \n    dotnet run -c Release && \
-                    \n    youtube-dl -U \
-                    \n    sleep 5s \
+                    \n    sleep 10
+                    \n    if [[ $(systemctl is-active nadeko.service) = \"inactive\" ]]; then
+                    \n        cd $root_dir/NadekoBot/src/NadekoBot \
+                    \n        dotnet run -c Release \
+                    \n        youtube-dl -U \
+                    \n    fi
                     \ndone" > NadekoRun.sh
             else
                 #sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' nadeko_latest_installer.sh
@@ -138,19 +143,21 @@
                     \necho \"\" \
                     \necho \"Running NadekoBot in the background with auto restart and updating to latest build\" \
                     \nyoutube-dl -U \
+                    \nsleep 5 \
                     \n \
-                    \nsleep 5s \
                     \nwhile true; do \
-                    \n    cd $root_dir/NadekoBot && \
-                    \n    dotnet restore && \
-                    \n    dotnet build -c Release && \
-                    \n    cd $root_dir/NadekoBot/src/NadekoBot && \
-                    \n    dotnet run -c Release && \
-                    \n    youtube-dl -U && \
-                    \n    cd $root_dir && \
-                    \n    curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer.sh && \
-                    \n    bash $root_dir/nadeko_latest_installer.sh \
-                    \n    sleep 5s \
+                    \n    sleep 10 \
+                    \n    if [[ $(systemctl is-active nadeko.service) = \"inactive\" ]]; then \
+                    \n        cd $root_dir/NadekoBot \
+                    \n        dotnet restore \
+                    \n        dotnet build -c Release \
+                    \n        cd $root_dir/NadekoBot/src/NadekoBot \
+                    \n        dotnet run -c Release \
+                    \n        youtube-dl -U \
+                    \n        cd $root_dir \
+                    \n        curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer.sh \
+                    \n        bash $root_dir/nadeko_latest_installer.sh \
+                    \n    fi \
                     \ndone"
             fi
 
