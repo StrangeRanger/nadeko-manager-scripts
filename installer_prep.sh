@@ -35,7 +35,7 @@
     # don't need to stay on the system unless currently being run
     clean_exit() {
         local installer_files=("credentials_setup.sh" "installer_prep.sh"
-            "nadeko_installer_latest.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
+            "nadeko_latest_installer.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
             "NadekoARBU.sh" "NadekoB.sh" "prereqs_installer.sh")
 
         if [[ $3 = true ]]; then echo "Cleaning up..."; else echo -e "\nCleaning up..."; fi
