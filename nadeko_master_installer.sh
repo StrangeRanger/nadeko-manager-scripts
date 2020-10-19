@@ -81,8 +81,8 @@
             # TODO: Have it create service if not exist
             # Disables 'nadeko.service' if enabled
             if [[ $nadeko_service_enabled = 0 ]]; then
-                echo "Disabling 'nadeko.service'..."
-                systemctl "$disable_enable" nadeko.service || {
+                echo "$disable_enable 'nadeko.service'..."
+                sudo systemctl "$disable_enable" nadeko.service || {
                     echo "${red}Failed to $disable_enable 'nadeko.service'" >&2
                     echo "${cyan}This service must be ${disable_enable}d in order to use this" \
                         "run mode${nc}"
@@ -96,7 +96,7 @@
             else
                 echo "Creating 'NadekoRun.sh'..."
                 touch NadekoRun.sh
-                chmod +x NadekoRun.sh
+                sudo chmod +x NadekoRun.sh
             fi
             
             if [[ $1 = "2" ]]; then 
@@ -125,16 +125,39 @@
                     \ncd $root_dir/NadekoBot \
                     \ndotnet restore && dotnet build -c Release \
                     \n \
-                    \nwhile true; do cd $root_dir/NadekoBot/src/NadekoBot && dotnet run -c Release && youtube-dl -U; sleep 5s; done" > NadekoRun.sh
+                    \nwhile true; do \
+                    \n    cd $root_dir/NadekoBot/src/NadekoBot && \
+                    \n    dotnet run -c Release && \
+                    \n    youtube-dl -U \
+                    \n    sleep 5s \
+                    \ndone" > NadekoRun.sh
             else
                 #sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' nadeko_latest_installer.sh
-                echo "#TODO: NEED TO FILL THIS IN"
+                echo -e "#!/bin/bash \
+                    \n \
+                    \necho \"\" \
+                    \necho \"Running NadekoBot in the background with auto restart and updating to latest build\" \
+                    \nyoutube-dl -U \
+                    \n \
+                    \nsleep 5s \
+                    \nwhile true; do \
+                    \n    cd $root_dir/NadekoBot && \
+                    \n    dotnet restore && \
+                    \n    dotnet build -c Release && \
+                    \n    cd $root_dir/NadekoBot/src/NadekoBot && \
+                    \n    dotnet run -c Release && \
+                    \n    youtube-dl -U && \
+                    \n    cd $root_dir && \
+                    \n    curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer.sh && \
+                    \n    bash $root_dir/nadeko_latest_installer.sh \
+                    \n    sleep 5s \
+                    \ndone"
             fi
 
             # Starting or restarting 'nadeko.service'
             if [[ $nadeko_service_status = "active" ]]; then
                 echo "Restarting 'nadeko.service'..."
-                systemctl restart nadeko.service || {
+                sudo systemctl restart nadeko.service || {
                     echo "${red}Failed to restart 'nadeko.service'${nc}" >&2
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
@@ -142,7 +165,7 @@
                 echo "Waiting 60 seconds for 'nadeko.service' to restart..."
             else
                 echo "Starting 'nadeko.service'..."
-                systemctl start nadeko.service || {
+                sudo systemctl start nadeko.service || {
                     echo "${red}Failed to start 'nadeko.service'${nc}" >&2
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
