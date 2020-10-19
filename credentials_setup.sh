@@ -98,5 +98,5 @@
     \"TotalShards\": 1
     }" > NadekoBot/src/NadekoBot/credentials.json
 
-    echo "${green}Finished creating 'credentials.json'${nc}"
+    echo -e "\n${green}Finished creating 'credentials.json'${nc}"
     read -p "Press [Enter] to return the the installer menu"
