@@ -16,7 +16,7 @@
     # Cleans up any loose ends/left over files
     clean_up() {
         local installer_files=("credentials_setup.sh" "installer_prep.sh"
-            "nadeko_installer_latest.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
+            "nadeko_latest_installer.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
             "NadekoARBU.sh" "NadekoB.sh" "prereqs_installer.sh")
 
         echo "Cleaning up files and directories..."
