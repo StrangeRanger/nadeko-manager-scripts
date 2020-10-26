@@ -283,7 +283,7 @@
         # User options for starting nadeko
         ########################################################################
         if (! hash git || ! hash dotnet) &>/dev/null; then
-            echo "1. Download NadekoBot ${red}(Disabled | 1)${nc}"
+            echo "1. Download NadekoBot ${grey}(Disabled | 1)${nc}"
             disabled_1=true
         else
             echo "1. Download NadekoBot"
@@ -293,17 +293,12 @@
         if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ||
                 ! -d NadekoBot/src/NadekoBot/bin/Release || -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] || 
                 (! hash git || ! hash dotnet || ! hash jq) &>/dev/null; then
-            if [[ -f NadekoBot/src/NadekoBot/credentials.json && -z $(jq -r \
-                    ".Token" NadekoBot/src/NadekoBot/credentials.json) ]]; then
-                disable_code=3
-            else
-                disable_code=2
-            fi
-            echo "2. Run Nadeko in the background ${red}(Disabled | $disable_code)${nc}"
-            echo "3. Run Nadeko in the background with auto restart ${red}(Disabled" \
-                "| $disable_code)${nc}"
+            echo "2. Run Nadeko in the background ${grey}(Disabled until option" \
+                "1,5, and 6 is ran)${nc}"
+            echo "3. Run Nadeko in the background with auto restart ${grey}(Disabled" \
+                "until option 1,5, and 6 is ran)${nc}"
             echo "4. Run Nadeko in the background with auto restart and auto-update" \
-                "${red}(Disabled | $disable_code)${nc}"
+                "${grey}(Disabled until option 1,5, and 6 is ran)${nc}"
             disabled_234=true
         else
             echo "2. Run Nadeko in the background"
@@ -312,16 +307,10 @@
             disabled_234=false
         fi
 
-        if [[ $distro = "Darwin" ]]; then
-            echo "5. Install prerequisites ${red}(Disabled | 5)${nc}"
-            disabled_5=true
-        else
-            echo "5. Install prerequisites"
-            disabled_5=false
-        fi
+        echo "5. Install prerequisites"
 
         if [[ ! -d NadekoBot/src/NadekoBot/ ]]; then
-            echo "6. Set up credentials.json ${red}(Disabled | 4)${nc}"
+            echo "6. Set up credentials.json ${grey}(Disabled until option 1 is ran)${nc}"
             disabled_6=true
         else
             echo "6. Set up credentials.json"

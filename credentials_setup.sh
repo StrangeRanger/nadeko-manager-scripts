@@ -2,9 +2,10 @@
 
 ################################################################################
 #
-# ADD DESCRIPTION
+# Sets up crendtials.json
 #
-# Note: ......
+# Note: All variables not defined in this script, are exported from
+# 'linuxPMI.sh', 'installer-prep.sh', and 'linux-master-installer.sh'
 #
 ################################################################################
 #

@@ -38,7 +38,7 @@
 #
     echo "${cyan}Note: This installer will download all of the required packages" \
         "for NadekoBot. It will use about 350MB of space. This might take awhile" \
-        "to download if you do not have a good internet connection."
+        "to download if you do not have a good internet connection.${nc}"
     read -p "We will now install Nadeko's prerequisites. Press [Enter] to continue."
 
     if [[ $distro = "ubuntu" ]]; then
