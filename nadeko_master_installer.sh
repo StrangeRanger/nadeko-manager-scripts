@@ -139,12 +139,10 @@
                     \nyoutube-dl -U \
                     \n \
                     \nwhile true; do \
-                    \n    sleep 10 \
-                    \n    if [[ \$(systemctl is-active nadeko.service) = \"inactive\" ]]; then \
-                    \n        cd $root_dir/NadekoBot/src/NadekoBot \
-                    \n        dotnet run -c Release \
-                    \n        youtube-dl -U \
-                    \n    fi \
+                    \n    sleep 30 \
+                    \n    cd $root_dir/NadekoBot/src/NadekoBot \
+                    \n    dotnet run -c Release \
+                    \n    youtube-dl -U \
                     \ndone" > NadekoRun.sh
             else
                 #sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' nadeko_latest_installer.sh
@@ -156,18 +154,16 @@
                     \nsleep 5 \
                     \n \
                     \nwhile true; do \
-                    \n    sleep 10 \
-                    \n    if [[ \$(systemctl is-active nadeko.service) = \"inactive\" ]]; then \
-                    \n        cd $root_dir/NadekoBot \
-                    \n        dotnet restore \
-                    \n        dotnet build -c Release \
-                    \n        cd $root_dir/NadekoBot/src/NadekoBot \
-                    \n        dotnet run -c Release \
-                    \n        youtube-dl -U \
-                    \n        cd $root_dir \
-                    \n        curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer.sh \
-                    \n        bash $root_dir/nadeko_latest_installer.sh \
-                    \n    fi \
+                    \n    sleep 30 \
+                    \n    cd $root_dir/NadekoBot \
+                    \n    dotnet restore \
+                    \n    dotnet build -c Release \
+                    \n    cd $root_dir/NadekoBot/src/NadekoBot \
+                    \n    dotnet run -c Release \
+                    \n    youtube-dl -U \
+                    \n    cd $root_dir \
+                    \n    curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer.sh \
+                    \n    bash $root_dir/nadeko_latest_installer.sh \
                     \ndone"
             fi
 
