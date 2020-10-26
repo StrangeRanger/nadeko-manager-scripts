@@ -74,8 +74,10 @@
 
             if [[ $1 = "2" ]]; then
                 disable_enable="disable"
+                disable_enable2="Disabling"
             else
                 disable_enable="enable"
+                disable_enable2="Enabling"
             fi
 
              # E.1. Creates '$nadeko_service_name', if it does not exist
@@ -90,7 +92,7 @@
             fi
 
             # Disables or enables 'nadeko.service'
-            echo "$disable_enable 'nadeko.service'..."
+            echo "$disable_enable2 'nadeko.service'..."
             sudo systemctl "$disable_enable" nadeko.service || {
                 echo "${red}Failed to $disable_enable 'nadeko.service'" >&2
                 echo "${cyan}This service must be ${disable_enable}d in order to use this" \
