@@ -139,12 +139,12 @@
                     \nyoutube-dl -U \
                     \n \
                     \nwhile true; do \
-                    \n    sleep 10
-                    \n    if [[ $(systemctl is-active nadeko.service) = \"inactive\" ]]; then
+                    \n    sleep 10 \
+                    \n    if [[ $(systemctl is-active nadeko.service) = \"inactive\" ]]; then \
                     \n        cd $root_dir/NadekoBot/src/NadekoBot \
                     \n        dotnet run -c Release \
                     \n        youtube-dl -U \
-                    \n    fi
+                    \n    fi \
                     \ndone" > NadekoRun.sh
             else
                 #sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' nadeko_latest_installer.sh
@@ -378,7 +378,7 @@
             if [[ $disabled_234 = true ]]; then
                 echo "${red}Option 4 is currently disabled${nc}"
                 continue
-            fi
+            i
             printf "We will now run NadekoBot in the background with auto restart and auto update. "
             read -p "Press [Enter] to begin."
             nadeko_starter "4"
