@@ -55,7 +55,7 @@
                     ;;
                 nadeko_service_enabled)
                     nadeko_service_enabled=$(systemctl is-enabled nadeko.service \
-                        2>/dev/null; echo $?)
+                        &>/dev/null; echo $?)
                     ;;
                 stop_service)
                     sudo systemctl stop nadeko.service || {
