@@ -140,7 +140,7 @@
                     \n \
                     \nwhile true; do \
                     \n    sleep 10 \
-                    \n    if [[ $(systemctl is-active nadeko.service) = \"inactive\" ]]; then \
+                    \n    if [[ \$(systemctl is-active nadeko.service) = \"inactive\" ]]; then \
                     \n        cd $root_dir/NadekoBot/src/NadekoBot \
                     \n        dotnet run -c Release \
                     \n        youtube-dl -U \
@@ -157,7 +157,7 @@
                     \n \
                     \nwhile true; do \
                     \n    sleep 10 \
-                    \n    if [[ $(systemctl is-active nadeko.service) = \"inactive\" ]]; then \
+                    \n    if [[ \$(systemctl is-active nadeko.service) = \"inactive\" ]]; then \
                     \n        cd $root_dir/NadekoBot \
                     \n        dotnet restore \
                     \n        dotnet build -c Release \

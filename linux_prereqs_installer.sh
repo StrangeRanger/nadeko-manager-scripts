@@ -13,8 +13,8 @@
     dot_net_install() {
         echo "Installing .NET Core..."
         # Microsoft package signing key
-        wget https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb \
-            -O packages-microsoft-prod.deb
+        curl https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb \
+            -o packages-microsoft-prod.deb
         sudo dpkg -i packages-microsoft-prod.deb && sudo rm -f packages-microsoft-prod.deb
         # Install the SDK
         sudo apt-get update
