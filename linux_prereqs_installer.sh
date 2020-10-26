@@ -25,7 +25,7 @@
         echo "Installing prerequisites..."
         sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg \
             redis-server git jq -y
-        sudo curl -s https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+        sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
         sudo chmod a+rx /usr/local/bin/youtube-dl
     }
 
@@ -72,7 +72,7 @@
             echo "Installing prerequisites..."
             sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev \
                 ffmpeg redis-server git jq -y
-            sudo curl -s https://yt-dl.org/downloads/latest/youtube-dl -o \
+            sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
                 /usr/local/bin/youtube-dl
             sudo chmod a+rx /usr/local/bin/youtube-dl
         elif [[ $sver = "10" ]]; then
