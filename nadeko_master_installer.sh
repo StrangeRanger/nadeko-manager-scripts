@@ -378,7 +378,7 @@
             if [[ $disabled_234 = true ]]; then
                 echo "${red}Option 4 is currently disabled${nc}"
                 continue
-            i
+            fi
             printf "We will now run NadekoBot in the background with auto restart and auto update. "
             read -p "Press [Enter] to begin."
             nadeko_starter "4"
