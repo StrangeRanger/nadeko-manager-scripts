@@ -283,7 +283,7 @@
         # User options for starting nadeko
         ########################################################################
         if (! hash git || ! hash dotnet) &>/dev/null; then
-            echo "1. Download NadekoBot (Disabled until option 5 is ran)${nc}"
+            echo "${grey}1. Download NadekoBot (Disabled until option 5 is ran)${nc}"
             disabled_1=true
         else
             echo "1. Download NadekoBot"
