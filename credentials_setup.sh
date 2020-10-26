@@ -74,7 +74,7 @@
         sudo chmod +x NadekoBot/src/NadekoBot/credentials.json
     fi
     echo "{
-    \"ClientId\": $clientid,
+    \"ClientId\": \"\",
     \"Token\": \"$token\",
     \"OwnerIds\": [
     $ownerid

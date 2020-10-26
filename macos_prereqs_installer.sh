@@ -31,7 +31,7 @@
 #   
     echo "${cyan}IMPORTANT: If Homebrew is currently not installed, it will" \
         "automatically installed. If you do not want this, the exit the program" \
-        "immediatly."
+        "immediatly.${nc}"
     read -p "We will now install Nadeko's prerequisites. Press [Enter] to continue."
 
     if ! hash brew &>/dev/null; then
