@@ -78,18 +78,26 @@
                 disable_enable="enable"
             fi
 
-            # TODO: Have it create service if not exist
-            # Disables 'nadeko.service' if enabled
-            if [[ $nadeko_service_enabled = 0 ]]; then
-                echo "$disable_enable 'nadeko.service'..."
-                sudo systemctl "$disable_enable" nadeko.service || {
-                    echo "${red}Failed to $disable_enable 'nadeko.service'" >&2
-                    echo "${cyan}This service must be ${disable_enable}d in order to use this" \
-                        "run mode${nc}"
-                    read -p "Press [Enter] to return to the installer menu"
+             # E.1. Creates '$nadeko_service_name', if it does not exist
+            if [[ ! -f $nadeko_service ]]; then
+                echo "Creating '$nadeko_service_name'..."
+                echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null &&
+                if [[ $distro != "Darwin" ]]; then sudo systemctl daemon-reload; fi || {
+                    echo "${red}Failed to create '$nadeko_service_name'" >&2
+                    echo "${cyan}This service must exist for nadeko to work${nc}"
                     clean_exit "1" "Exiting"
                 }
             fi
+
+            # Disables or enables 'nadeko.service'
+            echo "$disable_enable 'nadeko.service'..."
+            sudo systemctl "$disable_enable" nadeko.service || {
+                echo "${red}Failed to $disable_enable 'nadeko.service'" >&2
+                echo "${cyan}This service must be ${disable_enable}d in order to use this" \
+                    "run mode${nc}"
+                read -p "Press [Enter] to return to the installer menu"
+                clean_exit "1" "Exiting"
+            }
 
             if [[ -f NadekoRun.sh ]]; then
                 echo "Updating 'NadekoRun.sh'..."
