@@ -145,7 +145,7 @@
                     \n    youtube-dl -U \
                     \ndone" > NadekoRun.sh
             else
-                sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' nadeko_latest_installer.sh
+                #sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' nadeko_latest_installer.sh
                 echo -e "#!/bin/bash \
                     \n \
                     \necho \"\" \
@@ -165,7 +165,7 @@
                     \n    curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer.sh && \
                     \n    sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' $root_dir/nadeko_latest_installer.sh \
                     \n    bash $root_dir/nadeko_latest_installer.sh \
-                    \ndone"
+                    \ndone" > NadekoRun.sh
             fi
 
             # Starting or restarting 'nadeko.service'
