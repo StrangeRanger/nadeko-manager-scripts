@@ -269,12 +269,13 @@
     echo -e "Welcome to NadekoBot\n"
 
     while true; do
-        service_actions "nadeko_service_status"
-        service_actions "nadeko_service_enabled"
-
         # E.1. Creates '$nadeko_service_name', if it does not exist
         if [[ ! -f $nadeko_service ]]; then
             echo "Creating '$nadeko_service_name'..."
+            if [[ $distro != "Darwin" && ! -d /Users/$USER/Library/LaunchAgents/ ]]; then
+                # TODO: Add error catching
+                mkdir /Users/$USER/Library/LaunchAgents
+            fi
             echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null &&
             if [[ $distro != "Darwin" ]]; then sudo systemctl daemon-reload; fi || {
                 echo "${red}Failed to create '$nadeko_service_name'" >&2
@@ -282,6 +283,9 @@
                 clean_exit "1" "Exiting"
             }
         fi
+
+        service_actions "nadeko_service_status"
+        service_actions "nadeko_service_enabled"
 
         ########################################################################
         # User options for starting nadeko
