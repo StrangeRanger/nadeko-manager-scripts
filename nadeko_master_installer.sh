@@ -272,7 +272,7 @@
         # E.1. Creates '$nadeko_service_name', if it does not exist
         if [[ ! -f $nadeko_service ]]; then
             echo "Creating '$nadeko_service_name'..."
-            if [[ $distro != "Darwin" && ! -d /Users/$USER/Library/LaunchAgents/ ]]; then
+            if [[ $distro == "Darwin" && ! -d /Users/$USER/Library/LaunchAgents/ ]]; then
                 # TODO: Add error catching
                 mkdir /Users/$USER/Library/LaunchAgents
             fi
