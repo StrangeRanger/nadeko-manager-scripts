@@ -134,15 +134,12 @@
                     \nsleep 5 \
                     \ncd $root_dir/NadekoBot \
                     \ndotnet restore && dotnet build -c Release \
-                    \ncd $root_dir/NadekoBot/src/NadekoBot && \
-                    \ndotnet run -c Release && \
-                    \nyoutube-dl -U \
                     \n \
                     \nwhile true; do \
-                    \n    sleep 10 && \
                     \n    cd $root_dir/NadekoBot/src/NadekoBot && \
                     \n    dotnet run -c Release && \
                     \n    youtube-dl -U \
+                    \n    sleep 10 \
                     \ndone" > NadekoRun.sh
             else
                 #sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' nadeko_latest_installer.sh
@@ -154,7 +151,6 @@
                     \nsleep 5 \
                     \n \
                     \nwhile true; do \
-                    \n    sleep 10 \
                     \n    cd $root_dir/NadekoBot && \
                     \n    dotnet restore && \
                     \n    dotnet build -c Release && \
@@ -163,8 +159,9 @@
                     \n    youtube-dl -U && \
                     \n    cd $root_dir && \
                     \n    curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer.sh && \
-                    \n    sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' $root_dir/nadeko_latest_installer.sh \
+                    \n    sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' $root_dir/nadeko_latest_installer.sh && \
                     \n    bash $root_dir/nadeko_latest_installer.sh \
+                    \n    sleep 10 \
                     \ndone" > NadekoRun.sh
             fi
 
@@ -372,10 +369,10 @@
             ;;
         4)
             clear -x
-            if [[ $disabled_234 = true ]]; then
+            #if [[ $disabled_234 = true ]]; then
                 echo "${red}Option 4 is currently disabled${nc}"
                 continue
-            fi
+            #fi
             printf "We will now run NadekoBot in the background with auto restart and auto update. "
             read -p "Press [Enter] to begin."
             nadeko_starter "4"

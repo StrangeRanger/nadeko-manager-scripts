@@ -25,6 +25,7 @@
         echo "Installing prerequisites..."
         sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg \
             redis-server git jq python python3 -y
+
         sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
         sudo chmod a+rx /usr/local/bin/youtube-dl
     }
@@ -36,9 +37,6 @@
 #
 ################################################################################
 #
-    echo "${cyan}Note: This installer will download all of the required packages" \
-        "for NadekoBot. It will use about 350MB of space. This might take awhile" \
-        "to download if you do not have a good internet connection.${nc}"
     read -p "We will now install Nadeko's prerequisites. Press [Enter] to continue."
 
     if [[ $distro = "ubuntu" ]]; then
