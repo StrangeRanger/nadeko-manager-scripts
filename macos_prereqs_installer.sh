@@ -15,7 +15,7 @@
         brew install opus opus-tools opusfile libsodium libffi ffmpeg openssl \
             redis git jq python python3 wget youtube-dl
         echo "Starting redis..."
-        brew services start redis # Might have problems starting service # TODO: investigate
+        brew services start redis
         echo "Casking Dotnet..."
         brew cask install dotnet-sdk
         echo "Brew doctor..."

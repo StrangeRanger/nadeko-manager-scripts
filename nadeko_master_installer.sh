@@ -406,7 +406,7 @@
             export nadeko_service_status
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh \
                     -o credentials_setup.sh || {
-                echo "${red}Failed to download latest 'nadeko_latest_installer.sh'...${nc}" >&2
+                echo "${red}Failed to download latest 'credentials_setup.sh'...${nc}" >&2
                 clean_exit "1" "Exiting" "true"
             }
             sudo chmod +x credentials_setup.sh && ./credentials_setup.sh
