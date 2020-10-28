@@ -153,11 +153,16 @@
         create_or_update="create"
     fi
     
-    #echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null || {
-    echo -e "$nadeko_service_content" > "$nadeko_service" || {
-        echo "${red}Failed to $create_or_update '$nadeko_service_name'${nc}" >&2
-        b_s_update="Failed"
-    }
+    echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
+        if [[ $distro != "Darwin" ]]; then 
+            sudo systemctl daemon-reload
+        else
+            sudo chown "$USER":staff nadeko_service
+        fi || {
+            echo "${red}Failed to $create_or_update '$nadeko_service_name'${nc}" >&2
+            b_s_update="Failed"
+        }
+    
 
     ############################################################################
     # Cleaning up and presenting results...

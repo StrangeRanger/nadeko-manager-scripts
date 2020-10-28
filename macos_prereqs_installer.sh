@@ -2,7 +2,11 @@
 
 ################################################################################
 #
-# TODO: Add a file description
+# Installs all of the packages and dependencies required for NadekoBot to run,
+# on macOS.
+#
+# Note: All variables not defined in this script, are exported from
+# 'linuxPMI.sh', 'installer_prep.sh', and 'nadeko_master_installer.sh'.
 #
 ################################################################################
 #

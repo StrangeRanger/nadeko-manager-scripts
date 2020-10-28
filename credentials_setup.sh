@@ -5,11 +5,11 @@
 # Sets up crendtials.json
 #
 # Note: All variables not defined in this script, are exported from
-# 'linuxPMI.sh', 'installer-prep.sh', and 'linux-master-installer.sh'
+# 'linuxPMI.sh', 'installer_prep.sh', and 'nadeko_master_installer.sh'.
 #
 ################################################################################
 #
-    read -p "We will now create a new credentials.json. Press [Enter] to continue."
+    read -p "We will now create a new 'credentials.json'. Press [Enter] to continue."
 
     echo -e "\n-------------"
     echo "${cyan}This field is required and cannot be left blank${nc}"
@@ -62,7 +62,7 @@
     echo -e "\n-------------"
     read -p "Enter your Timezone DB API Key: " timedbapi
     echo "Timezone DB API Key: $timedbapi"
-    echo "-------------"
+    echo -e "-------------\n"
 
     if [[ -f NadekoBot/src/NadekoBot/credentials.json ]]; then
         echo "Backing up current 'credentials.json'..."
@@ -73,6 +73,7 @@
         touch NadekoBot/src/NadekoBot/credentials.json
         sudo chmod +x NadekoBot/src/NadekoBot/credentials.json
     fi
+
     echo "{
     \"Token\": \"$token\",
     \"OwnerIds\": [
