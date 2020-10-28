@@ -145,13 +145,6 @@
         rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old
     fi
 
-    # For some reason, if this file already exists and is written to, it will
-    # erase the file instead of updating it.... # TODO: Add more to comment
-    if [[ $distro = "Darwin" && -f $nadeko_service ]]; then
-        echo "Backing up '$nadeko_service_name'..."
-        mv "$nadeko_service" /Users/"$USER"/Library/LaunchAgents/bot.nadeko.Nadeko.plist.bak
-    fi
-
     if [[ -f $nadeko_service ]]; then
         echo "Updating '$nadeko_service_name'..."
         create_or_update="update"

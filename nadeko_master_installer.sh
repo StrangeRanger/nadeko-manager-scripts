@@ -213,7 +213,7 @@
         nadeko_service="/Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist"
         nadeko_service_name="bot.nadeko.Nadeko"
         prereqs_installer="macos_prereqs_installer.sh"
-        nadeko_service_content=("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+        nadeko_service_content="<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
             \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
             \n<plist version=\"1.0\"> \
             \n<dict> \
@@ -233,7 +233,7 @@
             \n	<key>StandardOutPath</key> \
             \n	<string>$root_dir/.bot.nadeko.Nadeko.stdout</string> \
             \n</dict> \
-            \n</plist>")
+            \n</plist>"
 
         #-------------------------------
         # Function
