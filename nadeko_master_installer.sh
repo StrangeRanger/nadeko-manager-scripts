@@ -83,7 +83,7 @@
                     if [[ $distro != "Darwin" ]]; then 
                         sudo systemctl daemon-reload
                     else
-                        sudo chown "$USER":staff nadeko_service
+                        sudo chown "$USER":staff "$nadeko_service"
                     fi || {
                         echo "${red}Failed to create '$nadeko_service_name'" >&2
                         echo "${cyan}This service must exist for nadeko to work${nc}"
