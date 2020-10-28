@@ -53,10 +53,6 @@
                 nadeko_service_status)
                     nadeko_service_status=$(systemctl is-active nadeko.service)
                     ;;
-                nadeko_service_enabled)
-                    nadeko_service_enabled=$(systemctl is-enabled nadeko.service \
-                        &>/dev/null; echo $?)
-                    ;;
                 stop_service)
                     sudo systemctl stop nadeko.service || {
                         echo "${red}Failed to stop 'nadeko.service'" >&2
@@ -83,7 +79,8 @@
              # E.1. Creates '$nadeko_service_name', if it does not exist
             if [[ ! -f $nadeko_service ]]; then
                 echo "Creating '$nadeko_service_name'..."
-                echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null &&
+                #echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null &&
+                echo -e "$nadeko_service_content" > "$nadeko_service" &&
                 if [[ $distro != "Darwin" ]]; then sudo systemctl daemon-reload; fi || {
                     echo "${red}Failed to create '$nadeko_service_name'" >&2
                     echo "${cyan}This service must exist for nadeko to work${nc}"
@@ -142,7 +139,6 @@
                     \n    sleep 10 \
                     \ndone" > NadekoRun.sh
             else
-                #sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' nadeko_latest_installer.sh
                 echo -e "#!/bin/bash \
                     \n \
                     \necho \"\" \
@@ -276,7 +272,8 @@
                 # TODO: Add error catching
                 mkdir /Users/$USER/Library/LaunchAgents
             fi
-            echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null &&
+            #echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" >/dev/null &&
+            echo -e "$nadeko_service_content" > "$nadeko_service" &&
             if [[ $distro != "Darwin" ]]; then sudo systemctl daemon-reload; fi || {
                 echo "${red}Failed to create '$nadeko_service_name'" >&2
                 echo "${cyan}This service must exist for nadeko to work${nc}"
