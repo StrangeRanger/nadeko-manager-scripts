@@ -59,7 +59,7 @@
                         echo "${cyan}You will need to restart 'nadeko.service'" \
                             "to apply any updates to Nadeko${nc}"
                     }
-                ;;
+                    ;;
             esac
         }
 
@@ -112,6 +112,8 @@
             if [[ $1 = "2" ]]; then 
                 echo -e "#!bin/bash \
                     \n \
+                    \n_code_name_=\"NadekoRun\" \
+                    \n \
                     \necho \"Running NadekoBot in the background\" \ 
                     \nyoutube-dl -U \
                     \n \
@@ -126,6 +128,8 @@
                     \n" > NadekoRun.sh
             elif [[ $1 = "3" ]]; then
                 echo -e "#!/bin/bash \
+                    \n \
+                    \n_code_name_=\"NadekoRunAR\" \
                     \n \
                     \necho \"\" \
                     \necho \"Running NadekoBot in the background with auto restart\" \
@@ -143,6 +147,8 @@
                     \ndone" > NadekoRun.sh
             else
                 echo -e "#!/bin/bash \
+                    \n \
+                    \n_code_name_=\"NadekoRunARU\" \
                     \n \
                     \necho \"\" \
                     \necho \"Running NadekoBot in the background with auto restart and updating to latest build\" \
@@ -273,7 +279,7 @@
             echo "Creating '$nadeko_service_name'..."
             if [[ $distro = "Darwin" && ! -d /Users/$USER/Library/LaunchAgents/ ]]; then
                 # TODO: Add error catching
-                mkdir /Users/$USER/Library/LaunchAgents
+                mkdir /Users/"$USER"/Library/LaunchAgents
             fi
             echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
                 if [[ $distro != "Darwin" ]]; then 
@@ -312,9 +318,32 @@
                 "(Disabled until option 1,5, and 6 is ran)${nc}"
             disabled_234=true
         else
-            echo "2. Run Nadeko in the background"
-            echo "3. Run Nadeko in the background with auto restart"
-            echo "4. Run Nadeko in the background with auto restart and auto-update"
+            if [[ $nadeko_service_status = "active" ]]; then
+                run_mode_status=" ${green}(Running in this mode)${nc}"
+            elif [[ $nadeko_service_status = "inactive" ]]; then
+                run_mode_status=" ${yellow}(Set up to run in this mode)${nc}"
+            else
+                run_mode_status=" ${yellow}(Status unkown)${nc}"
+            fi
+            
+            if [[ $(grep '_code_name_="NadekoRunARU"' NadekoRun.sh) ]]; then
+                echo "2. Run Nadeko in the background"
+                echo "3. Run Nadeko in the background with auto restart"
+                echo "4. Run Nadeko in the background with auto restart and auto-update${run_mode_status}"
+            elif [[ $(grep '_code_name_="NadekoRunAR"' NadekoRun.sh) ]]; then
+                echo "2. Run Nadeko in the background"
+                echo "3. Run Nadeko in the background with auto restart${run_mode_status}"
+                echo "4. Run Nadeko in the background with auto restart and auto-update"
+            elif [[ $(grep '_code_name_="NadekoRun"' NadekoRun.sh) ]]; then
+                echo "2. Run Nadeko in the background${run_mode_status}"
+                echo "3. Run Nadeko in the background with auto restart"
+                echo "4. Run Nadeko in the background with auto restart and auto-update"
+            else
+                echo "2. Run Nadeko in the background"
+                echo "3. Run Nadeko in the background with auto restart"
+                echo "4. Run Nadeko in the background with auto restart and auto-update"
+            fi
+
             disabled_234=false
         fi
 
