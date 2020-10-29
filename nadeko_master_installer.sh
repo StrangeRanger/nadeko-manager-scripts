@@ -386,7 +386,7 @@
             clear -x
             printf "We will now stop NadekoBot. "
             read -p "Press [Enter] to begin."
-            service_actions "nadeko_service_status"
+            service_actions "stop_service"
             clear -x
             ;;
         5)
