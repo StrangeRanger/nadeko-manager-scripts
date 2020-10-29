@@ -54,11 +54,19 @@
                     nadeko_service_status=$(systemctl is-active nadeko.service)
                     ;;
                 stop_service)
-                    sudo systemctl stop nadeko.service || {
-                        echo "${red}Failed to stop 'nadeko.service'" >&2
-                        echo "${cyan}You will need to restart 'nadeko.service'" \
-                            "to apply any updates to Nadeko${nc}"
-                    }
+                    if [[ $nadeko_service_status = "active" ]]; then
+                        echo "Stopping 'nadeko.service'..."
+                        sudo systemctl stop nadeko.service || {
+                            echo "${red}Failed to stop 'nadeko.service'" >&2
+                            echo "${cyan}You will need to restart 'nadeko.service'" \
+                                "to apply any updates to Nadeko${nc}"
+                        }
+                        echo -e "\n${green}NadekoBot has been stopped${nc}"
+                    else
+                        echo -e "\n${cyan}NadekoBot is currently not running${nc}"
+                    fi
+
+                    read -p "Press [Enter] to return to the installer menu"
                     ;;
             esac
         }
@@ -122,7 +130,7 @@
                     \necho \"Done\" \
                     \ncd $root_dir \
                     \n" > NadekoRun.sh
-            elif [[ $1 = "3" ]]; then
+            else
                 echo -e "#!/bin/bash \
                     \n \
                     \n_code_name_=\"NadekoRunAR\" \
@@ -140,29 +148,6 @@
                     \n    dotnet run -c Release \
                     \n \
                     \n    youtube-dl -U \
-                    \n    sleep 10 \
-                    \ndone" > NadekoRun.sh
-            else
-                echo -e "#!/bin/bash \
-                    \n \
-                    \n_code_name_=\"NadekoRunARU\" \
-                    \n \
-                    \necho \"\" \
-                    \necho \"Running NadekoBot in the background with auto restart and updating to latest build\" \
-                    \nyoutube-dl -U \
-                    \nsleep 5 \
-                    \n \
-                    \nwhile true; do \
-                    \n    cd $root_dir/NadekoBot && \
-                    \n    dotnet restore && \
-                    \n    dotnet build -c Release && \
-                    \n    cd $root_dir/NadekoBot/src/NadekoBot && \
-                    \n    dotnet run -c Release \
-                    \n \
-                    \n    youtube-dl -U && \
-                    \n    cd $root_dir && \
-                    \n    curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer_ARU.sh && \
-                    \n    bash $root_dir/nadeko_latest_installer.sh \
                     \n    sleep 10 \
                     \ndone" > NadekoRun.sh
             fi
@@ -268,7 +253,7 @@
 #
 ################################################################################
 #
-    echo -e "Welcome to NadekoBot\n"
+    echo -e "Welcome to the NadekoBot installer\n"
 
     while true; do
         # E.1. Creates '$nadeko_service_name', if it does not exist
@@ -313,7 +298,7 @@
                 "until option 1,5, and 6 is ran)${nc}"
             echo "${grey}4. Run Nadeko in the background with auto restart and auto-update" \
                 "(Disabled until option 1,5, and 6 is ran)${nc}"
-            disabled_234=true
+            disabled_23=true
         else
             if [[ $nadeko_service_status = "active" ]]; then
                 run_mode_status=" ${green}(Running in this mode)${nc}"
@@ -326,24 +311,21 @@
             if [[ $(grep '_code_name_="NadekoRunARU"' NadekoRun.sh) ]]; then
                 echo "2. Run Nadeko in the background"
                 echo "3. Run Nadeko in the background with auto restart"
-                echo "4. Run Nadeko in the background with auto restart and auto-update${run_mode_status}"
             elif [[ $(grep '_code_name_="NadekoRunAR"' NadekoRun.sh) ]]; then
                 echo "2. Run Nadeko in the background"
                 echo "3. Run Nadeko in the background with auto restart${run_mode_status}"
-                echo "${grey}4. Run Nadeko in the background with auto restart and auto-update (This option in currently non-functional)${nc}"
             elif [[ $(grep '_code_name_="NadekoRun"' NadekoRun.sh) ]]; then
                 echo "2. Run Nadeko in the background${run_mode_status}"
                 echo "3. Run Nadeko in the background with auto restart"
-                echo "${grey}4. Run Nadeko in the background with auto restart and auto-update (This option in currently non-functional)${nc}"
             else
                 echo "2. Run Nadeko in the background"
                 echo "3. Run Nadeko in the background with auto restart"
-                echo "${grey}4. Run Nadeko in the background with auto restart and auto-update (This option in currently non-functional)${nc}"
             fi
 
-            disabled_234=false
+            disabled_23=false
         fi
 
+        echo "4. Stop NadekoBot"
         echo "5. Install prerequisites"
 
         if [[ ! -d NadekoBot/src/NadekoBot/ ]]; then
@@ -380,7 +362,7 @@
             ;;
         2)
             clear -x
-            if [[ $disabled_234 = true ]]; then
+            if [[ $disabled_23 = true ]]; then
                 echo "${red}Option 2 is currently disabled${nc}"
                 continue
             fi
@@ -391,7 +373,7 @@
             ;;
         3)
             clear -x
-            if [[ $disabled_234 = true ]]; then
+            if [[ $disabled_23 = true ]]; then
                 echo "${red}Option 3 is currently disabled${nc}"
                 continue
             fi
@@ -402,21 +384,13 @@
             ;;
         4)
             clear -x
-            #if [[ $disabled_234 = true ]]; then
-                echo "${red}Option 4 is currently disabled${nc}"
-                continue
-            #fi
-            printf "We will now run NadekoBot in the background with auto restart and auto update. "
+            printf "We will now stop NadekoBot. "
             read -p "Press [Enter] to begin."
-            nadeko_starter "4"
+            service_actions "nadeko_service_status"
             clear -x
             ;;
         5)
             clear -x
-            if [[ $disabled_5 = true ]]; then
-                echo "${red}Option 5 is currently disabled${nc}"
-                continue
-            fi
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/"$prereqs_installer" \
                     -o prereqs_installer.sh || {
                 echo "${red}Failed to download latest 'prereqs_installer.sh'...${nc}" >&2
