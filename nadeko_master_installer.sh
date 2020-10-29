@@ -80,15 +80,11 @@
             if [[ ! -f $nadeko_service ]]; then
                 echo "Creating '$nadeko_service_name'..."
                 echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
-                    if [[ $distro != "Darwin" ]]; then 
-                        sudo systemctl daemon-reload
-                    else
-                        sudo chown "$USER":staff "$nadeko_service"
-                    fi || {
-                        echo "${red}Failed to create '$nadeko_service_name'" >&2
-                        echo "${cyan}This service must exist for nadeko to work${nc}"
-                        clean_exit "1" "Exiting"
-                    }
+                    sudo systemctl daemon-reload || {
+                    echo "${red}Failed to create '$nadeko_service_name'" >&2
+                    echo "${cyan}This service must exist for nadeko to work${nc}"
+                    clean_exit "1" "Exiting"
+                }
             fi
 
             # Disables or enables 'nadeko.service'
@@ -141,7 +137,8 @@
                     \n \
                     \nwhile true; do \
                     \n    cd $root_dir/NadekoBot/src/NadekoBot && \
-                    \n    dotnet run -c Release && \
+                    \n    dotnet run -c Release \
+                    \n \
                     \n    youtube-dl -U \
                     \n    sleep 10 \
                     \ndone" > NadekoRun.sh
@@ -160,11 +157,11 @@
                     \n    dotnet restore && \
                     \n    dotnet build -c Release && \
                     \n    cd $root_dir/NadekoBot/src/NadekoBot && \
-                    \n    dotnet run -c Release && \
+                    \n    dotnet run -c Release \
+                    \n \
                     \n    youtube-dl -U && \
                     \n    cd $root_dir && \
-                    \n    curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer.sh && \
-                    \n    sed -E -e 's/\${(red|yellow|nc|cyan|green)}//g' $root_dir/nadeko_latest_installer.sh && \
+                    \n    curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh -o nadeko_latest_installer_ARU.sh && \
                     \n    bash $root_dir/nadeko_latest_installer.sh \
                     \n    sleep 10 \
                     \ndone" > NadekoRun.sh
@@ -333,15 +330,15 @@
             elif [[ $(grep '_code_name_="NadekoRunAR"' NadekoRun.sh) ]]; then
                 echo "2. Run Nadeko in the background"
                 echo "3. Run Nadeko in the background with auto restart${run_mode_status}"
-                echo "4. Run Nadeko in the background with auto restart and auto-update"
+                echo "${grey}4. Run Nadeko in the background with auto restart and auto-update (This option in currently non-functional)${nc}"
             elif [[ $(grep '_code_name_="NadekoRun"' NadekoRun.sh) ]]; then
                 echo "2. Run Nadeko in the background${run_mode_status}"
                 echo "3. Run Nadeko in the background with auto restart"
-                echo "4. Run Nadeko in the background with auto restart and auto-update"
+                echo "${grey}4. Run Nadeko in the background with auto restart and auto-update (This option in currently non-functional)${nc}"
             else
                 echo "2. Run Nadeko in the background"
                 echo "3. Run Nadeko in the background with auto restart"
-                echo "4. Run Nadeko in the background with auto restart and auto-update"
+                echo "${grey}4. Run Nadeko in the background with auto restart and auto-update (This option in currently non-functional)${nc}"
             fi
 
             disabled_234=false
