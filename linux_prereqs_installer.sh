@@ -51,8 +51,11 @@
         elif [[ $ver = "20.04" ]]; then
             dot_net_install "ubuntu" "20.04"
         else
-            echo "Your OS $OS $VER $ARCH probably can run Microsoft .NET Core."
-            read -p "Contact NadekoBot's support on Discord with screenshot."
+            # TODO: Maybe modify message
+            echo "${red}The installer does not support the automatic" \
+                "installation and setup of NadekoBot's prerequisites, for your" \
+                "OS: $distro $ver $arch${nc}"
+            read -p "Press [Enter] to return to the installer menu"
         fi
     elif [[ $distro = "debian" ]]; then
         if [[ $sver = "9" ]]; then
@@ -80,8 +83,11 @@
         elif [[ $sver = "10" ]]; then
             dot_net_install "debian" "10"
         else
-            echo "Your OS $OS $VER $ARCH probably can run Microsoft .NET Core."
-            read -p "Contact NadekoBot's support on Discord with screenshot."
+            # TODO: Maybe modify message
+            echo "${red}The installer does not support the automatic" \
+                "installation and setup of NadekoBot's prerequisites, for your" \
+                "OS: $distro $ver $arch${nc}"
+            read -p "Press [Enter] to return to the installer menu"
         fi
     elif [ $distro = "LinuxMint" ]; then
         if [[ $sver = "18" ]]; then
@@ -91,8 +97,11 @@
         elif [[ $sver = "20" ]]; then
             dot_net_install "ubuntu" "20.04"
         else
-            echo "Your OS $OS $VER $ARCH probably can run Microsoft .NET Core."
-            read -p "Contact NadekoBot's support on Discord with screenshot."
+            # TODO: Maybe modify message
+            echo "${red}The installer does not support the automatic" \
+                "installation and setup of NadekoBot's prerequisites, for your" \
+                "OS: $distro $ver $arch${nc}"
+            read -p "Press [Enter] to return to the installer menu"
         fi
     fi
 
