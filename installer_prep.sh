@@ -17,13 +17,13 @@
 #
     current_linuxAIO_revision="3"
 
-    export yellow=$'\033[1;33m'
-    export green=$'\033[0;32m'
-    export cyan=$'\033[0;36m'
-    export red=$'\033[1;31m'
-    export nc=$'\033[0m'
-    export clrln=$'\r\033[K'
-    export grey=$'\033[0;90m'
+    export yellow="\033[1;33m"
+    export green="\033[0;32m"
+    export cyan="\033[0;36m"
+    export red="\033[1;31m"
+    export nc="\033[0m"
+    export clrln="\r\033[K"
+    export grey="\033[0;90m"
     export installer_prep_pid=$$
     
     # The '--no-hostname' flag for journalctl only works with systemd 230 and
@@ -42,6 +42,7 @@
     # Makes it possible to cleanly exit the installer by cleaning up files that
     # aren't required unless currently being run
     clean_exit() {
+        # TODO: Redo list below
         local installer_files=("credentials_setup.sh" "installer_prep.sh"
             "nadeko_latest_installer.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
             "NadekoARBU.sh" "NadekoB.sh" "prereqs_installer.sh")
@@ -219,7 +220,7 @@
 
     if [[ $supported = false ]]; then
         echo "${red}Your operating system/Linux Distribution is not OFFICIALLY" \
-            "supported by the installation, setup, and/or use of Nadeko${nc}" >&2
+            "supported by the installation, setup, and/or use of NadekoBot${nc}" >&2
         read -p "Would you like to continue with the installation anyways? [y|N] " choice
         choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in

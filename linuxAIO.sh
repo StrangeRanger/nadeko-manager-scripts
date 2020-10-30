@@ -2,7 +2,7 @@
 
 ################################################################################
 #
-# linuxAIO acts as the intermediary between the system Nadeko is being hosted
+# linuxAIO acts as the intermediary between the system NadekoBot is being hosted
 # on and the 'installer_prep.sh'. To prevent any conflicts with updates to
 # the installer, this script has as little code as deemed necessary. In
 # addition, linuxAIO is the only script that will remain on the system, when the
@@ -11,7 +11,7 @@
 ################################################################################
 #
     # The exports below are for dev/testing purpouses (DO NOT MODIFY)
-    export linuxAIO_revision="3"                               # Keeps track of changes to linuxPMI.sh
+    export linuxAIO_revision="3"                               # Keeps track of changes to linuxAIO.sh
     export installer_branch="dev"                              # Determines which installer branch is used
     export installer_repo="StrangeRanger/NadekoBot-BashScript" # Determines which repo is used
 

@@ -32,7 +32,7 @@
         nadeko_service_name="nadeko.service"
         prereqs_installer="linux_prereqs_installer.sh"
         nadeko_service_content="[Unit] \
-            \nDescription=Nadeko \
+            \nDescription=NadekoBot \
             \n \
             \n[Service] \
             \nExecStart=/bin/bash $root_dir/NadekoRun.sh \
@@ -59,7 +59,7 @@
                         sudo systemctl stop nadeko.service || {
                             echo "${red}Failed to stop 'nadeko.service'" >&2
                             echo "${cyan}You will need to restart 'nadeko.service'" \
-                                "to apply any updates to Nadeko${nc}"
+                                "to apply any updates to NadekoBot${nc}"
                         }
                         echo -e "\n${green}NadekoBot has been stopped${nc}"
                     else
@@ -239,7 +239,7 @@
                     launchctl stop bot.nadeko.Nadeko || {
                         echo "${red}Failed to stop 'bot.nadeko.Nadeko'" >&2
                         echo "${cyan}You will need to restart 'bot.nadeko.Nadeko'" \
-                            "to apply any updates to Nadeko${nc}"
+                            "to apply any updates to NadekoBot${nc}"
                     }
                     ;;
             esac
@@ -292,11 +292,11 @@
         if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ||
                 ! -d NadekoBot/src/NadekoBot/bin/Release || -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] || 
                 (! hash git || ! hash dotnet || ! hash jq) &>/dev/null; then
-            echo "${grey}2. Run Nadeko in the background (Disabled until option" \
+            echo "${grey}2. Run NadekoBot in the background (Disabled until option" \
                 "1,5, and 6 is ran)${nc}"
-            echo "${grey}3. Run Nadeko in the background with auto restart (Disabled" \
+            echo "${grey}3. Run NadekoBot in the background with auto restart (Disabled" \
                 "until option 1,5, and 6 is ran)${nc}"
-            echo "${grey}4. Run Nadeko in the background with auto restart and auto-update" \
+            echo "${grey}4. Run NadekoBot in the background with auto restart and auto-update" \
                 "(Disabled until option 1,5, and 6 is ran)${nc}"
             disabled_23=true
         else
@@ -309,17 +309,17 @@
             fi
             
             if [[ $(grep '_code_name_="NadekoRunARU"' NadekoRun.sh) ]]; then
-                echo "2. Run Nadeko in the background"
-                echo "3. Run Nadeko in the background with auto restart"
+                echo "2. Run NadekoBot in the background"
+                echo "3. Run NadekoBot in the background with auto restart"
             elif [[ $(grep '_code_name_="NadekoRunAR"' NadekoRun.sh) ]]; then
-                echo "2. Run Nadeko in the background"
-                echo "3. Run Nadeko in the background with auto restart${run_mode_status}"
+                echo "2. Run NadekoBot in the background"
+                echo "3. Run NadekoBot in the background with auto restart${run_mode_status}"
             elif [[ $(grep '_code_name_="NadekoRun"' NadekoRun.sh) ]]; then
-                echo "2. Run Nadeko in the background${run_mode_status}"
-                echo "3. Run Nadeko in the background with auto restart"
+                echo "2. Run NadekoBot in the background${run_mode_status}"
+                echo "3. Run NadekoBot in the background with auto restart"
             else
-                echo "2. Run Nadeko in the background"
-                echo "3. Run Nadeko in the background with auto restart"
+                echo "2. Run NadekoBot in the background"
+                echo "3. Run NadekoBot in the background with auto restart"
             fi
 
             disabled_23=false
@@ -355,7 +355,7 @@
                 echo "${red}Failed to download latest 'nadeko_latest_installer.sh'...${nc}" >&2
                 clean_exit "1" "Exiting" "true"
             }
-            printf "We will now download/update Nadeko. "
+            printf "We will now download/update NadekoBot. "
             read -p "Press [Enter] to begin."
             sudo chmod +x nadeko_latest_installer.sh && ./nadeko_latest_installer.sh
             exec "$installer_prep"

@@ -2,11 +2,11 @@
 
 ################################################################################
 #
-# Installs all of the packages and dependencies required for NadekoBot to run,
+# Installs all of the packages and dependencies required for NadekoBot to run
 # on macOS.
 #
 # Note: All variables not defined in this script, are exported from
-# 'linuxPMI.sh', 'installer_prep.sh', and 'nadeko_master_installer.sh'.
+# 'linuxAIO.sh', 'installer_prep.sh', and 'nadeko_master_installer.sh'.
 #
 ################################################################################
 #
@@ -34,9 +34,9 @@
 ################################################################################
 #   
     echo "${cyan}IMPORTANT: If Homebrew is currently not installed, it will" \
-        "automatically installed. If you do not want this, the exit the program" \
+        "automatically be installed. If you do not want this, the exit the program" \
         "immediatly.${nc}"
-    read -p "We will now install Nadeko's prerequisites. Press [Enter] to continue."
+    read -p "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
     if ! hash brew &>/dev/null; then
         echo "${yellow}Homebrew is not installed${cyan}"
@@ -52,9 +52,8 @@
     case "$sver" in
         10.15) dot_net_install ;;
         *) 
-            # TODO: Maybe modify message
             echo "${red}The installer does not support the automatic" \
-                "installation and setup of NadekoBot's prerequisites, for your" \
+                "installation and setup of NadekoBot's prerequisites for your" \
                 "version of macOS${nc}"
             read -p "Press [Enter] to return to the installer menu"
             ;;

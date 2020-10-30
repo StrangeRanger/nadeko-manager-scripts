@@ -15,6 +15,7 @@
 #
     # Cleans up any loose ends/left over files
     clean_up() {
+        # TODO: Redo list below
         local installer_files=("credentials_setup.sh" "installer_prep.sh"
             "nadeko_latest_installer.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
             "NadekoARBU.sh" "NadekoB.sh" "prereqs_installer.sh")
@@ -76,7 +77,7 @@
 
     ############################################################################
     # Creating backups of current code in '/home/nadeko' then downloads/
-    # updates Nadeko
+    # updates NadekoBot
     ############################################################################
     if [[ -d NadekoBot ]]; then
         echo "Backing up NadekoBot as 'NadekoBot.bak'..."
@@ -104,7 +105,7 @@
         }
     fi
 
-    echo "Downloading Nadeko dependencies..."
+    echo "Downloading NadekoBot's dependencies..."
     cd NadekoBot || {
         echo "${red}Failed to change working directory${nc}" >&2
         clean_up "true"
@@ -167,7 +168,7 @@
     ############################################################################
     # Cleaning up and presenting results...
     ############################################################################
-    echo -e "\n${green}Finished downloading/updating Nadeko${nc}"
+    echo -e "\n${green}Finished downloading/updating NadekoBot${nc}"
 
     if [[ $b_s_update ]]; then
         echo "${yellow}WARNING: Failed to $create_or_update '$nadeko_service_name'${nc}"
@@ -176,7 +177,7 @@
     # B.1.
     if [[ $nadeko_service_active ]]; then
         echo "${cyan}NOTE: '$nadeko_service_name' was stopped to update" \
-            "Nadeko and has to be started using the run modes in the" \
+            "NadekoBot and has to be started using the run modes in the" \
             "installer menu${nc}"
     fi
 

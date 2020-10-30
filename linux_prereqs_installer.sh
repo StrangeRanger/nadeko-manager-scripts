@@ -2,11 +2,11 @@
 
 ################################################################################
 #
-# Installs all of the packages and dependencies required for NadekoBot to run,
-# on Linux Based Distributions.
+# Installs all of the packages and dependencies required for NadekoBot to run
+# on Linux based distributions.
 #
 # Note: All variables not defined in this script, are exported from
-# 'linuxPMI.sh', 'installer_prep.sh', and 'nadeko_master_installer.sh'.
+# 'linuxAIO.sh', 'installer_prep.sh', and 'nadeko_master_installer.sh'.
 #
 ################################################################################
 #
@@ -41,7 +41,7 @@
 #
 ################################################################################
 #
-    read -p "We will now install Nadeko's prerequisites. Press [Enter] to continue."
+    read -p "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
     if [[ $distro = "ubuntu" ]]; then
         if [[ $ver = "16.04" ]]; then
@@ -51,9 +51,8 @@
         elif [[ $ver = "20.04" ]]; then
             dot_net_install "ubuntu" "20.04"
         else
-            # TODO: Maybe modify message
             echo "${red}The installer does not support the automatic" \
-                "installation and setup of NadekoBot's prerequisites, for your" \
+                "installation and setup of NadekoBot's prerequisites for your" \
                 "OS: $distro $ver $arch${nc}"
             read -p "Press [Enter] to return to the installer menu"
         fi
@@ -83,9 +82,8 @@
         elif [[ $sver = "10" ]]; then
             dot_net_install "debian" "10"
         else
-            # TODO: Maybe modify message
             echo "${red}The installer does not support the automatic" \
-                "installation and setup of NadekoBot's prerequisites, for your" \
+                "installation and setup of NadekoBot's prerequisites for your" \
                 "OS: $distro $ver $arch${nc}"
             read -p "Press [Enter] to return to the installer menu"
         fi
@@ -97,9 +95,8 @@
         elif [[ $sver = "20" ]]; then
             dot_net_install "ubuntu" "20.04"
         else
-            # TODO: Maybe modify message
             echo "${red}The installer does not support the automatic" \
-                "installation and setup of NadekoBot's prerequisites, for your" \
+                "installation and setup of NadekoBot's prerequisites for your" \
                 "OS: $distro $ver $arch${nc}"
             read -p "Press [Enter] to return to the installer menu"
         fi

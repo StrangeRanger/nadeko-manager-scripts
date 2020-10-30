@@ -30,7 +30,7 @@
     echo "-------------"
 
     echo -e "\n-------------"
-    read -p "Enter your Google API key: " googleapi
+    read -p "Enter your Google API Key: " googleapi
     echo "Google API Key: $googleapi"
     echo "-------------"
 
@@ -67,28 +67,28 @@
     if [[ -f NadekoBot/src/NadekoBot/credentials.json ]]; then
         echo "Backing up current 'credentials.json'..."
         mv NadekoBot/src/NadekoBot/credentials.json NadekoBot/src/NadekoBot/credentials.json.bak
-        echo "Updating 'credentials.json'..."
+        echo "Creating new 'credentials.json'..."
     else
         echo "Creating 'credentials.json'..."
         touch NadekoBot/src/NadekoBot/credentials.json
         sudo chmod +x NadekoBot/src/NadekoBot/credentials.json
     fi
 
-    echo "{
-    \"Token\": \"$token\",
-    \"OwnerIds\": [
-    $ownerid
-    ],
-    \"GoogleApiKey\": \"$googleapi\",
-    \"MashapeKey\": \"$mashapekey\",
-    \"OsuApiKey\": \"$osu\",
-    \"CleverbotApiKey\": \"$cleverbot\",
-    \"TwitchClientId\": \"$twitchcid\",
-    \"LocationIqApiKey\": \"$locationiqapi\",
-    \"TimezoneDbApiKey\": \"$timedbapi\",
-    \"Db\": null,
-    \"TotalShards\": 1
-    }" > NadekoBot/src/NadekoBot/credentials.json
+    echo -e "{ \
+        \n    \"Token\": \"$token\", \
+        \n    \"OwnerIds\": [ \
+        \n        $ownerid \
+        \n    ], \
+        \n    \"GoogleApiKey\": \"$googleapi\", \
+        \n    \"MashapeKey\": \"$mashapekey\", \
+        \n    \"OsuApiKey\": \"$osu\", \
+        \n    \"CleverbotApiKey\": \"$cleverbot\", \
+        \n    \"TwitchClientId\": \"$twitchcid\", \
+        \n    \"LocationIqApiKey\": \"$locationiqapi\", \
+        \n    \"TimezoneDbApiKey\": \"$timedbapi\", \
+        \n    \"Db\": null, \
+        \n    \"TotalShards\": 1 \
+        \n}" > NadekoBot/src/NadekoBot/credentials.json
 
     echo -e "\n${green}Finished creating 'credentials.json'${nc}"
     read -p "Press [Enter] to return the the installer menu"
