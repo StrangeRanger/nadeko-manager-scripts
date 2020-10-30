@@ -17,13 +17,13 @@
 #
     current_linuxAIO_revision="3"
 
-    export yellow="\033[1;33m"
-    export green="\033[0;32m"
-    export cyan="\033[0;36m"
-    export red="\033[1;31m"
-    export nc="\033[0m"
-    export clrln="\r\033[K"
-    export grey="\033[0;90m"
+    export yellow=$'\033[1;33m'
+    export green=$'\033[0;32m'
+    export cyan=$'\033[0;36m'
+    export red=$'\033[1;31m'
+    export nc=$'\033[0m'
+    export clrln=$'\r\033[K'
+    export grey=$'\033[0;90m'
     export installer_prep_pid=$$
     
     # The '--no-hostname' flag for journalctl only works with systemd 230 and
