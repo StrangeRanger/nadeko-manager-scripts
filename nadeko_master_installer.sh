@@ -65,8 +65,6 @@
                     else
                         echo -e "\n${cyan}NadekoBot is currently not running${nc}"
                     fi
-
-                    read -p "Press [Enter] to return to the installer menu"
                     ;;
             esac
         }
@@ -84,23 +82,23 @@
                 disable_enable2="Enabling"
             fi
 
-             # E.1. Creates '$nadeko_service_name', if it does not exist
+            # E.1. Creates '$nadeko_service_name', if it does not exist
             if [[ ! -f $nadeko_service ]]; then
                 echo "Creating '$nadeko_service_name'..."
                 echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
                     sudo systemctl daemon-reload || {
-                    echo "${red}Failed to create '$nadeko_service_name'" >&2
-                    echo "${cyan}This service must exist for nadeko to work${nc}"
-                    clean_exit "1" "Exiting"
-                }
+                        echo "${red}Failed to create '$nadeko_service_name'" >&2
+                        echo "${cyan}This service must exist for NadekoBot to work${nc}"
+                        clean_exit "1" "Exiting"
+                    }
             fi
 
             # Disables or enables 'nadeko.service'
             echo "$disable_enable2 'nadeko.service'..."
             sudo systemctl "$disable_enable" nadeko.service || {
                 echo "${red}Failed to $disable_enable 'nadeko.service'" >&2
-                echo "${cyan}This service must be ${disable_enable}d in order to use this" \
-                    "run mode${nc}"
+                echo "${cyan}This service must be ${disable_enable}d in order" \
+                    "to use this run mode${nc}"
                 read -p "Press [Enter] to return to the installer menu"
                 clean_exit "1" "Exiting"
             }
@@ -276,7 +274,6 @@
         fi
 
         service_actions "nadeko_service_status"
-        service_actions "nadeko_service_enabled"
 
         ########################################################################
         # User options for starting nadeko
@@ -296,8 +293,6 @@
                 "1,5, and 6 is ran)${nc}"
             echo "${grey}3. Run NadekoBot in the background with auto restart (Disabled" \
                 "until option 1,5, and 6 is ran)${nc}"
-            echo "${grey}4. Run NadekoBot in the background with auto restart and auto-update" \
-                "(Disabled until option 1,5, and 6 is ran)${nc}"
             disabled_23=true
         else
             if [[ $nadeko_service_status = "active" ]]; then
@@ -387,6 +382,7 @@
             printf "We will now stop NadekoBot. "
             read -p "Press [Enter] to begin."
             service_actions "stop_service"
+            read -p "Press [Enter] to return to the installer menu"
             clear -x
             ;;
         5)

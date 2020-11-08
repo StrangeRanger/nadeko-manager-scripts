@@ -15,21 +15,30 @@
 #
     # Cleans up any loose ends/left over files
     clean_up() {
-        # TODO: Redo list below
+        ##
+        # NOTE: 
+        # '$root_dir' is used because if an error occures while the working
+        # directory is currently in NadekoBot's root directory, it won't be
+        # possible to cleanly exit and restore everything.
+        #
+        # I don't just 'cd' to the root dir in the unlikely case it fails and
+        # causes even more problems.
+        ##
+
         local installer_files=("credentials_setup.sh" "installer_prep.sh"
-            "nadeko_latest_installer.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
-            "NadekoARBU.sh" "NadekoB.sh" "prereqs_installer.sh")
+            "linux_prereqs_installer.sh" "macos_prereqs_installer.sh"
+            "nadeko_latest_installer.sh" "nadeko_master_installer.sh")
 
         echo "Cleaning up files and directories..."
-        if [[ -d tmp ]]; then rm -rf tmp; fi
-        if [[ -d NadekoBot ]]; then rm -rf NadekoBot; fi
+        if [[ -d $root_dir/tmp ]]; then rm -rf "$root_dir"/tmp; fi
+        if [[ -d $root_dir/NadekoBot ]]; then rm -rf "$root_dir"/NadekoBot; fi
         for file in "${installer_files[@]}"; do
-            if [[ -f $file ]]; then rm "$file"; fi
+            if [[ -f $root_dir/$file ]]; then rm "$root_dir"/"$file"; fi
         done
 
-        if [[ -d NadekoBot.bak ]]; then
-            echo "Restoring from 'NadekoBot.bak'"
-            mv -f NadekoBot.bak NadekoBot || {
+        if [[ -d $root_dir/NadekoBot.bak ]]; then
+            echo "Restoring from 'NadekoBot.bak'..."
+            mv -f "$root_dir"/NadekoBot.bak "$root_dir"/NadekoBot || {
                 echo "${red}Failed to restore from 'NadekoBot.old'" >&2
                 echo "${cyan}Manually rename 'NadekoBot.old' to 'NadekoBot'${nc}"
             }
@@ -76,8 +85,7 @@
     fi
 
     ############################################################################
-    # Creating backups of current code in '/home/nadeko' then downloads/
-    # updates NadekoBot
+    # Creating backups of current code then downloads any updates for NadekoBot
     ############################################################################
     if [[ -d NadekoBot ]]; then
         echo "Backing up NadekoBot as 'NadekoBot.bak'..."
@@ -94,11 +102,11 @@
         clean_up "true"
     }
 
-    if [[ -d /tmp/NuGetScratch ]]; then
-        echo "Modifying ownership of /tmp/NuGetScratch"
-        sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/$USER/.nuget || {
-            echo "${red}Failed to to modify ownership of /tmp/NuGetScratch and/or" \
-                "/home/$USER/.nuget" >&2
+    if [[ -d /tmp/NuGetScratch && $distro != "Darwin" ]]; then
+        echo "Modifying ownership of '/tmp/NuGetScratch'"
+        sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/"$USER"/.nuget || {
+            echo "${red}Failed to to modify ownership of '/tmp/NuGetScratch' and/or" \
+                "'/home/$USER/.nuget'" >&2
             echo "${cyan}You can ignore this if you are not prompted about" \
                 "locked files/permission error while attempting to download" \
                 "dependencies${nc}"
@@ -120,9 +128,9 @@
         echo "${red}Failed to build NadekoBot${nc}" >&2
         clean_up "true"
     }
-    cd $root_dir || {
+    cd "$root_dir" || {
+        # TODO: Possibly reword this and use something else besides project
         echo "${red}Failed to return to the project root directory${nc}" >&2
-        # TODO: Provide instructions on what to do instead of erasing progress
         clean_up "true"
     }
 

@@ -42,10 +42,9 @@
     # Makes it possible to cleanly exit the installer by cleaning up files that
     # aren't required unless currently being run
     clean_exit() {
-        # TODO: Redo list below
         local installer_files=("credentials_setup.sh" "installer_prep.sh"
-            "nadeko_latest_installer.sh" "nadeko_master_installer.sh" "NadekoARB.sh"
-            "NadekoARBU.sh" "NadekoB.sh" "prereqs_installer.sh")
+            "linux_prereqs_installer.sh" "macos_prereqs_installer.sh"
+            "nadeko_latest_installer.sh" "nadeko_master_installer.sh")
 
         if [[ $3 = true ]]; then echo "Cleaning up..."; else echo -e "\nCleaning up..."; fi
         for file in "${installer_files[@]}"; do
@@ -117,29 +116,20 @@
         else
             distro=$(uname -s)
             if [[ $distro = "Darwin" ]]; then
-                # Version: x.x.x
-                ver=$(sw_vers -productVersion)
-                # Version: x.x
-                sver=${ver%.*}
+                # macOS version: x.x.x --> x.x
+                sver=${$(sw_vers -productVersion)%.*}
                 pname="Mac OS X"
             else
                 ver=$(uname -r)
             fi
         fi
 
-        # Identifying bit type
+        # Identifying bit and architecture type
         case $(uname -m) in
-            x86_64) bits="64" ;;
-            i*86) bits="32" ;;
-            armv*) bits="32" ;;
-            *) bits="?" ;;
-        esac
-
-        # Identifying architecture type
-        case $(uname -m) in
-            x86_64) arch="x64" ;;
-            i*86) arch="x86" ;;
-            *) arch="?" ;;
+            x86_64) bits="64"; arch="x64" ;;
+            i*86) bits="32"; arch="x86" ;;
+            armv*) bits="32"; arch="?" ;;
+            *) bits="?"; arch="?" ;;
         esac
     }
 
@@ -190,7 +180,7 @@
             supported=false
         fi
     elif [[ $distro = "debian" ]]; then
-        if [[ $bits = 64 ]]; then # B.1.
+        if [[ $bits = 64 ]]; then  # B.1.
             case "$sver" in
                 9) export nadeko_service_content="nadeko.service"; execute_master_installer ;;
                 10) export nadeko_service_content="nadeko.service"; execute_master_installer ;;
@@ -201,7 +191,7 @@
         fi
 
     elif [[ $distro = "linuxmint" ]]; then
-        if [[ $bits = 64 ]]; then # B.1.
+        if [[ $bits = 64 ]]; then  # B.1.
             case "$sver" in
                 18) export nadeko_service_content="nadeko.service"; execute_master_installer ;;
                 19) export nadeko_service_content="nadeko.service"; execute_master_installer ;;
@@ -221,7 +211,7 @@
     if [[ $supported = false ]]; then
         echo "${red}Your operating system/Linux Distribution is not OFFICIALLY" \
             "supported by the installation, setup, and/or use of NadekoBot${nc}" >&2
-        read -p "Would you like to continue with the installation anyways? [y|N] " choice
+        read -p "Would you like to continue with the installation anyways? [y/N] " choice
         choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in
             y|yes) execute_master_installer ;;
