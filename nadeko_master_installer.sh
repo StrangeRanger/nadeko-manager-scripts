@@ -1,227 +1,426 @@
-#!/bin/sh
+#!/bin/bash
 
-echo "Welcome to NadekoBot."
-root=$(pwd)
-echo ""
-choice=9
-	echo "1. Download NadekoBot"
-	echo "2. Run Nadeko (Normally)"
-	echo "3. Run Nadeko with Auto Restart in this session"
-	echo "4. Auto-Install Prerequisites (For Ubuntu, Debian and CentOS)"
-	echo "5. Set up credentials.json (If you have downloaded NadekoBot already)"
-	echo "6. Auto-Install pm2 (For pm2 information, see README!)"
-	echo "7. Start Nadeko in pm2 (Complete option 6 first!)"
-	echo "8. Exit"
-	echo -n "Choose [1] to Download, [2 or 3] to Run, [6 and 7] for pm2 setup/startup (see README) or [8] to Exit."
-while [ $choice -eq 9 ]; do
-read choice
-if [ $choice -eq 1 ] ; then
+################################################################################
+#
+# The master/main installer for macOS and Linux Distributions.
+#
+# Note: All variables not defined in this script, are exported from
+# 'linuxAIO.sh' and 'installer_prep.sh'.
+#
+################################################################################
+#
+    export nadeko_master_installer_pid=$$
 
-	echo ""
-	echo "Downloading NadekoBot, please wait."
-	wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadeko_installer_latest.sh && bash "$root/nadeko_installer_latest.sh"
-	echo ""
-	bash "$root/linuxAIO.sh"
-else
-		if [ $choice -eq 2 ] ; then
-			echo ""
-			echo "Running Nadeko Normally, if you are running this to check Nadeko, use .die command on discord to stop Nadeko."
-			wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadeko_run.sh && bash "$root/nadeko_run.sh"
-			echo ""
-			echo "Welcome back to NadekoBot."
-			sleep 2s
-			bash "$root/linuxAIO.sh"
-		else
-			if [ $choice -eq 3 ] ; then
-				echo ""
-				echo "Running Nadeko with Auto Restart you will have to close the session to stop the auto restart."
-				sleep 5s
-				wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/NadekoAutoRestartAndUpdate.sh && bash "$root/NadekoAutoRestartAndUpdate.sh"
-				echo ""
-				echo "That did not work?"
-				sleep 2s
-				bash "$root/linuxAIO.sh"
-			else
-				if [ $choice -eq 4 ] ; then
-					echo ""
-					echo "Getting the Auto-Installer for Debian/Ubuntu"
-					wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadekoautoinstaller.sh && bash "$root/nadekoautoinstaller.sh"
-					echo ""
-					echo "Welcome back..."
-					sleep 2s
-					bash "$root/linuxAIO.sh"
-				else
-					if [ $choice -eq 5 ] ; then
-						echo ""
-						echo
-echo -e "Let's begin creating a new credentials.json file if you are about to run the NadekoBot for the first time. \n \nPlease read JSON Explanations in the guide... \n \nPress [Y] when you are ready to continue or [N] to exit."
-while true; do
-    read -p "[y/n]: " yn
-    case $yn in
-        [Yy]* ) clear; break;;
-        [Nn]* ) echo Exiting...; exit;;
-        * ) echo "Couldn't get that please type [y] for Yes or [n] for No.";;
-    esac
-done
-clear
-cd "$root/NadekoBot/src/NadekoBot"
-mv credentials.json credentials.json.old
+#
+################################################################################
+#
+# [ Variables and Functions ]
+#
+# The variables and functions below are designed specifically for either macOS
+# or linux distribution.
+#
+################################################################################
+#
+    ############################################################################
+    # Variables used when executed on 'Linux Distributions'
+    ############################################################################
+    if [[ $distro != "Darwin" ]]; then
+        #-------------------------------
+        # Variables
+        #-------------------------------
+        nadeko_service="/lib/systemd/system/nadeko.service"
+        nadeko_service_name="nadeko.service"
+        prereqs_installer="linux_prereqs_installer.sh"
+        nadeko_service_content="[Unit] \
+            \nDescription=NadekoBot \
+            \n \
+            \n[Service] \
+            \nExecStart=/bin/bash $root_dir/NadekoRun.sh \
+            \nUser=$USER \
+            \nType=simple \
+            \nStandardOutput=syslog \
+            \nStandardError=syslog \
+            \nSyslogIdentifier=NadekoBot \
+            \n \
+            \n[Install] \
+            \nWantedBy=multi-user.target"
 
-echo Please enter your bot client ID:
-echo ""
-read clientid
-echo ""
-echo Alright saved \'$clientid\' as your client ID.
-echo ""
-echo "----------"
-echo ""
+        #-------------------------------
+        # Function
+        #-------------------------------
+        service_actions() {
+            case "$1" in
+                nadeko_service_status)
+                    nadeko_service_status=$(systemctl is-active nadeko.service)
+                    ;;
+                stop_service)
+                    if [[ $nadeko_service_status = "active" ]]; then
+                        echo "Stopping 'nadeko.service'..."
+                        sudo systemctl stop nadeko.service || {
+                            echo "${red}Failed to stop 'nadeko.service'" >&2
+                            echo "${cyan}You will need to restart 'nadeko.service'" \
+                                "to apply any updates to NadekoBot${nc}"
+                        }
+                        if [[ $2 = true ]]; then
+                            echo -e "\n${green}NadekoBot has been stopped${nc}"
+                        fi
+                    else
+                        if [[ $2 = true ]]; then
+                            echo -e "\n${cyan}NadekoBot is currently not running${nc}"
+                        fi
+                    fi
+                    ;;
+            esac
+        }
 
-echo Please enter your bot token \(It is not bot secret, it should be ~59 characters long.\):
-echo ""
-read token
-echo ""
-echo Alright saved \'$token\' as your bot\'s token.
-echo ""
-echo "----------"
-echo ""
+        nadeko_starter() {
+            timer=60
+            # Saves the current time and date, which will be used with journalctl
+            start_time=$(date +"%F %H:%M:%S")
 
-echo Please enter your own ID \(Refer to the guide, it will be bot\'s owner ID.\):
-echo ""
-read ownerid
-echo ""
-echo Alright saved \'$ownerid\' as owner\'s ID.
-echo ""
-echo "----------"
-echo ""
+            if [[ $1 = "2" ]]; then
+                disable_enable="disable"
+                disable_enable2="Disabling"
+            else
+                disable_enable="enable"
+                disable_enable2="Enabling"
+            fi
 
-echo Please enter Google API key \(Refer to the guide.\):
-echo ""
-read googleapi
-echo ""
-echo Alright saved \'$googleapi\' as your bot\'s Google API Key.
-echo ""
-echo "----------"
-echo ""
+            # E.1. Creates '$nadeko_service_name', if it does not exist
+            if [[ ! -f $nadeko_service ]]; then
+                echo "Creating '$nadeko_service_name'..."
+                echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
+                    sudo systemctl daemon-reload || {
+                        echo "${red}Failed to create '$nadeko_service_name'" >&2
+                        echo "${cyan}This service must exist for NadekoBot to work${nc}"
+                        clean_exit "1" "Exiting"
+                    }
+            fi
 
-echo -e "Please enter Mashape Key or Just Press [Enter Key] to skip. (optional) \nRefer to the JSON Explanations guide:"
-echo ""
-read mashapekey
-echo ""
-echo Alright saved \'$mashapekey\' as your bot\'s Mashape Key.
-echo ""
-echo "----------"
-echo ""
+            # Disables or enables 'nadeko.service'
+            echo "$disable_enable2 'nadeko.service'..."
+            sudo systemctl "$disable_enable" nadeko.service || {
+                echo "${red}Failed to $disable_enable 'nadeko.service'" >&2
+                echo "${cyan}This service must be ${disable_enable}d in order" \
+                    "to use this run mode${nc}"
+                read -p "Press [Enter] to return to the installer menu"
+                clean_exit "1" "Exiting"
+            }
 
-echo -e "Please enter OSU API Key or Just Press [Enter Key] to skip. (optional) \nRefer to the JSON Explanations guide:"
-echo ""
-read osu
-echo ""
-echo Alright saved \'$osu\' as your bot\'s OSU API Key.
-echo ""
-echo "----------"
-echo ""
+            if [[ -f NadekoRun.sh ]]; then
+                echo "Updating 'NadekoRun.sh'..."
+            else
+                echo "Creating 'NadekoRun.sh'..."
+                touch NadekoRun.sh
+                sudo chmod +x NadekoRun.sh
+            fi
+            
+            if [[ $1 = "2" ]]; then 
+                echo -e "#!bin/bash \
+                    \n \
+                    \n_code_name_=\"NadekoRun\" \
+                    \n \
+                    \necho \"Running NadekoBot in the background\" \ 
+                    \nyoutube-dl -U \
+                    \n \
+                    \ncd $root_dir/NadekoBot \
+                    \ndotnet restore \
+                    \ndotnet build -c Release \
+                    \ncd $root_dir/NadekoBot/src/NadekoBot \
+                    \necho \"Running NadekoBot...\" \
+                    \ndotnet run -c Release \
+                    \necho \"Done\" \
+                    \ncd $root_dir \
+                    \n" > NadekoRun.sh
+            else
+                echo -e "#!/bin/bash \
+                    \n \
+                    \n_code_name_=\"NadekoRunAR\" \
+                    \n \
+                    \necho \"\" \
+                    \necho \"Running NadekoBot in the background with auto restart\" \
+                    \nyoutube-dl -U \
+                    \n \
+                    \nsleep 5 \
+                    \ncd $root_dir/NadekoBot \
+                    \ndotnet restore && dotnet build -c Release \
+                    \n \
+                    \nwhile true; do \
+                    \n    cd $root_dir/NadekoBot/src/NadekoBot && \
+                    \n    dotnet run -c Release \
+                    \n \
+                    \n    youtube-dl -U \
+                    \n    sleep 10 \
+                    \ndone" > NadekoRun.sh
+            fi
 
-echo -e "Please enter Cleverbot API Key or Just Press [Enter Key] to skip. (optional) \nRefer to the JSON Explanations guide:"
-echo ""
-read cleverbot
-echo ""
-echo Alright saved \'$cleverbot\' as your bot\'s Cleverbot API Key.
-echo ""
-echo "----------"
-echo ""
+            # Starting or restarting 'nadeko.service'
+            if [[ $nadeko_service_status = "active" ]]; then
+                echo "Restarting 'nadeko.service'..."
+                sudo systemctl restart nadeko.service || {
+                    echo "${red}Failed to restart 'nadeko.service'${nc}" >&2
+                    read -p "Press [Enter] to return to the installer menu"
+                    clean_exit "1" "Exiting"
+                }
+                echo "Waiting 60 seconds for 'nadeko.service' to restart..."
+            else
+                echo "Starting 'nadeko.service'..."
+                sudo systemctl start nadeko.service || {
+                    echo "${red}Failed to start 'nadeko.service'${nc}" >&2
+                    read -p "Press [Enter] to return to the installer menu"
+                    clean_exit "1" "Exiting"
+                }
+                echo "Waiting 60 seconds for 'nadeko.service' to start..."
+            fi
 
-echo -e "Please enter Twitch Client ID or Just Press [Enter Key] to skip. (optional) \nRefer to the JSON Explanations guide:"
-echo ""
-read twitchcid
-echo ""
-echo Alright saved \'$twitchcid\' as your bot\'s Twitch Client ID.
-echo ""
-echo "----------"
-echo ""
+            # Waits in order to give 'nadeko.service' enough time to (re)start
+            while ((timer > 0)); do
+                echo -en "${clrln}${timer} seconds left"
+                sleep 1
+                ((timer-=1))
+            done
 
-echo -e "Please enter Location IQ Api Key or Just Press [Enter Key] to skip. (optional) \nRefer to the JSON Explanations guide:"
-echo ""
-read locationiqapi
-echo ""
-echo Alright saved \'$locationiqapi\' as your bot\'s Location IQ API Key.
-echo ""
-echo "----------"
-echo ""
+            # Note: $no_hostname is purposefully unquoted. Do not quote those variables.
+            echo -e "\n\n-------- nadeko.service startup logs ---------" \
+                "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
+                "\n--------- End of nadeko.service startup logs --------\n"
 
-echo -e "Please enter Timezone DB Api Key or Just Press [Enter Key] to skip. (optional) \nRefer to the JSON Explanations guide:"
-echo ""
-read timedbapi
-echo ""
-echo Alright saved \'$timedbapi\' as your bot\'s Timezone DB API Key.
-echo ""
-echo "----------"
-echo ""
+            echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
+                "errors, and if there are, to resolve whatever issue is causing them\n"
 
-echo "{
-  \"ClientId\": $clientid,
-  \"Token\": \"$token\",
-  \"OwnerIds\": [
-    $ownerid
-  ],
-  \"GoogleApiKey\": \"$googleapi\",
-  \"MashapeKey\": \"$mashapekey\",
-  \"OsuApiKey\": \"$osu\",
-  \"CleverbotApiKey\": \"$cleverbot\",
-  \"TwitchClientId\": \"$twitchcid\",
-  \"LocationIqApiKey\": \"$locationiqapi\",
-  \"TimezoneDbApiKey\": \"$timedbapi\",
-  \"Db\": null,
-  \"TotalShards\": 1
-}" | cat - >> credentials.json
-echo Credentials setup completed.
-sleep 5
-clear
-cd "$root"
-bash "$root/linuxAIO.sh"
-					else
-						if [ $choice -eq 6 ] ; then
-						echo ""
-						echo "Starting the setup for pm2 with NadekoBot. This only has to be done once."
-						wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadekopm2setup.sh && bash "$root/nadekopm2setup.sh"
-						echo ""
-						echo "Welcome back..."
-						sleep 2s
-						bash "$root/linuxAIO.sh"	
-						else
-							if [ $choice -eq 7 ] ; then
-							echo ""
-							echo "Getting the pm2 startup options for NadekoBot.."
-							wget -N https://github.com/Kwoth/NadekoBot-BashScript/raw/1.9/nadekobotpm2start.sh && bash "$root/nadekobotpm2start.sh"
-							echo ""
-							sleep 2s
-							bash "$root/linuxAIO.sh"
-							else
-								if [ $choice -eq 8 ] ; then
-									echo ""
-									echo "Exiting..."
-									cd "$root"
-									exit 0
-								else
-									clear
-									echo "1. Download NadekoBot"
-									echo "2. Run Nadeko (Normally)"
-									echo "3. Run Nadeko with Auto Restart in this session"
-									echo "4. Auto-Install Prerequisites (For Ubuntu, Debian and CentOS)"
-									echo "5. Set up credentials.json (If you have downloaded NadekoBot already)"
-									echo "6. Auto-Install pm2 (For pm2 information, see README!)"
-									echo "7. Start Nadeko in pm2 (Complete option 6 first!)"
-									echo "8. Exit"
-									echo -n "Choose [1] to Download, [2 or 3] to Run, [6 and 7] for pm2 setup/startup (see README) or [8] to Exit."
-									choice=9
-								fi
-							fi	
-						fi 
-					fi
-				fi
-			fi
-		fi
-	fi
-done
+            echo "${green}NadekoBot is now running in the background${nc}"
+            read -p "Press [Enter] to return to the installer menu"
 
-cd "$root"
-exit 0
+        }
+    
+    ############################################################################
+    # Variables use when executed on 'macOS'
+    ############################################################################
+    else
+        #-------------------------------
+        # Variables
+        #-------------------------------
+        nadeko_service="/Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist"
+        nadeko_service_name="bot.nadeko.Nadeko"
+        prereqs_installer="macos_prereqs_installer.sh"
+        nadeko_service_content="<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+            \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
+            \n<plist version=\"1.0\"> \
+            \n<dict> \
+            \n	<key>Disabled</key> \
+            \n	<false/> \
+            \n	<key>Label</key> \
+            \n	<string>bot.nadeko.Nadeko</string> \
+            \n	<key>ProgramArguments</key> \
+            \n	<array> \
+            \n		<string>$(which bash)</string> \
+            \n		<string>$root_dir/NadekoRun.sh</string> \
+            \n	</array> \
+            \n	<key>RunAtLoad</key> \
+            \n	<true/> \
+            \n	<key>StandardErrorPath</key> \
+            \n	<string>$root_dir/.bot.nadeko.Nadeko.stderr</string> \
+            \n	<key>StandardOutPath</key> \
+            \n	<string>$root_dir/.bot.nadeko.Nadeko.stdout</string> \
+            \n</dict> \
+            \n</plist>"
+
+        #-------------------------------
+        # Function
+        #-------------------------------
+        service_actions() {
+            case "$1" in
+                nadeko_service_status)
+                    launchctl load /Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist 2>/dev/null
+                    nadeko_service_status=$(launchctl print gui/$UID/bot.nadeko.Nadeko | grep "state") &&
+                    nadeko_service_status=${nadeko_service_status/[[:blank:]]state = /} || {
+                        nadeko_service_status="inactive"
+                    }
+                    ;;
+                stop_service)
+                    launchctl stop bot.nadeko.Nadeko || {
+                        echo "${red}Failed to stop 'bot.nadeko.Nadeko'" >&2
+                        echo "${cyan}You will need to restart 'bot.nadeko.Nadeko'" \
+                            "to apply any updates to NadekoBot${nc}"
+                    }
+                    ;;
+            esac
+        }
+    fi
+
+#
+################################################################################
+#
+# [ Main ]
+#
+################################################################################
+#
+    echo -e "Welcome to the NadekoBot installer\n"
+
+    while true; do
+        # E.1. Creates '$nadeko_service_name', if it does not exist
+        if [[ ! -f $nadeko_service ]]; then
+            echo "Creating '$nadeko_service_name'..."
+            if [[ $distro = "Darwin" && ! -d /Users/$USER/Library/LaunchAgents/ ]]; then
+                # TODO: Add error catching
+                mkdir /Users/"$USER"/Library/LaunchAgents
+            fi
+            echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
+                if [[ $distro != "Darwin" ]]; then 
+                    sudo systemctl daemon-reload
+                else
+                    sudo chown "$USER":staff "$nadeko_service"
+                fi || {
+                    echo "${red}Failed to create '$nadeko_service_name'" >&2
+                    echo "${cyan}This service must exist for nadeko to work${nc}"
+                    clean_exit "1" "Exiting"
+                }
+        fi
+
+        service_actions "nadeko_service_status"
+
+        ########################################################################
+        # User options for starting nadeko
+        ########################################################################
+        if (! hash git || ! hash dotnet) &>/dev/null; then
+            echo "${grey}1. Download NadekoBot (Disabled until option 5 is ran)${nc}"
+            disabled_1=true
+        else
+            echo "1. Download NadekoBot"
+            disabled_1=false
+        fi
+
+        if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ||
+                ! -d NadekoBot/src/NadekoBot/bin/Release || -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] || 
+                (! hash git || ! hash dotnet || ! hash jq) &>/dev/null; then
+            echo "${grey}2. Run NadekoBot in the background (Disabled until option" \
+                "1,5, and 6 is ran)${nc}"
+            echo "${grey}3. Run NadekoBot in the background with auto restart (Disabled" \
+                "until option 1,5, and 6 is ran)${nc}"
+            disabled_23=true
+        else
+            if [[ $nadeko_service_status = "active" ]]; then
+                run_mode_status=" ${green}(Running in this mode)${nc}"
+            elif [[ $nadeko_service_status = "inactive" ]]; then
+                run_mode_status=" ${yellow}(Set up to run in this mode)${nc}"
+            else
+                run_mode_status=" ${yellow}(Status unkown)${nc}"
+            fi
+            
+            if [[ $(grep '_code_name_="NadekoRunARU"' NadekoRun.sh) ]]; then
+                echo "2. Run NadekoBot in the background"
+                echo "3. Run NadekoBot in the background with auto restart"
+            elif [[ $(grep '_code_name_="NadekoRunAR"' NadekoRun.sh) ]]; then
+                echo "2. Run NadekoBot in the background"
+                echo "3. Run NadekoBot in the background with auto restart${run_mode_status}"
+            elif [[ $(grep '_code_name_="NadekoRun"' NadekoRun.sh) ]]; then
+                echo "2. Run NadekoBot in the background${run_mode_status}"
+                echo "3. Run NadekoBot in the background with auto restart"
+            else
+                echo "2. Run NadekoBot in the background"
+                echo "3. Run NadekoBot in the background with auto restart"
+            fi
+
+            disabled_23=false
+        fi
+
+        echo "4. Stop NadekoBot"
+        echo "5. Install prerequisites"
+
+        if [[ ! -d NadekoBot/src/NadekoBot/ ]]; then
+            echo "${grey}6. Set up credentials.json (Disabled until option 1 is ran)${nc}"
+            disabled_6=true
+        else
+            echo "6. Set up credentials.json"
+            disabled_6=false
+        fi
+
+        echo "7. Exit"
+        read choice
+        case "$choice" in
+        1)
+            clear -x
+            if [[ $disabled_1 = true ]]; then
+                echo "${red}Option 1 is currently disabled${nc}"
+                continue
+            fi
+            export nadeko_service
+            export -f service_actions
+            export nadeko_service_name
+            export nadeko_service_status
+            export nadeko_service_content
+            curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh \
+                    -o nadeko_latest_installer.sh || {
+                echo "${red}Failed to download latest 'nadeko_latest_installer.sh'...${nc}" >&2
+                clean_exit "1" "Exiting" "true"
+            }
+            printf "We will now download/update NadekoBot. "
+            read -p "Press [Enter] to begin."
+            sudo chmod +x nadeko_latest_installer.sh && ./nadeko_latest_installer.sh
+            exec "$installer_prep"
+            ;;
+        2)
+            clear -x
+            if [[ $disabled_23 = true ]]; then
+                echo "${red}Option 2 is currently disabled${nc}"
+                continue
+            fi
+            printf "We will now run NadekoBot in the background. "
+            read -p "Press [Enter] to begin."
+            nadeko_starter "2"
+            clear -x
+            ;;
+        3)
+            clear -x
+            if [[ $disabled_23 = true ]]; then
+                echo "${red}Option 3 is currently disabled${nc}"
+                continue
+            fi
+            printf "We will now run NadekoBot in the background with auto restart. "
+            read -p "Press [Enter] to begin."
+            nadeko_starter "3"
+            clear -x
+            ;;
+        4)
+            clear -x
+            printf "We will now stop NadekoBot. "
+            read -p "Press [Enter] to begin."
+            service_actions "stop_service" "true"
+            read -p "Press [Enter] to return to the installer menu"
+            clear -x
+            ;;
+        5)
+            clear -x
+            curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/"$prereqs_installer" \
+                    -o prereqs_installer.sh || {
+                echo "${red}Failed to download latest 'prereqs_installer.sh'...${nc}" >&2
+                clean_exit "1" "Exiting" "true"
+            }
+            sudo chmod +x prereqs_installer.sh && ./prereqs_installer.sh
+            clear -x
+            ;;
+        6)
+            clear -x
+            if [[ $disabled_6 = true ]]; then
+                echo "${red}Option 6 is currently disabled${nc}"
+                continue
+            fi
+            export nadeko_service_name
+            export nadeko_service_status
+            curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/credentials_setup.sh \
+                    -o credentials_setup.sh || {
+                echo "${red}Failed to download latest 'credentials_setup.sh'...${nc}" >&2
+                clean_exit "1" "Exiting" "true"
+            }
+            sudo chmod +x credentials_setup.sh && ./credentials_setup.sh
+            clear -x
+            ;;
+        7)
+            clean_exit "0" "Exiting"
+            ;;
+        *)
+            clear -x
+            echo "${red}Invalid input: '$choice' is not a valid option${nc}" >&2
+            ;;
+        esac
+    done
