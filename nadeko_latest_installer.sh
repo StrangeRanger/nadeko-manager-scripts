@@ -66,7 +66,7 @@
     trap "echo -e \"\n\nScript forcefully stopped\"
         clean_up
         echo \"Killing parent processes...\"
-        kill -9 \"$linux_master_installer_pid\" \"$installer_prep_pid\"
+        kill -9 \"$nadeko_master_installer_pid\" \"$installer_prep_pid\"
         echo \"Exiting...\"
         exit 1" \
         SIGINT SIGTSTP SIGTERM
@@ -80,7 +80,6 @@
         # active, and is used to indicate to the user that the service was
         # stopped and that they will need to start it
         nadeko_service_active=true
-        echo "Stopping '$nadeko_service_name'..."
         service_actions "stop_service"
     fi
 
