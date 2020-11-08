@@ -15,7 +15,7 @@
 #
 ################################################################################
 #
-    current_linuxAIO_revision="3"
+    current_linuxAIO_revision="4"
 
     export yellow=$'\033[1;33m'
     export green=$'\033[0;32m'
