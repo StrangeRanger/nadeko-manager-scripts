@@ -26,8 +26,8 @@
         ##
 
         local installer_files=("credentials_setup.sh" "installer_prep.sh"
-            "linux_prereqs_installer.sh" "macos_prereqs_installer.sh"
-            "nadeko_latest_installer.sh" "nadeko_master_installer.sh")
+            "prereqs_installer.sh" "nadeko_latest_installer.sh"
+            "nadeko_master_installer.sh")
 
         echo "Cleaning up files and directories..."
         if [[ -d $root_dir/tmp ]]; then rm -rf "$root_dir"/tmp; fi
