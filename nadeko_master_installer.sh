@@ -61,9 +61,13 @@
                             echo "${cyan}You will need to restart 'nadeko.service'" \
                                 "to apply any updates to NadekoBot${nc}"
                         }
-                        echo -e "\n${green}NadekoBot has been stopped${nc}"
+                        if [[ $2 = true ]]; then
+                            echo -e "\n${green}NadekoBot has been stopped${nc}"
+                        fi
                     else
-                        echo -e "\n${cyan}NadekoBot is currently not running${nc}"
+                        if [[ $2 = true ]]; then
+                            echo -e "\n${cyan}NadekoBot is currently not running${nc}"
+                        fi
                     fi
                     ;;
             esac
@@ -381,7 +385,7 @@
             clear -x
             printf "We will now stop NadekoBot. "
             read -p "Press [Enter] to begin."
-            service_actions "stop_service"
+            service_actions "stop_service" "true"
             read -p "Press [Enter] to return to the installer menu"
             clear -x
             ;;
