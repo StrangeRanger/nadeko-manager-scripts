@@ -182,7 +182,7 @@
 
             # Note: $no_hostname is purposefully unquoted. Do not quote those variables.
             echo -e "\n\n-------- nadeko.service startup logs ---------" \
-                "\n$(journalctl -u nadeko -b $no_hostname -S "$start_time")" \
+                "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
                 "\n--------- End of nadeko.service startup logs --------\n"
 
             echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
