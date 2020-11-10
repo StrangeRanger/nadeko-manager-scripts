@@ -328,7 +328,7 @@
             fi
 
             # Starting or restarting '$nadeko_service_name'
-            if [[ $nadeko_service_status = "active" ]]; then
+            if [[ $nadeko_service_status = "running" ]]; then
                 echo "Restarting '$nadeko_service_name'..."
                 launchctl kickstart -k gui/$UID/"$nadeko_service_name" || {
                     echo "${red}Failed to restart '$nadeko_service_name'${nc}" >&2
