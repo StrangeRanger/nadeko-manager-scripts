@@ -330,7 +330,7 @@
             # Starting or restarting '$nadeko_service_name'
             if [[ $nadeko_service_status = "active" ]]; then
                 echo "Restarting '$nadeko_service_name'..."
-                sudo systemctl restart $nadeko_service_name || {
+                launchctl kickstart -k gui/$UID/"$nadeko_service_name" || {
                     echo "${red}Failed to restart '$nadeko_service_name'${nc}" >&2
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
@@ -338,7 +338,7 @@
                 echo "Waiting 60 seconds for '$nadeko_service_name' to restart..."
             else
                 echo "Starting '$nadeko_service_name'..."
-                launchctl kickstart -k gui/$UID/"$nadeko_service_name" || {
+                launchctl start gui/$UID/"$nadeko_service_name" || {
                     echo "${red}Failed to start '$nadeko_service_name'${nc}" >&2
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
@@ -354,9 +354,9 @@
             done
 
             # Note: $no_hostname is purposefully unquoted. Do not quote those variables.
-            echo -e "\n\n-------- $nadeko_service_name startup logs ---------" \
-                "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
-                "\n--------- End of $nadeko_service_name startup logs --------\n"
+            #echo -e "\n\n-------- $nadeko_service_name startup logs ---------" \
+            #    "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
+            #    "\n--------- End of $nadeko_service_name startup logs --------\n"
 
             echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
                 "errors, and if there are, to resolve whatever issue is causing them\n"
