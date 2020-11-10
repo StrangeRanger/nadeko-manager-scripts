@@ -216,7 +216,7 @@
         read -p "Would you like to continue with the installation anyways? [y/N] " choice
         choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in
-            y|yes) execute_master_installer ;;
+            y|yes) clear -x; execute_master_installer ;;
             n|no) clean_exit "0" "Exiting" ;;
             *) clean_exit "0" "Exiting" ;;
         esac

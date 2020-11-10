@@ -291,6 +291,7 @@
                 echo -e "#\!/bin/bash \
                     \n \
                     \nexport DOTNET_CLI_HOME=/tmp \
+                    \n_code_name_=\"NadekoRun\" \
                     \necho \"\" \
                     \necho \"Running NadekoBot in the background\" \
                     \nbrew upgrade youtube-dl \
@@ -308,6 +309,7 @@
                 echo -e "#\!/bin/bash \
                     \n \
                     \nexport DOTNET_CLI_HOME=/tmp \
+                    \n_code_name_=\"NadekoRunAR\" \
                     \necho \"\" \
                     \necho \"Running NadekoBot in the background with auto restart\" \
                     \nbrew upgrade youtube-dl \
@@ -336,7 +338,7 @@
                 echo "Waiting 60 seconds for '$nadeko_service_name' to restart..."
             else
                 echo "Starting '$nadeko_service_name'..."
-                sudo systemctl start $nadeko_service_name || {
+                launchctl kickstart -k gui/$UID/"$nadeko_service_name" || {
                     echo "${red}Failed to start '$nadeko_service_name'${nc}" >&2
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
@@ -415,7 +417,7 @@
             echo "${grey}3. Run NadekoBot in the background with auto restart (Disabled" \
                 "until option 1,5, and 6 is ran)${nc}"
             disabled_23=true
-        else
+        elif [[ -f NadekoRun.sh ]]; then
             if [[ $nadeko_service_status = "active" ]]; then
                 run_mode_status=" ${green}(Running in this mode)${nc}"
             elif [[ $nadeko_service_status = "inactive" ]]; then
@@ -423,7 +425,7 @@
             else
                 run_mode_status=" ${yellow}(Status unkown)${nc}"
             fi
-            
+
             if [[ $(grep '_code_name_="NadekoRunARU"' NadekoRun.sh) ]]; then
                 echo "2. Run NadekoBot in the background"
                 echo "3. Run NadekoBot in the background with auto restart"
@@ -439,6 +441,9 @@
             fi
 
             disabled_23=false
+        else
+            echo "2. Run NadekoBot in the background"
+            echo "3. Run NadekoBot in the background with auto restart"
         fi
 
         echo "4. Stop NadekoBot"
