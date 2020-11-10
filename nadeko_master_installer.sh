@@ -241,7 +241,7 @@
                     ;;
                 # TODO: Update to be similar to linux version
                 stop_service)
-                    launchctl stop $nadeko_service_name || {
+                    launchctl stop "$nadeko_service_name" || {
                         echo "${red}Failed to stop '$nadeko_service_name'" >&2
                         echo "${cyan}You will need to restart '$nadeko_service_name'" \
                             "to apply any updates to NadekoBot${nc}"
@@ -338,7 +338,7 @@
                 echo "Waiting 60 seconds for '$nadeko_service_name' to restart..."
             else
                 echo "Starting '$nadeko_service_name'..."
-                launchctl start gui/$UID/"$nadeko_service_name" || {
+                launchctl start "$nadeko_service_name" || {
                     echo "${red}Failed to start '$nadeko_service_name'${nc}" >&2
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
