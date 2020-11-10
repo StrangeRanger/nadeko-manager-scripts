@@ -28,7 +28,7 @@
     
     # The '--no-hostname' flag for journalctl only works with systemd 230 and
     # later
-    if (($(journalctl --version | grep -oP "[0-9]+" | head -1) >= 230)); then
+    if (($(journalctl --version | grep -oP "[0-9]+" | head -1) >= 230)) 2>/dev/null; then
         export no_hostname="--no-hostname"
     fi
 
@@ -116,8 +116,10 @@
         else
             distro=$(uname -s)
             if [[ $distro = "Darwin" ]]; then
-                # macOS version: x.x.x --> x.x
-                sver=${$(sw_vers -productVersion)%.*}
+                # macOS version: x.x.x
+                ver=$(sw_vers -productVersion)
+                # macOS version: x.x
+                sver=${$ver%.*}
                 pname="Mac OS X"
             else
                 ver=$(uname -r)
