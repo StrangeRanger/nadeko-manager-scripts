@@ -119,7 +119,7 @@
                 # macOS version: x.x.x
                 ver=$(sw_vers -productVersion)
                 # macOS version: x.x
-                sver=${$ver%.*}
+                sver=${ver%.*}
                 pname="Mac OS X"
             else
                 ver=$(uname -r)
