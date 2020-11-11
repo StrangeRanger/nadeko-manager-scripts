@@ -258,6 +258,9 @@
                 disable_enable2="Enabling"
             fi
 
+            echo "${cyan}Note: Due to limiations on macOS, logs of NadekoBot's" \
+                "startup will not be displayed${nc}"
+
             # E.1. Creates '$nadeko_service_name', if it does not exist
             if [[ ! -f $nadeko_service ]]; then
                 echo "Creating '$nadeko_service_name'..."
@@ -365,21 +368,20 @@
                 ((timer-=1))
             done
 
-           
-#if [[ $(echo $line | awk '{print $1,$2}') = "$start_time" ]]; then echo "True"; else echo "False"; fi; done < bot.nadeko.Nadeko.log
+            # TODO: Figure out a way to get this to work
+            #echo -e "\n\n-------- $nadeko_service_name startup logs ---------"
+            #while IFS= read line; do
+            #    if [[ $(echo "$line" | awk '{print $1,$2}') < "$start_time" ]]; then
+            #        echo "$line"
+            #    fi;
+            #done < bot.nadeko.Nadeko.log
+            #echo -e "\n--------- End of $nadeko_service_name startup logs --------\n"
+            #echo ""
+            #echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
+            #    "errors, and if there are, to resolve whatever issue is causing them\n"
 
-            # Note: $no_hostname is purposefully unquoted. Do not quote those variables.
-            echo -e "\n\n-------- $nadeko_service_name startup logs ---------"
-            while IFS= read line; do
-                if [[ $(echo "$line" | awk '{print $1,$2}') < "$start_time" ]]; then
-                    echo "$line"
-                fi;
-            done < bot.nadeko.Nadeko.log
-            echo -e "\n--------- End of $nadeko_service_name startup logs --------\n"
-            echo ""
-
-            echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
-                "errors, and if there are, to resolve whatever issue is causing them\n"
+            echo -e "\n${cyan}It's recommended to inspect 'bot.nadeko.Nadeko.log'" \
+                "to confirm that there were no errors during NadekoBot's startup${nc}"
 
             echo "${green}NadekoBot is now running in the background${nc}"
             read -p "Press [Enter] to return to the installer menu"
