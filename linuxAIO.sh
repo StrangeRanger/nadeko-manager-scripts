@@ -4,27 +4,35 @@
 #
 # linuxAIO acts as the intermediary between the system NadekoBot is being hosted
 # on and the 'installer_prep.sh'. To prevent any conflicts with updates to
-# the installer, this script has as little code as deemed necessary. In
-# addition, linuxAIO is the only script that will remain on the system, when the
-# installer is not in use.
+# the installer, this script has as little code as deemed necessary.
 #
 ################################################################################
 #
     # The exports below are for dev/testing purpouses (DO NOT MODIFY)
-    export linuxAIO_revision="4"                               # Keeps track of changes to linuxAIO.sh
-    export installer_branch="master"                           # Determines which installer branch is used
-    export installer_repo="StrangeRanger/NadekoBot-BashScript" # Determines which repo is used
+    export linuxAIO_revision="5"                                # Keeps track of changes to linuxAIO.sh
+    export installer_repo="StrangeRanger/NadekoBot-BashScript"  # Determines which repo is used
 
-    # Dictates whether or not the installer can be run as the root user:
+    # Determines from which branch from the installer repo will be used
+    # release/latest = The most recent release
+    # master         = The latest stable code
+    # dev            = Non-production ready code (may break your system)
+    # 
+    # Default: release/latest
+    export installer_branch="release/latest"
+
+    # Determines whether or not the installer can be run as the root user:
     # true = can be run with root privilege
     # false = cannot be run with root privilege (recommended)
+    #
+    # Default: false
     allow_run_as_root=false
 
     # Checks if the script was executed with root privilege
     if ((EUID == 0)) && [[ $allow_run_as_root = false ]]; then
-        echo "Please run this script without root privilege" >&2
-        echo "While you will be performing specific tasks with root privilege," \
-            "running the installer in it's entirety as root is not recommended"
+        echo "\033[1;31mPlease run this script without root privilege" >&2
+        echo "\033[0;36mWhile you will be performing specific tasks with root" \
+            "priviledge running the installer in it's entirety as root is not" \
+            "recommended\033[0m"
         echo -e "\nExiting..."
         exit 1
     fi

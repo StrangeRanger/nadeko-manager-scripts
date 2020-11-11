@@ -15,7 +15,7 @@
 #
 ################################################################################
 #
-    current_linuxAIO_revision="4"
+    current_linuxAIO_revision="5"
 
     export yellow=$'\033[1;33m'
     export green=$'\033[0;32m'
@@ -28,7 +28,7 @@
     
     # The '--no-hostname' flag for journalctl only works with systemd 230 and
     # later
-    if (($(journalctl --version | grep -oP "[0-9]+" | head -1) >= 230)); then
+    if (($(journalctl --version | grep -oP "[0-9]+" | head -1) >= 230)) 2>/dev/null; then
         export no_hostname="--no-hostname"
     fi
 
@@ -116,8 +116,10 @@
         else
             distro=$(uname -s)
             if [[ $distro = "Darwin" ]]; then
-                # macOS version: x.x.x --> x.x
-                sver=${$(sw_vers -productVersion)%.*}
+                # macOS version: x.x.x
+                ver=$(sw_vers -productVersion)
+                # macOS version: x.x
+                sver=${ver%.*}
                 pname="Mac OS X"
             else
                 ver=$(uname -r)
@@ -214,7 +216,7 @@
         read -p "Would you like to continue with the installation anyways? [y/N] " choice
         choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in
-            y|yes) execute_master_installer ;;
+            y|yes) clear -x; execute_master_installer ;;
             n|no) clean_exit "0" "Exiting" ;;
             *) clean_exit "0" "Exiting" ;;
         esac

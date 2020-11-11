@@ -51,14 +51,14 @@
         service_actions() {
             case "$1" in
                 nadeko_service_status)
-                    nadeko_service_status=$(systemctl is-active nadeko.service)
+                    nadeko_service_status=$(systemctl is-active $nadeko_service_name)
                     ;;
                 stop_service)
                     if [[ $nadeko_service_status = "active" ]]; then
-                        echo "Stopping 'nadeko.service'..."
-                        sudo systemctl stop nadeko.service || {
-                            echo "${red}Failed to stop 'nadeko.service'" >&2
-                            echo "${cyan}You will need to restart 'nadeko.service'" \
+                        echo "Stopping '$nadeko_service_name'..."
+                        sudo systemctl stop $nadeko_service_name || {
+                            echo "${red}Failed to stop '$nadeko_service_name'" >&2
+                            echo "${cyan}You will need to restart '$nadeko_service_name'" \
                                 "to apply any updates to NadekoBot${nc}"
                         }
                         if [[ $2 = true ]]; then
@@ -97,10 +97,10 @@
                     }
             fi
 
-            # Disables or enables 'nadeko.service'
-            echo "$disable_enable2 'nadeko.service'..."
-            sudo systemctl "$disable_enable" nadeko.service || {
-                echo "${red}Failed to $disable_enable 'nadeko.service'" >&2
+            # Disables or enables '$nadeko_service_name'
+            echo "$disable_enable2 '$nadeko_service_name'..."
+            sudo systemctl "$disable_enable" $nadeko_service_name || {
+                echo "${red}Failed to $disable_enable '$nadeko_service_name'" >&2
                 echo "${cyan}This service must be ${disable_enable}d in order" \
                     "to use this run mode${nc}"
                 read -p "Press [Enter] to return to the installer menu"
@@ -154,26 +154,26 @@
                     \ndone" > NadekoRun.sh
             fi
 
-            # Starting or restarting 'nadeko.service'
+            # Starting or restarting '$nadeko_service_name'
             if [[ $nadeko_service_status = "active" ]]; then
-                echo "Restarting 'nadeko.service'..."
-                sudo systemctl restart nadeko.service || {
-                    echo "${red}Failed to restart 'nadeko.service'${nc}" >&2
+                echo "Restarting '$nadeko_service_name'..."
+                sudo systemctl restart $nadeko_service_name || {
+                    echo "${red}Failed to restart '$nadeko_service_name'${nc}" >&2
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
                 }
-                echo "Waiting 60 seconds for 'nadeko.service' to restart..."
+                echo "Waiting 60 seconds for '$nadeko_service_name' to restart..."
             else
-                echo "Starting 'nadeko.service'..."
-                sudo systemctl start nadeko.service || {
-                    echo "${red}Failed to start 'nadeko.service'${nc}" >&2
+                echo "Starting '$nadeko_service_name'..."
+                sudo systemctl start $nadeko_service_name || {
+                    echo "${red}Failed to start '$nadeko_service_name'${nc}" >&2
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
                 }
-                echo "Waiting 60 seconds for 'nadeko.service' to start..."
+                echo "Waiting 60 seconds for '$nadeko_service_name' to start..."
             fi
 
-            # Waits in order to give 'nadeko.service' enough time to (re)start
+            # Waits in order to give '$nadeko_service_name' enough time to (re)start
             while ((timer > 0)); do
                 echo -en "${clrln}${timer} seconds left"
                 sleep 1
@@ -181,9 +181,9 @@
             done
 
             # Note: $no_hostname is purposefully unquoted. Do not quote those variables.
-            echo -e "\n\n-------- nadeko.service startup logs ---------" \
+            echo -e "\n\n-------- $nadeko_service_name startup logs ---------" \
                 "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
-                "\n--------- End of nadeko.service startup logs --------\n"
+                "\n--------- End of $nadeko_service_name startup logs --------\n"
 
             echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
                 "errors, and if there are, to resolve whatever issue is causing them\n"
@@ -210,7 +210,7 @@
             \n	<key>Disabled</key> \
             \n	<false/> \
             \n	<key>Label</key> \
-            \n	<string>bot.nadeko.Nadeko</string> \
+            \n	<string>$nadeko_service_name</string> \
             \n	<key>ProgramArguments</key> \
             \n	<array> \
             \n		<string>$(which bash)</string> \
@@ -218,10 +218,6 @@
             \n	</array> \
             \n	<key>RunAtLoad</key> \
             \n	<true/> \
-            \n	<key>StandardErrorPath</key> \
-            \n	<string>$root_dir/.bot.nadeko.Nadeko.stderr</string> \
-            \n	<key>StandardOutPath</key> \
-            \n	<string>$root_dir/.bot.nadeko.Nadeko.stdout</string> \
             \n</dict> \
             \n</plist>"
 
@@ -231,20 +227,172 @@
         service_actions() {
             case "$1" in
                 nadeko_service_status)
-                    launchctl load /Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist 2>/dev/null
-                    nadeko_service_status=$(launchctl print gui/$UID/bot.nadeko.Nadeko | grep "state") &&
-                    nadeko_service_status=${nadeko_service_status/[[:blank:]]state = /} || {
-                        nadeko_service_status="inactive"
-                    }
+                    launchctl load /Users/$USER/Library/LaunchAgents/$nadeko_service_name.plist 2>/dev/null
+                    # Have to save to two variables because if I place the code inside the paramerter
+                    # expansion, it's save "status = [status]" instead of just "status"
+                    nadeko_service_status=$(launchctl print gui/$UID/$nadeko_service_name | grep "state") &&
+                        nadeko_service_status=${nadeko_service_status/[[:blank:]]state = /} || {
+                            nadeko_service_status="inactive"
+                        }
                     ;;
+                # TODO: Update to be similar to linux version
                 stop_service)
-                    launchctl stop bot.nadeko.Nadeko || {
-                        echo "${red}Failed to stop 'bot.nadeko.Nadeko'" >&2
-                        echo "${cyan}You will need to restart 'bot.nadeko.Nadeko'" \
-                            "to apply any updates to NadekoBot${nc}"
-                    }
+                    if [[ $nadeko_service_status = "running" ]]; then
+                        launchctl stop "$nadeko_service_name" || {
+                            echo "${red}Failed to stop '$nadeko_service_name'" >&2
+                            echo "${cyan}You will need to restart '$nadeko_service_name'" \
+                                "to apply any updates to NadekoBot${nc}"
+                        }
+                        if [[ $2 = true ]]; then
+                            echo -e "\n${green}NadekoBot has been stopped${nc}"
+                        fi
+                    else
+                        if [[ $2 = true ]]; then
+                            echo -e "\n${cyan}NadekoBot is currently not running${nc}"
+                        fi
+                    fi
                     ;;
             esac
+        }
+
+        nadeko_starter() {
+            timer=60
+            start_time=$(date +"%F %H:%M:%S")
+            
+            if [[ $1 = "2" ]]; then
+                disable_enable="disable"
+                disable_enable2="Disabling"
+            else
+                disable_enable="enable"
+                disable_enable2="Enabling"
+            fi
+
+            echo "${cyan}Note: Due to limiations on macOS, NadekoBots's startup" \
+                "logs will not be displayed${nc}"
+
+            # E.1. Creates '$nadeko_service_name', if it does not exist
+            if [[ ! -f $nadeko_service ]]; then
+                echo "Creating '$nadeko_service_name'..."
+                echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null
+            fi
+
+            # Disables or enables '$nadeko_service_name'
+            echo "$disable_enable2 '$nadeko_service_name'..."
+            sudo launchctl "$disable_enable" gui/"$UID"/$nadeko_service_name || {
+                echo "${red}Failed to $disable_enable '$nadeko_service_name'" >&2
+                echo "${cyan}This service must be ${disable_enable}d in order" \
+                    "to use this run mode${nc}"
+                read -p "Press [Enter] to return to the installer menu"
+                clean_exit "1" "Exiting"
+            }
+
+            if [[ -f NadekoRun.sh ]]; then
+                echo "Updating 'NadekoRun.sh'..."
+            else
+                echo "Creating 'NadekoRun.sh'..."
+                touch NadekoRun.sh
+                sudo chmod +x NadekoRun.sh
+            fi
+            
+            # TODO: Figure out a way that doesn't require all of the ' | 
+            # add_date >> $root_dir/bot.nadeko.Nadeko.log \'
+            if [[ $1 = "2" ]]; then
+                echo -e "#!/bin/bash \
+                    \n \
+                    \nexport DOTNET_CLI_HOME=/tmp \
+                    \n_code_name_=\"NadekoRun\" \
+                    \n \
+                    \nadd_date() { \
+                    \n    while IFS= read -r line; do \
+                    \n        echo -e \"\$(date +\"%F %H:%M:%S\") \$line\"; \
+                    \n    done \
+                    \n} \
+                    \n \
+                    \necho \"\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \necho \"Running NadekoBot in the background\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \nbrew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n \
+                    \ncd $root_dir/NadekoBot \
+                    \n$(which dotnet) restore | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n$(which dotnet) build -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ncd $root_dir/NadekoBot/src/NadekoBot \
+                    \necho \"Running NadekoBot...\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n$(which dotnet) run -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \necho \"Done\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ncd $root_dir \
+                    \n" > NadekoRun.sh
+            else
+                echo -e "#!/bin/bash \
+                    \n \
+                    \nexport DOTNET_CLI_HOME=/tmp \
+                    \n_code_name_=\"NadekoRunAR\" \
+                    \n \
+                    \nadd_date() { \
+                    \n    while IFS= read -r line; do \
+                    \n        echo -e \"\$(date +\"%F %H:%M:%S\") \$line\"; \
+                    \n    done \
+                    \n} \
+                    \n \
+                    \necho \"\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \necho \"Running NadekoBot in the background with auto restart\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \nbrew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n \
+                    \nsleep 5 \
+                    \ncd $root_dir/NadekoBot \
+                    \n$(which dotnet) restore | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n$(which dotnet) build -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n \
+                    \nwhile true; do \
+                    \n    cd $root_dir/NadekoBot/src/NadekoBot && \
+                    \n    $(which dotnet) run -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n \
+                    \n    brew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n    sleep 10 | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ndone" > NadekoRun.sh
+            fi
+
+            # Starting or restarting '$nadeko_service_name'
+            if [[ $nadeko_service_status = "running" ]]; then
+                echo "Restarting '$nadeko_service_name'..."
+                launchctl kickstart -k gui/$UID/"$nadeko_service_name" || {
+                    echo "${red}Failed to restart '$nadeko_service_name'${nc}" >&2
+                    read -p "Press [Enter] to return to the installer menu"
+                    clean_exit "1" "Exiting"
+                }
+                echo "Waiting 60 seconds for '$nadeko_service_name' to restart..."
+            else
+                echo "Starting '$nadeko_service_name'..."
+                launchctl start "$nadeko_service_name" || {
+                    echo "${red}Failed to start '$nadeko_service_name'${nc}" >&2
+                    read -p "Press [Enter] to return to the installer menu"
+                    clean_exit "1" "Exiting"
+                }
+                echo "Waiting 60 seconds for '$nadeko_service_name' to start..."
+            fi
+
+            # Waits in order to give '$nadeko_service_name' enough time to (re)start
+            while ((timer > 0)); do
+                echo -en "${clrln}${timer} seconds left"
+                sleep 1
+                ((timer-=1))
+            done
+
+            # TODO: Figure out a way to get this to work
+            #echo -e "\n\n-------- $nadeko_service_name startup logs ---------"
+            #while IFS= read line; do
+            #    if [[ $(echo "$line" | awk '{print $1,$2}') < "$start_time" ]]; then
+            #        echo "$line"
+            #    fi;
+            #done < bot.nadeko.Nadeko.log
+            #echo -e "\n--------- End of $nadeko_service_name startup logs --------\n"
+            #echo ""
+            #echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
+            #    "errors, and if there are, to resolve whatever issue is causing them\n"
+
+            echo -e "\n\n${cyan}It's recommended to inspect 'bot.nadeko.Nadeko.log'" \
+                "to confirm that there were no errors during NadekoBot's startup${nc}"
+            read -p "Press [Enter] to return to the installer menu"
+
         }
     fi
 
@@ -298,15 +446,15 @@
             echo "${grey}3. Run NadekoBot in the background with auto restart (Disabled" \
                 "until option 1,5, and 6 is ran)${nc}"
             disabled_23=true
-        else
-            if [[ $nadeko_service_status = "active" ]]; then
+        elif [[ -f NadekoRun.sh ]]; then
+            if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
                 run_mode_status=" ${green}(Running in this mode)${nc}"
-            elif [[ $nadeko_service_status = "inactive" ]]; then
+            elif [[ $nadeko_service_status = "inactive" || $nadeko_service_status = "waiting" ]]; then
                 run_mode_status=" ${yellow}(Set up to run in this mode)${nc}"
             else
                 run_mode_status=" ${yellow}(Status unkown)${nc}"
             fi
-            
+
             if [[ $(grep '_code_name_="NadekoRunARU"' NadekoRun.sh) ]]; then
                 echo "2. Run NadekoBot in the background"
                 echo "3. Run NadekoBot in the background with auto restart"
@@ -320,6 +468,11 @@
                 echo "2. Run NadekoBot in the background"
                 echo "3. Run NadekoBot in the background with auto restart"
             fi
+
+            disabled_23=false
+        else
+            echo "2. Run NadekoBot in the background"
+            echo "3. Run NadekoBot in the background with auto restart"
 
             disabled_23=false
         fi
