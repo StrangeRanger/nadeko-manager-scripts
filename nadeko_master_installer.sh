@@ -291,7 +291,7 @@
                     \n \
                     \nadd_date() { \
                     \n    while IFS= read -r line; do \
-                    \n        echo -e \"$(date +"%F %H:%M:%S") \$line\"; \
+                    \n        echo -e \"\$(date +\"%F %H:%M:%S\") \$line\"; \
                     \n    done \
                     \n} \
                     \n \
@@ -299,14 +299,14 @@
                     \necho \"Running NadekoBot in the background\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \nbrew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n \
-                    \ncd $root_dir/NadekoBot | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ncd $root_dir/NadekoBot \
                     \n$(which dotnet) restore | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n$(which dotnet) build -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
-                    \ncd $root_dir/NadekoBot/src/NadekoBot | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ncd $root_dir/NadekoBot/src/NadekoBot \
                     \necho \"Running NadekoBot...\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n$(which dotnet) run -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \necho \"Done\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
-                    \ncd $root_dir | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ncd $root_dir \
                     \n" > NadekoRun.sh
             else
                 echo -e "#!/bin/bash \
@@ -316,7 +316,7 @@
                     \n \
                     \nadd_date() { \
                     \n    while IFS= read -r line; do \
-                    \n        echo -e \"$(date +"%F %H:%M:%S") \$line\"; \
+                    \n        echo -e \"\$(date +\"%F %H:%M:%S\") \$line\"; \
                     \n    done \
                     \n} \
                     \n \
@@ -324,8 +324,8 @@
                     \necho \"Running NadekoBot in the background with auto restart\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \nbrew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n \
-                    \nsleep 5 | add_date >> $root_dir/bot.nadeko.Nadeko.log \
-                    \ncd $root_dir/NadekoBot | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \nsleep 5 \
+                    \ncd $root_dir/NadekoBot \
                     \n$(which dotnet) restore | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n$(which dotnet) build -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n \
