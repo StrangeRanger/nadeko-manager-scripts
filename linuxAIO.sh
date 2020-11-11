@@ -9,7 +9,7 @@
 ################################################################################
 #
     # The exports below are for dev/testing purpouses (DO NOT MODIFY)
-    export linuxAIO_revision="4"                                # Keeps track of changes to linuxAIO.sh
+    export linuxAIO_revision="5"                                # Keeps track of changes to linuxAIO.sh
     export installer_repo="StrangeRanger/NadekoBot-BashScript"  # Determines which repo is used
 
     # Determines from which branch from the installer repo will be used
