@@ -218,10 +218,6 @@
             \n	</array> \
             \n	<key>RunAtLoad</key> \
             \n	<true/> \
-            \n	<key>StandardErrorPath</key> \
-            \n	<string>$root_dir/$nadeko_service_name.stderr</string> \
-            \n	<key>StandardOutPath</key> \
-            \n	<string>$root_dir/$nadeko_service_name.stdout</string> \
             \n</dict> \
             \n</plist>"
 
@@ -252,9 +248,7 @@
 
         nadeko_starter() {
             timer=60
-            # Saves the current time and date, which will be used with journalctl
-            start_time=$(date +"%F %H:%M:%S")
-
+            
             if [[ $1 = "2" ]]; then
                 disable_enable="disable"
                 disable_enable2="Disabling"
@@ -292,6 +286,13 @@
                     \n \
                     \nexport DOTNET_CLI_HOME=/tmp \
                     \n_code_name_=\"NadekoRun\" \
+                    \n \
+                    \nadd_date() { \
+                    \n    while IFS= read -r line; do \
+                    \n        echo -e \"$(date +"%F %H:%M:%S") \$line\n\"; \
+                    \n    done \
+                    \n} \
+                    \n \
                     \necho \"\" \
                     \necho \"Running NadekoBot in the background\" \
                     \nbrew upgrade youtube-dl \
@@ -310,6 +311,13 @@
                     \n \
                     \nexport DOTNET_CLI_HOME=/tmp \
                     \n_code_name_=\"NadekoRunAR\" \
+                    \n \
+                    \nadd_date() { \
+                    \n    while IFS= read -r line; do \
+                    \n        echo -e \"$(date +"%F %H:%M:%S") \$line\n\"; \
+                    \n    done \
+                    \n} \
+                    \n \
                     \necho \"\" \
                     \necho \"Running NadekoBot in the background with auto restart\" \
                     \nbrew upgrade youtube-dl \
@@ -445,6 +453,8 @@
         else
             echo "2. Run NadekoBot in the background"
             echo "3. Run NadekoBot in the background with auto restart"
+
+            disabled_23=false
         fi
 
         echo "4. Stop NadekoBot"
