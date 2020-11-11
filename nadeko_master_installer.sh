@@ -248,6 +248,7 @@
 
         nadeko_starter() {
             timer=60
+            start_time=$(date +"%F %H:%M:%S")
             
             if [[ $1 = "2" ]]; then
                 disable_enable="disable"
@@ -364,10 +365,17 @@
                 ((timer-=1))
             done
 
+           
+#if [[ $(echo $line | awk '{print $1,$2}') = "$start_time" ]]; then echo "True"; else echo "False"; fi; done < bot.nadeko.Nadeko.log
+
             # Note: $no_hostname is purposefully unquoted. Do not quote those variables.
-            #echo -e "\n\n-------- $nadeko_service_name startup logs ---------" \
-            #    "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
-            #    "\n--------- End of $nadeko_service_name startup logs --------\n"
+            echo -e "\n\n-------- $nadeko_service_name startup logs ---------"
+            while IFS= read line; do
+                if [[ $(echo "$line" | awk '{print $1,$2}') < "$start_time" ]]; then
+                    echo "$line"
+                fi;
+            done < bot.nadeko.Nadeko.log
+            echo -e "\n--------- End of $nadeko_service_name startup logs --------\n"
             echo ""
 
             echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
