@@ -237,11 +237,20 @@
                     ;;
                 # TODO: Update to be similar to linux version
                 stop_service)
-                    launchctl stop "$nadeko_service_name" || {
-                        echo "${red}Failed to stop '$nadeko_service_name'" >&2
-                        echo "${cyan}You will need to restart '$nadeko_service_name'" \
-                            "to apply any updates to NadekoBot${nc}"
-                    }
+                    if [[ $nadeko_service_status = "running" ]]; then
+                        launchctl stop "$nadeko_service_name" || {
+                            echo "${red}Failed to stop '$nadeko_service_name'" >&2
+                            echo "${cyan}You will need to restart '$nadeko_service_name'" \
+                                "to apply any updates to NadekoBot${nc}"
+                        }
+                        if [[ $2 = true ]]; then
+                            echo -e "\n${green}NadekoBot has been stopped${nc}"
+                        fi
+                    else
+                        if [[ $2 = true ]]; then
+                            echo -e "\n${cyan}NadekoBot is currently not running${nc}"
+                        fi
+                    fi
                     ;;
             esac
         }
@@ -258,8 +267,8 @@
                 disable_enable2="Enabling"
             fi
 
-            echo "${cyan}Note: Due to limiations on macOS, logs of NadekoBot's" \
-                "startup will not be displayed${nc}"
+            echo "${cyan}Note: Due to limiations on macOS, NadekoBots's startup" \
+                "logs will not be displayed${nc}"
 
             # E.1. Creates '$nadeko_service_name', if it does not exist
             if [[ ! -f $nadeko_service ]]; then
@@ -380,10 +389,8 @@
             #echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
             #    "errors, and if there are, to resolve whatever issue is causing them\n"
 
-            echo -e "\n${cyan}It's recommended to inspect 'bot.nadeko.Nadeko.log'" \
+            echo -e "\n\n${cyan}It's recommended to inspect 'bot.nadeko.Nadeko.log'" \
                 "to confirm that there were no errors during NadekoBot's startup${nc}"
-
-            echo "${green}NadekoBot is now running in the background${nc}"
             read -p "Press [Enter] to return to the installer menu"
 
         }
