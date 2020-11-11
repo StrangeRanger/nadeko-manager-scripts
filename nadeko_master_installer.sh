@@ -219,9 +219,9 @@
             \n	<key>RunAtLoad</key> \
             \n	<true/> \
             \n	<key>StandardErrorPath</key> \
-            \n	<string>$root_dir/.$nadeko_service_name.stderr</string> \
+            \n	<string>$root_dir/$nadeko_service_name.stderr.log</string> \
             \n	<key>StandardOutPath</key> \
-            \n	<string>$root_dir/.$nadeko_service_name.stdout</string> \
+            \n	<string>$root_dir/$nadeko_service_name.stdout.log</string> \
             \n</dict> \
             \n</plist>"
 
@@ -354,9 +354,9 @@
             done
 
             # Note: $no_hostname is purposefully unquoted. Do not quote those variables.
-            #echo -e "\n\n-------- $nadeko_service_name startup logs ---------" \
-            #    "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
-            #    "\n--------- End of $nadeko_service_name startup logs --------\n"
+            echo -e "\n\n-------- $nadeko_service_name startup logs ---------" \
+                "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
+                "\n--------- End of $nadeko_service_name startup logs --------\n"
 
             echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
                 "errors, and if there are, to resolve whatever issue is causing them\n"
@@ -418,9 +418,9 @@
                 "until option 1,5, and 6 is ran)${nc}"
             disabled_23=true
         elif [[ -f NadekoRun.sh ]]; then
-            if [[ $nadeko_service_status = "active" ]]; then
+            if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
                 run_mode_status=" ${green}(Running in this mode)${nc}"
-            elif [[ $nadeko_service_status = "inactive" ]]; then
+            elif [[ $nadeko_service_status = "inactive" || $nadeko_service_status = "waiting" ]]; then
                 run_mode_status=" ${yellow}(Set up to run in this mode)${nc}"
             else
                 run_mode_status=" ${yellow}(Status unkown)${nc}"
