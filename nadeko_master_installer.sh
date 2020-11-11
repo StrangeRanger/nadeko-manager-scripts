@@ -282,14 +282,14 @@
             fi
             
             if [[ $1 = "2" ]]; then 
-                echo -e "#\!/bin/bash \
+                echo -e "#!/bin/bash \
                     \n \
                     \nexport DOTNET_CLI_HOME=/tmp \
                     \n_code_name_=\"NadekoRun\" \
                     \n \
                     \nadd_date() { \
                     \n    while IFS= read -r line; do \
-                    \n        echo -e \"$(date +"%F %H:%M:%S") \$line\n\"; \
+                    \n        echo -e \"$(date +"%F %H:%M:%S") \$line\"; \
                     \n    done \
                     \n} \
                     \n \
@@ -302,19 +302,19 @@
                     \n$(which dotnet) build -c Release \
                     \ncd $root_dir/NadekoBot/src/NadekoBot \
                     \necho \"Running NadekoBot...\" \
-                    \n$(which dotnet) run -c Release \
+                    \n$(which dotnet) run -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \necho \"Done\" \
                     \ncd $root_dir \
                     \n" > NadekoRun.sh
             else
-                echo -e "#\!/bin/bash \
+                echo -e "#!/bin/bash \
                     \n \
                     \nexport DOTNET_CLI_HOME=/tmp \
                     \n_code_name_=\"NadekoRunAR\" \
                     \n \
                     \nadd_date() { \
                     \n    while IFS= read -r line; do \
-                    \n        echo -e \"$(date +"%F %H:%M:%S") \$line\n\"; \
+                    \n        echo -e \"$(date +"%F %H:%M:%S") \$line\"; \
                     \n    done \
                     \n} \
                     \n \
@@ -328,7 +328,7 @@
                     \n \
                     \nwhile true; do \
                     \n    cd $root_dir/NadekoBot/src/NadekoBot && \
-                    \n    $(which dotnet) run -c Release \
+                    \n    $(which dotnet) run -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n \
                     \n    brew upgrade youtube-dl \
                     \n    sleep 10 \
