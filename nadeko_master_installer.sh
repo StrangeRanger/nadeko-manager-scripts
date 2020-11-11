@@ -281,7 +281,9 @@
                 sudo chmod +x NadekoRun.sh
             fi
             
-            if [[ $1 = "2" ]]; then 
+            # TODO: Figure out a way that doesn't require all of the ' | 
+            # add_date >> $root_dir/bot.nadeko.Nadeko.log \'
+            if [[ $1 = "2" ]]; then
                 echo -e "#!/bin/bash \
                     \n \
                     \nexport DOTNET_CLI_HOME=/tmp \
@@ -293,18 +295,18 @@
                     \n    done \
                     \n} \
                     \n \
-                    \necho \"\" \
-                    \necho \"Running NadekoBot in the background\" \
-                    \nbrew upgrade youtube-dl \
+                    \necho \"\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \necho \"Running NadekoBot in the background\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \nbrew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n \
-                    \ncd $root_dir/NadekoBot \
-                    \n$(which dotnet) restore \
-                    \n$(which dotnet) build -c Release \
-                    \ncd $root_dir/NadekoBot/src/NadekoBot \
-                    \necho \"Running NadekoBot...\" \
+                    \ncd $root_dir/NadekoBot | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n$(which dotnet) restore | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n$(which dotnet) build -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ncd $root_dir/NadekoBot/src/NadekoBot | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \necho \"Running NadekoBot...\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n$(which dotnet) run -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
-                    \necho \"Done\" \
-                    \ncd $root_dir \
+                    \necho \"Done\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ncd $root_dir | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n" > NadekoRun.sh
             else
                 echo -e "#!/bin/bash \
@@ -318,20 +320,21 @@
                     \n    done \
                     \n} \
                     \n \
-                    \necho \"\" \
-                    \necho \"Running NadekoBot in the background with auto restart\" \
-                    \nbrew upgrade youtube-dl \
+                    \necho \"\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \necho \"Running NadekoBot in the background with auto restart\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \nbrew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n \
-                    \nsleep 5 \
-                    \ncd $root_dir/NadekoBot \
-                    \n$(which dotnet) restore && $(which dotnet) build -c Release \
+                    \nsleep 5 | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ncd $root_dir/NadekoBot | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n$(which dotnet) restore | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n$(which dotnet) build -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n \
                     \nwhile true; do \
                     \n    cd $root_dir/NadekoBot/src/NadekoBot && \
                     \n    $(which dotnet) run -c Release | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n \
-                    \n    brew upgrade youtube-dl \
-                    \n    sleep 10 \
+                    \n    brew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n    sleep 10 | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \ndone" > NadekoRun.sh
             fi
 
