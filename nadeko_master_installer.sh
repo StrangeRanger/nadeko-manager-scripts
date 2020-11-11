@@ -219,9 +219,9 @@
             \n	<key>RunAtLoad</key> \
             \n	<true/> \
             \n	<key>StandardErrorPath</key> \
-            \n	<string>$root_dir/$nadeko_service_name.stderr.log</string> \
+            \n	<string>$root_dir/$nadeko_service_name.stderr</string> \
             \n	<key>StandardOutPath</key> \
-            \n	<string>$root_dir/$nadeko_service_name.stdout.log</string> \
+            \n	<string>$root_dir/$nadeko_service_name.stdout</string> \
             \n</dict> \
             \n</plist>"
 
