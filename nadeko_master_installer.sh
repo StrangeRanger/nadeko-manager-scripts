@@ -354,9 +354,10 @@
             done
 
             # Note: $no_hostname is purposefully unquoted. Do not quote those variables.
-            echo -e "\n\n-------- $nadeko_service_name startup logs ---------" \
-                "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
-                "\n--------- End of $nadeko_service_name startup logs --------\n"
+            #echo -e "\n\n-------- $nadeko_service_name startup logs ---------" \
+            #    "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
+            #    "\n--------- End of $nadeko_service_name startup logs --------\n"
+            echo ""
 
             echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
                 "errors, and if there are, to resolve whatever issue is causing them\n"
