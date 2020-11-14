@@ -217,7 +217,7 @@
             \n		<string>$root_dir/NadekoRun.sh</string> \
             \n	</array> \
             \n	<key>RunAtLoad</key> \
-            \n	<true/> \
+            \n	<false/> \
             \n</dict> \
             \n</plist>"
 
@@ -227,7 +227,6 @@
         service_actions() {
             case "$1" in
                 nadeko_service_status)
-                    launchctl load /Users/$USER/Library/LaunchAgents/$nadeko_service_name.plist 2>/dev/null
                     # Have to save to two variables because if I place the code inside the paramerter
                     # expansion, it's save "status = [status]" instead of just "status"
                     nadeko_service_status=$(launchctl print gui/$UID/$nadeko_service_name | grep "state") &&
@@ -235,7 +234,6 @@
                             nadeko_service_status="inactive"
                         }
                     ;;
-                # TODO: Update to be similar to linux version
                 stop_service)
                     if [[ $nadeko_service_status = "running" ]]; then
                         launchctl stop "$nadeko_service_name" || {
@@ -321,6 +319,23 @@
                     \necho \"Done\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \ncd $root_dir \
                     \n" > NadekoRun.sh
+                echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+                    \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
+                    \n<plist version=\"1.0\"> \
+                    \n<dict> \
+                    \n    <key>Disabled</key> \
+                    \n    <false/> \
+                    \n    <key>Label</key> \
+                    \n    <string>$nadeko_service_name</string> \
+                    \n    <key>ProgramArguments</key> \
+                    \n    <array> \
+                    \n        <string>$(which bash)</string> \
+                    \n        <string>$root_dir/NadekoRun.sh</string> \
+                    \n    </array> \
+                    \n    <key>RunAtLoad</key> \
+                    \n    <false/> \
+                    \n</dict> \
+                    \n</plist>" > "$nadeko_service"
             else
                 echo -e "#!/bin/bash \
                     \n \
@@ -349,6 +364,23 @@
                     \n    brew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n    sleep 10 | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \ndone" > NadekoRun.sh
+                echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+                    \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
+                    \n<plist version=\"1.0\"> \
+                    \n<dict> \
+                    \n    <key>Disabled</key> \
+                    \n    <false/> \
+                    \n    <key>Label</key> \
+                    \n    <string>$nadeko_service_name</string> \
+                    \n    <key>ProgramArguments</key> \
+                    \n    <array> \
+                    \n        <string>$(which bash)</string> \
+                    \n        <string>$root_dir/NadekoRun.sh</string> \
+                    \n    </array> \
+                    \n    <key>RunAtLoad</key> \
+                    \n    <true/> \
+                    \n</dict> \
+                    \n</plist>" > "$nadeko_service"
             fi
 
             # Starting or restarting '$nadeko_service_name'
@@ -418,6 +450,8 @@
                     sudo systemctl daemon-reload
                 else
                     sudo chown "$USER":staff "$nadeko_service"
+                    launchctl enable gui/"$UID"/"$nadeko_service_name"
+                    launchctl load "$nadeko_service"
                 fi || {
                     echo "${red}Failed to create '$nadeko_service_name'" >&2
                     echo "${cyan}This service must exist for nadeko to work${nc}"
@@ -501,7 +535,7 @@
             export -f service_actions
             export nadeko_service_name
             export nadeko_service_status
-            export nadeko_service_content
+            if [[ $distro != "Darwin" ]]; then export nadeko_service_content; fi
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh \
                     -o nadeko_latest_installer.sh || {
                 echo "${red}Failed to download latest 'nadeko_latest_installer.sh'...${nc}" >&2
