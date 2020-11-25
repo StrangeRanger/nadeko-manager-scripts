@@ -512,15 +512,16 @@
             echo "3. Run NadekoBot in the background with auto restart"
 
             disabled_23=false
+            disabled_5=true
         fi
 
         echo "4. Stop NadekoBot"
         
         if [[ $disabled_5 = true ]]; then
-            echo "${grey}5. Display '$nadeko_service_name' logs," \
-                "live (Disabled until NadekoBot has been started)${nc}"
+            echo "${grey}5. Display '$nadeko_service_name' logs in follow mode" \
+                "(Disabled until NadekoBot has been started)${nc}"
         else
-            echo "5. Display '$nadeko_service_name' logs live"
+            echo "5. Display '$nadeko_service_name' logs in follow mode"
         fi
 
         echo "6. Install prerequisites"
@@ -590,11 +591,11 @@
         5) 
             clear -x
             if [[ $disabled_5 = true ]]; then
-                echo "${red}Option 6 is currently disabled${nc}"
+                echo "${red}Option 5 is currently disabled${nc}"
                 continue
             fi
             echo "Watching '$nadeko_service_name' logs, live..."
-            echo -e "${cyan}To exit return to the installer menu:\n1) Press" \
+            echo -e "${cyan}To return to the installer menu:\n1) Press" \
                 "'Ctrl + C'\n2) Press 'Q'${nc}"
             if [[ $distro != "Darwin" ]]; then
                 # The pipe makes it posible to exit journalctl without exiting
@@ -603,6 +604,7 @@
             else
                 tail -f "bot.nadeko.Nadeko.log" | less -FRSXM
             fi
+            clear -x
             ;;
         6)
             clear -x
