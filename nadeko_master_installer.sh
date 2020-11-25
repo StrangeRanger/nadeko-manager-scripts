@@ -480,11 +480,14 @@
             echo "${grey}3. Run NadekoBot in the background with auto restart (Disabled" \
                 "until option 1,5, and 6 is ran)${nc}"
             disabled_23=true
+            disabled_5=true
         elif [[ -f NadekoRun.sh ]]; then
             if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
                 run_mode_status=" ${green}(Running in this mode)${nc}"
+                disabled_5=false
             elif [[ $nadeko_service_status = "inactive" || $nadeko_service_status = "waiting" ]]; then
                 run_mode_status=" ${yellow}(Set up to run in this mode)${nc}"
+                disabled_5=true
             else
                 run_mode_status=" ${yellow}(Status unkown)${nc}"
             fi
@@ -512,17 +515,25 @@
         fi
 
         echo "4. Stop NadekoBot"
-        echo "5. Install prerequisites"
-
-        if [[ ! -d NadekoBot/src/NadekoBot/ ]]; then
-            echo "${grey}6. Set up credentials.json (Disabled until option 1 is ran)${nc}"
-            disabled_6=true
+        
+        if [[ $disabled_5 = true ]]; then
+            echo "${grey}5. Display '$nadeko_service_name' logs" \
+                "live (Disabled until NadekoBot has been started)${nc}"
         else
-            echo "6. Set up credentials.json"
-            disabled_6=false
+            echo "5. Display '$nadeko_service_name' logs live"
         fi
 
-        echo "7. Exit"
+        echo "6. Install prerequisites"
+
+        if [[ ! -d NadekoBot/src/NadekoBot/ ]]; then
+            echo "${grey}7. Set up credentials.json (Disabled until option 1 is ran)${nc}"
+            disabled_7=true
+        else
+            echo "7. Set up credentials.json"
+            disabled_7=false
+        fi
+
+        echo "8. Exit"
         read choice
         case "$choice" in
         1)
@@ -586,10 +597,23 @@
             sudo chmod +x prereqs_installer.sh && ./prereqs_installer.sh
             clear -x
             ;;
-        6)
+        6) 
             clear -x
-            if [[ $disabled_6 = true ]]; then
+            if [[ $disabled_7 = true ]]; then
                 echo "${red}Option 6 is currently disabled${nc}"
+                continue
+            fi
+            echo "Watching '$nadeko_service_name' log live..."
+            if [[ $distro != "Darwin" ]]; then
+                sudo journalctl -f -u "$nadeko_service_name"
+            else
+                tail -f "bot.nadeko.Nadeko.log"
+            fi
+            ;;
+        7)
+            clear -x
+            if [[ $disabled_7 = true ]]; then
+                echo "${red}Option 7 is currently disabled${nc}"
                 continue
             fi
             export nadeko_service_name
@@ -602,7 +626,7 @@
             sudo chmod +x credentials_setup.sh && ./credentials_setup.sh
             clear -x
             ;;
-        7)
+        8)
             clean_exit "0" "Exiting"
             ;;
         *)
