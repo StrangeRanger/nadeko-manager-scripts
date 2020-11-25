@@ -589,15 +589,19 @@
             ;;
         5) 
             clear -x
-            if [[ $disabled_6 = true ]]; then
+            if [[ $disabled_5 = true ]]; then
                 echo "${red}Option 6 is currently disabled${nc}"
                 continue
             fi
-            echo "Watching '$nadeko_service_name' log live..."
+            echo "Watching '$nadeko_service_name' logs, live..."
+            echo -e "${cyan}To exit return to the installer menu:\n1) Press" \
+                "'Ctrl + C'\n2) Press 'Q'${nc}"
             if [[ $distro != "Darwin" ]]; then
-                sudo journalctl -f -u "$nadeko_service_name"
+                # The pipe makes it posible to exit journalctl without exiting
+                # the script
+                sudo journalctl -f -u "$nadeko_service_name"  | less -FRSXM
             else
-                tail -f "bot.nadeko.Nadeko.log"
+                tail -f "bot.nadeko.Nadeko.log" | less -FRSXM
             fi
             ;;
         6)
