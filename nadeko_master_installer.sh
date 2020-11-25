@@ -517,7 +517,7 @@
         echo "4. Stop NadekoBot"
         
         if [[ $disabled_5 = true ]]; then
-            echo "${grey}5. Display '$nadeko_service_name' logs" \
+            echo "${grey}5. Display '$nadeko_service_name' logs," \
                 "live (Disabled until NadekoBot has been started)${nc}"
         else
             echo "5. Display '$nadeko_service_name' logs live"
@@ -599,7 +599,7 @@
             ;;
         6) 
             clear -x
-            if [[ $disabled_7 = true ]]; then
+            if [[ $disabled_6 = true ]]; then
                 echo "${red}Option 6 is currently disabled${nc}"
                 continue
             fi
