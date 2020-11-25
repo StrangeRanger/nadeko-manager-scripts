@@ -153,23 +153,21 @@
         rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old
     fi
 
-    if [[ -f $nadeko_service ]]; then
-        echo "Updating '$nadeko_service_name'..."
-        create_or_update="update"
-    else
-        echo "Creating '$nadeko_service_name'..."
-        create_or_update="create"
-    fi
-        
-    echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
-        if [[ $distro != "Darwin" ]]; then 
-            sudo systemctl daemon-reload
+    if [[ $distro != "Darwin" ]]; then
+        if [[ -f $nadeko_service ]]; then
+            echo "Updating '$nadeko_service_name'..."
+            create_or_update="update"
         else
-            sudo chown "$USER":staff "$nadeko_service"
-        fi || {
-            echo "${red}Failed to $create_or_update '$nadeko_service_name'${nc}" >&2
-            b_s_update="Failed"
-        }
+            echo "Creating '$nadeko_service_name'..."
+            create_or_update="create"
+        fi
+            
+        echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
+            sudo systemctl daemon-reload || {
+                echo "${red}Failed to $create_or_update '$nadeko_service_name'${nc}" >&2
+                b_s_update="Failed"
+            }
+    fi
     
 
     ############################################################################

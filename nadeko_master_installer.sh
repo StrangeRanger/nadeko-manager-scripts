@@ -217,7 +217,7 @@
             \n		<string>$root_dir/NadekoRun.sh</string> \
             \n	</array> \
             \n	<key>RunAtLoad</key> \
-            \n	<true/> \
+            \n	<false/> \
             \n</dict> \
             \n</plist>"
 
@@ -227,7 +227,6 @@
         service_actions() {
             case "$1" in
                 nadeko_service_status)
-                    launchctl load /Users/$USER/Library/LaunchAgents/$nadeko_service_name.plist 2>/dev/null
                     # Have to save to two variables because if I place the code inside the paramerter
                     # expansion, it's save "status = [status]" instead of just "status"
                     nadeko_service_status=$(launchctl print gui/$UID/$nadeko_service_name | grep "state") &&
@@ -235,7 +234,6 @@
                             nadeko_service_status="inactive"
                         }
                     ;;
-                # TODO: Update to be similar to linux version
                 stop_service)
                     if [[ $nadeko_service_status = "running" ]]; then
                         launchctl stop "$nadeko_service_name" || {
@@ -321,6 +319,23 @@
                     \necho \"Done\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \ncd $root_dir \
                     \n" > NadekoRun.sh
+                echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+                    \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
+                    \n<plist version=\"1.0\"> \
+                    \n<dict> \
+                    \n    <key>Disabled</key> \
+                    \n    <false/> \
+                    \n    <key>Label</key> \
+                    \n    <string>$nadeko_service_name</string> \
+                    \n    <key>ProgramArguments</key> \
+                    \n    <array> \
+                    \n        <string>$(which bash)</string> \
+                    \n        <string>$root_dir/NadekoRun.sh</string> \
+                    \n    </array> \
+                    \n    <key>RunAtLoad</key> \
+                    \n    <false/> \
+                    \n</dict> \
+                    \n</plist>" > "$nadeko_service"
             else
                 echo -e "#!/bin/bash \
                     \n \
@@ -349,6 +364,23 @@
                     \n    brew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n    sleep 10 | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \ndone" > NadekoRun.sh
+                echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+                    \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
+                    \n<plist version=\"1.0\"> \
+                    \n<dict> \
+                    \n    <key>Disabled</key> \
+                    \n    <false/> \
+                    \n    <key>Label</key> \
+                    \n    <string>$nadeko_service_name</string> \
+                    \n    <key>ProgramArguments</key> \
+                    \n    <array> \
+                    \n        <string>$(which bash)</string> \
+                    \n        <string>$root_dir/NadekoRun.sh</string> \
+                    \n    </array> \
+                    \n    <key>RunAtLoad</key> \
+                    \n    <true/> \
+                    \n</dict> \
+                    \n</plist>" > "$nadeko_service"
             fi
 
             # Starting or restarting '$nadeko_service_name'
@@ -418,6 +450,8 @@
                     sudo systemctl daemon-reload
                 else
                     sudo chown "$USER":staff "$nadeko_service"
+                    launchctl enable gui/"$UID"/"$nadeko_service_name"
+                    launchctl load "$nadeko_service"
                 fi || {
                     echo "${red}Failed to create '$nadeko_service_name'" >&2
                     echo "${cyan}This service must exist for nadeko to work${nc}"
@@ -446,11 +480,14 @@
             echo "${grey}3. Run NadekoBot in the background with auto restart (Disabled" \
                 "until option 1,5, and 6 is ran)${nc}"
             disabled_23=true
+            disabled_5=true
         elif [[ -f NadekoRun.sh ]]; then
             if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
                 run_mode_status=" ${green}(Running in this mode)${nc}"
+                disabled_5=false
             elif [[ $nadeko_service_status = "inactive" || $nadeko_service_status = "waiting" ]]; then
                 run_mode_status=" ${yellow}(Set up to run in this mode)${nc}"
+                disabled_5=true
             else
                 run_mode_status=" ${yellow}(Status unkown)${nc}"
             fi
@@ -475,20 +512,29 @@
             echo "3. Run NadekoBot in the background with auto restart"
 
             disabled_23=false
+            disabled_5=true
         fi
 
         echo "4. Stop NadekoBot"
-        echo "5. Install prerequisites"
-
-        if [[ ! -d NadekoBot/src/NadekoBot/ ]]; then
-            echo "${grey}6. Set up credentials.json (Disabled until option 1 is ran)${nc}"
-            disabled_6=true
+        
+        if [[ $disabled_5 = true ]]; then
+            echo "${grey}5. Display '$nadeko_service_name' logs in follow mode" \
+                "(Disabled until NadekoBot has been started)${nc}"
         else
-            echo "6. Set up credentials.json"
-            disabled_6=false
+            echo "5. Display '$nadeko_service_name' logs in follow mode"
         fi
 
-        echo "7. Exit"
+        echo "6. Install prerequisites"
+
+        if [[ ! -d NadekoBot/src/NadekoBot/ ]]; then
+            echo "${grey}7. Set up credentials.json (Disabled until option 1 is ran)${nc}"
+            disabled_7=true
+        else
+            echo "7. Set up credentials.json"
+            disabled_7=false
+        fi
+
+        echo "8. Exit"
         read choice
         case "$choice" in
         1)
@@ -501,7 +547,7 @@
             export -f service_actions
             export nadeko_service_name
             export nadeko_service_status
-            export nadeko_service_content
+            if [[ $distro != "Darwin" ]]; then export nadeko_service_content; fi
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_latest_installer.sh \
                     -o nadeko_latest_installer.sh || {
                 echo "${red}Failed to download latest 'nadeko_latest_installer.sh'...${nc}" >&2
@@ -542,7 +588,25 @@
             read -p "Press [Enter] to return to the installer menu"
             clear -x
             ;;
-        5)
+        5) 
+            clear -x
+            if [[ $disabled_5 = true ]]; then
+                echo "${red}Option 5 is currently disabled${nc}"
+                continue
+            fi
+            echo "Watching '$nadeko_service_name' logs, live..."
+            echo -e "${cyan}To return to the installer menu:\n1) Press" \
+                "'Ctrl + C'\n2) Press 'Q'${nc}"
+            if [[ $distro != "Darwin" ]]; then
+                # The pipe makes it posible to exit journalctl without exiting
+                # the script
+                sudo journalctl -f -u "$nadeko_service_name"  | less -FRSXM
+            else
+                tail -f "bot.nadeko.Nadeko.log" | less -FRSXM
+            fi
+            clear -x
+            ;;
+        6)
             clear -x
             curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/"$prereqs_installer" \
                     -o prereqs_installer.sh || {
@@ -552,10 +616,10 @@
             sudo chmod +x prereqs_installer.sh && ./prereqs_installer.sh
             clear -x
             ;;
-        6)
+        7)
             clear -x
-            if [[ $disabled_6 = true ]]; then
-                echo "${red}Option 6 is currently disabled${nc}"
+            if [[ $disabled_7 = true ]]; then
+                echo "${red}Option 7 is currently disabled${nc}"
                 continue
             fi
             export nadeko_service_name
@@ -568,7 +632,7 @@
             sudo chmod +x credentials_setup.sh && ./credentials_setup.sh
             clear -x
             ;;
-        7)
+        8)
             clean_exit "0" "Exiting"
             ;;
         *)
