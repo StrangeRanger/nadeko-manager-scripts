@@ -587,17 +587,7 @@
             read -p "Press [Enter] to return to the installer menu"
             clear -x
             ;;
-        5)
-            clear -x
-            curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/"$prereqs_installer" \
-                    -o prereqs_installer.sh || {
-                echo "${red}Failed to download latest 'prereqs_installer.sh'...${nc}" >&2
-                clean_exit "1" "Exiting" "true"
-            }
-            sudo chmod +x prereqs_installer.sh && ./prereqs_installer.sh
-            clear -x
-            ;;
-        6) 
+        5) 
             clear -x
             if [[ $disabled_6 = true ]]; then
                 echo "${red}Option 6 is currently disabled${nc}"
@@ -609,6 +599,16 @@
             else
                 tail -f "bot.nadeko.Nadeko.log"
             fi
+            ;;
+        6)
+            clear -x
+            curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/"$prereqs_installer" \
+                    -o prereqs_installer.sh || {
+                echo "${red}Failed to download latest 'prereqs_installer.sh'...${nc}" >&2
+                clean_exit "1" "Exiting" "true"
+            }
+            sudo chmod +x prereqs_installer.sh && ./prereqs_installer.sh
+            clear -x
             ;;
         7)
             clear -x
