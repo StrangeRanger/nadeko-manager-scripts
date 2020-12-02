@@ -62,9 +62,10 @@
 # [ Main ]
 #
 ###
-    ############################################################################
-    # Error trapping
-    ############################################################################
+    ########################################################################
+    #
+    # [ Error Trapping ]
+    
     # TODO: Figure out how to silently kill a process
     trap "echo -e \"\n\nScript forcefully stopped\"
         clean_up
@@ -74,9 +75,15 @@
         exit 1" \
         SIGINT SIGTSTP SIGTERM
 
-    ############################################################################
-    # Prepping
-    ############################################################################
+    #
+    # End of [ Error Trapping ]
+    ########################################################################
+
+
+    ########################################################################
+    # 
+    # [ Prepping ]
+    
     # 'active' is used on Linux and 'running' is used on macOS
     if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
         # B.1. $nadeko_service_active = true when '$nadeko_service_name' is
@@ -86,9 +93,15 @@
         service_actions "stop_service" "false"
     fi
 
-    ############################################################################
-    # Creating backups of current code then downloads any updates for NadekoBot
-    ############################################################################
+    #
+    # End of [ Prepping ]
+    ########################################################################
+
+
+    ########################################################################
+    # 
+    # [ Create Backup, Then Update ]
+    
     if [[ -d NadekoBot ]]; then
         echo "Backing up NadekoBot as 'NadekoBot.bak'..."
         mv -f NadekoBot NadekoBot.bak || {
@@ -171,11 +184,16 @@
                 b_s_update="Failed"
             }
     fi
+    #
+    # End of [ Create Backup, Then Update ]
+    ########################################################################
+
     
 
-    ############################################################################
-    # Cleaning up and presenting results...
-    ############################################################################
+    ########################################################################
+    # 
+    # [ Clean Up and Present Results ]
+    
     echo -e "\n${green}Finished downloading/updating NadekoBot${nc}"
 
     if [[ $b_s_update ]]; then
@@ -190,6 +208,9 @@
     fi
 
     read -p "Press [Enter] to apply any existing changes to the installers"
+    #
+    # End of [ Clean Up and Present Results ]
+    ########################################################################
 ###
 #
 # End of [ Main ]

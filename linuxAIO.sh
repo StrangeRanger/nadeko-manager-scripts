@@ -8,7 +8,7 @@
 #
 ################################################################################
 #
-# [ Development variables ]
+# [ Development Variables ]
 #
 # The variables below are for dev/testing purpouses (DO NOT MODIFY).
 #
@@ -17,13 +17,13 @@
     export installer_repo="StrangeRanger/NadekoBot-BashScript"  # Determines which repo is used
 ###
 #
-# End of [ Exported and/or Globally Used Variables ]
+# End of [ Development Variables ]
 ################################################################################
 
 
 ################################################################################
 #
-# [ Configuration variables ]
+# [ Configuration Variables ]
 #
 # The variables below are used to configure the installer in one way or another,
 # and CAN BE modified by the end user.
@@ -45,7 +45,7 @@
     allow_run_as_root=false
 ###
 #
-# End of [ Exported and/or Globally Used Variables ]
+# End of [ Configuration Variables ]
 ################################################################################
 
 
@@ -74,6 +74,6 @@
     sudo chmod +x installer_prep.sh && ./installer_prep.sh
 ###
 #
-# End of [ Exported and/or Globally Used Variables ]
+# End of [ Main ]
 ################################################################################
 

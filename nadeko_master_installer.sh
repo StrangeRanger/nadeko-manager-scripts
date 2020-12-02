@@ -8,7 +8,7 @@
 # 'linuxAIO.sh' and 'installer_prep.sh'.
 #
 ################################################################################
-
+#
     export nadeko_master_installer_pid=$$
 
 
@@ -20,13 +20,15 @@
 # or linux distribution.
 #
 ###
-    ############################################################################
-    # Variables used when executed on 'Linux Distributions'
-    ############################################################################
+    ########################################################################
+    # 
+    # [ Variables Used On 'Linux Distributions' ]
+    
     if [[ $distro != "Darwin" ]]; then
-        #-------------------------------
-        # Variables
-        #-------------------------------
+        ################################################################
+        # 
+        # [ Variables ]
+        
         nadeko_service="/lib/systemd/system/nadeko.service"
         nadeko_service_name="nadeko.service"
         prereqs_installer="linux_prereqs_installer.sh"
@@ -43,10 +45,16 @@
             \n \
             \n[Install] \
             \nWantedBy=multi-user.target"
+        
+        #
+        # End of [ Variables ]
+        ################################################################
 
-        #-------------------------------
-        # Function
-        #-------------------------------
+
+        ################################################################
+        # 
+        # [ Functions ]
+
         service_actions() {
             case "$1" in
                 nadeko_service_status)
@@ -191,14 +199,26 @@
             read -p "Press [Enter] to return to the installer menu"
 
         }
+
+        #
+        # End of [ Variables ]
+        ################################################################
+
+    #
+    # [ Variables Used On 'Linux Distributions' ]
+    ########################################################################
+
     
-    ############################################################################
-    # Variables use when executed on 'macOS'
-    ############################################################################
+    ########################################################################
+    #
+    # [ Variables Used On 'macOS' ]
+    #
+    
     else
-        #-------------------------------
-        # Variables
-        #-------------------------------
+        ################################################################
+        # 
+        # [ Variables ]
+
         nadeko_service="/Users/$USER/Library/LaunchAgents/bot.nadeko.Nadeko.plist"
         nadeko_service_name="bot.nadeko.Nadeko"
         prereqs_installer="macos_prereqs_installer.sh"
@@ -220,9 +240,15 @@
             \n</dict> \
             \n</plist>"
 
-        #-------------------------------
-        # Function
-        #-------------------------------
+        #
+        # End of [ Variables ]
+        ################################################################
+
+
+        ################################################################
+        # 
+        # [ Functions ]
+        
         service_actions() {
             case "$1" in
                 nadeko_service_status)
@@ -382,9 +408,7 @@
                     \n</plist>" > "$nadeko_service"
             fi
 
-            ####################################################################
-            # Starting and displaying startup logs of nadeko service
-            ####################################################################
+
             # Starting or restarting '$nadeko_service_name'
             if [[ $nadeko_service_status = "running" ]]; then
                 echo "Restarting '$nadeko_service_name'..."
@@ -428,7 +452,15 @@
             read -p "Press [Enter] to return to the installer menu"
 
         }
+
+        #
+        # End of [ Functions ]
+        ################################################################
     fi
+
+    #
+    # End of [ Variables Used On 'macOS' ]
+    ########################################################################
 ###
 #
 # End of [ Variables and Functions ]
@@ -466,9 +498,11 @@
 
         service_actions "nadeko_service_status"
 
-        ########################################################################
-        # User options for starting nadeko
-        ########################################################################
+
+        ################################################################
+        #
+        # [ User Options For Starting NadekoBot ]
+        
         if (! hash git || ! hash dotnet) &>/dev/null; then
             echo "${grey}1. Download NadekoBot (Disabled until option 5 is ran)${nc}"
             disabled_1=true
@@ -645,6 +679,10 @@
             echo "${red}Invalid input: '$choice' is not a valid option${nc}" >&2
             ;;
         esac
+
+        #
+        # End of [ User Options For Starting NadekoBot ]
+        ################################################################
     done
 ###
 #
