@@ -8,11 +8,6 @@
 # 'linuxAIO.sh' and 'installer_prep.sh'.
 #
 ################################################################################
-
-    export nadeko_master_installer_pid=$$
-
-
-################################################################################
 #
 # [ Variables and Functions ]
 #
@@ -20,6 +15,8 @@
 # or linux distribution.
 #
 ###
+    export nadeko_master_installer_pid=$$
+
     ########################################################################
     # 
     # [ Variables Used On 'Linux Distributions' ]
@@ -205,7 +202,7 @@
         ################################################################
 
     #
-    # [ Variables Used On 'Linux Distributions' ]
+    # End of [ Variables Used On 'Linux Distributions' ]
     ########################################################################
 
     
