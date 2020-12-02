@@ -12,8 +12,7 @@
 #
 # [ Functions ]
 #
-################################################################################
-#
+###
     dot_net_install() {
         echo "Installing .NET Core..."
         # Microsoft package signing key
@@ -33,14 +32,17 @@
         sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
         sudo chmod a+rx /usr/local/bin/youtube-dl
     }
-
+###
 #
+# End of [ Functions ]
+################################################################################
+
+
 ################################################################################
 #
 # [ Main ]
 #
-################################################################################
-#
+###
     read -p "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
     if [[ $distro = "ubuntu" ]]; then
@@ -104,3 +106,8 @@
 
     echo -e "\n${green}Finished installing prerequisites${nc}"
     read -p "Press [Enter] to return to the installer menu"
+###
+#
+# End of [ Main ]
+################################################################################
+
