@@ -11,19 +11,19 @@
 #
 # [ Functions ]
 #
-################################################################################
-#
+###
     # Cleans up any loose ends/left over files
     clean_up() {
-        ##
-        # NOTE: 
+        ####
+        # NOTE:
+        #
         # '$root_dir' is used because if an error occures while the working
         # directory is currently in NadekoBot's root directory, it won't be
         # possible to cleanly exit and restore everything.
         #
         # I don't just 'cd' to the root dir in the unlikely case it fails and
         # causes even more problems.
-        ##
+        ####
 
         local installer_files=("credentials_setup.sh" "installer_prep.sh"
             "prereqs_installer.sh" "nadeko_latest_installer.sh"
@@ -51,14 +51,17 @@
             exit 1
         fi
     }
-
+###
 #
+# End of [ Functions ]
+################################################################################
+
+
 ################################################################################
 #
 # [ Main ]
 #
-################################################################################
-#
+###
     ############################################################################
     # Error trapping
     ############################################################################
@@ -187,3 +190,8 @@
     fi
 
     read -p "Press [Enter] to apply any existing changes to the installers"
+###
+#
+# End of [ Main ]
+################################################################################
+

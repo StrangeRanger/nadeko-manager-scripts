@@ -11,10 +11,9 @@
 #
 ################################################################################
 #
-# Exported and/or globally used [ variables ]
+# [ Exported and/or Globally Used Variables ]
 #
-################################################################################
-#
+###
     current_linuxAIO_revision="6"
 
     export yellow=$'\033[1;33m'
@@ -31,14 +30,17 @@
     if (($(journalctl --version | grep -oP "[0-9]+" | head -1) >= 230)) 2>/dev/null; then
         export no_hostname="--no-hostname"
     fi
+###
+#
+# End of [ Exported and/or Globally Used Variables ]
+################################################################################
 
-#
+
 ################################################################################
 #
-# [ Error traps ]
+# [ Error Traps ]
 #
-################################################################################
-#
+###
     # Makes it possible to cleanly exit the installer by cleaning up files that
     # aren't required unless currently being run
     clean_exit() {
@@ -58,14 +60,17 @@
     trap "echo -e \"\n\nScript forcefully stopped\"
         clean_exit \"1\" \"Exiting\" \"true\"" \
         SIGINT SIGTSTP SIGTERM
-
+###
 #
+# End of [ Error traps ]
+################################################################################
+
+
 ################################################################################
 #
 # [ Prepping ]
 #
-################################################################################
-#
+###
     # Makes sure that linuxAIO.sh is up to date
     if [[ $linuxAIO_revision != $current_linuxAIO_revision ]]; then
         echo "${yellow}'linuxAIO.sh' is not up to date${nc}"
@@ -91,14 +96,17 @@
     }
     export root_dir="$PWD"
     export installer_prep="$root_dir/installer_prep.sh"
-
+###
 #
+# End of [ Prepping ]
+################################################################################
+
+
 ################################################################################
 #
 # [ Functions ]
 #
-################################################################################
-#
+###
     # Identify the operating system, version number, architecture, bit type (32
     # or 64), etc.
     detect_sys_info() {
@@ -147,14 +155,17 @@
             clean_exit "1" "Exiting" "true"
         }
     }
-
+###
 #
+# End of [ Functions ]
+################################################################################
+
+
 ################################################################################
 #
 # [ Main ]
 #
-################################################################################
-#
+###
     clear -x
 
     detect_sys_info
@@ -221,3 +232,8 @@
             *) clean_exit "0" "Exiting" ;;
         esac
     fi
+###
+#
+# End of [ Main ]
+################################################################################
+

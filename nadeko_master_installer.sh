@@ -8,10 +8,10 @@
 # 'linuxAIO.sh' and 'installer_prep.sh'.
 #
 ################################################################################
-#
+
     export nadeko_master_installer_pid=$$
 
-#
+
 ################################################################################
 #
 # [ Variables and Functions ]
@@ -19,8 +19,7 @@
 # The variables and functions below are designed specifically for either macOS
 # or linux distribution.
 #
-################################################################################
-#
+###
     ############################################################################
     # Variables used when executed on 'Linux Distributions'
     ############################################################################
@@ -383,6 +382,9 @@
                     \n</plist>" > "$nadeko_service"
             fi
 
+            ####################################################################
+            # Starting and displaying startup logs of nadeko service
+            ####################################################################
             # Starting or restarting '$nadeko_service_name'
             if [[ $nadeko_service_status = "running" ]]; then
                 echo "Restarting '$nadeko_service_name'..."
@@ -427,14 +429,17 @@
 
         }
     fi
-
+###
 #
+# End of [ Variables and Functions ]
+################################################################################
+
+
 ################################################################################
 #
 # [ Main ]
 #
-################################################################################
-#
+###
     echo -e "Welcome to the NadekoBot installer\n"
 
     while true; do
@@ -641,3 +646,8 @@
             ;;
         esac
     done
+###
+#
+# End of [ Main ]
+################################################################################
+

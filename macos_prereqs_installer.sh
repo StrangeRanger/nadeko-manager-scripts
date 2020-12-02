@@ -12,8 +12,7 @@
 #
 # [ Functions ]
 #
-################################################################################
-#
+###
     dot_net_install() {
         echo "Installing prerequisites..."
         brew install opus opus-tools opusfile libsodium libffi ffmpeg openssl \
@@ -25,14 +24,17 @@
         echo "Brew doctor..."
         brew doctor
     }
-
+###
 #
+# End of [ Functions ]
+################################################################################
+
+
 ################################################################################
 #
 # [ Main ]
 #
-################################################################################
-#   
+###  
     echo "${cyan}IMPORTANT: If Homebrew is currently not installed, it will" \
         "automatically be installed. If you do not want this, the exit the program" \
         "immediatly.${nc}"
@@ -61,3 +63,8 @@
 
     echo "${green}Finished installing prerequisites${nc}"
     read -p "Press [Enter] to return to the installer menu"
+###
+#
+# End of [ Main ]
+################################################################################
+
