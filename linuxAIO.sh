@@ -13,7 +13,7 @@
 # The variables below are for dev/testing purpouses (DO NOT MODIFY).
 #
 ###
-    export linuxAIO_revision="6"                                # Keeps track of changes to linuxAIO.sh
+    export linuxAIO_revision="7"                                # Keeps track of changes to linuxAIO.sh
     export installer_repo="StrangeRanger/NadekoBot-BashScript"  # Determines which repo is used
 ###
 #
@@ -30,12 +30,11 @@
 #
 ###
     # Determines from which branch from the installer repo will be used
-    # release/latest = The most recent release
-    # master         = The latest stable code
+    # master         = The latest stable code/release
     # dev            = Non-production ready code (may break your system)
     # 
-    # Default: release/latest
-    export installer_branch="release/latest"
+    # Default: master
+    export installer_branch="master"
 
     # Determines whether or not the installer can be run as the root user:
     # true = can be run with root privilege

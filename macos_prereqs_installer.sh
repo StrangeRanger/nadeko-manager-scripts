@@ -22,7 +22,7 @@
         echo "Starting redis..."
         brew services start redis
         echo "Casking Dotnet..."
-        brew cask install dotnet-sdk
+        brew install dotnet
         echo "Brew doctor..."
         brew doctor
     }
@@ -37,9 +37,10 @@
 # [ Main ]
 #
 ###  
-    echo "${cyan}IMPORTANT: If Homebrew is currently not installed, it will" \
+    echo -e "${cyan}IMPORTANT: If Homebrew is currently not installed, it will" \
         "automatically be installed. If you do not want this, the exit the program" \
-        "immediatly.${nc}"
+        "immediatly.\nNote: It might take up to 10 minutes for all the" \
+        "prerequisites to be installed.${nc}"
     read -p "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
     if ! hash brew &>/dev/null; then

@@ -19,6 +19,11 @@
 
     ########################################################################
     # 
+    # [ General Function ]
+
+
+    ########################################################################
+    # 
     # [ Variables Used On 'Linux Distributions' ]
     
     if [[ $distro != "Darwin" ]]; then
@@ -125,7 +130,7 @@
                     \n_code_name_=\"NadekoRun\" \
                     \n \
                     \necho \"Running NadekoBot in the background\" \ 
-                    \nyoutube-dl -U \
+                    \nsudo youtube-dl -U \
                     \n \
                     \ncd $root_dir/NadekoBot \
                     \ndotnet restore \
@@ -143,7 +148,7 @@
                     \n \
                     \necho \"\" \
                     \necho \"Running NadekoBot in the background with auto restart\" \
-                    \nyoutube-dl -U \
+                    \nsudo youtube-dl -U \
                     \n \
                     \nsleep 5 \
                     \ncd $root_dir/NadekoBot \
@@ -153,8 +158,10 @@
                     \n    cd $root_dir/NadekoBot/src/NadekoBot && \
                     \n    dotnet run -c Release \
                     \n \
-                    \n    youtube-dl -U \
+                    \n    sudo youtube-dl -U \
                     \n    sleep 10 \
+                    \n \
+                    \necho \"Stopping NadekoBot\" \
                     \ndone" > NadekoRun.sh
             fi
 
@@ -248,6 +255,8 @@
         service_actions() {
             case "$1" in
                 nadeko_service_status)
+                    launchctl enable gui/"$UID"/"$nadeko_service_name" &&
+                    launchctl load "$nadeko_service" 2>/dev/null
                     # Have to save to two variables because if I place the code inside the paramerter
                     # expansion, it's save "status = [status]" instead of just "status"
                     nadeko_service_status=$(launchctl print gui/$UID/$nadeko_service_name | grep "state") &&
@@ -274,6 +283,10 @@
             esac
         }
 
+        fix_error_code_three() {
+            echo "TESTING"
+        }
+
         nadeko_starter() {
             timer=60
             start_time=$(date +"%F %H:%M:%S")
@@ -295,22 +308,14 @@
                 echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null
             fi
 
-            # Disables or enables '$nadeko_service_name'
-            echo "$disable_enable2 '$nadeko_service_name'..."
-            sudo launchctl "$disable_enable" gui/"$UID"/$nadeko_service_name || {
-                echo "${red}Failed to $disable_enable '$nadeko_service_name'" >&2
-                echo "${cyan}This service must be ${disable_enable}d in order" \
-                    "to use this run mode${nc}"
-                read -p "Press [Enter] to return to the installer menu"
-                clean_exit "1" "Exiting"
-            }
-
             if [[ -f NadekoRun.sh ]]; then
                 echo "Updating 'NadekoRun.sh'..."
+                echo "Updating ${nadeko_service_name}..."
             else
                 echo "Creating 'NadekoRun.sh'..."
                 touch NadekoRun.sh
                 sudo chmod +x NadekoRun.sh
+                echo "Updating ${nadeko_service_name}..."
             fi
             
             # TODO: Figure out a way that doesn't require all of the ' | 
@@ -384,6 +389,8 @@
                     \n \
                     \n    brew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n    sleep 10 | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \n \
+                    \necho \"Stopping NadekoBot\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \ndone" > NadekoRun.sh
                 echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
                     \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
@@ -409,7 +416,12 @@
             if [[ $nadeko_service_status = "running" ]]; then
                 echo "Restarting '$nadeko_service_name'..."
                 launchctl kickstart -k gui/$UID/"$nadeko_service_name" || {
-                    echo "${red}Failed to restart '$nadeko_service_name'${nc}" >&2
+                    error_code=$(launchctl error "$?")
+                    echo "${red}Failed to restart '$nadeko_service_name'" >&2
+                    echo "Error code: $error_code"
+                    echo "${cyan}If the error code is '3', the current temporary" \
+                    "solution is to remove the current NadekoBot service via:" \
+                    "sudo rm -f ~/Library/LaunchAgents/bot.nadeko.Nadeko.plist${nc}"
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
                 }
@@ -417,7 +429,12 @@
             else
                 echo "Starting '$nadeko_service_name'..."
                 launchctl start "$nadeko_service_name" || {
-                    echo "${red}Failed to start '$nadeko_service_name'${nc}" >&2
+                    error_code=$(launchctl error "$?")
+                    echo "${red}Failed to start '$nadeko_service_name'" >&2
+                    echo "Error code: $error_code"
+                    echo "${cyan}If the error code is '3', the current temporary" \
+                    "solution is to remove the current NadekoBot service via:" \
+                    "sudo rm -f ~/Library/LaunchAgents/bot.nadeko.Nadeko.plist${nc}"
                     read -p "Press [Enter] to return to the installer menu"
                     clean_exit "1" "Exiting"
                 }
@@ -499,7 +516,8 @@
         #
         # [ User Options For Starting NadekoBot ]
         
-        if (! hash git || ! hash dotnet) &>/dev/null; then
+        # TODO: Have it check almost if not all required stuff (make functions ???)
+        if (! hash git || ! hash dotnet || ! hash jq || ! hash youtube-dl) &>/dev/null; then
             echo "${grey}1. Download NadekoBot (Disabled until option 5 is ran)${nc}"
             disabled_1=true
         else
@@ -509,7 +527,7 @@
 
         if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ||
                 ! -d NadekoBot/src/NadekoBot/bin/Release || -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] || 
-                (! hash git || ! hash dotnet || ! hash jq) &>/dev/null; then
+                (! hash git || ! hash dotnet || ! hash jq || ! hash youtube-dl) &>/dev/null; then
             echo "${grey}2. Run NadekoBot in the background (Disabled until option" \
                 "1,5, and 6 is ran)${nc}"
             echo "${grey}3. Run NadekoBot in the background with auto restart (Disabled" \
@@ -630,7 +648,7 @@
                 continue
             fi
             echo "Watching '$nadeko_service_name' logs, live..."
-            echo -e "${cyan}To return to the installer menu:\n1) Press" \
+            echo -e "${cyan}To return to the installer menu (Linux)/exit script (macOS):\n1) Press" \
                 "'Ctrl + C'\n2) Press 'Q'${nc}"
             if [[ $distro != "Darwin" ]]; then
                 # The pipe makes it posible to exit journalctl without exiting

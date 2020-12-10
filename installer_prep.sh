@@ -14,7 +14,7 @@
 # [ Exported and/or Globally Used Variables ]
 #
 ###
-    current_linuxAIO_revision="6"
+    current_linuxAIO_revision="7"
 
     export yellow=$'\033[1;33m'
     export green=$'\033[0;32m'
