@@ -184,6 +184,7 @@
                 b_s_update="Failed"
             }
     fi
+    
     #
     # End of [ Create Backup, Then Update ]
     ########################################################################
@@ -208,6 +209,7 @@
     fi
 
     read -p "Press [Enter] to apply any existing changes to the installers"
+    
     #
     # End of [ Clean Up and Present Results ]
     ########################################################################

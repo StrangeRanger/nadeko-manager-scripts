@@ -9,17 +9,14 @@
 #
 ################################################################################
 #
-    export nadeko_master_installer_pid=$$
-
-
-################################################################################
-#
 # [ Variables and Functions ]
 #
 # The variables and functions below are designed specifically for either macOS
 # or linux distribution.
 #
 ###
+    export nadeko_master_installer_pid=$$
+
     ########################################################################
     # 
     # [ Variables Used On 'Linux Distributions' ]
@@ -205,15 +202,14 @@
         ################################################################
 
     #
-    # [ Variables Used On 'Linux Distributions' ]
+    # End of [ Variables Used On 'Linux Distributions' ]
     ########################################################################
 
     
     ########################################################################
     #
     # [ Variables Used On 'macOS' ]
-    #
-    
+
     else
         ################################################################
         # 
