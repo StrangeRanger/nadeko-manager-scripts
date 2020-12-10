@@ -310,12 +310,12 @@
 
             if [[ -f NadekoRun.sh ]]; then
                 echo "Updating 'NadekoRun.sh'..."
-                echo "Updating ${nadeko_service_name}..."
+                echo "Updating '${nadeko_service_name}'..."
             else
                 echo "Creating 'NadekoRun.sh'..."
                 touch NadekoRun.sh
                 sudo chmod +x NadekoRun.sh
-                echo "Updating ${nadeko_service_name}..."
+                echo "Updating '${nadeko_service_name}'..."
             fi
             
             # TODO: Figure out a way that doesn't require all of the ' | 
