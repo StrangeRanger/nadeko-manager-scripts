@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 Version 2 of the Nadeko Bash Scripts is a complete rewrite of the previous Bash Scripts. Below is a list of the most significant changes to the installer.
 
-## Added
+### Added
 
 * Added support for:
     * Ubuntu 20.04
@@ -24,13 +24,13 @@ Version 2 of the Nadeko Bash Scripts is a complete rewrite of the previous Bash 
 * Installs both homebrew and prerequisite on macOS (previously required manual installation)
 * After starting NadekoBot, a startup log is displayed to allow the end-user to identify possible errors better
 
-## Changed
+### Changed
 
 * Installer disables specific options until a prerequisite is met
 * Uses systemctl (Linux) and launchctl (macOS) to run NadekoBot, instead of PM2
 * Relies on curl more than wget
 
-## Removed
+### Removed
 
 * Removed support for:
     * Ubuntu: 14.04, 16.10, 17.04, 17.10
