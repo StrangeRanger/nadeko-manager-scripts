@@ -6,13 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## Changed
+### Added
 
-* Default `installer_branch` is now set to `release/latest`
+- Whenever downloading latest `linuxAIO.sh`, current `installer_branch` will be applied to new `linuxAIO.sh`
 
-## Fixed
+### Changed
 
-* Fixed issue #14 
+- Default `installer_branch` is now set to `release/latest`
+
+### Fixed
+
+- Fixed issue #14 
 
 ## [2.1.0] - 2020-12-10
 

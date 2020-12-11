@@ -73,15 +73,17 @@
 ###
     # Makes sure that linuxAIO.sh is up to date
     if [[ $linuxAIO_revision != $current_linuxAIO_revision ]]; then
+        installer_branch=$(grep 'export installer_branch=' linuxAIO.sh | awk -F '"' '{print $2}');
+
         echo "${yellow}'linuxAIO.sh' is not up to date${nc}"
-        echo "Remving current 'linuxAIO.sh'..."
-        rm linuxAIO.sh
         echo "Downloading latest 'linuxAIO.sh'..."
         curl https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh \
                 -o linuxAIO.sh || {
             echo "${red}Failed to download latest 'linuxAIO.sh'...${nc}" >&2
             clean_exit "1" "Exiting" "true"
         }
+        echo "Modifying 'installer_branch'..."
+        sed "s/export installer_branch=.*/export installer_branch=\"$installer_branch\"/" linuxAIO.sh
         sudo chmod +x linuxAIO.sh
         echo "${cyan}Re-execute 'linuxAIO.sh' to continue${nc}"
         clean_exit "0" "Exiting" "true"
