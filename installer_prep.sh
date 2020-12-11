@@ -14,7 +14,7 @@
 # [ Exported and/or Globally Used Variables ]
 #
 ###
-    current_linuxAIO_revision="7"
+    current_linuxAIO_revision="8"
 
     export yellow=$'\033[1;33m'
     export green=$'\033[0;32m'
@@ -74,7 +74,7 @@
     # Makes sure that linuxAIO.sh is up to date
     if [[ $linuxAIO_revision != $current_linuxAIO_revision ]]; then
         echo "${yellow}'linuxAIO.sh' is not up to date${nc}"
-        echo "Remving currenct 'linuxAIO.sh'..."
+        echo "Remving current 'linuxAIO.sh'..."
         rm linuxAIO.sh
         echo "Downloading latest 'linuxAIO.sh'..."
         curl https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh \
