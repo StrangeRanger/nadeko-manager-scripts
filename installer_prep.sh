@@ -83,7 +83,7 @@
             clean_exit "1" "Exiting" "true"
         }
         echo "Modifying 'installer_branch'..."
-        sed "s/export installer_branch=.*/export installer_branch=\"$installer_branch\"/" linuxAIO.sh
+        sed -i "s/export installer_branch=.*/export installer_branch=\"$installer_branch\"/" linuxAIO.sh
         sudo chmod +x linuxAIO.sh
         echo "${cyan}Re-execute 'linuxAIO.sh' to continue${nc}"
         clean_exit "0" "Exiting" "true"
