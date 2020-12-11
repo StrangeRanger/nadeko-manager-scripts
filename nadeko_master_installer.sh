@@ -129,7 +129,7 @@
                     \n_code_name_=\"NadekoRun\" \
                     \n \
                     \necho \"Running NadekoBot in the background\" \ 
-                    \nsudo youtube-dl -U \
+                    \nyoutube-dl -U 2>/dev/null || sudo youtube-dl -U \
                     \n \
                     \ncd $root_dir/NadekoBot \
                     \ndotnet restore \
@@ -147,7 +147,7 @@
                     \n \
                     \necho \"\" \
                     \necho \"Running NadekoBot in the background with auto restart\" \
-                    \nsudo youtube-dl -U \
+                    \nyoutube-dl -U 2>/dev/null || sudo youtube-dl -U \
                     \n \
                     \nsleep 5 \
                     \ncd $root_dir/NadekoBot \
@@ -157,7 +157,7 @@
                     \n    cd $root_dir/NadekoBot/src/NadekoBot && \
                     \n    dotnet run -c Release \
                     \n \
-                    \n    sudo youtube-dl -U \
+                    \n    youtube-dl -U 2>/dev/null || sudo youtube-dl -U \
                     \n    sleep 10 \
                     \n \
                     \necho \"Stopping NadekoBot\" \
