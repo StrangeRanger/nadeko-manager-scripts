@@ -22,12 +22,12 @@
         # Install the SDK
         sudo apt-get update
         sudo apt-get install -y apt-transport-https &&
-            sudo apt-get update &&
-            sudo apt-get install -y dotnet-sdk-3.1
+        sudo apt-get update &&
+        sudo apt-get install -y dotnet-sdk-3.1
 
         echo "Installing prerequisites..."
         sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg \
-            redis-server git jq python python3 -y
+            redis-server git python python3 jq wget -y
 
         sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
         sudo chmod a+rx /usr/local/bin/youtube-dl
@@ -72,8 +72,8 @@
             # Install the SDK
             sudo apt-get update
             sudo apt-get install -y apt-transport-https &&
-                sudo apt-get update &&
-                sudo apt-get install -y dotnet-sdk-3.1
+            sudo apt-get update &&
+            sudo apt-get install -y dotnet-sdk-3.1
 
             echo "Installing prerequisites..."
             sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev \
@@ -89,7 +89,7 @@
                 "OS: $distro $ver $arch${nc}"
             read -p "Press [Enter] to return to the installer menu"
         fi
-    elif [ $distro = "LinuxMint" ]; then
+    elif [[ $distro = "LinuxMint" ]]; then
         if [[ $sver = "18" ]]; then
             dot_net_install "ubuntu" "16.04"
         elif [[ $sver = "19" ]]; then
@@ -110,4 +110,3 @@
 #
 # End of [ Main ]
 ################################################################################
-

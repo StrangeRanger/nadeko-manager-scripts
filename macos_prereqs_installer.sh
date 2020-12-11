@@ -37,17 +37,15 @@
 # [ Main ]
 #
 ###  
-    echo -e "${cyan}IMPORTANT: If Homebrew is currently not installed, it will" \
-        "automatically be installed. If you do not want this, the exit the program" \
-        "immediatly.\nNote: It might take up to 10 minutes for all the" \
+    echo -e "${cyan}Note: It may take up to 10 minutes for all the" \
         "prerequisites to be installed.${nc}"
     read -p "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
     if ! hash brew &>/dev/null; then
         echo "${yellow}Homebrew is not installed${cyan}"
         echo "Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" || {
-            echo "${red}Failed to to install Homebrew" >&2
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+            echo "${red}Failed to install Homebrew" >&2
             echo "${cyan}Homebrew must be installed to install prerequisites${nc}"
             read -p "Press [Enter] to return to the installer menu"
             exit 1
@@ -64,10 +62,9 @@
             ;;
     esac
 
-    echo "${green}Finished installing prerequisites${nc}"
+    echo -e "\n${green}Finished installing prerequisites${nc}"
     read -p "Press [Enter] to return to the installer menu"
 ###
 #
 # End of [ Main ]
 ################################################################################
-

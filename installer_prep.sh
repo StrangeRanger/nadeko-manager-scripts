@@ -74,6 +74,8 @@
     # Makes sure that linuxAIO.sh is up to date
     if [[ $linuxAIO_revision != $current_linuxAIO_revision ]]; then
         echo "${yellow}'linuxAIO.sh' is not up to date${nc}"
+        echo "Remving currenct 'linuxAIO.sh'..."
+        rm linuxAIO.sh
         echo "Downloading latest 'linuxAIO.sh'..."
         curl https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh \
                 -o linuxAIO.sh || {
@@ -89,7 +91,7 @@
     # Changes the working directory to that of where the executed script is
     # located
     cd "$(dirname "$0")" || {
-        echo "${red}Failed to change working directories" >&2
+        echo "${red}Failed to change working directory" >&2
         echo "${cyan}Change your working directory to that of the executed" \
             "script${nc}"
         clean_exit "1" "Exiting" "true"
@@ -115,20 +117,16 @@
         if [[ -f /etc/os-release ]]; then
             . /etc/os-release
             distro="$ID"
-            # Version: x.x.x...
-            ver="$VERSION_ID"
-            # Version: x
-            sver=${ver//.*/}
+            ver="$VERSION_ID"  # Version: x.x.x...
+            sver=${ver//.*/}   # Version: x
             pname="$PRETTY_NAME"
             codename="$VERSION_CODENAME"
         else
             distro=$(uname -s)
             if [[ $distro = "Darwin" ]]; then
-                # macOS version: x.x.x
-                ver=$(sw_vers -productVersion)
-                # macOS version: x.x
-                sver=${ver%.*}
-                pname="Mac OS X"
+                ver=$(sw_vers -productVersion)  # macOS version: x.x.x
+                sver=${ver%.*}                  # macOS version: x.x
+                pname="macOS"
             else
                 ver=$(uname -r)
             fi
@@ -137,17 +135,18 @@
         # Identifying bit and architecture type
         case $(uname -m) in
             x86_64) bits="64"; arch="x64" ;;
-            i*86) bits="32"; arch="x86" ;;
-            armv*) bits="32"; arch="?" ;;
-            *) bits="?"; arch="?" ;;
+            i*86)   bits="32"; arch="x86" ;;
+            armv*)  bits="32"; arch="?" ;;
+            *)      bits="?";  arch="?" ;;
         esac
     }
 
     execute_master_installer() {
         supported=true
+
         curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_master_installer.sh \
                 -o nadeko_master_installer.sh || {
-            echo "${red}Failed to download 'nadeko_master_installer.sh'" >&2
+            echo "${red}Failed to download 'nadeko_master_installer.sh'${nc}" >&2
             clean_exit "1" "Exiting" "true"
         }
         sudo chmod +x nadeko_master_installer.sh && ./nadeko_master_installer.sh || {
@@ -187,7 +186,7 @@
                 16.04) execute_master_installer ;;
                 18.04) execute_master_installer ;;
                 20.04) execute_master_installer ;;
-                *) supported=false ;;
+                *)     supported=false ;;
             esac
         else
             supported=false
@@ -195,27 +194,28 @@
     elif [[ $distro = "debian" ]]; then
         if [[ $bits = 64 ]]; then  # B.1.
             case "$sver" in
-                9) execute_master_installer ;;
+                9)  execute_master_installer ;;
                 10) execute_master_installer ;;
-                *) supported=false ;;
+                *)  supported=false ;;
             esac
         else
             supported=false
         fi
-
     elif [[ $distro = "linuxmint" ]]; then
         if [[ $bits = 64 ]]; then  # B.1.
             case "$sver" in
                 18) execute_master_installer ;;
                 19) execute_master_installer ;;
                 20) execute_master_installer ;;
-                *) supported=false ;;
+                *)  supported=false ;;
             esac
+        else
+            supported=false
         fi
     elif [[ $distro = "Darwin" ]]; then
         case "$sver" in
-            10.15) export nadeko_service_content="bot.nadeko.Nadeko"; execute_master_installer ;;
-            *) supported=false ;;
+            10.15) execute_master_installer ;;
+            *)     supported=false ;;
         esac
     else
         supported=false
@@ -228,8 +228,8 @@
         choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
         case "$choice" in
             y|yes) clear -x; execute_master_installer ;;
-            n|no) clean_exit "0" "Exiting" ;;
-            *) clean_exit "0" "Exiting" ;;
+            n|no)  clean_exit "0" "Exiting" ;;
+            *)     clean_exit "0" "Exiting" ;;
         esac
     fi
 ###

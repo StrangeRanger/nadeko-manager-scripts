@@ -25,11 +25,11 @@
 #
 # [ Configuration Variables ]
 #
-# The variables below are used to configure the installer in one way or another,
+# The variables below are used to modify some of the actions of the installer
 # and CAN BE modified by the end user.
 #
 ###
-    # Determines from which branch from the installer repo will be used
+    # Determines from which branch the installer will use
     # master         = The latest stable code/release
     # dev            = Non-production ready code (may break your system)
     # 
@@ -57,7 +57,7 @@
     if ((EUID == 0)) && [[ $allow_run_as_root = false ]]; then
         echo "\033[1;31mPlease run this script without root privilege" >&2
         echo "\033[0;36mWhile you will be performing specific tasks with root" \
-            "priviledge running the installer in it's entirety as root is not" \
+            "priviledge, running the installer in it's entirety as root is not" \
             "recommended\033[0m"
         echo -e "\nExiting..."
         exit 1
@@ -75,4 +75,3 @@
 #
 # End of [ Main ]
 ################################################################################
-

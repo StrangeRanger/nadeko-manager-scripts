@@ -2,7 +2,7 @@
 
 ################################################################################
 #
-# Downloads and updates nadeko
+# Downloads and updates NadekoBot
 #
 # Note: All variables not defined in this script, are exported from
 # 'linuxPMI.sh', 'installer-prep.sh', and 'linux-master-installer.sh'.
@@ -39,12 +39,13 @@
         if [[ -d $root_dir/NadekoBot.bak ]]; then
             echo "Restoring from 'NadekoBot.bak'..."
             mv -f "$root_dir"/NadekoBot.bak "$root_dir"/NadekoBot || {
-                echo "${red}Failed to restore from 'NadekoBot.old'" >&2
-                echo "${cyan}Manually rename 'NadekoBot.old' to 'NadekoBot'${nc}"
+                echo "${red}Failed to restore from 'NadekoBot.bak'" >&2
+                echo "${cyan}Manually rename 'NadekoBot.bak' to 'NadekoBot'${nc}"
             }
         fi
 
         if [[ $1 = true ]]; then
+            # TODO: Figure out how to silently kill a process
             echo "Killing parent processes..."
             kill -9 "$nadeko_master_installer_pid" "$installer_prep_pid"
             echo "Exiting..."
@@ -118,7 +119,7 @@
     }
 
     if [[ -d /tmp/NuGetScratch && $distro != "Darwin" ]]; then
-        echo "Modifying ownership of '/tmp/NuGetScratch'"
+        echo "Modifying ownership of '/tmp/NuGetScratch' and '/home/$USER/.nuget'"
         sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/"$USER"/.nuget || {
             echo "${red}Failed to to modify ownership of '/tmp/NuGetScratch' and/or" \
                 "'/home/$USER/.nuget'" >&2
@@ -128,13 +129,13 @@
         }
     fi
 
-    echo "Downloading NadekoBot's dependencies..."
+    echo "Restoring NadekoBot's dependencies..."
     cd NadekoBot || {
         echo "${red}Failed to change working directory${nc}" >&2
         clean_up "true"
     }
     dotnet restore || {
-        echo "${red}Failed to download dependencies${nc}" >&2
+        echo "${red}Failed to restore dependencies${nc}" >&2
         clean_up "true"
     }
 
@@ -144,8 +145,7 @@
         clean_up "true"
     }
     cd "$root_dir" || {
-        # TODO: Possibly reword this and use something else besides project
-        echo "${red}Failed to return to the project root directory${nc}" >&2
+        echo "${red}Failed to return to the project's root directory${nc}" >&2
         clean_up "true"
     }
 
@@ -189,7 +189,6 @@
     # End of [ Create Backup, Then Update ]
     ########################################################################
 
-    
 
     ########################################################################
     # 
@@ -217,4 +216,3 @@
 #
 # End of [ Main ]
 ################################################################################
-
