@@ -192,7 +192,8 @@
 
             # Note: $no_hostname is purposefully unquoted. Do not quote the variable.
             echo -e "\n\n-------- nadeko.service startup logs ---------" \
-                "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
+                "\n$(journalctl -q -u nadeko -b $no_hostname -S "$start_time" 2>/dev/null ||
+                sudo journalctl -q -u nadeko -b $no_hostname -S "$start_time")" \
                 "\n--------- End of nadeko.service startup logs --------\n"
 
             echo -e "${cyan}Please check the logs above to make sure that there aren't any" \
@@ -492,11 +493,11 @@
         #
         # [ User Options For Starting NadekoBot ]
         
-        if (! hash dotnet || ! hash ffmpeg || ! hash redis-server || ! \
-                hash git || ! hash jq || (! hash python && ! hash \
-                python3) || ! hash youtube-dl) &>/dev/null; then
+        if (! hash dotnet || ! hash redis-server || ! hash git || ! \
+                hash jq || (! hash python && ! hash python3) || ! hash \
+                youtube-dl) &>/dev/null; then
             disabled_1=true
-            echo "${grey}1. Download NadekoBot (Disabled until option 5 is ran)${nc}"
+            echo "${grey}1. Download NadekoBot (Disabled until option 6 is ran)${nc}"
         else
             disabled_1=false
             echo "1. Download NadekoBot"
@@ -504,15 +505,15 @@
 
         if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ||
                 ! -d NadekoBot/src/NadekoBot/bin/Release || -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] || 
-                (! hash dotnet || ! hash ffmpeg || ! hash redis-server \
-                || ! hash git || ! hash jq || (! hash python && ! hash \
-                python3) || ! hash youtube-dl) &>/dev/null; then
+                (! hash dotnet || ! hash redis-server || ! hash git || ! \
+                hash jq || (! hash python && ! hash python3) || ! hash \
+                youtube-dl) &>/dev/null; then
             disabled_23=true
             disabled_5=true
             echo "${grey}2. Run NadekoBot in the background (Disabled" \
-                "until options 1, 5, and 6 are ran)"
+                "until options 1, 6, and 6 are ran)"
             echo "3. Run NadekoBot in the background with auto" \
-                "restart (Disabled until options 1, 5, and 6 are ran)${nc}"
+                "restart (Disabled until options 1, 6, and 6 are ran)${nc}"
         elif [[ -f NadekoRun.sh ]]; then
             disabled_23=false
 

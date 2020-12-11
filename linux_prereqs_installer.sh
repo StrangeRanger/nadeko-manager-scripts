@@ -65,7 +65,7 @@
             wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg \
                 --dearmor >microsoft.asc.gpg
             sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
-            curl -s https://packages.microsoft.com/config/debian/9/prod.list
+            curl -s https://packages.microsoft.com/config/debian/9/prod.list -o prod.list
             sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
             sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
             sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
@@ -89,7 +89,7 @@
                 "OS: $distro $ver $arch${nc}"
             read -p "Press [Enter] to return to the installer menu"
         fi
-    elif [[ $distro = "LinuxMint" ]]; then
+    elif [[ $distro = "linuxmint" ]]; then
         if [[ $sver = "18" ]]; then
             dot_net_install "ubuntu" "16.04"
         elif [[ $sver = "19" ]]; then

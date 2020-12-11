@@ -30,8 +30,8 @@
 #
 ###
     # Determines from which branch the installer will use
-    # master         = The latest stable code/release
-    # dev            = Non-production ready code (may break your system)
+    # master = The latest stable code/release
+    # dev    = Non-production ready code (may break your system)
     # 
     # Default: master
     export installer_branch="master"
