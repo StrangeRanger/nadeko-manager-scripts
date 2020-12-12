@@ -627,8 +627,13 @@
                 continue
             fi
             echo "Watching '$nadeko_service_name' logs, live..."
-            echo -e "${cyan}To return to the installer menu (Linux)/exit script (macOS):\n1) Press" \
-                "'Ctrl + C'\n2) Press 'Q'${nc}"
+            if [[ $distro != "Darwin" ]]; then
+                echo -e "${cyan}To return to the installer menu:\n1) Press 'Ctrl'" \
+                    "+ 'C'\n2) Press 'Q'${nc}"
+            else
+                echo -e "${cyan}To exit the installer:\n1) Press 'Ctrl" \
+                    "+ C'\n2) Press 'Q'${nc}"
+            fi
             if [[ $distro != "Darwin" ]]; then
                 # The pipe makes it possible to exit journalctl without exiting
                 # the script
