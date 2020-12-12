@@ -34,8 +34,8 @@
     # master         = The latest stable code
     # dev            = Non-production ready code (may break your system)
     # 
-    # Default: release/latest 
-    export installer_branch="release/latest"
+    # Default: master 
+    export installer_branch="master"
 
     # Determines whether or not the installer can be run as the root user:
     # true = can be run with root privilege
