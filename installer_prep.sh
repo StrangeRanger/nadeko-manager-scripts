@@ -217,6 +217,7 @@
     elif [[ $distro = "Darwin" ]]; then
         case "$sver" in
             10.15) execute_master_installer ;;
+            11.0)  execute_master_installer ;;
             *)     supported=false ;;
         esac
     else

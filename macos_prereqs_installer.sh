@@ -54,11 +54,13 @@
 
     case "$sver" in
         10.15) dot_net_install ;;
+        11.0)  dot_net_install ;;
         *) 
             echo "${red}The installer does not support the automatic" \
                 "installation and setup of NadekoBot's prerequisites for your" \
                 "version of macOS${nc}"
             read -p "Press [Enter] to return to the installer menu"
+            exit 1
             ;;
     esac
 
