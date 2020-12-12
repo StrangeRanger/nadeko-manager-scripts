@@ -159,9 +159,9 @@
                     \n \
                     \n    youtube-dl -U 2>/dev/null || sudo youtube-dl -U \
                     \n    sleep 10 \
+                    \ndone \
                     \n \
-                    \necho \"Stopping NadekoBot\" \
-                    \ndone" > NadekoRun.sh
+                    \necho \"Stopping NadekoBot\"" > NadekoRun.sh
             fi
 
             # Starting or restarting 'nadeko.service'
@@ -386,9 +386,9 @@
                     \n \
                     \n    brew upgrade youtube-dl | add_date >> $root_dir/bot.nadeko.Nadeko.log \
                     \n    sleep 10 | add_date >> $root_dir/bot.nadeko.Nadeko.log \
+                    \ndone \
                     \n \
-                    \necho \"Stopping NadekoBot\" | add_date >> $root_dir/bot.nadeko.Nadeko.log \
-                    \ndone" > NadekoRun.sh
+                    \necho \"Stopping NadekoBot\" | add_date >> $root_dir/bot.nadeko.Nadeko.log" > NadekoRun.sh
                 echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
                     \n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> \
                     \n<plist version=\"1.0\"> \
