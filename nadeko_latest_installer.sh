@@ -108,7 +108,7 @@
         mv -f NadekoBot NadekoBot.bak || {
             echo "${red}Failed to back up NadekoBot${nc}" >&2
             echo -e "\nPress [Enter] to return to the installer menu"
-            clean_exit "1" "Returning to the installer menu"
+            clean_up "false"
         }
     fi
 
@@ -149,7 +149,6 @@
         clean_up "true"
     }
 
-    # TODO: Find a way to make this smaller
     if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d \
             NadekoBot.bak ]]; then
         echo "Copping 'credentials.json' to new version..."
@@ -157,14 +156,29 @@
             NadekoBot/src/NadekoBot/credentials.json &>/dev/null
         echo "Copping database to the new version"
         cp -RT NadekoBot.bak/src/NadekoBot/bin/ NadekoBot/src/NadekoBot/bin/ &>/dev/null
-        cp -RT NadekoBot/src/NadekoBot/bin/Release/netcoreapp1.0/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db &>/dev/null
-        cp -RT NadekoBot/src/NadekoBot/bin/Release/netcoreapp1.1/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db &>/dev/null
-        cp -RT NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.0/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db &>/dev/null
-        mv -f NadekoBot/src/NadekoBot/bin/Release/netcoreapp1.0/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp1.0/data/NadekoBot_old.db &>/dev/null
-        mv -f NadekoBot/src/NadekoBot/bin/Release/netcoreapp1.1/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp1.1/data/NadekoBot_old.db &>/dev/null
-        mv -f NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.0/data/NadekoBot.db NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.0/data/NadekoBot_old.db &>/dev/null
-        echo "Copping other data to the new version..."
-        cp -RT NadekoBot_old/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/ &>/dev/null
+        while read line; do
+            if [[ $line != "netcoreapp2.1" ]]; then
+                echo "${yellow}WARNING: Old netcoreapp version detected${nc}"
+                echo "Moving database to new netcoreapp version..."
+                cp -RT NadekoBot/src/NadekoBot/bin/Release/"$line"/data/NadekoBot.db \
+                    NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db \
+                    &>/dev/null || {
+                        echo "${red}Failed to move database${nc}" >&2
+                        clean_up "true"
+                    }
+                echo "Moving '$line' to active directory: '${root_dir}/${line}'..."
+                echo "*You may do with it as you please*"
+                mv -f NadekoBot/src/NadekoBot/bin/Release/"$line" ./"$line" || {
+                    echo "${red}Failed to $line to active directory" >&2
+                    echo -e "${cyan}Please manually move '$line' to the same" \
+                        "'linuxAIO.sh' is located before starting NadekoBot\nLocation:" \
+                        "$root_dir/NadekoBot/src/NadekoBot/bin/Release/$line"
+                }
+            fi
+        done < <(ls "$root_dir"/NadekoBot/src/NadekoBot/bin/Release/)
+        # COMMENTED OUT TILL FURTHER NOTICE
+        #echo "Copping other data to the new version..."
+        #cp -RT NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
         # TODO: Add error handling???
         rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old
     fi
