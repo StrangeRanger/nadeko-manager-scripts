@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Whenever downloading latest `linuxAIO.sh`, current `installer_branch` will be applied to new `linuxAIO.sh`
 - Added `release/latest` as an optional branch for the `installer_branch`
 - Officially supports macOS Big Sur
+- Officially supports macOS Mojave
 
 ### Fixed
 
