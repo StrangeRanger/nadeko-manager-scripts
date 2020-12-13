@@ -176,9 +176,10 @@
                 }
             fi
         done < <(ls "$root_dir"/NadekoBot/src/NadekoBot/bin/Release/)
-        # COMMENTED OUT TILL FURTHER NOTICE
-        #echo "Copping other data to the new version..."
-        #cp -RT NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
+        # TODO: Figure out a way to give the user an option to overwrite this dir
+        # or save it so new changes to official data dir don't affect it.........
+        echo "Copping other data to the new version..."
+        cp -RT NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
         # TODO: Add error handling???
         rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old
     fi
