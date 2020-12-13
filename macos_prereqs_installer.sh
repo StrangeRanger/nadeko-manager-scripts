@@ -53,6 +53,7 @@
     fi
 
     case "$sver" in
+        10.14) dot_net_install ;;
         10.15) dot_net_install ;;
         11.0)  dot_net_install ;;
         *) 
