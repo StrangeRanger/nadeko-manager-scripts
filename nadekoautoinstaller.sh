@@ -89,6 +89,8 @@ if [ "$OS" = "Ubuntu" ]; then
 		#sleep 5
 	elif [ "$VER" = "20.04" ]; then
 		supported=1
+	elif [ "$VER" = "20.10" ]; then
+		supported=1
 	else
 		supported=0
 	fi
@@ -350,6 +352,31 @@ read -n 1 -s -p "Press any key to continue..."
 	sudo chmod a+rx /usr/local/bin/youtube-dl
 	# remove dotnet temp
 	#sudo rm -f packages-microsoft-prod.deb
+	elif [ "$VER" = "20.10" ]; then
+	echo ""
+	echo "Preparing..."
+	sudo apt-get update
+	#wget https://packages.microsoft.com/config/ubuntu/20.10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+	#sudo dpkg -i packages-microsoft-prod.deb
+	sudo apt-get install software-properties-common apt-transport-https curl gpg -y
+	#Backup for manual installation.
+	wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o microsoft.asc.gpg
+	sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+	wget https://packages.microsoft.com/config/ubuntu/20.10/prod.list
+	sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+	sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+	sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+	sudo apt-get update
+	sudo apt-get upgrade -y
+	# sudo apt-get dist-upgrade -y
+	echo "Installing Git..."
+	sudo apt-get install git -y
+	echo "Installing .NET Core..."
+	sudo apt-get install dotnet-sdk-3.1 -y
+	echo "Installing prerequisites..."
+	sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg tmux python python3-pip redis-server -y
+	sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
+	sudo chmod a+rx /usr/local/bin/youtube-dl
 	fi
 elif [ "$OS" = "Debian" ]; then
 	if [ "$SVER" = "8" ]; then
