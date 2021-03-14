@@ -104,7 +104,7 @@ if [[ $distro != "Darwin" ]]; then
             echo "${red}Failed to $disable_enable 'nadeko.service'" >&2
             echo "${cyan}This service must be ${disable_enable}d in order" \
                 "to use this run mode${nc}"
-            read -p "Press [Enter] to return to the installer menu"
+            read -rp "Press [Enter] to return to the installer menu"
             return 1
         }
 
@@ -162,7 +162,7 @@ if [[ $distro != "Darwin" ]]; then
             echo "Restarting 'nadeko.service'..."
             sudo systemctl restart nadeko.service || {
                 echo "${red}Failed to restart 'nadeko.service'${nc}" >&2
-                read -p "Press [Enter] to return to the installer menu"
+                read -rp "Press [Enter] to return to the installer menu"
                 return 1
             }
             echo "Waiting 60 seconds for 'nadeko.service' to restart..."
@@ -170,7 +170,7 @@ if [[ $distro != "Darwin" ]]; then
             echo "Starting 'nadeko.service'..."
             sudo systemctl start nadeko.service || {
                 echo "${red}Failed to start 'nadeko.service'${nc}" >&2
-                read -p "Press [Enter] to return to the installer menu"
+                read -rp "Press [Enter] to return to the installer menu"
                 return 1
             }
             echo "Waiting 60 seconds for 'nadeko.service' to start..."
@@ -193,7 +193,7 @@ if [[ $distro != "Darwin" ]]; then
             "errors, and if there are, to resolve whatever issue is causing them\n"
 
         echo "${green}NadekoBot is now running in the background${nc}"
-        read -p "Press [Enter] to return to the installer menu"
+        read -rp "Press [Enter] to return to the installer menu"
     }
 
 
@@ -401,7 +401,7 @@ else
                 error_code=$(launchctl error "$?")
                 echo "${red}Failed to restart 'bot.nadeko.Nadeko'${nc}" >&2
                 echo "Error code: $error_code"
-                read -p "Press [Enter] to return to the installer menu"
+                read -rp "Press [Enter] to return to the installer menu"
                 return 1
             }
             echo "Waiting 60 seconds for 'bot.nadeko.Nadeko' to restart..."
@@ -411,7 +411,7 @@ else
                 error_code=$(launchctl error "$?")
                 echo "${red}Failed to start 'bot.nadeko.Nadeko'${nc}" >&2
                 echo "Error code: $error_code"
-                read -p "Press [Enter] to return to the installer menu"
+                read -rp "Press [Enter] to return to the installer menu"
                 return 1
             }
             echo "Waiting 60 seconds for 'bot.nadeko.Nadeko' to start..."
@@ -426,7 +426,7 @@ else
 
         echo -e "\n\n${cyan}It's recommended to inspect 'bot.nadeko.Nadeko.log'" \
             "to confirm that there were no errors during NadekoBot's startup${nc}"
-        read -p "Press [Enter] to return to the installer menu"
+        read -rp "Press [Enter] to return to the installer menu"
     }
 
 
@@ -566,7 +566,7 @@ while true; do
             clean_exit "1" "Exiting" "true"
         }
         printf "We will now download/update NadekoBot. "
-        read -p "Press [Enter] to begin."
+        read -rp "Press [Enter] to begin."
         sudo chmod +x nadeko_latest_installer.sh && ./nadeko_latest_installer.sh
         exec "$installer_prep"
         ;;
@@ -577,7 +577,7 @@ while true; do
             continue
         fi
         printf "We will now run NadekoBot in the background. "
-        read -p "Press [Enter] to begin."
+        read -rp "Press [Enter] to begin."
         nadeko_starter "2"
         clear -x
         ;;
@@ -588,16 +588,16 @@ while true; do
             continue
         fi
         printf "We will now run NadekoBot in the background with auto restart. "
-        read -p "Press [Enter] to begin."
+        read -rp "Press [Enter] to begin."
         nadeko_starter "3"
         clear -x
         ;;
     4)
         clear -x
         printf "We will now stop NadekoBot. "
-        read -p "Press [Enter] to begin."
+        read -rp "Press [Enter] to begin."
         service_actions "stop_service" "true"
-        read -p "Press [Enter] to return to the installer menu"
+        read -rp "Press [Enter] to return to the installer menu"
         clear -x
         ;;
     5)

@@ -208,7 +208,7 @@ fi
 if [[ $supported = false ]]; then
     echo "${red}Your operating system/Linux Distribution is not OFFICIALLY" \
         "supported by the installation, setup, and/or use of NadekoBot${nc}" >&2
-    read -p "Would you like to continue with the installation anyways? [y/N] " choice
+    read -rp "Would you like to continue with the installation anyways? [y/N] " choice
     choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
     case "$choice" in
         y|yes) clear -x; execute_master_installer ;;

@@ -36,7 +36,7 @@ dot_net_install() {
 #### [ Main ]
 
 
-read -p "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
+read -rp "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
 if [[ $distro = "ubuntu" ]]; then
     if [[ $ver = "16.04" ]]; then
@@ -49,7 +49,7 @@ if [[ $distro = "ubuntu" ]]; then
         echo "${red}The installer does not support the automatic" \
             "installation and setup of NadekoBot's prerequisites for your" \
             "OS: $distro $ver $arch${nc}"
-        read -p "Press [Enter] to return to the installer menu"
+        read -rp "Press [Enter] to return to the installer menu"
     fi
 elif [[ $distro = "debian" ]]; then
     if [[ $sver = "9" ]]; then
@@ -80,7 +80,7 @@ elif [[ $distro = "debian" ]]; then
         echo "${red}The installer does not support the automatic" \
             "installation and setup of NadekoBot's prerequisites for your" \
             "OS: $distro $ver $arch${nc}"
-        read -p "Press [Enter] to return to the installer menu"
+        read -rp "Press [Enter] to return to the installer menu"
     fi
 elif [[ $distro = "linuxmint" ]]; then
     if [[ $sver = "18" ]]; then
@@ -93,12 +93,12 @@ elif [[ $distro = "linuxmint" ]]; then
         echo "${red}The installer does not support the automatic" \
             "installation and setup of NadekoBot's prerequisites for your" \
             "OS: $distro $ver $arch${nc}"
-        read -p "Press [Enter] to return to the installer menu"
+        read -rp "Press [Enter] to return to the installer menu"
     fi
 fi
 
 echo -e "\n${green}Finished installing prerequisites${nc}"
-read -p "Press [Enter] to return to the installer menu"
+read -rp "Press [Enter] to return to the installer menu"
 
 
 #### End of [ Main ]
