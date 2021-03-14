@@ -547,7 +547,7 @@ while true; do
     fi
 
     echo "8. Exit"
-    read choice
+    read -r choice
     case "$choice" in
     1)
         clear -x
