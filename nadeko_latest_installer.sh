@@ -142,7 +142,7 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d \
         NadekoBot/src/NadekoBot/credentials.json &>/dev/null
     echo "Copping database to the new version"
     cp -RT NadekoBot.bak/src/NadekoBot/bin/ NadekoBot/src/NadekoBot/bin/ &>/dev/null
-    while read line; do
+    while read -r line; do
         if [[ $line != "netcoreapp2.1" ]]; then
             echo "${yellow}WARNING: Old netcoreapp version detected${nc}"
             echo "Moving database to new netcoreapp version..."
