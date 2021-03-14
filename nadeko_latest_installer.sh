@@ -205,7 +205,7 @@ if [[ $nadeko_service_active ]]; then
         "installer menu${nc}"
 fi
 
-read -p "Press [Enter] to apply any existing changes to the installers"
+read -rp "Press [Enter] to apply any existing changes to the installers"
 
 
 ######## End of [ Clean Up and Present Results ]
