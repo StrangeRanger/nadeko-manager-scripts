@@ -49,8 +49,8 @@ clean_exit() {
     exit "$1"
 }
 
-trap "echo -e \"\n\nScript forcefully stopped\"
-    clean_exit \"1\" \"Exiting\" \"true\"" \
+trap 'echo -e "\n\nScript forcefully stopped"
+    clean_exit "1" "Exiting" "true"' \
     SIGINT SIGTSTP SIGTERM
 
 
@@ -60,7 +60,7 @@ trap "echo -e \"\n\nScript forcefully stopped\"
 
 
 # Makes sure that linuxAIO.sh is up to date
-if [[ $linuxAIO_revision != $current_linuxAIO_revision ]]; then
+if [[ $linuxAIO_revision != "$current_linuxAIO_revision" ]]; then
     installer_branch=$(grep 'export installer_branch=' linuxAIO.sh | awk -F '"' '{print $2}');
 
     echo "${yellow}'linuxAIO.sh' is not up to date${nc}"
