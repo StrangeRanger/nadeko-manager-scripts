@@ -42,8 +42,8 @@ allow_run_as_root=false
 
 
 # Checks if the script was executed with root privilege
-if ((EUID == 0)) && [[ $allow_run_as_root = false ]]; then
-    echo "\033[1;31mPlease run this script without root privilege" >&2
+if [[ $EUID = 0 ]] && [[ $allow_run_as_root = false ]]; then
+    echo "\033[1;31mP zlease run this script without root privilege" >&2
     echo "\033[0;36mWhile you will be performing specific tasks with root" \
         "priviledge, running the installer in it's entirety as root is not" \
         "recommended\033[0m"

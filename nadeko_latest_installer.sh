@@ -60,12 +60,12 @@ clean_up() {
 
 
 # TODO: Figure out how to silently kill a process
-trap "echo -e \"\n\nScript forcefully stopped\"
+trap 'echo -e "\n\nScript forcefully stopped"
     clean_up
-    echo \"Killing parent processes...\"
-    kill -9 \"$nadeko_master_installer_pid\" \"$installer_prep_pid\"
-    echo \"Exiting...\"
-    exit 1" \
+    echo "Killing parent processes..."
+    kill -9 "$nadeko_master_installer_pid" "$installer_prep_pid"
+    echo "Exiting..."
+    exit 1' \
     SIGINT SIGTSTP SIGTERM
 
 
