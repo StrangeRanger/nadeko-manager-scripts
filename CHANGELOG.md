@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- Fixed shellcheck warnings SC2064 SC2053
 - Fixed issue #14
 
 ## [2.1.0] - 2020-12-10
