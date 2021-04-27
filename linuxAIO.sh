@@ -21,9 +21,8 @@ export installer_repo="StrangeRanger/NadekoBot-BashScript"  # Determines which r
 
 
 # Determines from which branch the installer will use.
-# release/latest = The latest release
-# master         = The latest stable code
-# dev            = Non-production ready code (may break your system)
+# master = The latest stable code
+# dev    = Non-production ready code (may break your system)
 #
 # Default: master
 export installer_branch="master"
@@ -43,7 +42,7 @@ allow_run_as_root=false
 
 # Checks if the script was executed with root privilege
 if [[ $EUID = 0 ]] && [[ $allow_run_as_root = false ]]; then
-    echo "\033[1;31mP zlease run this script without root privilege" >&2
+    echo "\033[1;31mPlease run this script without root privilege" >&2
     echo "\033[0;36mWhile you will be performing specific tasks with root" \
         "priviledge, running the installer in it's entirety as root is not" \
         "recommended\033[0m"
@@ -54,7 +53,7 @@ fi
 echo "Downloading the latest installer..."
 curl https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/installer_prep.sh \
         -o installer_prep.sh || {
-    echo "Failed to download 'installer_prep.sh'..." >&2
+    echo "Failed to download 'installer_prep.sh'" >&2
     echo -e "\nExiting..."
     exit 1
 }

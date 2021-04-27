@@ -11,6 +11,7 @@
 #### [ Exported and/or Globally Used Variables ]
 
 
+# Used to check if 'linuxAIO.sh' is up to date.
 current_linuxAIO_revision="8"
 
 export yellow=$'\033[1;33m'
@@ -22,7 +23,7 @@ export clrln=$'\r\033[K'
 export grey=$'\033[0;90m'
 export installer_prep_pid=$$
 
-# The '--no-hostname' flag for journalctl only works with systemd 230 and later
+# The '--no-hostname' flag for journalctl only works with systemd 230 and later.
 if (($(journalctl --version | grep -oP "[0-9]+" | head -1) >= 230)) 2>/dev/null; then
     export no_hostname="--no-hostname"
 fi
@@ -34,13 +35,17 @@ fi
 
 
 # Makes it possible to cleanly exit the installer by cleaning up files that
-# aren't required unless currently being run
+# aren't required unless currently being run.
 clean_exit() {
+    # Files to be removed.
     local installer_files=("credentials_setup.sh" "installer_prep.sh"
         "prereqs_installer.sh" "nadeko_latest_installer.sh"
         "nadeko_master_installer.sh")
 
+    # Determines if 'Cleaning up...' needs to be printed with a new-line symbol
+    # or not.
     if [[ $3 = true ]]; then echo "Cleaning up..."; else echo -e "\nCleaning up..."; fi
+    # Removes files specified in 'installer_files'.
     for file in "${installer_files[@]}"; do
         if [[ -f $file ]]; then rm "$file"; fi
     done
@@ -49,6 +54,7 @@ clean_exit() {
     exit "$1"
 }
 
+# Executes when user uses 'Ctrl + Z' or 'Ctrl + C'.
 trap 'echo -e "\n\nScript forcefully stopped"
     clean_exit "1" "Exiting" "true"' \
     SIGINT SIGTSTP SIGTERM
@@ -59,27 +65,29 @@ trap 'echo -e "\n\nScript forcefully stopped"
 #### [ Prepping ]
 
 
-# Makes sure that linuxAIO.sh is up to date
+# Makes sure that 'linuxAIO.sh' is up to date
 if [[ $linuxAIO_revision != "$current_linuxAIO_revision" ]]; then
+    # Save the value of 'installer_branch' specified in 'linuxAIO.sh', to be be
+    # set in the new 'linuxAIO.sh'.
     installer_branch=$(grep 'export installer_branch=' linuxAIO.sh | awk -F '"' '{print $2}');
 
-    echo "${yellow}'linuxAIO.sh' is not up to date${nc}"
+    echo "$yellow'linuxAIO.sh' is not up to date$nc"
     echo "Downloading latest 'linuxAIO.sh'..."
     curl https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh \
             -o linuxAIO.sh || {
-        echo "${red}Failed to download latest 'linuxAIO.sh'...${nc}" >&2
+        echo "${red}Failed to download latest 'linuxAIO.sh'...$nc" >&2
         clean_exit "1" "Exiting" "true"
     }
+
     echo "Modifying 'installer_branch'..."
     sed -i "s/export installer_branch=.*/export installer_branch=\"$installer_branch\"/" linuxAIO.sh
-    sudo chmod +x linuxAIO.sh
-    echo "${cyan}Re-execute 'linuxAIO.sh' to continue${nc}"
+    sudo chmod +x linuxAIO.sh  # Set execution permission
+    echo "${cyan}Re-execute 'linuxAIO.sh' to continue$nc"
+    # TODO: Figure out a way to get exec to work, instead of exiting script
     clean_exit "0" "Exiting" "true"
-    # TODO: Figure out a way to get exec to work
 fi
 
-# Changes the working directory to that of where the executed script is
-# located
+# Changes the working directory to where the executed script is located.
 cd "$(dirname "$0")" || {
     echo "${red}Failed to change working directory" >&2
     echo "${cyan}Change your working directory to that of the executed" \
@@ -98,6 +106,7 @@ export installer_prep="$root_dir/installer_prep.sh"
 # Identify the operating system, version number, architecture, bit type (32
 # or 64), etc.
 detect_sys_info() {
+    # TODO: Remove???
     arch=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
 
     if [[ -f /etc/os-release ]]; then
@@ -127,6 +136,7 @@ detect_sys_info() {
     esac
 }
 
+# Download and execute 'nadeko_master_installer.sh'.
 execute_master_installer() {
     supported=true
 
@@ -157,6 +167,7 @@ echo "SYSTEM INFO"
 echo "Bit Type: $bits"
 echo "Architecture: $arch"
 printf "Distro: "
+# Checks if variable 'pname' exists.
 if [[ -n $pname ]]; then echo "$pname"; else echo "$distro"; fi
 echo "Distro Version: $ver"
 echo ""

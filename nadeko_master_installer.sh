@@ -51,23 +51,25 @@ if [[ $distro != "Darwin" ]]; then
 
     service_actions() {
         case "$1" in
+            # Retrieves the status of 'nadeko.service' and saves it to a variable.
             nadeko_service_status)
                 nadeko_service_status=$(systemctl is-active nadeko.service)
                 ;;
+            # Stops 'nadeko.service' if it is actively running.
             stop_service)
                 if [[ $nadeko_service_status = "active" ]]; then
                     echo "Stopping 'nadeko.service'..."
                     sudo systemctl stop nadeko.service || {
                         echo "${red}Failed to stop 'nadeko.service'" >&2
                         echo "${cyan}You will need to restart 'nadeko.service'" \
-                            "to apply any updates to NadekoBot${nc}"
+                            "to apply any updates to NadekoBot$nc"
                     }
                     if [[ $2 = true ]]; then
-                        echo -e "\n${green}NadekoBot has been stopped${nc}"
+                        echo -e "\n${green}NadekoBot has been stopped$nc"
                     fi
                 else
                     if [[ $2 = true ]]; then
-                        echo -e "\n${cyan}NadekoBot is currently not running${nc}"
+                        echo -e "\n${cyan}NadekoBot is currently not running$nc"
                     fi
                 fi
                 ;;
@@ -79,6 +81,8 @@ if [[ $distro != "Darwin" ]]; then
         # Saves the current time and date, which will be used with journalctl
         start_time=$(date +"%F %H:%M:%S")
 
+        # Decides whether we need to use 'disable' or 'enable', and what tense
+        # it should be in.
         if [[ $1 = "2" ]]; then
             disable_enable="disable"
             disable_enable2="Disabling"
