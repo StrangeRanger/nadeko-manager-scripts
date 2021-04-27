@@ -37,7 +37,7 @@ clean_up() {
         echo "Restoring from 'NadekoBot.bak'..."
         mv -f "$root_dir"/NadekoBot.bak "$root_dir"/NadekoBot || {
             echo "${red}Failed to restore from 'NadekoBot.bak'" >&2
-            echo "${cyan}Manually rename 'NadekoBot.bak' to 'NadekoBot'${nc}"
+            echo "${cyan}Manually rename 'NadekoBot.bak' to 'NadekoBot'$nc"
         }
     fi
 
@@ -92,7 +92,7 @@ fi
 if [[ -d NadekoBot ]]; then
     echo "Backing up NadekoBot as 'NadekoBot.bak'..."
     mv -f NadekoBot NadekoBot.bak || {
-        echo "${red}Failed to back up NadekoBot${nc}" >&2
+        echo "${red}Failed to back up NadekoBot$nc" >&2
         echo -e "\nPress [Enter] to return to the installer menu"
         clean_up "false"
     }
@@ -100,7 +100,7 @@ fi
 
 echo "Downloading NadekoBot..."
 git clone -b 1.9 --recursive --depth 1 https://gitlab.com/Kwoth/NadekoBot || {
-    echo "${red}Failed to download NadekoBot${nc}" >&2
+    echo "${red}Failed to download NadekoBot$nc" >&2
     clean_up "true"
 }
 
@@ -111,27 +111,27 @@ if [[ -d /tmp/NuGetScratch && $distro != "Darwin" ]]; then
             "'/home/$USER/.nuget'" >&2
         echo "${cyan}You can ignore this if you are not prompted about" \
             "locked files/permission error while attempting to download" \
-            "dependencies${nc}"
+            "dependencies$nc"
     }
 fi
 
 echo "Restoring NadekoBot's dependencies..."
 cd NadekoBot || {
-    echo "${red}Failed to change working directory${nc}" >&2
+    echo "${red}Failed to change working directory$nc" >&2
     clean_up "true"
 }
 dotnet restore || {
-    echo "${red}Failed to restore dependencies${nc}" >&2
+    echo "${red}Failed to restore dependencies$nc" >&2
     clean_up "true"
 }
 
 echo "Building NadekoBot..."
 dotnet build --configuration Release || {
-    echo "${red}Failed to build NadekoBot${nc}" >&2
+    echo "${red}Failed to build NadekoBot$nc" >&2
     clean_up "true"
 }
 cd "$root_dir" || {
-    echo "${red}Failed to return to the project's root directory${nc}" >&2
+    echo "${red}Failed to return to the project's root directory$nc" >&2
     clean_up "true"
 }
 
@@ -144,12 +144,12 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d \
     cp -RT NadekoBot.bak/src/NadekoBot/bin/ NadekoBot/src/NadekoBot/bin/ &>/dev/null
     while read -r line; do
         if [[ $line != "netcoreapp2.1" ]]; then
-            echo "${yellow}WARNING: Old netcoreapp version detected${nc}"
+            echo "${yellow}WARNING: Old netcoreapp version detected$nc"
             echo "Moving database to new netcoreapp version..."
             cp -RT NadekoBot/src/NadekoBot/bin/Release/"$line"/data/NadekoBot.db \
                     NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db \
                     &>/dev/null || {
-                echo "${red}Failed to move database${nc}" >&2
+                echo "${red}Failed to move database$nc" >&2
                 clean_up "true"
             }
             echo "Moving '$line' to active directory: '${root_dir}/${line}'..."
@@ -181,7 +181,7 @@ if [[ $distro != "Darwin" ]]; then
 
     echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
             sudo systemctl daemon-reload || {
-        echo "${red}Failed to $create_or_update '$nadeko_service_name'${nc}" >&2
+        echo "${red}Failed to $create_or_update '$nadeko_service_name'$nc" >&2
         b_s_update="Failed"
     }
 fi
@@ -192,17 +192,17 @@ fi
 ######## [ Clean Up and Present Results ]
 
 
-echo -e "\n${green}Finished downloading/updating NadekoBot${nc}"
+echo -e "\n${green}Finished downloading/updating NadekoBot$nc"
 
 if [[ $b_s_update ]]; then
-    echo "${yellow}WARNING: Failed to $create_or_update '$nadeko_service_name'${nc}"
+    echo "${yellow}WARNING: Failed to $create_or_update '$nadeko_service_name'$nc"
 fi
 
 # B.1.
 if [[ $nadeko_service_active ]]; then
     echo "${cyan}NOTE: '$nadeko_service_name' was stopped to update" \
         "NadekoBot and has to be started using the run modes in the" \
-        "installer menu${nc}"
+        "installer menu$nc"
 fi
 
 read -rp "Press [Enter] to apply any existing changes to the installers"

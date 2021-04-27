@@ -12,11 +12,11 @@
 
 dot_net_install() {
     echo "Installing .NET Core..."
-    # Microsoft package signing key
+    # Microsoft package signing key.
     curl https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb \
         -o packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb && sudo rm -f packages-microsoft-prod.deb
-    # Install the SDK
+    # Install the SDK.
     sudo apt-get update
     sudo apt-get install -y apt-transport-https &&
     sudo apt-get update &&
@@ -48,7 +48,7 @@ if [[ $distro = "ubuntu" ]]; then
     else
         echo "${red}The installer does not support the automatic" \
             "installation and setup of NadekoBot's prerequisites for your" \
-            "OS: $distro $ver $arch${nc}"
+            "OS: $distro $ver $arch$nc"
         read -rp "Press [Enter] to return to the installer menu"
     fi
 elif [[ $distro = "debian" ]]; then
@@ -79,7 +79,7 @@ elif [[ $distro = "debian" ]]; then
     else
         echo "${red}The installer does not support the automatic" \
             "installation and setup of NadekoBot's prerequisites for your" \
-            "OS: $distro $ver $arch${nc}"
+            "OS: $distro $ver $arch$nc"
         read -rp "Press [Enter] to return to the installer menu"
     fi
 elif [[ $distro = "linuxmint" ]]; then
@@ -92,12 +92,12 @@ elif [[ $distro = "linuxmint" ]]; then
     else
         echo "${red}The installer does not support the automatic" \
             "installation and setup of NadekoBot's prerequisites for your" \
-            "OS: $distro $ver $arch${nc}"
+            "OS: $distro $ver $arch$nc"
         read -rp "Press [Enter] to return to the installer menu"
     fi
 fi
 
-echo -e "\n${green}Finished installing prerequisites${nc}"
+echo -e "\n${green}Finished installing prerequisites$nc"
 read -rp "Press [Enter] to return to the installer menu"
 
 

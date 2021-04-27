@@ -31,7 +31,7 @@ dot_net_install() {
 
 
 echo -e "${cyan}Note: It may take up to 10 minutes for all the" \
-    "prerequisites to be installed.${nc}"
+    "prerequisites to be installed.$nc"
 read -rp "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
 if ! hash brew &>/dev/null; then
@@ -39,7 +39,7 @@ if ! hash brew &>/dev/null; then
     echo "Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
         echo "${red}Failed to install Homebrew" >&2
-        echo "${cyan}Homebrew must be installed to install prerequisites${nc}"
+        echo "${cyan}Homebrew must be installed to install prerequisites$nc"
         read -rp "Press [Enter] to return to the installer menu"
         exit 1
     }
@@ -52,13 +52,13 @@ case "$sver" in
     *)
         echo "${red}The installer does not support the automatic" \
             "installation and setup of NadekoBot's prerequisites for your" \
-            "version of macOS${nc}"
+            "version of macOS$nc"
         read -rp "Press [Enter] to return to the installer menu"
         exit 1
         ;;
 esac
 
-echo -e "\n${green}Finished installing prerequisites${nc}"
+echo -e "\n${green}Finished installing prerequisites$nc"
 read -rp "Press [Enter] to return to the installer menu"
 
 

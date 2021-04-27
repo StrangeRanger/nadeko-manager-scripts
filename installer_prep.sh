@@ -12,7 +12,7 @@
 
 
 # Used to check if 'linuxAIO.sh' is up to date.
-current_linuxAIO_revision="8"
+current_linuxAIO_revision="9"
 
 export yellow=$'\033[1;33m'
 export green=$'\033[0;32m'
@@ -42,10 +42,9 @@ clean_exit() {
         "prereqs_installer.sh" "nadeko_latest_installer.sh"
         "nadeko_master_installer.sh")
 
-    # Determines if 'Cleaning up...' needs to be printed with a new-line symbol
-    # or not.
+    # Determines if 'Cleaning up...' needs to be printed with a new-line symbol.
     if [[ $3 = true ]]; then echo "Cleaning up..."; else echo -e "\nCleaning up..."; fi
-    # Removes files specified in 'installer_files'.
+    ## Removes files specified in 'installer_files'.
     for file in "${installer_files[@]}"; do
         if [[ -f $file ]]; then rm "$file"; fi
     done
@@ -54,7 +53,7 @@ clean_exit() {
     exit "$1"
 }
 
-# Executes when user uses 'Ctrl + Z' or 'Ctrl + C'.
+# Executes when the user uses 'Ctrl + Z' or 'Ctrl + C'.
 trap 'echo -e "\n\nScript forcefully stopped"
     clean_exit "1" "Exiting" "true"' \
     SIGINT SIGTSTP SIGTERM
@@ -65,10 +64,11 @@ trap 'echo -e "\n\nScript forcefully stopped"
 #### [ Prepping ]
 
 
-# Makes sure that 'linuxAIO.sh' is up to date
+# Downloads latest version of 'linuxAIO.sh' if $linuxAIO_revision and 
+# $current_linuxAIO_revision aren't of equal value.
 if [[ $linuxAIO_revision != "$current_linuxAIO_revision" ]]; then
-    # Save the value of 'installer_branch' specified in 'linuxAIO.sh', to be be
-    # set in the new 'linuxAIO.sh'.
+    # Save the value of 'installer_branch' specified in 'linuxAIO.sh', to be set
+    # in the new 'linuxAIO.sh'.
     installer_branch=$(grep 'export installer_branch=' linuxAIO.sh | awk -F '"' '{print $2}');
 
     echo "$yellow'linuxAIO.sh' is not up to date$nc"
@@ -79,7 +79,7 @@ if [[ $linuxAIO_revision != "$current_linuxAIO_revision" ]]; then
         clean_exit "1" "Exiting" "true"
     }
 
-    echo "Modifying 'installer_branch'..."
+    echo "Applying set configurations to 'linuxAIO.sh'..."
     sed -i "s/export installer_branch=.*/export installer_branch=\"$installer_branch\"/" linuxAIO.sh
     sudo chmod +x linuxAIO.sh  # Set execution permission
     echo "${cyan}Re-execute 'linuxAIO.sh' to continue$nc"
@@ -87,11 +87,11 @@ if [[ $linuxAIO_revision != "$current_linuxAIO_revision" ]]; then
     clean_exit "0" "Exiting" "true"
 fi
 
-# Changes the working directory to where the executed script is located.
+# Changes the working directory to the location of the executed scrpt.
 cd "$(dirname "$0")" || {
     echo "${red}Failed to change working directory" >&2
     echo "${cyan}Change your working directory to that of the executed" \
-        "script${nc}"
+        "script$nc"
     clean_exit "1" "Exiting" "true"
 }
 export root_dir="$PWD"
@@ -106,8 +106,7 @@ export installer_prep="$root_dir/installer_prep.sh"
 # Identify the operating system, version number, architecture, bit type (32
 # or 64), etc.
 detect_sys_info() {
-    # TODO: Remove???
-    arch=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
+    arch=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')  # TODO: Remove???
 
     if [[ -f /etc/os-release ]]; then
         . /etc/os-release
@@ -127,7 +126,7 @@ detect_sys_info() {
         fi
     fi
 
-    # Identifying bit and architecture type
+    ## Identify bit and architecture type.
     case $(uname -m) in
         x86_64) bits="64"; arch="x64" ;;
         i*86)   bits="32"; arch="x86" ;;
@@ -142,11 +141,11 @@ execute_master_installer() {
 
     curl -s https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/nadeko_master_installer.sh \
             -o nadeko_master_installer.sh || {
-        echo "${red}Failed to download 'nadeko_master_installer.sh'${nc}" >&2
+        echo "${red}Failed to download 'nadeko_master_installer.sh'$nc" >&2
         clean_exit "1" "Exiting" "true"
     }
     sudo chmod +x nadeko_master_installer.sh && ./nadeko_master_installer.sh || {
-        echo "${red}Failed to execute 'nadeko_master_installer.sh'${nc}" >&2
+        echo "${red}Failed to execute 'nadeko_master_installer.sh'$nc" >&2
         clean_exit "1" "Exiting" "true"
     }
 }
@@ -172,9 +171,9 @@ if [[ -n $pname ]]; then echo "$pname"; else echo "$distro"; fi
 echo "Distro Version: $ver"
 echo ""
 
+# Checks if Nadeko and installer are compatible with the operating system.
 if [[ $distro = "ubuntu" ]]; then
-    # B.1. Forcing 64 bit architecture
-    if [[ $bits = 64 ]]; then
+    if [[ $bits = 64 ]]; then  # B.1. Forcing 64 bit architecture
         case "$ver" in
             16.04) execute_master_installer ;;
             18.04) execute_master_installer ;;
@@ -216,9 +215,11 @@ else
     supported=false
 fi
 
+# Provides the user with the option to continue, even if their system isn't
+# officially supported.
 if [[ $supported = false ]]; then
     echo "${red}Your operating system/Linux Distribution is not OFFICIALLY" \
-        "supported by the installation, setup, and/or use of NadekoBot${nc}" >&2
+        "supported by the installation, setup, and/or use of NadekoBot$nc" >&2
     read -rp "Would you like to continue with the installation anyways? [y/N] " choice
     choice=$(echo "$choice" | tr '[A-Z]' '[a-z]')
     case "$choice" in

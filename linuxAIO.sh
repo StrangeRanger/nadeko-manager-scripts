@@ -9,8 +9,8 @@
 #### The variables below are for dev/testing purpouses (!!! DO NOT MODIFY !!!).
 
 
-export linuxAIO_revision="8"                                # Keeps track of changes to linuxAIO.sh
-export installer_repo="StrangeRanger/NadekoBot-BashScript"  # Determines which repo is used
+export linuxAIO_revision="9"                                # Keeps track of changes to 'linuxAIO.sh'.
+export installer_repo="StrangeRanger/NadekoBot-BashScript"  # Determines which repo is used.
 
 
 #### End of [ Development Variables ]
@@ -40,7 +40,7 @@ allow_run_as_root=false
 #### [ Main ]
 
 
-# Checks if the script was executed with root privilege
+# Checks if the script was executed with root privilege.
 if [[ $EUID = 0 ]] && [[ $allow_run_as_root = false ]]; then
     echo "\033[1;31mPlease run this script without root privilege" >&2
     echo "\033[0;36mWhile you will be performing specific tasks with root" \
