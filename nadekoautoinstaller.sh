@@ -427,6 +427,29 @@ elif [ "$OS" = "Debian" ]; then
 		sudo apt-get install tmux python python3.5 -y
 		sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
 		sudo chmod a+rx /usr/local/bin/youtube-dl
+	elif [ "$SVER" = "10.9" ]; then
+		VER=10
+		echo -e "Using Debian 10 Installation scripts.\nIf the installation fails contact NadekoBot support."
+		sleep 5
+	elif [ "$SVER" = "10" ]; then
+		echo ""
+		echo "Preparing..."
+		apt-get update
+		apt-get upgrade -y
+		apt-get install sudo -y
+		sudo apt-get install software-properties-common apt-transport-https -y
+		sudo apt-get install curl libunwind8 gettext -y
+		wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+		sudo dpkg -i packages-microsoft-prod.deb
+		sudo apt-get update
+		sudo apt-get install dotnet-sdk-3.1 -y
+		echo "Installing prerequisites..."
+		sudo apt-get update && sudo apt install ffmpeg -y
+		sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev redis-server -y
+		sudo apt-get install git -y
+		sudo apt-get install tmux python python3.5 -y
+		sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
+		sudo chmod a+rx /usr/local/bin/youtube-dl
 	else
 		echo -e "Your OS $OS $VER $ARCH probably can run Microsoft .NET Core. \nContact NadekoBot's support on Discord with screenshot."
 		rm nadekoautoinstaller.sh
