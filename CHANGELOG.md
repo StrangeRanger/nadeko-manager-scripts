@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Now sets $allow_run_as_root the same way that $installer_branch is set, whenever 'linuxAIO.sh' is updated.
+
+### Changed
+
+- Modify style of exported variables.
+- Updated comments.
+- Minor refactoring.
+
 ## [2.1.1] - 2021-03-26
 
 ### Added
