@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Installs all of the packages and dependencies required for NadekoBot to run on Linux
-# based distributions.
+# Distributions.
 #
 ########################################################################################
 #### [ Functions ]
@@ -23,6 +23,7 @@ dot_net_install() {
     curl https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb \
         -o packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb && sudo rm -f packages-microsoft-prod.deb
+
     ## Install the SDK.
     sudo apt-get update
     sudo apt-get install -y apt-transport-https &&
@@ -37,6 +38,9 @@ dot_net_install() {
         redis-server git python python3 jq wget -y
     sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
         /usr/local/bin/youtube-dl
+    # Will always fail to update using 'youtube-dl -U', if command run as non-root user.
+    # I'll find a way that hopefully doesn't require me to change permissions of the
+    # program to 777.
     sudo chmod a+rx /usr/local/bin/youtube-dl
 }
 
@@ -72,6 +76,7 @@ elif [[ $_DISTRO = "debian" ]]; then
             sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
             sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
             sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+            
             ## Install the SDK
             sudo apt-get update
             sudo apt-get install -y apt-transport-https &&

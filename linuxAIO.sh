@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # linuxAIO acts as the intermediary between the system NadekoBot is being hosted on and
-# the 'installer_prep.sh'. To prevent any conflicts with updates to the installer, this
+# 'installer_prep.sh'. To prevent any conflicts with updates to the installer, this
 # script has as little code as deemed necessary.
 #
 ########################################################################################
@@ -11,19 +11,19 @@
 
 # Used to keep track of changes to 'linuxAIO.sh'.
 # Refer to the '[ Prepping ]' section of 'installer_prep.sh' for more information.
-export _LINUXAIO_REVISION="10"
-# Determines which repository from what user is used by the installer.
+export _LINUXAIO_REVISION="13"
+# Determines from which repository and what user the installer will use.
 installer_repo="StrangeRanger/NadekoBot-BashScript"
 
 
 #### End of [ Development Variables ]
 ########################################################################################
 #### [ Configuration Variables ]
-#### The variables below are used to modify some of the actions of the installer and CAN
-#### BE modified by the end user.
+#### The variables below are used to modify the behavior of the installer and CAN BE
+#### modified by the end user.
 
 
-# Determines from which branch the installer will use.
+# The branch that the installer will use.
 # master = The latest stable code
 # dev    = Non-production ready code
 #
@@ -37,21 +37,21 @@ installer_branch="master"
 # Default: false
 allow_run_as_root=false
 
+# Determines what branch or tag the installer will download NadekoBot from.
+# 1.9    = Latest version (the master/main branch)
+# 2.39.1 = Version (tag) 2.39.1 of NadekoBot
+# x.x.x  = So on and so forth (refer to the NadekoBot repo for available tags and
+#          branches)
+#
+# Default: 1.9
+export _NADEKO_INSTALL_VERSION="1.9"
+
 
 #### End of [ Configuration Variables ]
 ########################################################################################
 #### [ Variables ]
 #### Variables that aren't Development or Configurable specific.
 
-
-## Modify output text color.
-export _YELLOW=$'\033[1;33m'
-export _GREEN=$'\033[0;32m'
-export _CYAN=$'\033[0;36m'
-export _RED=$'\033[1;31m'
-export _NC=$'\033[0m'
-export _GREY=$'\033[0;90m'
-export _CLRLN=$'\r\033[K'
 
 # URL to the raw version of a specified script.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
@@ -63,20 +63,21 @@ export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_br
 
 
 # If executed with root privilege and $allow_run_as_root is false...
-if [[ $EUID = 0 ]] && [[ $allow_run_as_root = false ]]; then
-    echo "${_RED}Please run this script without root privilege" >&2
-    echo "${_CYAN}While you will be performing specific tasks with root privilege," \
-        "running the installer in it's entirety as root is not recommended$_NC"
+if [[ $EUID = 0 && $allow_run_as_root = false ]]; then
+    echo "\033[1;31mPlease run this script without root privilege" >&2
+    echo "\033[0;36mWhile you will be performing specific tasks with root privilege," \
+        "running the installer in it's entirety as root is not recommended\033[0m"
     echo -e "\nExiting..."
     exit 1
 fi
 
 echo "Downloading the latest installer..."
 curl "$_RAW_URL"/installer_prep.sh -o installer_prep.sh || {
-    echo "${_RED}Failed to download 'installer_prep.sh'$_NC" >&2
+    echo "\033[1;31mFailed to download 'installer_prep.sh'\033[0m" >&2
     echo -e "\nExiting..."
     exit 1
 }
+# Set the execution permissions for the downloaded script, then executes it.
 sudo chmod +x installer_prep.sh && ./installer_prep.sh
 
 

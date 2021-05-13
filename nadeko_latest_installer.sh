@@ -2,7 +2,7 @@
 #
 # Downloads and updates NadekoBot.
 #
-# Note: All variables not defined in this script, are exported from 'linuxAIO.sh',
+# NOTE: All variables not defined in this script, are exported from 'linuxAIO.sh',
 # 'installer_prep.sh', and 'linux_master_installer.sh'.
 #
 ########################################################################################
@@ -27,7 +27,7 @@ clean_up() {
     # FUNCTION INFO:
     #
     # If 'nadeko_latest_installer.sh', for whatever reason, is not able to completely
-    # update or download Nadeko, this function will cleanup any remaining files and
+    # update or download NadekoBot, this function will cleanup any remaining files and
     # restore the previous code and configurations.
     #
     # @param $1 Determines whether or not this function kills the script's parent
@@ -40,14 +40,12 @@ clean_up() {
         "nadeko_master_installer.sh")
 
     echo "Cleaning up files and directories..."
-    # NOTE: Unsure if this if statement is needed. Might be removed in a later PR.
-    if [[ -d $_WORKING_DIR/tmp ]]; then rm -rf "$_WORKING_DIR"/tmp; fi
-    ## Remove all files in the 'installer_files' array, if they exist.
+    ## Remove any and all files specified in $installer_files.
     for file in "${installer_files[@]}"; do
         if [[ -f $_WORKING_DIR/$file ]]; then rm "$_WORKING_DIR"/"$file"; fi
     done
     
-    ## Remove the NadekoBot code that was just downloaded, and restore the old code.
+    ## Remove the NadekoBot code that was just downloaded, then restore the old code.
     if [[ -d $_WORKING_DIR/NadekoBot && -d $_WORKING_DIR/NadekoBot.bak ]]; then
         rm -rf "$_WORKING_DIR"/NadekoBot
 
@@ -57,11 +55,6 @@ clean_up() {
             echo "${_CYAN}Manually rename 'NadekoBot.bak' to 'NadekoBot'$_NC"
         }
     fi
-
-    ## Remove all files in the 'installer_files' array, if they exist.
-    for file in "${installer_files[@]}"; do
-        if [[ -f $_WORKING_DIR/$file ]]; then rm "$_WORKING_DIR"/"$file"; fi
-    done
 
     ## Kill the script's parent processes, if param $1 is true.
     if [[ $1 = true ]]; then
@@ -78,7 +71,7 @@ clean_up() {
 #### [ Error Trapping ]
 
 
-# Executes when the user uses 'Ctrl + Z' or 'Ctrl + C'.
+# Execute when the user uses 'Ctrl + Z' or 'Ctrl + C'.
 trap 'echo -e "\n\nScript forcefully stopped"
     clean_up
     echo "Killing parent processes..."
@@ -100,8 +93,8 @@ read -rp "Press [Enter] to begin."
 ######## [ Stop service ]
 
 
-## 'active' is used on Linux while 'running' is used on macOS.
-## Stops $nadeko_service_status if it's currently active/running.
+## 'active' is used on Linux, while 'running' is used on macOS.
+## Stop $nadeko_service_status if it's currently active/running.
 if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
     nadeko_service_active=true
     service_actions "stop_service" "false"
@@ -113,7 +106,7 @@ fi
 ######## [ Create Backup, Then Update ]
 
 
-## Create a backup of NadekoBot, if it currently exists.
+## If the 'NadekoBot' directory exists, create a backup of it.
 if [[ -d NadekoBot ]]; then
     echo "Backing up NadekoBot as 'NadekoBot.bak'..."
     mv -f NadekoBot NadekoBot.bak || {
@@ -124,7 +117,7 @@ if [[ -d NadekoBot ]]; then
 fi
 
 echo "Downloading NadekoBot..."
-git clone -b 1.9 --recursive --depth 1 https://gitlab.com/Kwoth/NadekoBot || {
+git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 https://gitlab.com/Kwoth/NadekoBot || {
     echo "${_RED}Failed to download NadekoBot$_NC" >&2
     clean_up "true"
 }
@@ -139,7 +132,7 @@ if [[ -d /tmp/NuGetScratch && $_DISTRO != "Darwin" ]]; then
     sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/"$USER"/.nuget || {
         echo "${_RED}Failed to to modify the ownership of '/tmp/NuGetScratch' and/or" \
             "'/home/$USER/.nuget'..." >&2
-        # NOTE: Unsure if the echo is applicable or not. Maybe be removed in a future PR.
+        # NOTE: Unsure if this echo is applicable or not. May be removed in a future PR.
         echo "${_CYAN}You can ignore this if you were not prompted about locked" \
             "files/permission errors while attempting to download dependencies$_NC"
     }
@@ -166,8 +159,8 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
     echo "Copping database to the new version..."
     cp -RT "$bak_database" "$new_database" &>/dev/null
     
-    ## Check if an old netcoreapp version exists, then moves the database in it, to the
-    ## new netcorapp version.
+    ## Check if an old netcoreapp version exists, then moves the database within it, to
+    ## the new netcorapp version.
     while read -r netcoreapp; do
         if [[ $netcoreapp != "$notcoreapp_version" &&
                 # Make sure that there is a database to even move.
@@ -188,7 +181,7 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
                 clean_up "true"
             }
             ## Since NadekoBot still currently relies on netcoreapp2.1, it'll be left
-            ## untouched.
+            ## untouched for now.
             #echo "Removing '$netcoreapp'..."
             #rm -rf "$new_database"/Release/"$netcoreapp" || {
             #    echo "${_RED}Failed to remove '$netcoreapp'" >&2
@@ -203,7 +196,7 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
     rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old  # TODO: Add error handling???
 fi
 
-## Updates/creates 'bot.nadeko.Nadeko' if the installer is running on macOS.
+## Update/create 'bot.nadeko.Nadeko' if the installer is NOT running on macOS.
 if [[ $_DISTRO != "Darwin" ]]; then
     if [[ -f $nadeko_service ]]; then
         echo "Updating '$nadeko_service_name'..."
@@ -213,6 +206,7 @@ if [[ $_DISTRO != "Darwin" ]]; then
         create_or_update="create"
     fi
 
+    # Add the contents of the service to 'nadeko.service'.
     echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
             sudo systemctl daemon-reload || {
         echo "${_RED}Failed to $create_or_update '$nadeko_service_name'$_NC" >&2
@@ -233,9 +227,8 @@ if [[ $failed_to_create_or_update ]]; then
 fi
 
 if [[ $nadeko_service_active ]]; then
-    echo "${_CYAN}NOTE: '$nadeko_service_name' was stopped to update" \
-        "NadekoBot and has to be started using the run modes in the" \
-        "installer menu$_NC"
+    echo "${_CYAN}NOTE: '$nadeko_service_name' was stopped to update NadekoBot and has" \
+        "to be started using the run modes in the installer menu$_NC"
 fi
 
 read -rp "Press [Enter] to apply any existing changes to the installers"

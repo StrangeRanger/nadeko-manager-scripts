@@ -2,6 +2,17 @@
 #
 # The master/main installer for macOS and Linux Distributions.
 #
+# COMMENT '[letter].[number].' KEY INFO:
+#   A.1. - Save the current time and date, which will be used in conjunction with
+#          journalctl.
+#   B.1. - Decide whether we need to use 'disable' or 'enable', and what tense it
+#          should be in.
+#   C.1. - Add code to 'NadekoRun.sh' required to run NadekoBot in the background.
+#   D.1. - Add code to 'NadekoRun.sh' required to run NadekoBot in the background with
+#          auto restart.
+#   E.1. - Return to prevent further code execution.
+#   F.1. - Set the execution permissions for the downloaded script, then execute it.
+#
 ########################################################################################
 #### [ Variables and Functions ]
 #### The variables and functions below are designed specifically for either macOS or
@@ -20,7 +31,7 @@ if [[ $_DISTRO != "Darwin" ]]; then
     ######## [ Variables ]
 
 
-    nadeko_service="/lib/systemd/system/nadeko.service"
+    nadeko_service="/etc/systemd/system/nadeko.service"
     nadeko_service_name="nadeko.service"
     prereqs_installer="linux_prereqs_installer.sh"
     nadeko_service_content="[Unit] \
@@ -69,7 +80,7 @@ if [[ $_DISTRO != "Darwin" ]]; then
                         echo "${_RED}Failed to stop 'nadeko.service'" >&2
                         echo "${_CYAN}You will need to restart 'nadeko.service' to" \
                             "apply any updates to NadekoBot$_NC"
-                        return 1  # D.1. Return to prevent further code execution.
+                        return 1  # E.1. Return to prevent further code execution.
                     }
                     if [[ $2 = true ]]; then
                         echo -e "\n${_GREEN}NadekoBot has been stopped$_NC"
@@ -93,12 +104,10 @@ if [[ $_DISTRO != "Darwin" ]]; then
         ####
 
         timer=60
-        # E.1. Save the current time and date, which will be used in conjunction with
-        # journalctl.
+        # A.1.
         start_time=$(date +"%F %H:%M:%S")
 
-        ## F.1. Decide whether we need to use 'disable' or 'enable', and what tense it
-        ## should be in.
+        ## B.1.
         if [[ $1 = "NadekoRun" ]]; then
             dis_en_lower="disable"
             dis_en_upper="Disabling"
@@ -114,7 +123,7 @@ if [[ $_DISTRO != "Darwin" ]]; then
                     sudo systemctl daemon-reload || {
                 echo "${_RED}Failed to create 'nadeko.service'" >&2
                 echo "${_CYAN}This service must exist for NadekoBot to work$_NC"
-                clean_exit "1" "Exiting"
+                _CLEAN_EXIT "1" "Exiting"
             }
         fi
 
@@ -125,7 +134,7 @@ if [[ $_DISTRO != "Darwin" ]]; then
             echo "${_CYAN}This service must be ${dis_en_lower}d in order to use this" \
                 "run mode$_NC"
             read -rp "Press [Enter] to return to the installer menu"
-            return 1  # D.1.
+            return 1  # E.1.
         }
 
         # Check if 'NadekoRun.sh' exists.
@@ -137,17 +146,16 @@ if [[ $_DISTRO != "Darwin" ]]; then
             sudo chmod +x NadekoRun.sh
         fi
 
-        ## G.1. Add code to 'NadekoRun.sh' required to run NadekoBot in the background.
+        ## C.1.
         if [[ $1 = "NadekoRun" ]]; then
             echo -e "#!bin/bash \
                 \n \
                 \n_code_name_=\"NadekoRun\" \
                 \n \
                 \necho \"Running NadekoBot in the background\" \
-                \nyoutube-dl -U 2>/dev/null || sudo youtube-dl -U \
+                \nyoutube-dl -U \
                 \n \
                 \ncd $_WORKING_DIR/NadekoBot \
-                \ndotnet restore \
                 \ndotnet build -c Release \
                 \ncd $_WORKING_DIR/NadekoBot/src/NadekoBot \
                 \necho \"Running NadekoBot...\" \
@@ -155,8 +163,7 @@ if [[ $_DISTRO != "Darwin" ]]; then
                 \necho \"Done\" \
                 \ncd $_WORKING_DIR \
                 \n" > NadekoRun.sh
-        ## H.1. Add code to 'NadekoRun.sh' required to run NadekoBot in the background
-        ## with auto restart.
+        ## D.1.
         else
             echo -e "#!/bin/bash \
                 \n \
@@ -164,17 +171,17 @@ if [[ $_DISTRO != "Darwin" ]]; then
                 \n \
                 \necho \"\" \
                 \necho \"Running NadekoBot in the background with auto restart\" \
-                \nyoutube-dl -U 2>/dev/null || sudo youtube-dl -U \
+                \nyoutube-dl -U \
                 \n \
                 \nsleep 5 \
                 \ncd $_WORKING_DIR/NadekoBot \
-                \ndotnet restore && dotnet build -c Release \
+                \ndotnet build -c Release \
                 \n \
                 \nwhile true; do \
                 \n    cd $_WORKING_DIR/NadekoBot/src/NadekoBot && \
-                \n    dotnet run -c Release \
+                \n        dotnet run -c Release \
                 \n \
-                \n    youtube-dl -U 2>/dev/null || sudo youtube-dl -U \
+                \n    youtube-dl -U \
                 \n    sleep 10 \
                 \ndone \
                 \n \
@@ -187,7 +194,7 @@ if [[ $_DISTRO != "Darwin" ]]; then
             sudo systemctl restart nadeko.service || {
                 echo "${_RED}Failed to restart 'nadeko.service'$_NC" >&2
                 read -rp "Press [Enter] to return to the installer menu"
-                return 1  # D.1.
+                return 1  # E.1.
             }
             echo "Waiting 60 seconds for 'nadeko.service' to restart..."
         ## Start 'nadeko.service' if it is NOT currently active.
@@ -196,7 +203,7 @@ if [[ $_DISTRO != "Darwin" ]]; then
             sudo systemctl start nadeko.service || {
                 echo "${_RED}Failed to start 'nadeko.service'$_NC" >&2
                 read -rp "Press [Enter] to return to the installer menu"
-                return 1  # D.1.
+                return 1  # E.1.
             }
             echo "Waiting 60 seconds for 'nadeko.service' to start..."
         fi
@@ -208,7 +215,7 @@ if [[ $_DISTRO != "Darwin" ]]; then
             ((timer-=1))
         done
 
-        # Note: $_NO_HOSTNAME is purposefully unquoted. Do not quote the variable.
+        # NOTE: $_NO_HOSTNAME is purposefully unquoted. Do not quote the variable.
         echo -e "\n\n-------- nadeko.service startup logs ---------" \
             "\n$(journalctl -q -u nadeko -b $_NO_HOSTNAME -S "$start_time" 2>/dev/null ||
             sudo journalctl -q -u nadeko -b $_NO_HOSTNAME -S "$start_time")" \
@@ -278,12 +285,9 @@ else
         case "$1" in
             ## Saves the status of 'bot.nadeko.Nadeko' to $nadeko_service_status.
             nadeko_service_status)
-                # Makes sure the nadeko service is enabled and loaded
+                # Makes sure the nadeko service is enabled and loaded.
                 launchctl enable gui/"$UID"/bot.nadeko.Nadeko &&
                     launchctl load "$nadeko_service" 2>/dev/null
-                # Have to save to two variables because if I place the code inside the
-                # paramerter expansion, it saves "status = [status]" instead of just
-                # "status"
                 nadeko_service_status=$(launchctl print gui/$UID/bot.nadeko.Nadeko | grep "state") &&
                         nadeko_service_status=${nadeko_service_status/[[:blank:]]state = /} || {
                     nadeko_service_status="inactive"
@@ -296,7 +300,7 @@ else
                         echo "${_RED}Failed to stop 'bot.nadeko.Nadeko'" >&2
                         echo "${_CYAN}You will need to restart 'bot.nadeko.Nadeko'" \
                             "to apply any updates to NadekoBot$_NC"
-                        return 1  # D.1.
+                        return 1  # E.1.
                     }
                     if [[ $2 = true ]]; then
                         echo -e "\n${_GREEN}NadekoBot has been stopped$_NC"
@@ -320,10 +324,10 @@ else
         ####
         
         timer=60
-        # E.1.
+        # A.1.
         start_time=$(date +"%F %H:%M:%S")
 
-        ## F.1.
+        ## B.1.
         if [[ $1 = "NadekoRun" ]]; then
             dis_en_lower="disable"
             dis_en_upper="Disabling"
@@ -332,7 +336,7 @@ else
             dis_en_upper="Enabling"
         fi
 
-        echo "${_CYAN}Note: Due to limiations on macOS, NadekoBots's startup" \
+        echo "${_CYAN}NOTE: Due to limiations on macOS, NadekoBots's startup" \
             "logs will not be displayed$_NC"
 
         ## Create 'bot.nadeko.Nadeko', if it does not already exist.
@@ -341,7 +345,7 @@ else
             echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null
         fi
 
-        # Checks if 'NadekoRun.sh' exists.
+        # Check if 'NadekoRun.sh' exists.
         if [[ -f NadekoRun.sh ]]; then
             echo "Updating 'NadekoRun.sh'..."
             echo "Updating 'bot.nadeko.Nadeko'..."
@@ -352,7 +356,7 @@ else
             echo "Updating 'bot.nadeko.Nadeko'..."
         fi
 
-        ## G.1.
+        ## C.1.
         if [[ $1 = "NadekoRun" ]]; then
             echo -e "#!/bin/bash \
                 \n \
@@ -373,7 +377,6 @@ else
                 \n \
                 \n( \
                 \n    cd $_WORKING_DIR/NadekoBot \
-                \n    $(which dotnet) restore \
                 \n    $(which dotnet) build -c Release \
                 \n    cd $_WORKING_DIR/NadekoBot/src/NadekoBot \
                 \n    echo \"Running NadekoBot...\" \
@@ -398,7 +401,7 @@ else
                 \n    <false/> \
                 \n</dict> \
                 \n</plist>" > "$nadeko_service"
-        ## H.1.
+        ## D.1.
         else
             echo -e "#!/bin/bash \
                 \n \
@@ -418,14 +421,13 @@ else
                 \n \
                 \n    sleep 5 \
                 \n    cd $_WORKING_DIR/NadekoBot \
-                \n    $(which dotnet) restore \
                 \n    $(which dotnet) build -c Release \
                 \n) | add_date >> $_WORKING_DIR/bot.nadeko.Nadeko.log \
                 \n \
                 \n( \
                 \n    while true; do \
                 \n        cd $_WORKING_DIR/NadekoBot/src/NadekoBot && \
-                \n        $(which dotnet) run -c Release \
+                \n            $(which dotnet) run -c Release \
                 \n \
                 \n        brew upgrade youtube-dl \
                 \n        sleep 10 \
@@ -451,7 +453,7 @@ else
                 \n</plist>" > "$nadeko_service"
         fi
 
-        ## Restart 'bot.nadeko.Nadeko' if it is currently running
+        ## Restart 'bot.nadeko.Nadeko' if it is currently running.
         if [[ $nadeko_service_status = "running" ]]; then
             echo "Restarting 'bot.nadeko.Nadeko'..."
             launchctl kickstart -k gui/$UID/bot.nadeko.Nadeko || {
@@ -459,7 +461,7 @@ else
                 echo "${_RED}Failed to restart 'bot.nadeko.Nadeko'$_NC" >&2
                 echo "Error code: $error_code"
                 read -rp "Press [Enter] to return to the installer menu"
-                return 1  # D.1.
+                return 1  # E.1.
             }
             echo "Waiting 60 seconds for 'bot.nadeko.Nadeko' to restart..."
         ## Start 'bot.nadeko.Nadeko' if it is NOT currently running.
@@ -470,12 +472,12 @@ else
                 echo "${_RED}Failed to start 'bot.nadeko.Nadeko'$_NC" >&2
                 echo "Error code: $error_code"
                 read -rp "Press [Enter] to return to the installer menu"
-                return 1  # D.1.
+                return 1  # E.1.
             }
             echo "Waiting 60 seconds for 'bot.nadeko.Nadeko' to start..."
         fi
 
-        ## Waits in order to give 'bot.nadeko.Nadeko' enough time to (re)start
+        ## Wait in order to give 'bot.nadeko.Nadeko' enough time to (re)start.
         while ((timer > 0)); do
             echo -en "${_CLRLN}${timer} seconds left"
             sleep 1
@@ -507,12 +509,15 @@ while true; do
     ## Create '$nadeko_service_name', if it does not already exist.
     if [[ ! -f $nadeko_service ]]; then
         echo "Creating '$nadeko_service_name'..."
+        ## Create '/Users/"$USER"/Library/LaunchAgents' if 'LaunchAgents' doesn't
+        ## already exist.
         if [[ $_DISTRO = "Darwin" && ! -d /Users/$USER/Library/LaunchAgents/ ]]; then
             # TODO: Add error catching???
             mkdir /Users/"$USER"/Library/LaunchAgents
         fi
         echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
             if [[ $_DISTRO != "Darwin" ]]; then
+                # Make changes to services in 
                 sudo systemctl daemon-reload
             else
                 sudo chown "$USER":staff "$nadeko_service"
@@ -521,7 +526,7 @@ while true; do
             fi || {
                 echo "${_RED}Failed to create '$nadeko_service_name'" >&2
                 echo "${_CYAN}This service must exist for NadekoBot to work$_NC"
-                clean_exit "1" "Exiting"
+                _CLEAN_EXIT "1" "Exiting"
             }
     fi
 
@@ -624,9 +629,10 @@ while true; do
             # Download latest version of 'nadeko_latest_installer.sh'.
             curl -s "$_RAW_URL"/nadeko_latest_installer.sh -o nadeko_latest_installer.sh || {
                 echo "${_RED}Failed to download latest 'nadeko_latest_installer.sh'...$_NC" >&2
-                clean_exit "1" "Exiting" "true"
+                _CLEAN_EXIT "1" "Exiting" "true"
             }
-            clear -x  # B.1. Clears screen of current content.
+            # B.1. Clears screen of current content.
+            clear -x
             sudo chmod +x nadeko_latest_installer.sh && ./nadeko_latest_installer.sh
 
             # Rexecutes the new/downloaded version of 'installer_prep.sh', so that all
@@ -694,7 +700,7 @@ while true; do
             # Download latest version of '$prereqs_installer'.
             curl -s "$_RAW_URL"/"$prereqs_installer" -o prereqs_installer.sh || {
                 echo "${_RED}Failed to download latest '$prereqs_installer'...$_NC" >&2
-                clean_exit "1" "Exiting" "true"
+                _CLEAN_EXIT "1" "Exiting" "true"
             }
             clear -x  # B.1.
             sudo chmod +x prereqs_installer.sh && ./prereqs_installer.sh
@@ -711,14 +717,14 @@ while true; do
             # Download latest version of 'credentials_setup.sh'.
             curl -s "$_RAW_URL"/credentials_setup.sh -o credentials_setup.sh || {
                 echo "${_RED}Failed to download latest 'credentials_setup.sh'...$_NC" >&2
-                clean_exit "1" "Exiting" "true"
+                _CLEAN_EXIT "1" "Exiting" "true"
             }
             clear -x  # B.1.
             sudo chmod +x credentials_setup.sh && ./credentials_setup.sh
             clear -x  # B.1.
             ;;
         8)
-            clean_exit "0" "Exiting"
+            _CLEAN_EXIT "0" "Exiting"
             ;;
         *)
             clear -x

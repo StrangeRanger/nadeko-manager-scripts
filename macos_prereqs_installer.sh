@@ -16,8 +16,8 @@ dot_net_install() {
     echo "Updating and upgrading Homebrew formulas and casks..."
     brew update && brew upgrade
     echo "Installing prerequisites..."
-    brew install opus opus-tools opusfile libsodium libffi ffmpeg openssl \
-        redis git jq python python3 wget youtube-dl
+    brew install opus opus-tools opusfile libsodium libffi ffmpeg openssl redis git jq \
+        python python3 wget youtube-dl
     echo "Starting redis..."
     brew services start redis
     echo "Casking Dotnet..."

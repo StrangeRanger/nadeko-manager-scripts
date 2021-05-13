@@ -6,7 +6,7 @@
 #### [ Variables ]
 
 
-# TODO: Put in master installer file and export them?
+# TODO: Put in master installer file and export them???
 credentials="NadekoBot/src/NadekoBot/credentials.json"
 bak_credentials="NadekoBot/src/NadekoBot/credentials.json.bak"
 
@@ -80,7 +80,7 @@ read -rp "Enter your Timezone DB API Key: " timedbapi
 echo "Timezone DB API Key: $timedbapi"
 echo -e "-------------\n"
 
-## Back up credentials by renameing them to $bak_credentials.
+## Back up credentials by renameing it to 'credentials.json.bak'.
 if [[ -f $credentials ]]; then
     echo "Backing up current 'credentials.json' as 'credentials.json.bak'..."
     mv $credentials $bak_credentials
@@ -92,6 +92,7 @@ else
     sudo chmod +x $credentials
 fi
 
+## Add the credentials to 'credentials.json'.
 echo -e "{
     \"Token\": \"$token\",
     \"OwnerIds\": [
