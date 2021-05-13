@@ -1,50 +1,72 @@
 #!/bin/bash
 #
-# Downloads and updates NadekoBot
+# Downloads and updates NadekoBot.
 #
-# Note: All variables not defined in this script, are exported from
-# 'linuxPMI.sh', 'installer-prep.sh', and 'linux-master-installer.sh'.
+# Note: All variables not defined in this script, are exported from 'linuxAIO.sh',
+# 'installer_prep.sh', and 'linux_master_installer.sh'.
 #
-################################################################################
+########################################################################################
+#### [ Variables ]
+
+
+# TODO: Put in master installer file and export them?
+bak_credentials="NadekoBot.bak/src/NadekoBot/credentials.json"
+new_credentials="NadekoBot/src/NadekoBot/credentials.json"
+bak_database="NadekoBot.bak/src/NadekoBot/bin/"
+new_database="NadekoBot/src/NadekoBot/bin/"
+notcoreapp_version="netcoreapp3.1"
+
+
+#### End of [ Variables ]
+########################################################################################
 #### [ Functions ]
 
 
-# Cleans up any loose ends/left over files
 clean_up() {
     ####
-    # NOTE:
+    # FUNCTION INFO:
     #
-    # '$root_dir' is used because if an error occures while the working
-    # directory is currently in NadekoBot's root directory, it won't be
-    # possible to cleanly exit and restore everything.
+    # If 'nadeko_latest_installer.sh', for whatever reason, is not able to completely
+    # update or download Nadeko, this function will cleanup any remaining files and
+    # restore the previous code and configurations.
     #
-    # I don't just 'cd' to the root dir in the unlikely case it fails and
-    # causes even more problems.
+    # @param $1 Determines whether or not this function kills the script's parent
+    #           processes.
     ####
 
+    # Files to be removed.
     local installer_files=("credentials_setup.sh" "installer_prep.sh"
         "prereqs_installer.sh" "nadeko_latest_installer.sh"
         "nadeko_master_installer.sh")
 
     echo "Cleaning up files and directories..."
-    if [[ -d $root_dir/tmp ]]; then rm -rf "$root_dir"/tmp; fi
-    if [[ -d $root_dir/NadekoBot ]]; then rm -rf "$root_dir"/NadekoBot; fi
+    # NOTE: Unsure if this if statement is needed. Might be removed in a later PR.
+    if [[ -d $_WORKING_DIR/tmp ]]; then rm -rf "$_WORKING_DIR"/tmp; fi
+    ## Remove all files in the 'installer_files' array, if they exist.
     for file in "${installer_files[@]}"; do
-        if [[ -f $root_dir/$file ]]; then rm "$root_dir"/"$file"; fi
+        if [[ -f $_WORKING_DIR/$file ]]; then rm "$_WORKING_DIR"/"$file"; fi
     done
+    
+    ## Remove the NadekoBot code that was just downloaded, and restore the old code.
+    if [[ -d $_WORKING_DIR/NadekoBot && -d $_WORKING_DIR/NadekoBot.bak ]]; then
+        rm -rf "$_WORKING_DIR"/NadekoBot
 
-    if [[ -d $root_dir/NadekoBot.bak ]]; then
         echo "Restoring from 'NadekoBot.bak'..."
-        mv -f "$root_dir"/NadekoBot.bak "$root_dir"/NadekoBot || {
-            echo "${red}Failed to restore from 'NadekoBot.bak'" >&2
-            echo "${cyan}Manually rename 'NadekoBot.bak' to 'NadekoBot'$nc"
+        mv -f "$_WORKING_DIR"/NadekoBot.bak "$_WORKING_DIR"/NadekoBot || {
+            echo "${_RED}Failed to restore from 'NadekoBot.bak'" >&2
+            echo "${_CYAN}Manually rename 'NadekoBot.bak' to 'NadekoBot'$_NC"
         }
     fi
 
+    ## Remove all files in the 'installer_files' array, if they exist.
+    for file in "${installer_files[@]}"; do
+        if [[ -f $_WORKING_DIR/$file ]]; then rm "$_WORKING_DIR"/"$file"; fi
+    done
+
+    ## Kill the script's parent processes, if param $1 is true.
     if [[ $1 = true ]]; then
-        # TODO: Figure out how to silently kill a process
         echo "Killing parent processes..."
-        kill -9 "$nadeko_master_installer_pid" "$installer_prep_pid"
+        kill -9 "$_NADEKO_MASTER_INSTALLER_PID" "$_INSTALLER_PREP_PID"
         echo "Exiting..."
         exit 1
     fi
@@ -52,47 +74,50 @@ clean_up() {
 
 
 #### End of [ Functions ]
-################################################################################
-#### [ Main ]
-
-############################################################################
-######## [ Error Trapping ]
+########################################################################################
+#### [ Error Trapping ]
 
 
-# TODO: Figure out how to silently kill a process
+# Executes when the user uses 'Ctrl + Z' or 'Ctrl + C'.
 trap 'echo -e "\n\nScript forcefully stopped"
     clean_up
     echo "Killing parent processes..."
-    kill -9 "$nadeko_master_installer_pid" "$installer_prep_pid"
+    kill -9 "$_NADEKO_MASTER_INSTALLER_PID" "$_INSTALLER_PREP_PID"
     echo "Exiting..."
     exit 1' \
     SIGINT SIGTSTP SIGTERM
 
 
-######## End of [ Error Trapping ]
-########################################################################
-######## [ Prepping ]
+#### End of [ Error Trapping ]
+########################################################################################
+#### [ Prepping ]
 
 
-# 'active' is used on Linux and 'running' is used on macOS
+## 'active' is used on Linux while 'running' is used on macOS.
+## Stops $nadeko_service_status if it's currently active/running.
 if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
-    # B.1. $nadeko_service_active = true when '$nadeko_service_name' is active,
-    # and is used to indicate to the user that the service was stopped and that
-    # they will need to start it
     nadeko_service_active=true
     service_actions "stop_service" "false"
 fi
 
 
-######## End of [ Prepping ]
-########################################################################
+#### End of [ Prepping ]
+########################################################################################
+#### [ Main ]
+
+
+printf "We will now download/update NadekoBot. "
+read -rp "Press [Enter] to begin."
+
+####################################################################################
 ######## [ Create Backup, Then Update ]
 
 
+## Create a backup of NadekoBot, if it currently exists.
 if [[ -d NadekoBot ]]; then
     echo "Backing up NadekoBot as 'NadekoBot.bak'..."
     mv -f NadekoBot NadekoBot.bak || {
-        echo "${red}Failed to back up NadekoBot$nc" >&2
+        echo "${_RED}Failed to back up NadekoBot$_NC" >&2
         echo -e "\nPress [Enter] to return to the installer menu"
         clean_up "false"
     }
@@ -100,77 +125,86 @@ fi
 
 echo "Downloading NadekoBot..."
 git clone -b 1.9 --recursive --depth 1 https://gitlab.com/Kwoth/NadekoBot || {
-    echo "${red}Failed to download NadekoBot$nc" >&2
+    echo "${_RED}Failed to download NadekoBot$_NC" >&2
     clean_up "true"
 }
 
-if [[ -d /tmp/NuGetScratch && $distro != "Darwin" ]]; then
+# If $_DISTRO isn't Darwin and '/tmp/NuGetScratch' exists...
+if [[ -d /tmp/NuGetScratch && $_DISTRO != "Darwin" ]]; then
     echo "Modifying ownership of '/tmp/NuGetScratch' and '/home/$USER/.nuget'"
+    # Due to permission errors cropping up every now and then, especially when the
+    # installer is executed with root privileges, it's neccessary to make sure that 
+    # '/tmp/NuGetScratch' and '/home/$USER/.nuget' are owned by the user that the
+    # installer is currently being run under.
     sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/"$USER"/.nuget || {
-        echo "${red}Failed to to modify ownership of '/tmp/NuGetScratch' and/or" \
-            "'/home/$USER/.nuget'" >&2
-        echo "${cyan}You can ignore this if you are not prompted about" \
-            "locked files/permission error while attempting to download" \
-            "dependencies$nc"
+        echo "${_RED}Failed to to modify the ownership of '/tmp/NuGetScratch' and/or" \
+            "'/home/$USER/.nuget'..." >&2
+        # NOTE: Unsure if the echo is applicable or not. Maybe be removed in a future PR.
+        echo "${_CYAN}You can ignore this if you were not prompted about locked" \
+            "files/permission errors while attempting to download dependencies$_NC"
     }
 fi
 
-echo "Restoring NadekoBot's dependencies..."
-cd NadekoBot || {
-    echo "${red}Failed to change working directory$nc" >&2
-    clean_up "true"
-}
-dotnet restore || {
-    echo "${red}Failed to restore dependencies$nc" >&2
-    clean_up "true"
-}
-
 echo "Building NadekoBot..."
-dotnet build --configuration Release || {
-    echo "${red}Failed to build NadekoBot$nc" >&2
+cd NadekoBot || {
+    echo "${_RED}Failed to change working directory$_NC" >&2
     clean_up "true"
 }
-cd "$root_dir" || {
-    echo "${red}Failed to return to the project's root directory$nc" >&2
+dotnet build --configuration Release || {
+    echo "${_RED}Failed to build NadekoBot$_NC" >&2
+    clean_up "true"
+}
+cd "$_WORKING_DIR" || {
+    echo "${_RED}Failed to return to the project's root directory$_NC" >&2
     clean_up "true"
 }
 
-if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d \
-        NadekoBot.bak ]]; then
+## Move credentials, database, and other data to the new version of NadekoBot.
+if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot.bak ]]; then
     echo "Copping 'credentials.json' to new version..."
-    cp -f NadekoBot.bak/src/NadekoBot/credentials.json \
-        NadekoBot/src/NadekoBot/credentials.json &>/dev/null
-    echo "Copping database to the new version"
-    cp -RT NadekoBot.bak/src/NadekoBot/bin/ NadekoBot/src/NadekoBot/bin/ &>/dev/null
-    while read -r line; do
-        if [[ $line != "netcoreapp2.1" ]]; then
-            echo "${yellow}WARNING: Old netcoreapp version detected$nc"
+    cp -f "$bak_credentials" "$new_credentials" &>/dev/null
+    echo "Copping database to the new version..."
+    cp -RT "$bak_database" "$new_database" &>/dev/null
+    
+    ## Check if an old netcoreapp version exists, then moves the database in it, to the
+    ## new netcorapp version.
+    while read -r netcoreapp; do
+        if [[ $netcoreapp != "$notcoreapp_version" &&
+                # Make sure that there is a database to even move.
+                -f "$new_database"/Release/"$netcoreapp"/data/NadekoBot.db ]]; then
+            echo "${_YELLOW}WARNING: Old netcoreapp version detected$_NC"
             echo "Moving database to new netcoreapp version..."
-            cp -RT NadekoBot/src/NadekoBot/bin/Release/"$line"/data/NadekoBot.db \
-                    NadekoBot/src/NadekoBot/bin/Release/netcoreapp2.1/data/NadekoBot.db \
-                    &>/dev/null || {
-                echo "${red}Failed to move database$nc" >&2
+
+            ## NOTE: This code will be removed in the future, since the netcoreapp3.1
+            ## directory will be created when building NadekoBot.
+            if [[ ! -d $new_database/Release/$notcoreapp_version ]]; then
+                mkdir "$new_database"/Release/"$notcoreapp_version"
+                mkdir "$new_database"/Release/"$notcoreapp_version"/data/
+            fi
+
+            cp -RT "$new_database"/Release/"$netcoreapp"/data/NadekoBot.db \
+                    "$new_database"/Release/"$notcoreapp_version"/data/NadekoBot.db || {
+                echo "${_RED}Failed to move database$_NC" >&2
                 clean_up "true"
             }
-            echo "Moving '$line' to active directory: '${root_dir}/${line}'..."
-            echo "*You may do with it as you please*"
-            mv -f NadekoBot/src/NadekoBot/bin/Release/"$line" ./"$line" || {
-                echo "${red}Failed to $line to active directory" >&2
-                echo -e "${cyan}Please manually move '$line' to the same" \
-                    "'linuxAIO.sh' is located before starting NadekoBot\nLocation:" \
-                    "$root_dir/NadekoBot/src/NadekoBot/bin/Release/$line"
-            }
+            ## Since NadekoBot still currently relies on netcoreapp2.1, it'll be left
+            ## untouched.
+            #echo "Removing '$netcoreapp'..."
+            #rm -rf "$new_database"/Release/"$netcoreapp" || {
+            #    echo "${_RED}Failed to remove '$netcoreapp'" >&2
+            #    echo -e "${_CYAN}Please manually remove '$netcoreapp' before continuing" \
+            #        "\nLocation: $_WORKING_DIR/$new_database/Release/$netcoreapp$_NC"
+            #}
         fi
-    done < <(ls "$root_dir"/NadekoBot/src/NadekoBot/bin/Release/)
-    # TODO: Figure out a way to give the user an option to overwrite this dir
-    # or save it so new changes to official data dir don't affect it.........
+    done < <(ls "$_WORKING_DIR"/"$new_database"/Release/)
+
     echo "Copping other data to the new version..."
     cp -RT NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
-    # TODO: Add error handling???
-    rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old
+    rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old  # TODO: Add error handling???
 fi
 
-if [[ $distro != "Darwin" ]]; then
+## Updates/creates 'bot.nadeko.Nadeko' if the installer is running on macOS.
+if [[ $_DISTRO != "Darwin" ]]; then
     if [[ -f $nadeko_service ]]; then
         echo "Updating '$nadeko_service_name'..."
         create_or_update="update"
@@ -181,35 +215,35 @@ if [[ $distro != "Darwin" ]]; then
 
     echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
             sudo systemctl daemon-reload || {
-        echo "${red}Failed to $create_or_update '$nadeko_service_name'$nc" >&2
-        b_s_update="Failed"
+        echo "${_RED}Failed to $create_or_update '$nadeko_service_name'$_NC" >&2
+        failed_to_create_or_update=true
     }
 fi
 
 
 ######## End of [ Create Backup, Then Update ]
-########################################################################
+####################################################################################
 ######## [ Clean Up and Present Results ]
 
 
-echo -e "\n${green}Finished downloading/updating NadekoBot$nc"
+echo -e "\n${_GREEN}Finished downloading/updating NadekoBot$_NC"
 
-if [[ $b_s_update ]]; then
-    echo "${yellow}WARNING: Failed to $create_or_update '$nadeko_service_name'$nc"
+if [[ $failed_to_create_or_update ]]; then
+    echo "${_YELLOW}WARNING: Failed to $create_or_update '$nadeko_service_name'$_NC"
 fi
 
-# B.1.
 if [[ $nadeko_service_active ]]; then
-    echo "${cyan}NOTE: '$nadeko_service_name' was stopped to update" \
+    echo "${_CYAN}NOTE: '$nadeko_service_name' was stopped to update" \
         "NadekoBot and has to be started using the run modes in the" \
-        "installer menu$nc"
+        "installer menu$_NC"
 fi
 
 read -rp "Press [Enter] to apply any existing changes to the installers"
 
 
 ######## End of [ Clean Up and Present Results ]
-########################################################################
+####################################################################################
 
 #### End of [ Main ]
-################################################################################
+########################################################################################
+

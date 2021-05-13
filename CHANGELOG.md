@@ -13,8 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - Modify style of exported variables.
-- Updated comments.
+- Updated and added A LOT of comments.
 - Minor refactoring.
+
+### Fixed
+
+- Fixed macOS version scheme so installer works on all minor revisions of macOS 11.
+- Shellcheck SC2021
+- Fixed a bug where 'NadekoBot' could be deleted when trying to restore from a canceled download, even if 'NadekoBot.bak' didn't exist.
 
 ## [2.1.1] - 2021-03-26
 
