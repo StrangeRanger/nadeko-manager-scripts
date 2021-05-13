@@ -90,7 +90,14 @@ trap 'echo -e "\n\nScript forcefully stopped"
 
 #### End of [ Error Trapping ]
 ########################################################################################
-#### [ Prepping ]
+#### [ Main ]
+
+
+printf "We will now download/update NadekoBot. "
+read -rp "Press [Enter] to begin."
+
+####################################################################################
+######## [ Stop service ]
 
 
 ## 'active' is used on Linux while 'running' is used on macOS.
@@ -101,14 +108,7 @@ if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]
 fi
 
 
-#### End of [ Prepping ]
-########################################################################################
-#### [ Main ]
-
-
-printf "We will now download/update NadekoBot. "
-read -rp "Press [Enter] to begin."
-
+######## End of [ Stop service ]
 ####################################################################################
 ######## [ Create Backup, Then Update ]
 
