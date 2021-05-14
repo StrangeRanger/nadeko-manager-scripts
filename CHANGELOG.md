@@ -19,10 +19,10 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 
 ### Changed
 
-- Modify style of exported variables.
+- ⚠️ Modify style of exported variables.
 - Updated and added A LOT of comments.
 - Minor refactoring.
-- `nadeko.service` will now be stored in `/etc/systemd/system/`, instead of `/lib/systemd/system/`.
+- ⚠️ `nadeko.service` will now be stored in `/etc/systemd/system/`, instead of `/lib/systemd/system/`.
 
 ### Fixed
 
