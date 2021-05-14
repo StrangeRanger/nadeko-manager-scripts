@@ -155,7 +155,7 @@ elif [[ $linuxAIO_revision && $linuxAIO_revision != "$current_linuxAIO_revision"
         "required to manually download the newest version of" \
         "'linuxAIO.sh'. You can do so by executing the following:"
     echo "    mv linuxAIO.sh linuxAIO.sh.old && curl" \
-        "https://raw.githubusercontent.com/"$installer_repo"/"$installer_branch"/linuxAIO.sh" \
+        "https://raw.githubusercontent.com/\"$installer_repo\"/\"$installer_branch\"/linuxAIO.sh" \
         "-o linuxAIO.sh && sudo chmod +x linuxAIO.sh$_NC"
     _CLEAN_EXIT "0" "Exiting" "true"
 fi

@@ -8,13 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Summary (IMPORTANT)
 
-Due to some breaking changes inside of 'linuxAIO.sh', all users who are currently using 'linuxAIO.sh' revision 8 and earlier will receive a message the next time they execute the script. The message will inform users that they will need to manually download the newest version of 'linuxAIO.sh'. The appropriate command to do this will be provided by the installer, based on the current configurations of 'linuxAIO.sh'.
+Due to some breaking changes inside of 'linuxAIO.sh', all users who are currently using 'linuxAIO.sh' revision 8 and earlier will receive a message the next time they execute the script. The notice will inform users that they will need to download the newest version of 'linuxAIO.sh' manually. The appropriate command to do this will be provided by the installer, based on the current configurations of 'linuxAIO.sh'.
 
 Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the service will now be stored in `/etc/systemd/system/nadeko.service`. To do this, run the following command: `sudo systemctl stop nadeko.service && sudo rm /lib/systemd/system/nadeko.service && sudo systemctl daemon-reload`. From here, start NadekoBot like you have any other time.
 
 ### Added
 
-- End user can now configure what branch/tag to download NadekoBot from (i.e. `1.9`, `2.39.1`, etc.).
+- End-user can now configure what branch/tag to download NadekoBot from (i.e. `1.9`, `2.39.1`, etc.).
 - Now sets `$allow_run_as_root` and `$_NADEKO_INSTALL_VERSION` the same way that `$installer_branch` is set, whenever a new version of 'linuxAIO.sh' is retrieved.
 
 ### Changed
@@ -26,7 +26,7 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 
 ### Fixed
 
-- Fixed macOS version scheme so installer works on all minor revisions of macOS 11.
+- Fixed macOS version scheme, so installer works on all minor revisions of macOS 11.
 - Shellcheck SC2021
 - Fixed a bug where 'NadekoBot' could be deleted when trying to restore from a canceled download, even if 'NadekoBot.bak' didn't exist.
 
@@ -34,7 +34,7 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 
 ### Added
 
-- Whenever downloading latest `linuxAIO.sh`, the current `installer_branch` will be applied to new `linuxAIO.sh`.
+- Whenever downloading the latest `linuxAIO.sh`, the current `installer_branch` will be applied to the new `linuxAIO.sh`.
 - Added `release/latest` as an optional branch for the `installer_branch`.
 - Officially supports macOS Big Sur.
 - Officially supports macOS Mojave.
