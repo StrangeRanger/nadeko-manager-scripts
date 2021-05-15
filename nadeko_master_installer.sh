@@ -581,11 +581,11 @@ while true; do
         fi
 
         ## If NadekoBot is running in the background with auto restart...
-        if [[ $(grep '_code_name_="NadekoRunAR"' NadekoRun.sh) ]]; then
+        if grep -q '_code_name_="NadekoRunAR"' NadekoRun.sh; then
             echo "2. Run NadekoBot in the background"
             echo "3. Run NadekoBot in the background with auto restart${run_mode_status}"
         ## Else if NadekoBot is running in the background...
-        elif [[ $(grep '_code_name_="NadekoRun"' NadekoRun.sh) ]]; then
+        elif grep -q '_code_name_="NadekoRun"' NadekoRun.sh; then
             echo "2. Run NadekoBot in the background${run_mode_status}"
             echo "3. Run NadekoBot in the background with auto restart"
         else
