@@ -6,29 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Summary (IMPORTANT)
+## [3.0.0] - 2021-05-15
 
-Due to some breaking changes inside of 'linuxAIO.sh', all users who are currently using 'linuxAIO.sh' revision 8 and earlier will receive a message the next time they execute the script. The notice will inform users that they will need to download the newest version of 'linuxAIO.sh' manually. The appropriate command to do this will be provided by the installer, based on the current configurations of 'linuxAIO.sh'.
+### Breaking Changes
 
-Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the service will now be stored in `/etc/systemd/system/nadeko.service`. To do this, run the following command: `sudo systemctl stop nadeko.service && sudo rm /lib/systemd/system/nadeko.service && sudo systemctl daemon-reload`. From here, start NadekoBot like you have any other time.
+Due to some breaking changes inside of `linuxAIO.sh`, all users who are currently using `linuxAIO.sh` revision 8 and earlier will receive a message the next time they execute the script. The notice will inform users that they will need to download the newest version of `linuxAIO.sh` manually. The appropriate command to do this will be provided by the installer, based on the current configurations of `linuxAIO.sh`.
+
+Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the service will now be stored in `/etc/systemd/system/nadeko.service`. To do this, run the following command: `sudo systemctl stop nadeko.service && sudo rm /lib/systemd/system/nadeko.service && sudo systemctl daemon-reload`. From here, execute `linuxAIO.sh` as you always do.
 
 ### Added
 
 - End-user can now configure what branch/tag to download NadekoBot from (i.e. `1.9`, `2.39.1`, etc.).
-- Now sets `$allow_run_as_root` and `$_NADEKO_INSTALL_VERSION` the same way that `$installer_branch` is set, whenever a new version of 'linuxAIO.sh' is retrieved.
+- `$allow_run_as_root` and `$_NADEKO_INSTALL_VERSION` are now set the same way that `$installer_branch` is set, whenever a new version of 'linuxAIO.sh' is retrieved.
 
 ### Changed
 
-- ⚠️ Modify style of exported variables.
+- ⚠️ The majority of exported variables are now styled as `_UPPER_CASE`.
 - Updated and added A LOT of comments.
 - Minor refactoring.
-- ⚠️ `nadeko.service` will now be stored in `/etc/systemd/system/`, instead of `/lib/systemd/system/`.
+- ⚠️ `nadeko.service` will now be created and placed in `/etc/systemd/system/`, instead of `/lib/systemd/system/`.
 
 ### Fixed
 
 - Fixed macOS version scheme, so installer works on all minor revisions of macOS 11.
-- Shellcheck SC2021
-- Fixed a bug where 'NadekoBot' could be deleted when trying to restore from a canceled download, even if 'NadekoBot.bak' didn't exist.
+- Fixed several shellcheck errors and warnings.
+- Fixed a bug where the `NadekoBot` directory could be deleted when trying to restore NadekoBot after canceling a download, even if `NadekoBot.bak`/`NadekoBot.old` doesn't exist.
 
 ## [2.1.1] - 2021-03-26
 
@@ -82,6 +84,7 @@ Version 2 of the Nadeko Bash Scripts is a complete rewrite of the previous Bash 
   - CentOS: 7
 - Removed option to run NadekoBot with auto-update
 
-[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v2.1.1...HEAD
+[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.0
 [2.1.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.1
 [2.1.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.0
