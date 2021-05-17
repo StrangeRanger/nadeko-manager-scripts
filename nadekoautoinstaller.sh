@@ -91,6 +91,11 @@ if [ "$OS" = "Ubuntu" ]; then
 		supported=1
 	elif [ "$VER" = "20.10" ]; then
 		supported=1
+	elif [ "$VER" = "21.04" ]; then
+		supported=1
+		VER=20.10
+		echo -e "Using Ubuntu 20.10 Installation scripts.\nIf the installation fails contact NadekoBot support."
+		sleep 5
 	else
 		supported=0
 	fi
