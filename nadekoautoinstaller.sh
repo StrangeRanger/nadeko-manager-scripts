@@ -427,8 +427,9 @@ elif [ "$OS" = "Debian" ]; then
 		sudo apt-get install tmux python python3.5 -y
 		sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
 		sudo chmod a+rx /usr/local/bin/youtube-dl
-	elif [ "$SVER" = "10.9" ]; then
+	elif [ "$SVER" = "11" ]; then
 		VER=10
+		# Update when available
 		echo -e "Using Debian 10 Installation scripts.\nIf the installation fails contact NadekoBot support."
 		sleep 5
 	elif [ "$SVER" = "10" ]; then
