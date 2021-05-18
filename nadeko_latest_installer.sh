@@ -37,7 +37,7 @@ clean_up() {
     # Files to be removed.
     local installer_files=("credentials_setup.sh" "installer_prep.sh"
         "prereqs_installer.sh" "nadeko_latest_installer.sh"
-        "nadeko_master_installer.sh")
+        "nadeko_master_installer.sh" "nadeko_runner.sh")
 
     echo "Cleaning up files and directories..."
     ## Remove any and all files specified in $installer_files.
@@ -94,10 +94,10 @@ read -rp "Press [Enter] to begin."
 
 
 ## 'active' is used on Linux, while 'running' is used on macOS.
-## Stop $nadeko_service_status if it's currently active/running.
-if [[ $nadeko_service_status = "active" || $nadeko_service_status = "running" ]]; then
+## Stop $_NADEKO_SERVICE_STATUS if it's currently active/running.
+if [[ $_NADEKO_SERVICE_STATUS = "active" || $_NADEKO_SERVICE_STATUS = "running" ]]; then
     nadeko_service_active=true
-    service_actions "stop_service" "false"
+    _SERVICE_ACTIONS "stop_service" "false"
 fi
 
 
@@ -196,24 +196,6 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
     rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old  # TODO: Add error handling???
 fi
 
-## Update/create 'bot.nadeko.Nadeko' if the installer is NOT running on macOS.
-if [[ $_DISTRO != "Darwin" ]]; then
-    if [[ -f $nadeko_service ]]; then
-        echo "Updating '$nadeko_service_name'..."
-        create_or_update="update"
-    else
-        echo "Creating '$nadeko_service_name'..."
-        create_or_update="create"
-    fi
-
-    # Add the contents of the service to 'nadeko.service'.
-    echo -e "$nadeko_service_content" | sudo tee "$nadeko_service" &>/dev/null &&
-            sudo systemctl daemon-reload || {
-        echo "${_RED}Failed to $create_or_update '$nadeko_service_name'$_NC" >&2
-        failed_to_create_or_update=true
-    }
-fi
-
 
 ######## End of [ Create Backup, Then Update ]
 ####################################################################################
@@ -222,12 +204,8 @@ fi
 
 echo -e "\n${_GREEN}Finished downloading/updating NadekoBot$_NC"
 
-if [[ $failed_to_create_or_update ]]; then
-    echo "${_YELLOW}WARNING: Failed to $create_or_update '$nadeko_service_name'$_NC"
-fi
-
 if [[ $nadeko_service_active ]]; then
-    echo "${_CYAN}NOTE: '$nadeko_service_name' was stopped to update NadekoBot and has" \
+    echo "${_CYAN}NOTE: '$_NADEKO_SERVICE_NAME' was stopped to update NadekoBot and has" \
         "to be started using the run modes in the installer menu$_NC"
 fi
 

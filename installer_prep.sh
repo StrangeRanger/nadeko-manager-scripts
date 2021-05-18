@@ -54,7 +54,7 @@ _CLEAN_EXIT() {
     # Files to be removed.
     local installer_files=("credentials_setup.sh" "installer_prep.sh"
         "prereqs_installer.sh" "nadeko_latest_installer.sh"
-        "nadeko_master_installer.sh")
+        "nadeko_master_installer.sh" "nadeko_runner.sh")
 
     if [[ $3 = true ]]; then
         echo "Cleaning up..."

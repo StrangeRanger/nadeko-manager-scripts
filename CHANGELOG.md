@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Summary
+
+The most notable change in this version is the refactoring of the code used to download NadekoBot. I've provided information and what and how exactly it was refactored down below in the changed portion of this changelog. The change was done in the hopes that it will allow for the installer to be just a bit easier to maintain and modify, and organized.
+
+### Changed
+
+- Option four will inform the end-user whether or not NadekoBot's service is running. While the option will be greyed out if the service is not running, it will not be disabled.
+- Major refactoring
+  - All of the code used to download NadekoBot, has been moved into two separate files. One specifically for Linux and the other for macOS.
+  - This has resulted in the fact that the downloader code must be downloaded itself.
+
+### Fixed
+
+- Fixed typos in the menu output.
+
 ## [3.0.0] - 2021-05-15
 
 ### Breaking Changes
