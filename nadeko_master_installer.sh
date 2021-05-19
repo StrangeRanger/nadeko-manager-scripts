@@ -113,7 +113,7 @@ else  ##########################################################################
         ####
 
         ## Saves the status of '$_NADEKO_SERVICE_NAME' to $_NADEKO_SERVICE_STATUS.
-        if [[ $1 = "_NADEKO_SERVICE_STATUS" ]]; then
+        if [[ $1 = "nadeko_service_status" ]]; then
             # Makes sure the nadeko service is enabled and loaded.
             launchctl enable gui/"$UID"/$_NADEKO_SERVICE_NAME &&
                 launchctl load "$_NADEKO_SERVICE" 2>/dev/null
