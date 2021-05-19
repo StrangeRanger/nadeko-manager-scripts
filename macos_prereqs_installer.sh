@@ -17,11 +17,11 @@ dot_net_install() {
     brew update && brew upgrade
     echo "Installing prerequisites..."
     brew install opus opus-tools opusfile libsodium libffi ffmpeg openssl redis git jq \
-        python python3 wget youtube-dl
+        python3 wget youtube-dl
     echo "Starting redis..."
     brew services start redis
     echo "Casking Dotnet..."
-    brew install --cask dotnet
+    brew install --cask dotnet-sdk
     echo "Brew doctor..."
     brew doctor
 }
