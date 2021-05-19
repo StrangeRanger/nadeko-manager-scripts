@@ -55,7 +55,7 @@ if [[ ! -f $_NADEKO_SERVICE ]]; then
         _CLEAN_EXIT "1" "Exiting"
     }
 else
-    ecno "Updating '$_NADEKO_SERVICE_NAME'..."
+    echo "Updating '$_NADEKO_SERVICE_NAME'..."
 fi
 
 # Check if 'NadekoRun.sh' exists.
