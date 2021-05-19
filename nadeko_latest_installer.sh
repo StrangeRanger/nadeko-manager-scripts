@@ -16,6 +16,9 @@ bak_database="NadekoBot.bak/src/NadekoBot/bin/"
 new_database="NadekoBot/src/NadekoBot/bin/"
 notcoreapp_version="netcoreapp3.1"
 
+if [[ $_DISTRO != "Darwin" ]]; then cp_flag="RT"
+else cp_flag="r"; fi
+
 
 #### End of [ Variables ]
 ########################################################################################
@@ -157,7 +160,7 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
     echo "Copping 'credentials.json' to new version..."
     cp -f "$bak_credentials" "$new_credentials" &>/dev/null
     echo "Copping database to the new version..."
-    cp -RT "$bak_database" "$new_database" &>/dev/null
+    cp -r "$bak_database" "$new_database" &>/dev/null
     
     ## Check if an old netcoreapp version exists, then moves the database within it, to
     ## the new netcorapp version.
@@ -175,7 +178,7 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
                 mkdir "$new_database"/Release/"$notcoreapp_version"/data/
             fi
 
-            cp -RT "$new_database"/Release/"$netcoreapp"/data/NadekoBot.db \
+            cp -"$cp_flag" "$new_database"/Release/"$netcoreapp"/data/NadekoBot.db \
                     "$new_database"/Release/"$notcoreapp_version"/data/NadekoBot.db || {
                 echo "${_RED}Failed to move database$_NC" >&2
                 clean_up "true"
@@ -192,7 +195,7 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
     done < <(ls "$_WORKING_DIR"/"$new_database"/Release/)
 
     echo "Copping other data to the new version..."
-    cp -RT NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
+    cp -r$cp_flag NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
     rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old  # TODO: Add error handling???
 fi
 
