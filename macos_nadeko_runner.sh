@@ -46,7 +46,7 @@ if [[ ! -f $_NADEKO_SERVICE ]]; then
         # TODO: Add error catching???
         mkdir /Users/"$USER"/Library/LaunchAgents
     fi
-    echo -e "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null && (
+    echo "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null && (
             sudo chown "$USER":staff "$_NADEKO_SERVICE"
             launchctl enable gui/"$UID"/"$_NADEKO_SERVICE_NAME"
             launchctl load "$_NADEKO_SERVICE") || {

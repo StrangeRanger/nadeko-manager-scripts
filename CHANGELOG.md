@@ -16,6 +16,7 @@ The most notable change in this version is the refactoring of the code used to d
 - Major refactoring
   - All of the code used to download NadekoBot, has been moved into two separate files. One specifically for Linux and the other for macOS.
   - This has resulted in the fact that the downloader code must be downloaded itself.
+- The installer will no longer create Nadeko's service immediatley. Instead, the service will only be created when one of the run options have been chosen.
 
 ### Fixed
 

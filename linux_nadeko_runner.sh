@@ -47,7 +47,7 @@ else
 fi
 
 ## Create/update '$_NADEKO_SERVICE_NAME'
-echo -e "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null &&
+echo "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null &&
         sudo systemctl daemon-reload || {
     echo "${_RED}Failed to create '$_NADEKO_SERVICE_NAME'" >&2
     echo "${_CYAN}This service must exist for NadekoBot to work$_NC"

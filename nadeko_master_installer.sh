@@ -158,6 +158,7 @@ echo -e "Welcome to the NadekoBot installer\n"
 
 while true; do
     # Get the current status of $_NADEKO_SERVICE_NAME.
+    # NOTE: Will return 'inactive'   if it does not exist...
     _SERVICE_ACTIONS "nadeko_service_status"
 
     ## Disable option 1, if any of the following tools are not installed.
@@ -199,7 +200,7 @@ while true; do
         elif [[ $_NADEKO_SERVICE_STATUS = "inactive" || $_NADEKO_SERVICE_STATUS = "waiting" ]]; then
             option_five_disabled=true
             run_mode_status=" ${_YELLOW}(Set up to run in this mode)$_NC"
-            stop_nadeko_service="4. ${_GREY}Stop NadekoBot ('$_NADEKO_SERVICE_NAME' isn't running)"
+            stop_nadeko_service="4. ${_GREY}Stop NadekoBot ('$_NADEKO_SERVICE_NAME' isn't running)$_NC"
         ## Else don't do anything...
         else
             run_mode_status=" ${_YELLOW}(Status unkown)$_NC"
@@ -222,6 +223,7 @@ while true; do
     else
         option_two_and_three_disabled=false
         option_five_disabled=true
+        stop_nadeko_service="4. Stop NadekoBot"
         echo "2. Run NadekoBot in the background"
         echo "3. Run NadekoBot in the background with auto restart"
     fi
