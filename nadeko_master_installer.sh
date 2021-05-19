@@ -123,6 +123,7 @@ else  ##########################################################################
             }
         ## Stops '$_NADEKO_SERVICE_NAME' if it is actively running.
         elif [[ $1 = "stop_service" ]]; then
+            echo "Stopping '$_NADEKO_SERVICE_NAME'..."
             if [[ $_NADEKO_SERVICE_STATUS = "running" ]]; then
                 launchctl stop $_NADEKO_SERVICE_NAME || {
                     echo "${_RED}Failed to stop '$_NADEKO_SERVICE_NAME'" >&2
