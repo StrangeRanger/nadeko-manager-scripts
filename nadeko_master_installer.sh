@@ -181,6 +181,7 @@ while true; do
             (! hash python && ! hash python3) || ! hash  youtube-dl) &>/dev/null; then
         option_two_and_three_disabled=true
         option_five_disabled=true
+        stop_nadeko_service="4. Stop NadekoBot"
 
         echo "${_GREY}2. Run NadekoBot in the background (Disabled until options 1," \
             "6, and 7 has been run)"
