@@ -160,7 +160,7 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
     echo "Copping 'credentials.json' to new version..."
     cp -f "$bak_credentials" "$new_credentials" &>/dev/null
     echo "Copping database to the new version..."
-    cp -r "$bak_database" "$new_database" &>/dev/null
+    cp -"$cp_flag" "$bak_database" "$new_database" &>/dev/null
     
     ## Check if an old netcoreapp version exists, then moves the database within it, to
     ## the new netcorapp version.
@@ -195,7 +195,7 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
     done < <(ls "$_WORKING_DIR"/"$new_database"/Release/)
 
     echo "Copping other data to the new version..."
-    cp -r$cp_flag NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
+    cp -"$cp_flag" NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
     rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old  # TODO: Add error handling???
 fi
 
