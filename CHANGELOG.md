@@ -12,15 +12,23 @@ The most notable change in this version is the refactoring of the code used to d
 
 ### Changed
 
-- Option four will inform the end-user whether or not NadekoBot's service is running. While the option will be greyed out if the service is not running, it will not be disabled.
+- Option four will become disabled if NadekoBot is not currently running.
 - Major refactoring
-  - All of the code used to download NadekoBot, has been moved into two separate files. One specifically for Linux and the other for macOS.
-  - This has resulted in the fact that the downloader code must be downloaded itself.
-- The installer will no longer create Nadeko's service immediatley. Instead, the service will only be created when one of the run options have been chosen.
+  - Code used to download NadekoBot has been moved to two files. One file specific to Linux and the other macOS.
+  - Moving duplicate code into new functions.
+  - etc.
+- No longer creates NadekoBot's service at the time of execution. The service is created after a run mode is chosen and during the bot's startup.
+- Current `linuxAIO.sh` revision number: 17
+  - This means that the script has been modified in some way.
+- Curl related error catching been removed.
+  - Will be re-implemented in the future.
+- Installs `dotnet-sdk-5.0` instead of `dotnet-sdk-3.1`.
+- Update and add more comments.
 
 ### Fixed
 
 - Fixed typos in the menu output.
+- Fixed `cp` flags that weren't compatible with macOS's version of `cp`.
 
 ## [3.0.0] - 2021-05-15
 

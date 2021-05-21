@@ -6,7 +6,6 @@
 #### [ Variables ]
 
 
-# TODO: Put in master installer file and export them???
 credentials="NadekoBot/src/NadekoBot/credentials.json"
 bak_credentials="NadekoBot/src/NadekoBot/credentials.json.bak"
 
@@ -83,13 +82,13 @@ echo -e "-------------\n"
 ## Back up credentials by renameing it to 'credentials.json.bak'.
 if [[ -f $credentials ]]; then
     echo "Backing up current 'credentials.json' as 'credentials.json.bak'..."
-    mv $credentials $bak_credentials
+    mv "$credentials" "$bak_credentials"
     echo "Creating new 'credentials.json'..."
 ## Create a new 'credentials.json' file.
 else
     echo "Creating 'credentials.json'..."
-    touch $credentials
-    sudo chmod +x $credentials
+    touch "$credentials"
+    sudo chmod +x "$credentials"
 fi
 
 ## Add the credentials to 'credentials.json'.
@@ -107,7 +106,7 @@ echo -e "{
     \"TimezoneDbApiKey\": \"$timedbapi\",
     \"Db\": null,
     \"TotalShards\": 1 \
-}" > $credentials
+}" > "$credentials"
 
 echo -e "\n${_GREEN}Finished creating 'credentials.json'$_NC"
 read -rp "Press [Enter] to return the the installer menu"
