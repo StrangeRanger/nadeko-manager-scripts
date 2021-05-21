@@ -6,3 +6,5 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/strangeranger/nadekobot-bashscript/badge)](https://www.codefactor.io/repository/github/strangeranger/nadekobot-bashscript)
 
 The unofficial installer for NadekoBot 1.9.x on Linux Based Distributions and macOS.
+
+For information on how to use the installer, visit the repository's [wiki](https://github.com/StrangeRanger/NadekoBot-BashScript/wiki).
