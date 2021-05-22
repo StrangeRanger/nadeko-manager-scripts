@@ -34,7 +34,7 @@ If the following command was successfully executed, a menu with the following op
 8. Exit
 ```
 
-Note that by default, the installer doesn't allow its execution with root privilege. For information on how to configure the installer's behavior, refer to [this section of the wiki](https://github.com/StrangeRanger/NadekoBot-BashScript/wiki/Linux-and-macOS-Installer-Info)
+Note that by default, the installer doesn't allow its execution with root privilege. For information on how to configure the installer's behavior, refer to [this section of the wiki](https://github.com/StrangeRanger/NadekoBot-BashScript/wiki/Installer-Info)
 
 ## Officially Supported Distributions
 
