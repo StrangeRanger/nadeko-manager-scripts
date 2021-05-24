@@ -62,7 +62,6 @@ clean_up() {
         "nadeko_master_installer.sh" "nadeko_runner.sh")
 
     echo "Cleaning up files and directories..."
-    if [[ -d NadekoTMPDir ]]; then rmdir NadekoTMPDir; fi
     ## Remove any and all files specified in $installer_files.
     for file in "${installer_files[@]}"; do
         if [[ -f $_WORKING_DIR/$file ]]; then rm "$_WORKING_DIR"/"$file"; fi
@@ -70,8 +69,10 @@ clean_up() {
     
     ## Remove the NadekoBot code that was just downloaded, then restore the old code, if
     ## both of the 'NadekoBot' and 'NadekoBot.bak' directories exist.
-    if [[ -d $_WORKING_DIR/NadekoBot && -d $_WORKING_DIR/NadekoBot.bak ]]; then
-        rm -rf "$_WORKING_DIR"/NadekoBot
+    if [[ (-d $_WORKING_DIR/NadekoBot || -d $_WORKING_DIR/NadekoTMPDir) && 
+            -d $_WORKING_DIR/NadekoBot.bak ]]; then
+        rm -rf "$_WORKING_DIR"/NadekoBot 2>/dev/null
+        rm -rf "$_WORKING_DIR"/NadekoTMPDir 2>/dev/null
 
         echo "Restoring from 'NadekoBot.bak'..."
         mv -f "$_WORKING_DIR"/NadekoBot.bak "$_WORKING_DIR"/NadekoBot || {
