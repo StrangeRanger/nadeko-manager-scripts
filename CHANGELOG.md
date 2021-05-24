@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Modified code to allow more flexability for the [following fix](https://github.com/StrangeRanger/NadekoBot-BashScript/commit/4092d925677ade7a8f1ce18dc9d1b94baa80d531).
+- Slightly changed the way that the new version of NadekoBot is downloaded and built
+
+
 ## [3.0.3] - 2021-05-23
 
 ### Summary
