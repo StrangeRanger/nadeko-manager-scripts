@@ -13,10 +13,12 @@
 #### [ Variables ]
 
 
-bak_credentials="NadekoBot.bak/src/NadekoBot/credentials.json"
-new_credentials="NadekoBot/src/NadekoBot/credentials.json"
-bak_database="NadekoBot.bak/src/NadekoBot/bin/"
-new_database="NadekoBot/src/NadekoBot/bin/"
+current_credentials="NadekoBot/src/NadekoBot/credentials.json"
+new_credentials="NadekoTMPDir/NadekoBot/src/NadekoBot/credentials.json"
+current_database="NadekoBot/src/NadekoBot/bin/"
+new_database="NadekoTMPDir/NadekoBot/src/NadekoBot/bin/"
+current_data="NadekoBot/src/NadekoBot/data"
+new_data="NadekoTMPDir/NadekoBot/src/NadekoBot/data"
 netcoreapp_version="netcoreapp2.1"
 #netcoreapp_version="netcoreapp3.1"
 
@@ -130,17 +132,6 @@ fi
 ########################################################################################
 ######## [[ Create Backup, Then Update ]]
 
-
-## If the 'NadekoBot' directory exists, create a backup of it (by changing it's name).
-if [[ -d NadekoBot ]]; then
-    echo "Backing up NadekoBot as 'NadekoBot.bak'..."
-    mv -f NadekoBot NadekoBot.bak || {
-        echo "${_RED}Failed to back up NadekoBot$_NC" >&2
-        echo -e "\nPress [Enter] to return to the installer menu"
-        clean_up "false"
-    }
-fi
-
 ## A.1.
 ## Create a temporary folder to download NadekoBot into.
 mkdir NadekoTMPDir
@@ -189,16 +180,12 @@ cd "$_WORKING_DIR" || {
     clean_up "true"
 }
 
-## A.1.
-mv NadekoTMPDir/NadekoBot .
-rmdir NadekoTMPDir
-
 ## Move credentials, database, and other data to the new version of NadekoBot.
-if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot.bak ]]; then
+if [[ -d NadekoBot.old && -d NadekoBot || ! -d NadekoBot.old && -d NadekoBot ]]; then
     echo "Copping 'credentials.json' to new version..."
-    cp -f "$bak_credentials" "$new_credentials" &>/dev/null
+    cp -f "$current_credentials" "$new_credentials" &>/dev/null
     echo "Copping database to the new version..."
-    cp -"$cp_flag" "$bak_database" "$new_database" &>/dev/null
+    cp -"$cp_flag" "$current_database" "$new_database" &>/dev/null
     
     ## Check if an old netcoreapp version exists, then move the database within it, to
     ## the new netcorapp version.
@@ -226,19 +213,20 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
     echo "Copping other data to the new version..."
     ## 'alises.yml' and 'strings' are updated with every install, which could break the
     ## bot if not changed...
-    if [[ -f NadekoBot.bak/src/NadekoBot/data/aliases.yml.old ]]; then
-        rm -f NadekoBot.bak/src/NadekoBot/data/aliases.yml.old
+    if [[ -f "$current_data"/aliases.yml.old ]]; then
+        rm -f "$current_data"/aliases.yml.old
     fi
-    mv -f NadekoBot.bak/src/NadekoBot/data/aliases.yml NadekoBot.bak/src/NadekoBot/data/aliases.yml.old
-    if [[ -f NadekoBot.bak/src/NadekoBot/data/strings.old ]]; then
-        rm -f NadekoBot.bak/src/NadekoBot/data/strings.old
+    mv -f "$current_data"/aliases.yml "$current_data"/aliases.yml.old
+    if [[ -d "$current_data"/strings.old ]]; then
+        rm -rf "$current_data"/strings.old
     fi
-    mv -f NadekoBot.bak/src/NadekoBot/data/strings NadekoBot.bak/src/NadekoBot/data/strings.old
+    mv -f "$current_data"/strings "$current_data"/strings.old
     
-    cp -"$cp_flag" NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
-    # TODO: Add error handling???
-    rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old
+    cp -"$cp_flag" "$current_data" "$new_data"
+    rm -rf NadekoBot.old && mv -f NadekoBot NadekoBot.old
 fi
+
+mv NadekoTMPDir/NadekoBot . && rmdir NadekoTMPDir
 
 
 ######## End of [[ Create Backup, Then Update ]]
