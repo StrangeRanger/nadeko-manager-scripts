@@ -209,6 +209,11 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
     done < <(ls "$_WORKING_DIR"/"$new_database"/Release/)
 
     echo "Copping other data to the new version..."
+    ## 'alises.yml' and 'strings' are updated with every install, which could break the
+    ## bot if not changed...
+    mv -f NadekoBot.bak/src/NadekoBot/data/aliases.yml NadekoBot.bak/src/NadekoBot/data/aliases.yml.old
+    mv -f NadekoBot.bak/src/NadekoBot/data/strings NadekoBot.bak/src/NadekoBot/data/strings.old
+    
     cp -"$cp_flag" NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
     # TODO: Add error handling???
     rm -rf NadekoBot.old && mv -f NadekoBot.bak NadekoBot.old
