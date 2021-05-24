@@ -29,6 +29,7 @@ The most notable change in this version is the refactoring of the code used to d
 
 - Fixed typos in the menu output.
 - Fixed `cp` flags that weren't compatible with macOS's version of `cp`.
+- Fixed a strange problem where if NadekoBot wasn't downloaded a specific way, errors could occure when trying to start NadekoBot.
 
 ## [3.0.0] - 2021-05-15
 

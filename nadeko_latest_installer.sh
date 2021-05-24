@@ -2,6 +2,13 @@
 #
 # Downloads and updates NadekoBot.
 #
+# Comment key for '[letter].[number].'
+# ------------------------------------
+# A.1. - For reasons I'm unsure of, the installer MUST download the newest version of
+#        NadekoBot into a directory seperate from the where the installer, or the
+#        current version of NadekoBot, is located. Once NadekoBot has been built, it can
+#        then be moved back to the installer directory.
+#
 ########################################################################################
 #### [ Variables ]
 
@@ -10,7 +17,8 @@ bak_credentials="NadekoBot.bak/src/NadekoBot/credentials.json"
 new_credentials="NadekoBot/src/NadekoBot/credentials.json"
 bak_database="NadekoBot.bak/src/NadekoBot/bin/"
 new_database="NadekoBot/src/NadekoBot/bin/"
-netcoreapp_version="netcoreapp3.1"
+netcoreapp_version="netcoreapp2.1"
+#netcoreapp_version="netcoreapp3.1"
 
 ## NOTE: 'cp' on macOS doesn't have the flag options "RT", while the Linux version does.
 ## Use the "RT" flags if the OS is NOT macOS.
@@ -54,6 +62,7 @@ clean_up() {
         "nadeko_master_installer.sh" "nadeko_runner.sh")
 
     echo "Cleaning up files and directories..."
+    if [[ -d NadekoTMPDir ]]; then rmdir NadekoTMPDir; fi
     ## Remove any and all files specified in $installer_files.
     for file in "${installer_files[@]}"; do
         if [[ -f $_WORKING_DIR/$file ]]; then rm "$_WORKING_DIR"/"$file"; fi
@@ -131,6 +140,14 @@ if [[ -d NadekoBot ]]; then
     }
 fi
 
+## A.1.
+## Create a temporary folder to download NadekoBot into.
+mkdir NadekoTMPDir
+cd NadekoTMPDir || {
+    echo "${_RED}Failed to change working directory$_NC" >&2
+    clean_up "true"
+}
+
 echo "Downloading NadekoBot..."
 # Download NadekoBot from a specified branch/tag.
 git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 \
@@ -161,6 +178,7 @@ cd NadekoBot || {
     echo "${_RED}Failed to change working directory$_NC" >&2
     clean_up "true"
 }
+
 dotnet build --configuration Release || {
     echo "${_RED}Failed to build NadekoBot$_NC" >&2
     clean_up "true"
@@ -170,10 +188,14 @@ cd "$_WORKING_DIR" || {
     clean_up "true"
 }
 
+## A.1.
+mv NadekoTMPDir/NadekoBot .
+rmdir NadekoTMPDir
+
 ## Move credentials, database, and other data to the new version of NadekoBot.
 if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot.bak ]]; then
     echo "Copping 'credentials.json' to new version..."
-    cp "$bak_credentials" "$new_credentials" &>/dev/null
+    cp -f "$bak_credentials" "$new_credentials" &>/dev/null
     echo "Copping database to the new version..."
     cp -"$cp_flag" "$bak_database" "$new_database" &>/dev/null
     
@@ -185,33 +207,31 @@ if [[ -d NadekoBot.old && -d NadekoBot.bak || ! -d NadekoBot.old && -d NadekoBot
             echo "${_YELLOW}WARNING: Old netcoreapp version detected$_NC"
             echo "Moving database to new netcoreapp version..."
 
-            ## NOTE: This code will be removed in the future, since the netcoreapp3.1
-            ##       directory will be created when building NadekoBot.
-            if [[ ! -d $new_database/Release/$netcoreapp_version ]]; then
-                mkdir "$new_database"/Release/"$netcoreapp_version"
-                mkdir "$new_database"/Release/"$netcoreapp_version"/data/
-            fi
-
             cp "$new_database"/Release/"$netcoreapp"/data/NadekoBot.db \
                     "$new_database"/Release/"$netcoreapp_version"/data/NadekoBot.db || {
                 echo "${_RED}Failed to move database$_NC" >&2
                 clean_up "true"
             }
-            ## NOTE: Since NadekoBot still currently relies on netcoreapp2.1, it'll be
-            ##       left untouched for now.
-            #echo "Removing '$netcoreapp'..."
-            #rm -rf "$new_database"/Release/"$netcoreapp" || {
-            #    echo "${_RED}Failed to remove '$netcoreapp'" >&2
-            #    echo -e "${_CYAN}Please manually remove '$netcoreapp' before continuing" \
-            #        "\nLocation: $_WORKING_DIR/$new_database/Release/$netcoreapp$_NC"
-            #}
+
+            echo "Removing '$netcoreapp'..."
+            rm -rf "$new_database"/Release/"$netcoreapp" || {
+                echo "${_RED}Failed to remove '$netcoreapp'" >&2
+                echo -e "${_CYAN}Please manually remove '$netcoreapp' before continuing" \
+                    "\nLocation: $_WORKING_DIR/$new_database/Release/$netcoreapp$_NC"
+            }
         fi
     done < <(ls "$_WORKING_DIR"/"$new_database"/Release/)
 
     echo "Copping other data to the new version..."
     ## 'alises.yml' and 'strings' are updated with every install, which could break the
     ## bot if not changed...
+    if [[ -f NadekoBot.bak/src/NadekoBot/data/aliases.yml.old ]]; then
+        rm -f NadekoBot.bak/src/NadekoBot/data/aliases.yml.old
+    fi
     mv -f NadekoBot.bak/src/NadekoBot/data/aliases.yml NadekoBot.bak/src/NadekoBot/data/aliases.yml.old
+    if [[ -f NadekoBot.bak/src/NadekoBot/data/strings.old ]]; then
+        rm -f NadekoBot.bak/src/NadekoBot/data/strings.old
+    fi
     mv -f NadekoBot.bak/src/NadekoBot/data/strings NadekoBot.bak/src/NadekoBot/data/strings.old
     
     cp -"$cp_flag" NadekoBot.bak/src/NadekoBot/data/ NadekoBot/src/NadekoBot/data/
