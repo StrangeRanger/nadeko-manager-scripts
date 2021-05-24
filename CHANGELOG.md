@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [3.0.3] - 2021-05-23
+
 ### Summary
 
 The most notable change in this version is the refactoring of the code used to download NadekoBot. I've provided information and what and how exactly it was refactored down below in the changed portion of this changelog. The change was done in the hopes that it will allow for the installer to be just a bit easier to maintain and modify, and organized.
@@ -109,7 +111,8 @@ Version 2 of the Nadeko Bash Scripts is a complete rewrite of the previous Bash 
   - CentOS: 7
 - Removed option to run NadekoBot with auto-update
 
-[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.0.0...HEAD
+[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.0.3...HEAD
+[3.0.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.3
 [3.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.0
 [2.1.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.1
 [2.1.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.0
