@@ -24,11 +24,11 @@ netcoreapp_version="netcoreapp2.1"
 
 ## NOTE: 'cp' on macOS doesn't have the flag options "RT", while the Linux version does.
 ## Use the "RT" flags if the OS is NOT macOS.
-if [[ $_DISTRO != "Darwin" ]]; then 
+if [[ $_DISTRO != "Darwin" ]]; then
     cp_flag="RT"
 ## If running on macOS, use the "r" flag. But if 'gcp' (GNU cp) is installed, then use
 ## the "RT" flags and make 'cp' an alias of 'gcp'
-else 
+else
     if hash gcp; then
         # Enable 'expand_aliases' inside of this script.
         # This makes it possible for the alias to take immediate effect.
@@ -68,7 +68,7 @@ clean_up() {
     for file in "${installer_files[@]}"; do
         if [[ -f $_WORKING_DIR/$file ]]; then rm "$_WORKING_DIR"/"$file"; fi
     done
-    
+
     ## Remove the NadekoBot code that was just downloaded, then restore the old code, if
     ## both of the 'NadekoBot' and 'NadekoBot.bak' directories exist.
     if [[ (-d $_WORKING_DIR/NadekoBot || -d $_WORKING_DIR/NadekoTMPDir) && 
@@ -118,7 +118,7 @@ printf "We will now download/update NadekoBot. "
 read -rp "Press [Enter] to begin."
 
 ########################################################################################
-######## [[ Stop service ]]
+#### [[ Stop service ]]
 
 
 ## Stop $_NADEKO_SERVICE_STATUS if it's currently running.
@@ -128,9 +128,9 @@ if [[ $_NADEKO_SERVICE_STATUS = "active" || $_NADEKO_SERVICE_STATUS = "running" 
 fi
 
 
-######## End of [[ Stop service ]]
+#### End of [[ Stop service ]]
 ########################################################################################
-######## [[ Create Backup, Then Update ]]
+#### [[ Create Backup, Then Update ]]
 
 ## A.1.
 ## Create a temporary folder to download NadekoBot into.
@@ -186,7 +186,7 @@ if [[ -d NadekoBot.old && -d NadekoBot || ! -d NadekoBot.old && -d NadekoBot ]];
     cp -f "$current_credentials" "$new_credentials" &>/dev/null
     echo "Copping database to the new version..."
     cp -"$cp_flag" "$current_database" "$new_database" &>/dev/null
-    
+
     ## Check if an old netcoreapp version exists, then move the database within it, to
     ## the new netcorapp version.
     while read -r netcoreapp; do
@@ -221,7 +221,7 @@ if [[ -d NadekoBot.old && -d NadekoBot || ! -d NadekoBot.old && -d NadekoBot ]];
         rm -rf "$current_data"/strings.old
     fi
     mv -f "$current_data"/strings "$current_data"/strings.old
-    
+
     cp -"$cp_flag" "$current_data" "$new_data"
     rm -rf NadekoBot.old && mv -f NadekoBot NadekoBot.old
 fi
@@ -229,9 +229,9 @@ fi
 mv NadekoTMPDir/NadekoBot . && rmdir NadekoTMPDir
 
 
-######## End of [[ Create Backup, Then Update ]]
+#### End of [[ Create Backup, Then Update ]]
 ########################################################################################
-######## [[ Clean Up and Present Results ]]
+#### [[ Clean Up and Present Results ]]
 
 
 echo -e "\n${_GREEN}Finished downloading/updating NadekoBot$_NC"
@@ -244,7 +244,7 @@ fi
 read -rp "Press [Enter] to apply any existing changes to the installers"
 
 
-######## End of [[ Clean Up and Present Results ]]
+#### End of [[ Clean Up and Present Results ]]
 ########################################################################################
 
 #### End of [ Main ]

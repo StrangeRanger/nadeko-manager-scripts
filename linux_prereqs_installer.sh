@@ -81,7 +81,7 @@ elif [[ $_DISTRO = "debian" ]]; then
             sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
             sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
             sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
-            
+
             ## Install the SDK.
             sudo apt-get update
             sudo apt-get install -y apt-transport-https &&

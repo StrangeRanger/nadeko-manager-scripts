@@ -8,14 +8,14 @@
 #### [ Variables ]
 
 ########################################################################################
-######## [[ Configuration Variables ]]
-######## Variables used to modify the behavior of the installer.
-########
-######## ~~~ THESE VARIABLES CAN BE MODIFIED BY THE END-USER ~~~
-########
-######## Whenever the installer retrieves the newest version of 'linuxAIO.sh', all
-######## modified variables, with the exception of $installer_repo, will be applied to
-######## the new version of this script.
+#### [[ Configuration Variables ]]
+#### Variables used to modify the behavior of the installer.
+####
+#### ~~~ THESE VARIABLES CAN BE MODIFIED BY THE END-USER ~~~
+####
+#### Whenever the installer retrieves the newest version of 'linuxAIO.sh', all
+#### modified variables, with the exception of $installer_repo, will be applied to
+#### the new version of this script.
 
 
 # The repository that the installer will use.
@@ -26,7 +26,7 @@
 # Format: installer_repo="[github username]/[repository name]"
 installer_repo="StrangeRanger/NadekoBot-BashScript"
 
-# The branch that the installer will use. 
+# The branch that the installer will use.
 #
 # Options
 # -------
@@ -58,9 +58,9 @@ allow_run_as_root=false
 export _NADEKO_INSTALL_VERSION="1.9"
 
 
-######## End of [[ Configuration Variables ]]
+#### End of [[ Configuration Variables ]]
 ########################################################################################
-######## [[ General Variables ]]
+#### [[ General Variables ]]
 
 
 # Used to keep track of changes to 'linuxAIO.sh'.
@@ -70,7 +70,7 @@ export _LINUXAIO_REVISION="17"
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
 
-######## End of [[ General Variables ]]
+#### End of [[ General Variables ]]
 ########################################################################################
 
 #### End of [ Variables ]

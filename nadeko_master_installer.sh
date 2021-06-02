@@ -16,9 +16,9 @@
 if [[ $_DISTRO != "Darwin" ]]; then
     ####################################################################################
     #### [[ Used On 'Linux Distributions' ]]
-    
+
     ####################################################################################
-    ######## [[[ Variables ]]]
+    #### [[[ Variables ]]]
 
 
     prereqs_installer="linux_prereqs_installer.sh"
@@ -28,9 +28,9 @@ if [[ $_DISTRO != "Darwin" ]]; then
     _NADEKO_SERVICE_NAME="nadeko.service"
 
 
-    ######## End of [[[ Variables ]]]
+    #### End of [[[ Variables ]]]
     ####################################################################################
-    ######## [[[ Functions ]]]
+    #### [[[ Functions ]]]
 
 
     _SERVICE_ACTIONS() {
@@ -76,24 +76,24 @@ if [[ $_DISTRO != "Darwin" ]]; then
         # -------------
         # Display the logs from 'nadeko.server' as they are created.
         ####
-        
+
         echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
         echo -e "${_CYAN}To return to the installer menu:\n1) Press 'Ctrl' + 'C'\n2)" \
             "Press 'Q'$_NC"
-        
+
         sudo journalctl -f -u "$_NADEKO_SERVICE_NAME"  | less -FRSXM
     }
 
 
-    ######## End of [[[ Functions ]]]
+    #### End of [[[ Functions ]]]
     ####################################################################################
 
-    ######## End of [[ Used On 'Linux Distributions' ]]
+    #### End of [[ Used On 'Linux Distributions' ]]
 else  ##################################################################################
-    ######## [[ Used On 'macOS' ]]
+    #### [[ Used On 'macOS' ]]
 
     ####################################################################################
-    ######## [[ Variables ]]
+    #### [[ Variables ]]
 
 
     prereqs_installer="macos_prereqs_installer.sh"
@@ -103,9 +103,9 @@ else  ##########################################################################
     _NADEKO_SERVICE_NAME="bot.nadeko.Nadeko"
 
 
-    ######## End of [[ Variables ]]
+    #### End of [[ Variables ]]
     ####################################################################################
-    ######## [[[ Functions ]]]
+    #### [[[ Functions ]]]
 
 
     _SERVICE_ACTIONS() {
@@ -125,7 +125,7 @@ else  ##########################################################################
             # Make sure that $_NADEKO_SERVICE_NAME is enabled and loaded.
             launchctl enable gui/"$UID"/"$_NADEKO_SERVICE_NAME" &&
                 launchctl load "$_NADEKO_SERVICE" 2>/dev/null
-            
+
             _NADEKO_SERVICE_STATUS=$(launchctl print gui/"$UID"/"$_NADEKO_SERVICE_NAME" | grep "state") &&
                     _NADEKO_SERVICE_STATUS=${_NADEKO_SERVICE_STATUS/[[:blank:]]state = /} || {
                 _NADEKO_SERVICE_STATUS="inactive"
@@ -164,7 +164,7 @@ else  ##########################################################################
     }
 
 
-    ######## End of [[[ Functions ]]]
+    #### End of [[[ Functions ]]]
     ####################################################################################
 
     #### End of [[ Used On 'macOS' ]]
@@ -312,7 +312,7 @@ while true; do
             exec "$_INSTALLER_PREP"
             ;;
         2|3)
-            ## B.1. 
+            ## B.1.
             if [[ $option_two_and_three_disabled = true ]]; then
                 clear -x
                 echo "${_RED}Option $choice is currently disabled$_NC"
@@ -323,7 +323,7 @@ while true; do
             export _NADEKO_SERVICE_NAME
             export _NADEKO_SERVICE_STATUS
 
-            _DOWNLOAD_SCRIPT "$nadeko_runner" "nadeko_runner.sh" 
+            _DOWNLOAD_SCRIPT "$nadeko_runner" "nadeko_runner.sh"
             clear -x
 
             # If option 2 was executed...
@@ -342,7 +342,7 @@ while true; do
             ;;
         4)
             clear -x
-            ## B.1. 
+            ## B.1.
             if [[ $option_four_disabled = true ]]; then
                 echo "${_RED}Option $choice is currently disabled$_NC"
                 continue
@@ -355,7 +355,7 @@ while true; do
             ;;
         5)
             clear -x
-            ## B.1. 
+            ## B.1.
             if [[ $option_five_disabled = true ]]; then
                 echo "${_RED}Option 5 is currently disabled$_NC"
                 continue
@@ -371,7 +371,7 @@ while true; do
             clear -x
             ;;
         7)
-            ## B.1. 
+            ## B.1.
             if [[ $option_seven_disabled = true ]]; then
                 clear -x
                 echo "${_RED}Option 7 is currently disabled$_NC"

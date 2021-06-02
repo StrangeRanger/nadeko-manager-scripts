@@ -7,7 +7,7 @@
 # Comment key for '[letter].[number].'
 # ------------------------------------
 # A.1. - Forcing 64 bit architecture
-# 
+#
 ########################################################################################
 #### [ Exported and/or Globally Used Variables ]
 
@@ -180,7 +180,7 @@ execute_master_installer() {
 
 
 ########################################################################################
-######## [[ Functions To Be Exported ]]
+#### [[ Functions To Be Exported ]]
 
 
 _CLEAN_EXIT() {
@@ -235,7 +235,7 @@ _DOWNLOAD_SCRIPT() {
 }
 
 
-######## End of [[ Functions To Be Exported ]]
+#### End of [[ Functions To Be Exported ]]
 ########################################################################################
 
 #### End of [ Functions ]
