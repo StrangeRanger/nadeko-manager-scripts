@@ -56,7 +56,6 @@ if [[ $_DISTRO != "Darwin" ]]; then
                     echo "${_RED}Failed to stop '$_NADEKO_SERVICE_NAME'" >&2
                     echo "${_CYAN}You will need to restart '$2' to apply any updates" \
                         "to NadekoBot$_NC"
-                    _CLEAN_EXIT "1" "Exiting" "true"
                     return 1  # A.1.
                 }
                 if [[ $2 = true ]]; then
@@ -78,9 +77,9 @@ if [[ $_DISTRO != "Darwin" ]]; then
         ####
 
         echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
-        echo -e "${_CYAN}To return to the installer menu:\n1) Press 'Ctrl' + 'C'\n2)" \
-            "Press 'Q'$_NC"
-
+        echo "${_CYAN}To return to the installer menu:"
+        echo "1) Press 'Ctrl' + 'C'"
+        echo "2) Press 'Q'$_NC"
         sudo journalctl -f -u "$_NADEKO_SERVICE_NAME"  | less -FRSXM
     }
 
@@ -93,7 +92,7 @@ else  ##########################################################################
     #### [[ Used On 'macOS' ]]
 
     ####################################################################################
-    #### [[ Variables ]]
+    #### [[[ Variables ]]]
 
 
     prereqs_installer="macos_prereqs_installer.sh"
@@ -103,7 +102,7 @@ else  ##########################################################################
     _NADEKO_SERVICE_NAME="bot.nadeko.Nadeko"
 
 
-    #### End of [[ Variables ]]
+    #### End of [[[ Variables ]]]
     ####################################################################################
     #### [[[ Functions ]]]
 
@@ -123,30 +122,27 @@ else  ##########################################################################
         ## Save the status of $_NADEKO_SERVICE_NAME to $_NADEKO_SERVICE_STATUS.
         if [[ $1 = "nadeko_service_status" ]]; then
             # Make sure that $_NADEKO_SERVICE_NAME is enabled and loaded.
-            launchctl enable gui/"$UID"/"$_NADEKO_SERVICE_NAME" &&
-                launchctl load "$_NADEKO_SERVICE" 2>/dev/null
+            launchctl enable gui/"$UID"/"$_NADEKO_SERVICE_NAME" \
+                && launchctl load "$_NADEKO_SERVICE" 2>/dev/null
 
-            _NADEKO_SERVICE_STATUS=$(launchctl print gui/"$UID"/"$_NADEKO_SERVICE_NAME" | grep "state") &&
-                    _NADEKO_SERVICE_STATUS=${_NADEKO_SERVICE_STATUS/[[:blank:]]state = /} || {
-                _NADEKO_SERVICE_STATUS="inactive"
-            }
+            _NADEKO_SERVICE_STATUS=$(launchctl print gui/"$UID"/"$_NADEKO_SERVICE_NAME" | grep "state") \
+                && _NADEKO_SERVICE_STATUS=${_NADEKO_SERVICE_STATUS/[[:blank:]]state = /} \
+                || _NADEKO_SERVICE_STATUS="inactive"
         ## Stop $_NADEKO_SERVICE_NAME if it's currently running.
         elif [[ $1 = "stop_service" ]]; then
             launchctl stop "$_NADEKO_SERVICE_NAME" || {
                 echo "${_RED}Failed to stop '$_NADEKO_SERVICE_NAME'" >&2
-                echo "${_CYAN}You will need to restart '$2' to apply any updates" \
-                    "to NadekoBot$_NC"
-                _CLEAN_EXIT "1" "Exiting" "true"
+                echo "${_CYAN}You will need to restart '$2' to apply any updates to" \
+                    "NadekoBot$_NC"
                 return 1  # A.1.
             }
 
-            if [[ $2 = true ]]; then
-                echo -e "\n${_GREEN}NadekoBot has been stopped$_NC"
+            if [[ $2 = true ]]; then echo -e "\n${_GREEN}NadekoBot has been stopped$_NC"
             fi
         ## PURPOSE: Internal error protection.
         else
             echo "${_RED}INTERNAL ERROR: Bad parameter was provide (parameter: $2)$_NC" >&2
-            _CLEAN_EXIT "1" "Exiting"
+            exit 3
         fi
     }
 
@@ -158,8 +154,9 @@ else  ##########################################################################
         ####
 
         echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
-        echo -e "${_CYAN}To exit the installer:\n1) Press 'Ctrl + C'\n2) Press 'Q'$_NC"
-
+        echo "${_CYAN}To exit the installer:"
+        echo "1) Press 'Ctrl + C'"
+        echo "2) Press 'Q'$_NC"
         tail -f "bot.nadeko.Nadeko.log" | less -FRSXM
     }
 
@@ -174,12 +171,35 @@ fi
 
 #### End of [ OS Specific Variables and Functions ]
 ########################################################################################
-#### [ General Variables ]
+#### [ General Variables and Functions ]
 
 
 # Store process id of 'nadeko_master_installer.sh', in case it needs to be manually
 # killed by a sub/child script.
 export _NADEKO_MASTER_INSTALLER_PID=$$
+
+
+exit_types() {
+    ####
+    # Function Info
+    # -------------
+    # ...
+    #
+    # Code Meaning:
+    #	1 - Exit all the way through due to some error.
+    #	3 - Internal error.
+    #	6 - Kill sigs used...
+    #
+    # @param $1 Error code.
+    ####
+
+    case "$1" in
+        1|127) exit "$1" ;;
+        4)			     ;;
+        *)               ;;
+    esac
+
+}
 
 
 #### End of [ General Functions ]
@@ -195,8 +215,8 @@ while true; do
     _SERVICE_ACTIONS "nadeko_service_status"
 
     ## Disable option 1 if any of the following tools are not installed.
-    if (! hash dotnet || ! hash redis-server || ! hash git || ! hash jq || ! hash \
-            python3 || ! hash youtube-dl) &>/dev/null; then
+    if (! hash dotnet || ! hash redis-server || ! hash git || ! hash jq \
+            || ! hash python3 || ! hash youtube-dl) &>/dev/null; then
         option_one_disabled=true
         echo "${_GREY}1. Download NadekoBot (Disabled until option 6 has been run)$_NC"
     else
@@ -206,18 +226,18 @@ while true; do
 
     ## Disable options 2, 3, 4, and 5 if any of the following tools are not installed or
     ## none of the directories/files could be found.
-    if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json ||
-            ! -d NadekoBot/src/NadekoBot/bin/Release || 
-            -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] ||
-            (! hash dotnet || ! hash redis-server || ! hash git || ! hash jq || 
-            ! hash python3 || ! hash youtube-dl) &>/dev/null; then
+    if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json \
+            || ! -d NadekoBot/src/NadekoBot/bin/Release \
+            || -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] \
+            || (! hash dotnet || ! hash redis-server || ! hash git || ! hash jq \
+            || ! hash python3 || ! hash youtube-dl) &>/dev/null; then
         option_two_and_three_disabled=true
         option_four_disabled=true
         option_five_disabled=true
         stop_nadeko_service="${_GREY}4. Stop NadekoBot (Disabled until NadekoBot is running)$_NC"
 
-        echo "${_GREY}2. Run NadekoBot in the background (Disabled until options 1," \
-            "6, and 7 has been run)"
+        echo "${_GREY}2. Run NadekoBot in the background (Disabled until options 1, 6" \
+            "and 7 has been run)"
         echo "3. Run NadekoBot in the background with auto restart (Disabled until" \
             "options 1, 6, and 7 has been run)$_NC"
     ## Enable options 2 and 3, if 'NadekoRun.sh' exists.
@@ -225,13 +245,15 @@ while true; do
         option_two_and_three_disabled=false
 
         ## Enable options 4 and 5 if NadekoBot's service is running.
-        if [[ $_NADEKO_SERVICE_STATUS = "active" || $_NADEKO_SERVICE_STATUS = "running" ]]; then
+        if [[ $_NADEKO_SERVICE_STATUS = "active" \
+                || $_NADEKO_SERVICE_STATUS = "running" ]]; then
             option_four_disabled=false
             option_five_disabled=false
             stop_nadeko_service="4. Stop NadekoBot"
             run_mode_status=" ${_GREEN}(Running in this mode)$_NC"
         ## Disable options 4 and 5 if NadekoBot's service NOT running.
-        elif [[ $_NADEKO_SERVICE_STATUS = "inactive" || $_NADEKO_SERVICE_STATUS = "waiting" ]]; then
+        elif [[ $_NADEKO_SERVICE_STATUS = "inactive" \
+                || $_NADEKO_SERVICE_STATUS = "waiting" ]]; then
             option_four_disabled=true
             option_five_disabled=true
             stop_nadeko_service="${_GREY}4. Stop NadekoBot (Disabled until NadekoBot is running)$_NC"
@@ -290,8 +312,8 @@ while true; do
     echo "8. Exit"
     read -r choice
     case "$choice" in
-        1)  
-            ## B.1. 
+        1)
+            ## B.1.
             if [[ $option_one_disabled = true ]]; then
                 clear -x
                 echo "${_RED}Option 1 is currently disabled$_NC"
@@ -303,9 +325,9 @@ while true; do
             export _NADEKO_SERVICE_NAME
             export _NADEKO_SERVICE_STATUS
 
-            _DOWNLOAD_SCRIPT "nadeko_latest_installer.sh" "nadeko_latest_installer.sh" 
+            _DOWNLOAD_SCRIPT "nadeko_latest_installer.sh" "nadeko_latest_installer.sh"
             clear -x
-            ./nadeko_latest_installer.sh
+            ./nadeko_latest_installer.sh || exit_types "$?"
 
             # Execute the newly downloaded version of 'installer_prep.sh', so that all
             # changes are applied.
@@ -337,7 +359,7 @@ while true; do
             fi
 
             read -rp "Press [Enter] to begin."
-            ./nadeko_runner.sh
+            ./nadeko_runner.sh || exit_types "$?"
             clear -x
             ;;
         4)
@@ -365,9 +387,9 @@ while true; do
             clear -x
             ;;
         6)
-            _DOWNLOAD_SCRIPT "$prereqs_installer" "prereqs_installer.sh" 
+            _DOWNLOAD_SCRIPT "$prereqs_installer" "prereqs_installer.sh"
             clear -x
-            ./prereqs_installer.sh
+            ./prereqs_installer.sh || exit_types "$?"
             clear -x
             ;;
         7)
@@ -380,11 +402,11 @@ while true; do
 
             _DOWNLOAD_SCRIPT "credentials_setup.sh" "credentials_setup.sh"
             clear -x
-            ./credentials_setup.sh
+            ./credentials_setup.sh || exit_types "$?"
             clear -x
             ;;
         8)
-            _CLEAN_EXIT "0" "Exiting"
+            exit 0
             ;;
         *)
             clear -x

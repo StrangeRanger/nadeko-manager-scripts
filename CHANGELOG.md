@@ -8,7 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Slightly modified comment style.
+- Moved most non-assignment operators to the front of a continuation newline.
+- Used parameter substitution were possible.
+- Performed some refactoring and style changes to allow for better readability.
+- Removed unnecessary-redundant code.
+- Improved error catching/trapping.
+- Improved system exiting by using exit code values instead of just executing `_CLEAN_EXIT` (which is no longer exported and was renamed to `clean_up`):
+  - 1: Some error occurred that required the exit of the entire installer.
+  - 2: Produced when the end-user uses `CTRL + C` or `CTRL + Z`.
+  - 3: Unexpected internal error.
+  - 4: Some error occurred that required the installer to return the its main menu.
+  - 5: .....
 
 ## [3.0.4] - 2021-05-24
 

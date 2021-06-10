@@ -22,7 +22,8 @@ echo "${_CYAN}This field is required and cannot be left blank"
 echo "Field 1 of 9$_NC"
 while true; do
     read -rp "Enter your bot token (it is not bot secret, it should be ~59 characters long): " token
-    if [[ -n $token ]]; then break; fi
+    if [[ -n $token ]]; then break
+    fi
 done
 echo "Bot token: $token"
 echo "-------------"
@@ -32,7 +33,8 @@ echo "${_CYAN}This field is required and cannot be left blank"
 echo "Field 2 of 9$_NC"
 while true; do
     read -rp "Enter your own ID: " ownerid
-    if [[ -n $ownerid ]]; then break; fi
+    if [[ -n $ownerid ]]; then break
+    fi
 done
 echo "Owner ID: $ownerid"
 echo "-------------"
@@ -92,7 +94,7 @@ else
 fi
 
 ## Add the credentials to 'credentials.json'.
-echo -e "{
+echo "{
     \"Token\": \"$token\",
     \"OwnerIds\": [
         $ownerid
@@ -114,4 +116,3 @@ read -rp "Press [Enter] to return the the installer menu"
 
 #### End of [ Main ]
 ########################################################################################
-

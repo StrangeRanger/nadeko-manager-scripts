@@ -13,9 +13,9 @@
 ####
 #### ~~~ THESE VARIABLES CAN BE MODIFIED BY THE END-USER ~~~
 ####
-#### Whenever the installer retrieves the newest version of 'linuxAIO.sh', all
-#### modified variables, with the exception of $installer_repo, will be applied to
-#### the new version of this script.
+#### Whenever the installer retrieves the newest version of 'linuxAIO.sh', all modified
+#### variables, with the exception of $installer_repo, will be applied to the new
+#### version of this script.
 
 
 # The repository that the installer will use.
@@ -65,7 +65,7 @@ export _NADEKO_INSTALL_VERSION="1.9"
 
 # Used to keep track of changes to 'linuxAIO.sh'.
 # Refer to the '[ Prepping ]' section of 'installer_prep.sh' for more information.
-export _LINUXAIO_REVISION="17"
+export _LINUXAIO_REVISION="24"
 # URL to the raw version of a specified script.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
@@ -84,13 +84,15 @@ if [[ $EUID = 0 && $allow_run_as_root = false ]]; then
     echo "\033[0;36mWhile you will be performing specific tasks with root privilege," \
         "running the installer in it's entirety as root is not recommended\033[0m"
     echo -e "\nExiting..."
-    exit 1
+    exit 5
 fi
 
 echo "Downloading the latest installer..."
 curl -O "$_RAW_URL"/installer_prep.sh
-sudo chmod +x installer_prep.sh
-./installer_prep.sh
+sudo chmod +x installer_prep.sh \
+    && ./installer_prep.sh \
+    && exit 0 \
+    || exit "$?"
 
 
 #### End of [ Main ]

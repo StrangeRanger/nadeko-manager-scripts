@@ -32,32 +32,30 @@ install_prereqs() {
 #### [ Main ]
 
 
-echo -e "${_CYAN}NOTE: It may take up to 10 minutes for all the prerequisites to be" \
+echo "${_CYAN}NOTE: It may take up to 10 minutes for all the prerequisites to be" \
     "installed$_NC"
-echo -e "${_CYAN}NOTE 2: If Homebrew is not currently installed on your system, it" \
-    "will be installed now$_NC"
+echo "${_CYAN}NOTE 2: If Homebrew is not currently installed on your system, it will" \
+    "be installed now$_NC"
 read -rp "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
 if ! hash brew &>/dev/null; then
-    echo "${_YELLOW}Homebrew is not installed${_CYAN}"
+    echo "${_YELLOW}Homebrew is not installed$_CYAN"
     echo "Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
         echo "${_RED}Failed to install Homebrew" >&2
         echo "${_CYAN}Homebrew must be installed to install the prerequisites$_NC"
         read -rp "Press [Enter] to return to the installer menu"
-        exit 1
+        exit 4
     }
 fi
 
 case "$_SVER" in
-    10.14) install_prereqs ;;
-    10.15) install_prereqs ;;
-    11.*)  install_prereqs ;;
+    10.14|10.15|11.*) install_prereqs ;;
     *)
         echo "${_RED}The installer does not support the automatic installation and" \
             "setup of NadekoBot's prerequisites for your version of macOS$_NC"
         read -rp "Press [Enter] to return to the installer menu"
-        exit 1
+        exit 4
         ;;
 esac
 

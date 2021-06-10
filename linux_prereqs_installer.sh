@@ -25,9 +25,9 @@ install_prereqs() {
 
     ## Install the SDK.
     sudo apt-get update
-    sudo apt-get install -y apt-transport-https &&
-        sudo apt-get update &&
-        sudo apt-get install -y dotnet-sdk-5.0
+    sudo apt-get install -y apt-transport-https \
+        && sudo apt-get update \
+        && sudo apt-get install -y dotnet-sdk-5.0
 
     echo "Installing other prerequisites..."
     sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg jq wget \
@@ -35,7 +35,7 @@ install_prereqs() {
     sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
         /usr/local/bin/youtube-dl
     # NOTE: If the write perms are not applied to all users for this tool, attempts to
-    #       update 'youtube-dl' by a non-root user will always fail. 
+    #       update 'youtube-dl' by a non-root user will always fail.
     # TODO: Find a better solution than modifying the perms in such a way that I have.
     sudo chmod a+rwx /usr/local/bin/youtube-dl
 }
@@ -51,7 +51,7 @@ unsupported() {
     echo "${_RED}The installer does not support the automatic installation and setup" \
         "of NadekoBot's prerequisites for your OS: $_DISTRO $_VER $_ARCH$_NC"
     read -rp "Press [Enter] to return to the installer menu"
-    exit 1
+    exit 4
 }
 
 
@@ -70,8 +70,8 @@ if [[ $_DISTRO = "ubuntu" ]]; then
         *)     unsupported ;;
     esac
 elif [[ $_DISTRO = "debian" ]]; then
-    case "$_SVER" in    
-        9) 
+    case "$_SVER" in
+        9)
             echo "Installing .NET Core..."
             ## Microsoft package signing key.
             wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg \
@@ -84,9 +84,9 @@ elif [[ $_DISTRO = "debian" ]]; then
 
             ## Install the SDK.
             sudo apt-get update
-            sudo apt-get install -y apt-transport-https &&
-                sudo apt-get update &&
-                sudo apt-get install -y dotnet-sdk-5.0
+            sudo apt-get install -y apt-transport-https \
+                && sudo apt-get update \
+                && sudo apt-get install -y dotnet-sdk-5.0
 
             echo "Installing other prerequisites..."
             sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg \
@@ -94,7 +94,7 @@ elif [[ $_DISTRO = "debian" ]]; then
             sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
                 /usr/local/bin/youtube-dl
             # NOTE: If the write perms are not applied to all users for this tool,
-            #       attempts to update 'youtube-dl' by a non-root user will always fail. 
+            #       attempts to update 'youtube-dl' by a non-root user will always fail.
             # TODO: Find a better solution than modifying the perms in such a way that I
             #       have.
             sudo chmod a+rwx /usr/local/bin/youtube-dl
