@@ -17,7 +17,7 @@ install_prereqs() {
     brew update && brew upgrade
     echo "Installing prerequisites..."
     brew install opus opus-tools opusfile libsodium libffi ffmpeg openssl redis git jq \
-        mono-libgdiplus python3 wget youtube-dl
+        mono-libgdiplus python3 wget youtube-dl ccze
     echo "Starting redis..."
     brew services start redis
     echo "Casking Dotnet..."

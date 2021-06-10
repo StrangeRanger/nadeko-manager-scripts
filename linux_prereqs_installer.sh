@@ -31,7 +31,7 @@ install_prereqs() {
 
     echo "Installing other prerequisites..."
     sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg jq wget \
-        redis-server git python python3 jq wget -y
+        redis-server git python python3 jq wget ccze -y
     sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
         /usr/local/bin/youtube-dl
     # NOTE: If the write perms are not applied to all users for this tool, attempts to
@@ -90,7 +90,7 @@ elif [[ $_DISTRO = "debian" ]]; then
 
             echo "Installing other prerequisites..."
             sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg \
-                redis-server git jq python python3 wget -y
+                redis-server git jq python python3 wget ccze -y
             sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
                 /usr/local/bin/youtube-dl
             # NOTE: If the write perms are not applied to all users for this tool,

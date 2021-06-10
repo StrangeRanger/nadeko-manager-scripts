@@ -69,18 +69,23 @@ if [[ $_DISTRO != "Darwin" ]]; then
         fi
     }
 
-    watch_service_logs() {
+    _WATCH_SERVICE_LOGS() {
         ####
         # Function Info
         # -------------
         # Display the logs from 'nadeko.server' as they are created.
         ####
 
-        echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
-        echo "${_CYAN}To return to the installer menu:"
-        echo "1) Press 'Ctrl' + 'C'"
-        echo "2) Press 'Q'$_NC"
-        sudo journalctl -f -u "$_NADEKO_SERVICE_NAME"  | less -FRSXM
+        if [[ $1 = "runner" ]]; then
+            echo "Displaying '$_NADEKO_SERVICE_NAME' startup logs, live..."
+        else
+            echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
+        fi
+
+        echo "${_CYAN}To stop displaying the startup logs:"
+        echo "1) Press 'Ctrl + C'$_NC"
+        echo ""
+        sudo journalctl -f -u "$_NADEKO_SERVICE_NAME"  | ccze -A
     }
 
 
@@ -146,18 +151,23 @@ else  ##########################################################################
         fi
     }
 
-    watch_service_logs() {
+    _WATCH_SERVICE_LOGS() {
         ####
         # Function Info
         # -------------
         # Display the logs from 'nadeko.server' as they are created.
         ####
 
-        echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
-        echo "${_CYAN}To exit the installer:"
-        echo "1) Press 'Ctrl + C'"
-        echo "2) Press 'Q'$_NC"
-        tail -f "bot.nadeko.Nadeko.log" | less -FRSXM
+        if [[ $1 = "runner" ]]; then
+            echo "Displaying '$_NADEKO_SERVICE_NAME' startup logs, live..."
+        else
+            echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
+        fi
+
+        echo "${_CYAN}To stop displaying the startup logs:"
+        echo "1) Press 'Ctrl + C'$_NC"
+        echo ""
+        tail -f "bot.nadeko.Nadeko.log" | ccze -A
     }
 
 
@@ -216,7 +226,7 @@ while true; do
 
     ## Disable option 1 if any of the following tools are not installed.
     if (! hash dotnet || ! hash redis-server || ! hash git || ! hash jq \
-            || ! hash python3 || ! hash youtube-dl) &>/dev/null; then
+            || ! hash python3 || ! hash youtube-dl || ! hash ccze) &>/dev/null; then
         option_one_disabled=true
         echo "${_GREY}1. Download NadekoBot (Disabled until option 6 has been run)$_NC"
     else
@@ -230,7 +240,7 @@ while true; do
             || ! -d NadekoBot/src/NadekoBot/bin/Release \
             || -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] \
             || (! hash dotnet || ! hash redis-server || ! hash git || ! hash jq \
-            || ! hash python3 || ! hash youtube-dl) &>/dev/null; then
+            || ! hash python3 || ! hash youtube-dl || ! hash ccze) &>/dev/null; then
         option_two_and_three_disabled=true
         option_four_disabled=true
         option_five_disabled=true
@@ -344,6 +354,7 @@ while true; do
             export _NADEKO_SERVICE
             export _NADEKO_SERVICE_NAME
             export _NADEKO_SERVICE_STATUS
+            export -f _WATCH_SERVICE_LOGS
 
             _DOWNLOAD_SCRIPT "$nadeko_runner" "nadeko_runner.sh"
             clear -x
@@ -383,7 +394,7 @@ while true; do
                 continue
             fi
 
-            watch_service_logs
+            _WATCH_SERVICE_LOGS "option_five"
             clear -x
             ;;
         6)

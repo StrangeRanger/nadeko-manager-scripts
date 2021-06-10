@@ -65,7 +65,7 @@ export _NADEKO_INSTALL_VERSION="1.9"
 
 # Used to keep track of changes to 'linuxAIO.sh'.
 # Refer to the '[ Prepping ]' section of 'installer_prep.sh' for more information.
-export _LINUXAIO_REVISION="24"
+export _LINUXAIO_REVISION="25"
 # URL to the raw version of a specified script.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 

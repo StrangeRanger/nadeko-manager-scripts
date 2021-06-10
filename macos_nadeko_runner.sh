@@ -6,8 +6,6 @@
 #### [ Variables ]
 
 
-# Number of seconds to wait, in order to give NadekoBot enough time to start.
-timer=60
 nadeko_service_content="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
@@ -197,15 +195,10 @@ else
     echo "Waiting 60 seconds for '$_NADEKO_SERVICE_NAME' to start..."
 fi
 
-## Wait in order to give '$_NADEKO_SERVICE_NAME' enough time to (re)start.
-while ((timer > 0)); do
-    echo -en "$_CLRLN$timer seconds left"
-    sleep 1
-    ((timer-=1))
-done
+_WATCH_SERVICE_LOGS "runner"
 
-echo -e "\n\n${_CYAN}It's recommended to inspect 'bot.nadeko.Nadeko.log' to confirm" \
-    "that there were no errors during NadekoBot's startup$_NC"
+echo -e "\nPlease check the logs above to make sure that there aren't any" \
+    "errors, and if there are, to resolve whatever issue is causing them\n"
 read -rp "Press [Enter] to return to the installer menu"
 
 

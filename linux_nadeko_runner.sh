@@ -6,10 +6,6 @@
 #### [ Variables ]
 
 
-# Number of seconds to wait, in order to give NadekoBot enough time to start.
-timer=60
-# Save the current time and date, which will be used in conjunction with 'journalctl'.
-start_time=$(date +"%F %H:%M:%S")
 nadeko_service_content="[Unit]
 Description=NadekoBot service
 
@@ -125,7 +121,6 @@ if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
         read -rp "Press [Enter] to return to the installer menu"
         exit 4
     }
-    echo "Waiting $timer seconds for '$_NADEKO_SERVICE_NAME' to restart..."
 ## Start $_NADEKO_SERVICE_NAME if it is NOT currently running.
 else
     echo "Starting '$_NADEKO_SERVICE_NAME'..."
@@ -134,26 +129,12 @@ else
         read -rp "Press [Enter] to return to the installer menu"
         exit 4
     }
-    echo "Waiting $timer seconds for '$_NADEKO_SERVICE_NAME' to start..."
 fi
 
-## Wait in order to give $_NADEKO_SERVICE_NAME enough time to (re)start.
-while ((timer > 0)); do
-    echo -en "$_CLRLN$timer seconds left"
-    sleep 1
-    ((timer-=1))
-done
+_WATCH_SERVICE_LOGS "runner"
 
-# NOTE: $_NO_HOSTNAME is purposefully unquoted. Do not quote it!
-echo -e "\n\n-------- $_NADEKO_SERVICE_NAME startup logs ---------"            \
-    "\n$(journalctl -q -u nadeko -b $_NO_HOSTNAME -S "$start_time" 2>/dev/null \
-         || sudo journalctl -q -u nadeko -b $_NO_HOSTNAME -S "$start_time")"   \
-    "\n--------- End of $_NADEKO_SERVICE_NAME startup logs --------\n"
-
-echo -e "${_CYAN}Please check the logs above to make sure that there aren't any" \
+echo -e "\nPlease check the logs above to make sure that there aren't any" \
     "errors, and if there are, to resolve whatever issue is causing them\n"
-
-echo "${_GREEN}NadekoBot is now running in the background$_NC"
 read -rp "Press [Enter] to return to the installer menu"
 
 

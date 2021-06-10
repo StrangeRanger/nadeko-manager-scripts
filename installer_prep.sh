@@ -14,14 +14,11 @@
 
 # Used to keep track of changes to 'linuxAIO.sh'.
 # Refer to the '[ Prepping ]' section of this script for more information.
-current_linuxAIO_revision="24"
+current_linuxAIO_revision="25"
 # Name of the master installer to be downloaded.
 # REASON: I placed the name in a variable just so there are no chances of accidentally
 #         misstyping the filename, in addition to it being slighlty shorter.
 master_installer="nadeko_master_installer.sh"
-# Store process id of 'installer_prep.sh', in case it needs to be manually killed by a
-# sub/child script.
-export _INSTALLER_PREP_PID=$$
 
 ## Modify output text color.
 export _YELLOW=$'\033[1;33m'
@@ -128,8 +125,8 @@ linuxAIO_update() {
 
     echo "$_YELLOW'linuxAIO.sh' is not up to date$_NC"
     echo "Downloading latest 'linuxAIO.sh'..."
-    curl -O "$_RAW_URL"/linuxAIO.sh
-    sudo chmod +x linuxAIO.sh
+    curl -O "$_RAW_URL"/linuxAIO.sh \
+        && sudo chmod +x linuxAIO.sh
 
     echo "Applying existing configurations to the new 'linuxAIO.sh'..."
 
@@ -299,7 +296,7 @@ _DOWNLOAD_SCRIPT() {
 # installer.
 trap 'echo -e "\n\nScript forcefully stopped"
     clean_up "2" "Exiting" "true"' \
-    SIGINT SIGTSTP SIGTERM
+    SIGINT #SIGTSTP #SIGTERM
 
 
 #### End of [ Error Traps ]
