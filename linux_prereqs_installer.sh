@@ -9,49 +9,46 @@
 
 install_prereqs() {
     ####
-    # Function Info
-    # -------------
-    # Install required packages and dependencies needed by NadekoBot, on all compatable
-    # Linux Distributions, besides Debian 9.
-    #
-    # @param $1 Distribution name.
-    # @param $2 Distribution version.
+    # Function Info: Install required packages and dependencies needed by NadekoBot, on
+	#                all compatable Linux Distributions, besides Debian 9.
+	#
+    # Parameters:
+    # 	$1 - Distribution name.
+    # 	$2 - Distribution version.
+    #   $3 - 'python' or 'python-is-python3' (dependant on the version of the distro).
     ####
 
     echo "Installing .NET Core..."
     ## Microsoft package signing key.
     curl -O https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb && sudo rm -f packages-microsoft-prod.deb
-
     ## Install the SDK.
     sudo apt-get update
-    sudo apt-get install -y apt-transport-https &&
-        sudo apt-get update &&
-        sudo apt-get install -y dotnet-sdk-5.0
+    sudo apt-get install -y apt-transport-https \
+        && sudo apt-get update \
+        && sudo apt-get install -y dotnet-sdk-5.0
 
     echo "Installing other prerequisites..."
-    sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg jq wget \
-        redis-server git python python3 jq wget -y
+    sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg jq  \
+        redis-server git "$3" python3 jq ccze -y
     sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
         /usr/local/bin/youtube-dl
     # NOTE: If the write perms are not applied to all users for this tool, attempts to
-    #       update 'youtube-dl' by a non-root user will always fail. 
-    # TODO: Find a better solution than modifying the perms in such a way that I have.
+    #       update 'youtube-dl' by a non-root user will always fail.
+    # FIXME: Find a better solution than modifying the perms in such a way that I have.
     sudo chmod a+rwx /usr/local/bin/youtube-dl
 }
 
 unsupported() {
     ####
-    # Function Info
-    # -------------
-    # Informs the end-user that their system is not supported by the automatic
-    # installation of the prerequisites.
+    # Function Info: Informs the end-user that their system is not supported by the
+	#				 automatic installation of the prerequisites.
     ####
 
     echo "${_RED}The installer does not support the automatic installation and setup" \
         "of NadekoBot's prerequisites for your OS: $_DISTRO $_VER $_ARCH$_NC"
     read -rp "Press [Enter] to return to the installer menu"
-    exit 1
+    exit 4
 }
 
 
@@ -62,19 +59,26 @@ unsupported() {
 
 read -rp "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
+# Ubuntu:
+#   16.04
+#   18.04
+#   20.04
 if [[ $_DISTRO = "ubuntu" ]]; then
     case "$_VER" in
-        16.04) install_prereqs "ubuntu" "16.04" ;;
-        18.04) install_prereqs "ubuntu" "18.04" ;;
-        20.04) install_prereqs "ubuntu" "20.04" ;;
+        16.04) install_prereqs "ubuntu" "16.04" "python" ;;
+        18.04) install_prereqs "ubuntu" "18.04" "python" ;;
+        20.04) install_prereqs "ubuntu" "20.04" "python-is-python3" ;;
         *)     unsupported ;;
     esac
+# Linux Mint:
+#   9
+#   10
 elif [[ $_DISTRO = "debian" ]]; then
-    case "$_SVER" in    
-        9) 
+    case "$_SVER" in
+        9)
             echo "Installing .NET Core..."
             ## Microsoft package signing key.
-            wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg \
+            curl https://packages.microsoft.com/keys/microsoft.asc | gpg \
                 --dearmor > microsoft.asc.gpg
             sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
             curl -sO https://packages.microsoft.com/config/debian/9/prod.list
@@ -84,29 +88,33 @@ elif [[ $_DISTRO = "debian" ]]; then
 
             ## Install the SDK.
             sudo apt-get update
-            sudo apt-get install -y apt-transport-https &&
-                sudo apt-get update &&
-                sudo apt-get install -y dotnet-sdk-5.0
+            sudo apt-get install -y apt-transport-https \
+                && sudo apt-get update \
+                && sudo apt-get install -y dotnet-sdk-5.0
 
             echo "Installing other prerequisites..."
             sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg \
-                redis-server git jq python python3 wget -y
+                redis-server git jq python python3 ccze -y
             sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
                 /usr/local/bin/youtube-dl
             # NOTE: If the write perms are not applied to all users for this tool,
-            #       attempts to update 'youtube-dl' by a non-root user will always fail. 
-            # TODO: Find a better solution than modifying the perms in such a way that I
-            #       have.
+            #       attempts to update 'youtube-dl' by a non-root user will always fail.
+            # FIXME: Find a better solution than modifying the perms in such a way that
+            #        I have.
             sudo chmod a+rwx /usr/local/bin/youtube-dl
             ;;
-        10) install_prereqs "debian" "10" ;;
+        10) install_prereqs "debian" "10" "python" ;;
         *)  unsupported ;;
     esac
+# Linux Mint:
+#   18
+#   19
+#   20
 elif [[ $_DISTRO = "linuxmint" ]]; then
     case "$_SVER" in
-        18) install_prereqs "ubuntu" "16.04" ;;
-        19) install_prereqs "ubuntu" "18.04" ;;
-        20) install_prereqs "ubuntu" "20.04" ;;
+        18) install_prereqs "ubuntu" "16.04" "python" ;;
+        19) install_prereqs "ubuntu" "18.04" "python" ;;
+        20) install_prereqs "ubuntu" "20.04" "python-is-python3" ;;
         *)  unsupported ;;
     esac
 fi

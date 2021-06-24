@@ -6,8 +6,8 @@
 #### [ Variables ]
 
 
-credentials="NadekoBot/src/NadekoBot/credentials.json"
-bak_credentials="NadekoBot/src/NadekoBot/credentials.json.bak"
+credentials_path="NadekoBot/src/NadekoBot/credentials.json"
+bak_credentials_path="NadekoBot/src/NadekoBot/credentials.json.bak"
 
 
 #### End of [ Variables ]
@@ -22,7 +22,8 @@ echo "${_CYAN}This field is required and cannot be left blank"
 echo "Field 1 of 9$_NC"
 while true; do
     read -rp "Enter your bot token (it is not bot secret, it should be ~59 characters long): " token
-    if [[ -n $token ]]; then break; fi
+    if [[ -n $token ]]; then break
+    fi
 done
 echo "Bot token: $token"
 echo "-------------"
@@ -32,7 +33,8 @@ echo "${_CYAN}This field is required and cannot be left blank"
 echo "Field 2 of 9$_NC"
 while true; do
     read -rp "Enter your own ID: " ownerid
-    if [[ -n $ownerid ]]; then break; fi
+    if [[ -n $ownerid ]]; then break
+    fi
 done
 echo "Owner ID: $ownerid"
 echo "-------------"
@@ -79,20 +81,20 @@ read -rp "Enter your Timezone DB API Key: " timedbapi
 echo "Timezone DB API Key: $timedbapi"
 echo -e "-------------\n"
 
-## Back up credentials by renameing it to 'credentials.json.bak'.
-if [[ -f $credentials ]]; then
+## Back up the current credentials by renameing the file to 'credentials.json.bak'.
+if [[ -f $credentials_path ]]; then
     echo "Backing up current 'credentials.json' as 'credentials.json.bak'..."
-    mv "$credentials" "$bak_credentials"
+    mv "$credentials_path" "$bak_credentials_path"
     echo "Creating new 'credentials.json'..."
 ## Create a new 'credentials.json' file.
 else
     echo "Creating 'credentials.json'..."
-    touch "$credentials"
-    sudo chmod +x "$credentials"
+    touch "$credentials_path"
+    sudo chmod +x "$credentials_path"
 fi
 
-## Add the credentials to 'credentials.json'.
-echo -e "{
+## Add the new credentials to the new 'credentials.json' file.
+echo "{
     \"Token\": \"$token\",
     \"OwnerIds\": [
         $ownerid
@@ -106,7 +108,7 @@ echo -e "{
     \"TimezoneDbApiKey\": \"$timedbapi\",
     \"Db\": null,
     \"TotalShards\": 1 \
-}" > "$credentials"
+}" > "$credentials_path"
 
 echo -e "\n${_GREEN}Finished creating 'credentials.json'$_NC"
 read -rp "Press [Enter] to return the the installer menu"
@@ -114,4 +116,3 @@ read -rp "Press [Enter] to return the the installer menu"
 
 #### End of [ Main ]
 ########################################################################################
-
