@@ -8,17 +8,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Instead of waiting 60 seconds to display NadekoBot's startup logs, the logs are immediately displayed in real time, and can be stopped by using '`CTRL` + `C`'.
+- When displaying the service logs, they are now output in colored text using `ccze` (which has become a new dependency installed via the `prereqs_installer` scripts) (only applicable when run on Linux).
+- `NadekoRunner.sh` will now exit if an error occurs, instead of being stuck in an infinite while loop.
 - Moved most non-assignment operators to the front of a continuation newline.
 - Used parameter substitution were possible.
 - Performed some refactoring and style changes to allow for better readability.
 - Removed unnecessary-redundant code.
+- Replaced all instances of `wget` with `curl`.
 - Improved error catching/trapping.
-- Improved system exiting by using exit code values instead of just executing `_CLEAN_EXIT` (which is no longer exported and was renamed to `clean_up`):
-  - 1: Some error occurred that required the exit of the entire installer.
+- Improved system exiting by using exit codes instead of just executing `_CLEAN_EXIT` (which is no longer exported and was renamed to `clean_up`):
+  - 1: Some error occurred that required the installer to be exited.
   - 2: Produced when the end-user uses `CTRL + C` or `CTRL + Z`.
   - 3: Unexpected internal error.
   - 4: Some error occurred that required the installer to return the its main menu.
-  - 5: .....
+  - 5: The installer was executed with root perms when `linuxAIO.sh` was configured to prevent such action.
+  - NOTE:
+    - These error codes are only applicable if `linuxAIO.sh` executed `installer_prep.sh`.
+- `python-is-python3` is installed as a prerequisite instead of `python`, when running on Ubuntu 20.04 and Linux Mint 20.
 
 ## [3.0.4] - 2021-05-24
 

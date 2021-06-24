@@ -28,31 +28,34 @@ installer_repo="StrangeRanger/NadekoBot-BashScript"
 
 # The branch that the installer will use.
 #
-# Options
-# -------
-# master = Production ready code (the latest stable code)
-# dev    = Non-production ready code (has the possibility of breaking something)
+# Options:
+#   master = Production ready code (the latest stable code)
+#   dev    = Non-production ready code (has the possibility of breaking something)
 #
 # Default: master
 installer_branch="master"
 
 # Determines whether or not the installer can be run as the root user.
 #
-# Options
-# -------
-# true  = can be run with root privilege
-# false = cannot be run with root privilege (recommended)
+# Options:
+#   true  = Can be run with root privilege
+#   false = Cannot be run with root privilege (recommended)
 #
 # Default: false
 allow_run_as_root=false
 
-# The branch or tag that the installer will download NadekoBot from.
+# The branch or tag (also can be seen as NadekoBot's version) that the installer will
+# download NadekoBot from.
 #
-# Options
-# -------
-# 1.9   = Latest version (the master/main branch)
-# x.x.x = Any other branch/tag (refer to the NadekoBot repo for available tags and
-#         branches)
+# IMPORTANT: Having the installer download and use a version of NadekoBot that is older
+#            than the one currently on your system, increases the likelyhood of failed
+#            builds due to incompatible changes in Nadeko being moved over the the
+#            downloaded version.
+#
+# Options:
+#   1.9   = Latest version (the master/main branch)
+#   x.x.x = Any other branch/tag (refer to the NadekoBot repo for available tags and
+#           branches)
 #
 # Default: 1.9
 export _NADEKO_INSTALL_VERSION="1.9"
@@ -65,7 +68,7 @@ export _NADEKO_INSTALL_VERSION="1.9"
 
 # Used to keep track of changes to 'linuxAIO.sh'.
 # Refer to the '[ Prepping ]' section of 'installer_prep.sh' for more information.
-export _LINUXAIO_REVISION="25"
+export _LINUXAIO_REVISION="26"
 # URL to the raw version of a specified script.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
@@ -91,8 +94,7 @@ echo "Downloading the latest installer..."
 curl -O "$_RAW_URL"/installer_prep.sh
 sudo chmod +x installer_prep.sh \
     && ./installer_prep.sh \
-    && exit 0 \
-    || exit "$?"
+    || exit "$?"  # Will provide the exit code passed by 'installer_prep.sh'.
 
 
 #### End of [ Main ]

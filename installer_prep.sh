@@ -4,20 +4,17 @@
 # whether or not the system is supported by NadekoBot. Once the system is deemed as
 # supported, the master installer will be downloaded and executed.
 #
-# Comment key for '[letter].[number].'
-# ------------------------------------
-# A.1. - Forcing 64 bit architecture
-#
 ########################################################################################
 #### [ Exported and/or Globally Used Variables ]
 
 
 # Used to keep track of changes to 'linuxAIO.sh'.
 # Refer to the '[ Prepping ]' section of this script for more information.
-current_linuxAIO_revision="25"
+current_linuxAIO_revision="26"
 # Name of the master installer to be downloaded.
 # REASON: I placed the name in a variable just so there are no chances of accidentally
-#         misstyping the filename, in addition to it being slighlty shorter.
+#         misstyping the filename, in addition to it being slighlty shorter when
+#         refrencing the file.
 master_installer="nadeko_master_installer.sh"
 
 ## Modify output text color.
@@ -38,7 +35,7 @@ export _CLRLN=$'\r\033[K'
     if ((journalctl_version >= 230)) 2>/dev/null; then
         export _NO_HOSTNAME="--no-hostname"
     fi
- } 2>/dev/null
+} 2>/dev/null
 
 
 #### End of [ Exported and/or Globally Used Variables ]
@@ -48,10 +45,8 @@ export _CLRLN=$'\r\033[K'
 
 detect_sys_info() {
     ####
-    # Function Info
-    # -------------
-    # Identify the operating system, version number, architecture, bit type (32 or 64),
-    # etc.
+    # Function Info: Identify the operating system, version number, architecture, bit
+    #                type (32 or 64), etc.
     ####
 
     ## For Linux.
@@ -82,46 +77,43 @@ detect_sys_info() {
     esac
 }
 
+# TODO: Modify so there aren't so many repeated comments.
 linuxAIO_update() {
     ####
-    # Function Info
-    # -------------
-    # Download the latest version of 'linuxAIO.sh' if $_LINUXAIO_REVISION and
-    # $current_linuxAIO_revision aren't of equal value.
+    # Function Info: Download the latest version of 'linuxAIO.sh' if $_LINUXAIO_REVISION
+    #                and $current_linuxAIO_revision aren't of equal value.
     #
-    # Purpose
-    # -------
-    # Since 'linuxAIO.sh' remains on the user's system, any changes to the code that are
-    # pushed to github, are never applied to the version on the user's system. Whenever
-    # the values of $_LINUXAIO_REVISION and $current_linuxAIO_revision do not match, the
-    # newest version of 'linuxAIO.sh' is retrieved from github.
+    # Purpose: Since 'linuxAIO.sh' remains on the user's system, any changes to the code
+    #          that are pushed to github, are never applied to the version on the user's
+    #          system. Whenever the values of $_LINUXAIO_REVISION and
+    #          $current_linuxAIO_revision do not match, the newest version of
+    #          'linuxAIO.sh' is retrieved from github.
     #
-    # Important Note For Revisions 8 and Earlier
-    # ------------------------------------------
-    # As another note, only 'linuxAIO.sh' files with a revision number of 9 or later
-    # will utilize this function. Breaking changes occured between revision 8 and 9, and
-    # as a result, I've decided that the end-user will be required to manually download
-    # the latest version from github. The script will provide the user with the
-    # appropriate command to do this, based on the configurations in their current
-    # 'linuxAIO.sh'.
+    # ! Revision Note: As another important note, only 'linuxAIO.sh' files with a
+    #                  revision number of 9 or later will utilize this function.
+    #                  Breaking changes occured between revision 8 and 9, and as a
+    #                  result, I've decided that the end-user will be required to
+    #                  manually download the latest version from github. The script will
+    #                  provide the user with the appropriate command to do this, based
+    #                  on the configurations in their current 'linuxAIO.sh'.
     ####
 
-    ## Save the values of the Configuration Variables specified in 'linuxAIO.sh', to be
-    ## set in the new 'linuxAIO.sh'.
-    ## NOTE: Declaration and intialation is seperated at the recommendation by
+    ## Save the values of the current Configuration Variables specified in
+    ## 'linuxAIO.sh', to be set in the new 'linuxAIO.sh'.
+    ## NOTE: Declaration and instantiation is seperated at the recommendation by
     ##       shellcheck.
-    local installer_branch              # $installer_branch
-    local installer_branch_found        # $installer_branch
-    installer_branch=$(grep '^installer_branch=.*' linuxAIO.sh)
-    installer_branch_found=$?
-    local allow_run_as_root             # $allow_run_as_root
-    local allow_run_as_root_found       # $allow_run_as_root
-    allow_run_as_root=$(grep '^allow_run_as_root=.*' linuxAIO.sh)
-    allow_run_as_root_found=$?
-    local nadeko_install_version        # $_NADEKO_INSTALL_VERSION
-    local nadeko_install_version_found  # $_NADEKO_INSTALL_VERSION
-    nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)
-    nadeko_install_version_found=$?
+    local installer_branch                                       # Grouping One
+    local installer_branch_found                                 # Grouping One
+    installer_branch=$(grep '^installer_branch=.*' linuxAIO.sh)  # Grouping One
+    installer_branch_found="$?"	                                 # Grouping One
+    local allow_run_as_root                                        # Grouping Two
+    local allow_run_as_root_found                                  # Grouping Two
+    allow_run_as_root=$(grep '^allow_run_as_root=.*' linuxAIO.sh)  # Grouping Two
+    allow_run_as_root_found="$?"                                   # Grouping Two
+    local nadeko_install_version                                                     # Grouping Three
+    local nadeko_install_version_found                                               # Grouping Three
+    nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)  # Grouping Three
+    nadeko_install_version_found="$?"                                                # Grouping Three
 
     echo "$_YELLOW'linuxAIO.sh' is not up to date$_NC"
     echo "Downloading latest 'linuxAIO.sh'..."
@@ -182,19 +174,17 @@ linuxAIO_update() {
     ####################################################################################
 }
 
-unsupoorted() {
+unsupported() {
     ####
-    # Function Info
-    # -------------
-    # Provide the end-user with the option to continue, even if their system isn't
-    # officially supported.
+    # Function Info: Provide the end-user with the option to continue, even if their
+    #                system isn't officially supported.
     ####
 
     echo "${_RED}Your operating system/Linux Distribution is not OFFICIALLY supported" \
         "for the installation, setup, and/or use of NadekoBot" >&2
-    echo "${_YELLOW}WARNING: By continuing, you accept that unexpected behaviors"     \
+    echo "${_YELLOW}WARNING: By continuing, you accept that unexpected behaviors" \
         "may occur. If you run into any errors or problems with the installation and" \
-        "use of the NadekoBot, you are on your own. We do not provide support for"    \
+        "use of the NadekoBot, you are on your own. We do not provide support for" \
         "distributions that we don't officially support.$_NC"
     read -rp "Would you like to continue anyways? [y/N] " choice
     # Convert user input to lowercase.
@@ -208,28 +198,23 @@ unsupoorted() {
 
 execute_master_installer() {
     ####
-    # Function Info
-    # -------------
-    # Download and execute 'nadeko_master_installer.sh'.
+    # Function Info: Download and execute 'nadeko_master_installer.sh'.
     ####
 
     _DOWNLOAD_SCRIPT "$master_installer" "$master_installer" "true"
-    # TODO: Perhaps remove one of the duplicate code snippets.
     ./nadeko_master_installer.sh
     clean_up "$?" "Exiting"
 }
 
 clean_up() {
     ####
-    # Function Info
-    # -------------
-    # Cleanly exit the installer by removing files that aren't required unless the
-    # installer is currently running.
+    # Function Info: Cleanly exit the installer by removing files that aren't required
+    #                unless the installer is currently running.
     #
-    # @param $1 Exit status code.
-    # @param $2 Output text.
-    # @param $3 Determines if 'Cleaning up...' needs to be printed with a new-line
-    #           symbol.
+    # Parameters:
+    #   $1 - Exit status code.
+    #   $2 - Output text.
+    #   $3 - Determines if 'Cleaning up...' needs to be printed with a new-line symbol.
     ####
 
     # Files to be removed.
@@ -246,11 +231,11 @@ clean_up() {
     cd "$_WORKING_DIR" || {
         echo "${_RED}Failed to move to project root directory$_NC" >&2
         exit 1
-	}
+    }
 
-	# TODO: Add echo stuff for output.
+    # Remove the version of NadekoBot that had just been downloaded to the system.
     if [[ -d NadekoTMPDir ]]; then rm -rf NadekoTMPDir
-	fi
+    fi
 
     ## Remove any and all files specified in $installer_files.
     for file in "${installer_files[@]}"; do
@@ -269,12 +254,12 @@ clean_up() {
 
 _DOWNLOAD_SCRIPT() {
     ####
-    # Function Info
-    # -------------
-    # Download the specified script and modify it's execution permissions.
+    # Function Info: Download the specified script and modify it's execution
+    #                permissions.
     #
-    # @param $1 Name of script to donwload.
-    # @param $2 Name to rename $1 with.
+    # Parameters:
+    #   $1 - Name of script to donwload.
+    #   $2 - Name to rename $1 with.
     ####
 
     if [[ ! $3 ]]; then echo "Downloading '$1'..."
@@ -296,7 +281,7 @@ _DOWNLOAD_SCRIPT() {
 # installer.
 trap 'echo -e "\n\nScript forcefully stopped"
     clean_up "2" "Exiting" "true"' \
-    SIGINT #SIGTSTP #SIGTERM
+    SIGINT SIGTSTP SIGTERM
 
 
 #### End of [ Error Traps ]
@@ -358,7 +343,7 @@ if [[ $bits = 64 ]]; then
     if [[ $_DISTRO = "ubuntu" ]]; then
         case "$_VER" in
             16.04|18.04|20.04) execute_master_installer ;;
-            *)                 unsupoorted ;;
+            *)                 unsupported ;;
         esac
     # Debian:
     #   9
@@ -366,7 +351,7 @@ if [[ $bits = 64 ]]; then
     elif [[ $_DISTRO = "debian" ]]; then
         case "$_SVER" in
             9|10) execute_master_installer ;;
-            *)    unsupoorted ;;
+            *)    unsupported ;;
         esac
     # Linux Mint:
     #   18
@@ -375,7 +360,7 @@ if [[ $bits = 64 ]]; then
     elif [[ $_DISTRO = "linuxmint" ]]; then
         case "$_SVER" in
             18|19|20) execute_master_installer ;;
-            *)        unsupoorted ;;
+            *)        unsupported ;;
         esac
     # macOS:
     #   10.14
@@ -383,14 +368,15 @@ if [[ $bits = 64 ]]; then
     #   11.*
     elif [[ $_DISTRO = "Darwin" ]]; then
         case "$_SVER" in
-            10.14|10.15|11.*) execute_master_installer ;;
-            *)                unsupoorted ;;
+            10.14|10.15) execute_master_installer ;;
+            11|11.*)     execute_master_installer ;;
+            *)           unsupported ;;
         esac
     else
-        unsupoorted
+        unsupported
     fi
 else
-    unsupoorted
+    unsupported
 fi
 
 

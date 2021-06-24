@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Start NadekoBot in the specified run mode.
+# Start NadekoBot in the specified run mode, on Linux distributions.
 #
 ########################################################################################
 #### [ Variables ]
@@ -83,8 +83,7 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "echo \"Running NadekoBot...\"" \
         "dotnet run -c Release" \
         "echo \"Done\"" \
-        "cd $_WORKING_DIR" \
-        "" > NadekoRun.sh
+        "cd $_WORKING_DIR" > NadekoRun.sh
 ## Add code required to run NadekoBot in the background with auto restart, to
 ## 'NadekoRun.sh'.
 else
@@ -102,15 +101,21 @@ else
         "dotnet build -c Release" \
         "" \
         "while true; do" \
-        "    cd $_WORKING_DIR/NadekoBot/src/NadekoBot &&" \
+        "    {" \
+        "        cd $_WORKING_DIR/NadekoBot/src/NadekoBot" \
         "        dotnet run -c Release" \
+        "    # If a non-zero exit code is produced, exit this script." \
+        "    } || {" \
+        "        error_code=\"\$?\"" \
+        "        echo \"An error occurred when trying to start NadekBot\"" \
+        "        echo \"EXIT CODE: \$?\"" \
+        "        exit \"\$error_code\"" \
+        "    }" \
         "" \
         "    youtube-dl -U" \
-        "    sleep 10" \
         "done" \
         "" \
-        "echo \"Stopping NadekoBot\"" \
-        "" > NadekoRun.sh
+        "echo \"Stopping NadekoBot\"" > NadekoRun.sh
 fi
 
 ## Restart $_NADEKO_SERVICE_NAME if it is currently running.
@@ -132,10 +137,6 @@ else
 fi
 
 _WATCH_SERVICE_LOGS "runner"
-
-echo -e "\nPlease check the logs above to make sure that there aren't any" \
-    "errors, and if there are, to resolve whatever issue is causing them\n"
-read -rp "Press [Enter] to return to the installer menu"
 
 
 #### End of [ Variables ]

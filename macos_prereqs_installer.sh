@@ -8,16 +8,14 @@
 
 install_prereqs() {
     ####
-    # Function Info
-    # -------------
-    # Install required package and dependencies needed by NadekoBot.
+    # Function Info: Install required package and dependencies needed by NadekoBot.
     ####
 
     echo "Updating and upgrading Homebrew formulas and casks..."
     brew update && brew upgrade
     echo "Installing prerequisites..."
     brew install opus opus-tools opusfile libsodium libffi ffmpeg openssl redis git jq \
-        mono-libgdiplus python3 wget youtube-dl ccze
+        mono-libgdiplus python3 youtube-dl
     echo "Starting redis..."
     brew services start redis
     echo "Casking Dotnet..."
@@ -50,7 +48,12 @@ if ! hash brew &>/dev/null; then
 fi
 
 case "$_SVER" in
-    10.14|10.15|11.*) install_prereqs ;;
+	# macOS:
+    #   10.14
+    #   10.15
+    #   11.*
+    10.14|10.15) install_prereqs ;;
+    11|11.*)     install_prereqs ;;
     *)
         echo "${_RED}The installer does not support the automatic installation and" \
             "setup of NadekoBot's prerequisites for your version of macOS$_NC"

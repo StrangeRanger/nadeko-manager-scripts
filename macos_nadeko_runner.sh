@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Start NadekoBot in the specified run mode.
+# Start NadekoBot in the specified run mode, on macOS.
 #
 ########################################################################################
 #### [ Variables ]
@@ -30,9 +30,6 @@ nadeko_service_content="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 #### [ Main ]
 
 
-echo "${_CYAN}NOTE: Due to limiations on macOS, NadekoBot's startup logs will not be" \
-    "displayed$_NC"
-
 ## Create '$_NADEKO_SERVICE_NAME', if it does not already exist.
 if [[ ! -f $_NADEKO_SERVICE ]]; then
     echo "Creating '$_NADEKO_SERVICE_NAME'..."
@@ -57,8 +54,7 @@ else
 fi
 
 # Check if 'NadekoRun.sh' exists.
-if [[ -f NadekoRun.sh ]]; then
-    echo "Updating 'NadekoRun.sh'..."
+if [[ -f NadekoRun.sh ]]; then echo "Updating 'NadekoRun.sh'..."
 ## Create 'NadekoRun.sh' if it doesn't exist.
 else
     echo "Creating 'NadekoRun.sh'..."
@@ -86,9 +82,7 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "    echo \"\"" \
         "    echo \"Running NadekoBot in the background\"" \
         "    brew upgrade youtube-dl" \
-        "} | add_date >> $_WORKING_DIR/bot.nadeko.Nadeko.log" \
         "" \
-        "{" \
         "    cd $_WORKING_DIR/NadekoBot" \
         "    $(which dotnet) build -c Release" \
         "    cd $_WORKING_DIR/NadekoBot/src/NadekoBot" \
@@ -115,8 +109,8 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "    <false/>" \
         "</dict>" \
         "</plist>" > "$_NADEKO_SERVICE"
-## Add code required to run NadekoBot in the background with auto restart, to
-## 'NadekoRun.sh'. Additionally update the service with the information needed to run
+## Add the code required to run NadekoBot in the background with auto restart, to
+## 'NadekoRun.sh'. Additionally, update the service with the information needed to run
 ## NadekoBot in this run mode.
 else
     printf '%s\n' \
@@ -131,7 +125,7 @@ else
         "    done" \
         "}" \
         "" \
-        "(" \
+        "{" \
         "    echo \"\"" \
         "    echo \"Running NadekoBot in the background with auto restart\"" \
         "    brew upgrade youtube-dl" \
@@ -139,18 +133,25 @@ else
         "    sleep 5" \
         "    cd $_WORKING_DIR/NadekoBot" \
         "    $(which dotnet) build -c Release" \
-        ") | add_date >> $_WORKING_DIR/bot.nadeko.Nadeko.log" \
+        "} | add_date >> $_WORKING_DIR/bot.nadeko.Nadeko.log" \
         "" \
-        "(" \
+        "{" \
         "    while true; do" \
-        "        cd $_WORKING_DIR/NadekoBot/src/NadekoBot &&" \
+        "        {" \
+        "            cd $_WORKING_DIR/NadekoBot/src/NadekoBot" \
         "            $(which dotnet) run -c Release" \
+        "        # If a non-zero exit code is produced, exit this script." \
+        "        } || {" \
+        "            error_code=\"\$?\"" \
+        "            echo \"An error occurred when trying to start NadekBot\"" \
+        "            echo \"EXIT CODE: \$?\"" \
+        "            exit \"\$error_code\"" \
+        "        }" \
         "" \
         "        brew upgrade youtube-dl" \
-        "        sleep 10" \
         "    done" \
         "    echo \"Stopping NadekoBot\"" \
-        ") | add_date >> $_WORKING_DIR/bot.nadeko.Nadeko.log" > NadekoRun.sh
+        "} | add_date >> $_WORKING_DIR/bot.nadeko.Nadeko.log" > NadekoRun.sh
     printf '%s\n' \
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
         "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" \
@@ -171,6 +172,11 @@ else
         "</plist>" > "$_NADEKO_SERVICE"
 fi
 
+## Create 'bot.nadeko.Nadeko.log' if it doesn't exist.
+if [[ ! -d $_WORKING_DIR/bot.nadeko.Nadeko.log ]]; then
+    touch "$_WORKING_DIR"/bot.nadeko.Nadeko.log
+fi
+
 ## Restart '$_NADEKO_SERVICE_NAME' if it is currently running.
 if [[ $_NADEKO_SERVICE_STATUS = "running" ]]; then
     echo "Restarting '$_NADEKO_SERVICE_NAME'..."
@@ -181,7 +187,6 @@ if [[ $_NADEKO_SERVICE_STATUS = "running" ]]; then
         read -rp "Press [Enter] to return to the installer menu"
         exit 4
     }
-    echo "Waiting 60 seconds for '$_NADEKO_SERVICE_NAME' to restart..."
 ## Start '$_NADEKO_SERVICE_NAME' if it is NOT currently running.
 else
     echo "Starting '$_NADEKO_SERVICE_NAME'..."
@@ -192,14 +197,9 @@ else
         read -rp "Press [Enter] to return to the installer menu"
         exit 4
     }
-    echo "Waiting 60 seconds for '$_NADEKO_SERVICE_NAME' to start..."
 fi
 
 _WATCH_SERVICE_LOGS "runner"
-
-echo -e "\nPlease check the logs above to make sure that there aren't any" \
-    "errors, and if there are, to resolve whatever issue is causing them\n"
-read -rp "Press [Enter] to return to the installer menu"
 
 
 #### End of [ Variables ]

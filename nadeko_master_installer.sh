@@ -35,14 +35,13 @@ if [[ $_DISTRO != "Darwin" ]]; then
 
     _SERVICE_ACTIONS() {
         ####
-        # Function Info
-        # -------------
-        # Actions dealing with the status/state of the NadekoBot's service.
+        # Function Info: Actions dealing with the status/state of the NadekoBot's
+        #                service.
         #
-        # @param $1 The actions to be performed (i.e. get service status or stop
-        #           service).
-        # @param $2 Dictates whether or not the text indicating that the service has
-        #           been stopped or is not running, should be printed to the terminal.
+        # Parameters:
+        #   $1 - The actions to be performed (i.e. get service status or stop service).
+        #   $2 - Dictates whether or not the text indicating that the service has been
+        #        stopped or is not running, should be printed to the terminal.
         ####
 
         ## Save the status of $_NADEKO_SERVICE_NAME to $_NADEKO_SERVICE_STATUS.
@@ -69,11 +68,15 @@ if [[ $_DISTRO != "Darwin" ]]; then
         fi
     }
 
+    # TODO: Merge the Linux and macOS version of this functions in a way that removes
+    #       duplicate code.
     _WATCH_SERVICE_LOGS() {
         ####
-        # Function Info
-        # -------------
-        # Display the logs from 'nadeko.server' as they are created.
+        # Function Info: Display the logs from 'nadeko.server' as they are created.
+        #
+        # Parameters:
+        #   $1 - Indicates if the function was called from one of the runner scripts or
+        #        from within the master installer.
         ####
 
         if [[ $1 = "runner" ]]; then
@@ -83,9 +86,34 @@ if [[ $_DISTRO != "Darwin" ]]; then
         fi
 
         echo "${_CYAN}To stop displaying the startup logs:"
-        echo "1) Press 'Ctrl + C'$_NC"
+        echo "1) Press 'Ctrl' + 'C'$_NC"
         echo ""
-        sudo journalctl -f -u "$_NADEKO_SERVICE_NAME"  | ccze -A
+
+        ## REASON: Makes it possible for the end-user to use 'CTRL + C' without exiting
+        ##         the installer.
+        (
+            trap 'exit' SIGINT
+            sudo journalctl -f -u "$_NADEKO_SERVICE_NAME"  | ccze -A
+        )
+
+        if [[ $1 = "runner" ]]; then
+            echo -e "\n"
+            echo "Please check the logs above to make sure that there aren't any" \
+                "errors, and if there are, to resolve whatever issue is causing them"
+        fi
+
+        echo -e "\n"
+        read -rp "Press [Enter] to return to the installer menu"
+    }
+
+    hash_ccze() {
+        ####
+        # Function Info: Return whether or not 'ccze' is installed or not.
+        ####
+
+        if hash ccze &>/dev/null; then ccze_installed=true
+        else                           ccze_installed=false
+        fi
     }
 
 
@@ -114,14 +142,13 @@ else  ##########################################################################
 
     _SERVICE_ACTIONS() {
         ####
-        # Function Info
-        # -------------
-        # Actions dealing with the status/state of the NadekoBot's service.
+        # Function Info: Actions dealing with the status/state of the NadekoBot's
+        #                service.
         #
-        # @param $1 The actions to be performed (i.e. get service status or stop
-        #           service).
-        # @param $2 Dictates whether or not the text indicating that the service has
-        #           been stopped or is not running, should be printed to the terminal.
+        # Parameters:
+        #   $1 - The actions to be performed (i.e. get service status or stop service).
+        #   $2 - Dictates whether or not the text indicating that the service has been
+        #        stopped or is not running, should be printed to the terminal.
         ####
 
         ## Save the status of $_NADEKO_SERVICE_NAME to $_NADEKO_SERVICE_STATUS.
@@ -151,11 +178,15 @@ else  ##########################################################################
         fi
     }
 
+    # TODO: Merge the Linux and macOS version of this functions in a way that removes
+    #       duplicate code.
     _WATCH_SERVICE_LOGS() {
         ####
-        # Function Info
-        # -------------
-        # Display the logs from 'nadeko.server' as they are created.
+        # Function Info: Display the logs from 'nadeko.server' as they are created.
+        #
+        # Parameters:
+        #   $1 - Indicates if the function was called from one of the runner scripts or
+        #        from within the master installer.
         ####
 
         if [[ $1 = "runner" ]]; then
@@ -165,9 +196,34 @@ else  ##########################################################################
         fi
 
         echo "${_CYAN}To stop displaying the startup logs:"
-        echo "1) Press 'Ctrl + C'$_NC"
+        echo "1) Press 'Ctrl' + 'C'$_NC"
         echo ""
-        tail -f "bot.nadeko.Nadeko.log" | ccze -A
+
+        ## REASON: Makes it possible for the end-user to use 'CTRL + C' without it
+        ##         exiting the installer.
+        (
+            trap 'exit' SIGINT
+            tail -f "${_NADEKO_SERVICE_NAME}.log"
+        )
+
+        if [[ $1 = "runner" ]]; then
+            echo -e "\n"
+            echo "Please check the logs above to make sure that there aren't any" \
+                "errors, and if there are, to resolve whatever issue is causing them"
+        fi
+
+        echo -e "\n"
+        read -rp "Press [Enter] to return to the installer menu"
+    }
+
+    hash_ccze() {
+        ####
+        # Function Info: Always return that ccze is installed, even if it isn't, since
+        #                it's never used when the installer is run on macOS.
+        # Returns:       true
+        ####
+
+        ccze_installed=true
     }
 
 
@@ -188,24 +244,22 @@ fi
 # killed by a sub/child script.
 export _NADEKO_MASTER_INSTALLER_PID=$$
 
-
-exit_types() {
+exit_code_actions() {
     ####
-    # Function Info
-    # -------------
-    # ...
+    # Function Info:
+    #   Depending on the return/exit code from any of the executed scripts, perform the
+    #   corresponding/appropriate actions.
+    #
+    # Parameters:
+    #   $1 - Return/exit code.
     #
     # Code Meaning:
-    #	1 - Exit all the way through due to some error.
-    #	3 - Internal error.
-    #	6 - Kill sigs used...
-    #
-    # @param $1 Error code.
+    #	1   - Something happened that requires the exit of the entire installer.
+    #   127 - When the end-user uses 'CTRL' + 'C' or 'CTRL' + 'Z'.
     ####
 
     case "$1" in
         1|127) exit "$1" ;;
-        4)			     ;;
         *)               ;;
     esac
 
@@ -224,9 +278,17 @@ while true; do
     # NOTE: Will return 'inactive' if the service doesn't exist and the OS is macOS.
     _SERVICE_ACTIONS "nadeko_service_status"
 
+    # Determines if $ccze_installed is true or false.
+    hash_ccze
+
     ## Disable option 1 if any of the following tools are not installed.
-    if (! hash dotnet || ! hash redis-server || ! hash git || ! hash jq \
-            || ! hash python3 || ! hash youtube-dl || ! hash ccze) &>/dev/null; then
+    if (! hash dotnet \
+            || ! hash redis-server \
+            || ! hash git \
+            || ! hash jq \
+            || ! hash python3 \
+            || ! hash youtube-dl \
+            || [[ $ccze_installed = false ]]) &>/dev/null; then
         option_one_disabled=true
         echo "${_GREY}1. Download NadekoBot (Disabled until option 6 has been run)$_NC"
     else
@@ -236,11 +298,17 @@ while true; do
 
     ## Disable options 2, 3, 4, and 5 if any of the following tools are not installed or
     ## none of the directories/files could be found.
-    if [[ ! -d NadekoBot/src/NadekoBot/ || ! -f NadekoBot/src/NadekoBot/credentials.json \
+    if [[ ! -d NadekoBot/src/NadekoBot/ \
+            || ! -f NadekoBot/src/NadekoBot/credentials.json \
             || ! -d NadekoBot/src/NadekoBot/bin/Release \
             || -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] \
-            || (! hash dotnet || ! hash redis-server || ! hash git || ! hash jq \
-            || ! hash python3 || ! hash youtube-dl || ! hash ccze) &>/dev/null; then
+            || ( ! hash dotnet \
+                || ! hash redis-server \
+                || ! hash git \
+                || ! hash jq \
+                || ! hash python3 \
+                || ! hash youtube-dl \
+                || [[ $ccze_installed = false ]]) &>/dev/null; then
         option_two_and_three_disabled=true
         option_four_disabled=true
         option_five_disabled=true
@@ -337,7 +405,7 @@ while true; do
 
             _DOWNLOAD_SCRIPT "nadeko_latest_installer.sh" "nadeko_latest_installer.sh"
             clear -x
-            ./nadeko_latest_installer.sh || exit_types "$?"
+            ./nadeko_latest_installer.sh || exit_code_actions "$?"
 
             # Execute the newly downloaded version of 'installer_prep.sh', so that all
             # changes are applied.
@@ -370,7 +438,7 @@ while true; do
             fi
 
             read -rp "Press [Enter] to begin."
-            ./nadeko_runner.sh || exit_types "$?"
+            ./nadeko_runner.sh || exit_code_actions "$?"
             clear -x
             ;;
         4)
@@ -400,7 +468,7 @@ while true; do
         6)
             _DOWNLOAD_SCRIPT "$prereqs_installer" "prereqs_installer.sh"
             clear -x
-            ./prereqs_installer.sh || exit_types "$?"
+            ./prereqs_installer.sh || exit_code_actions "$?"
             clear -x
             ;;
         7)
@@ -413,7 +481,7 @@ while true; do
 
             _DOWNLOAD_SCRIPT "credentials_setup.sh" "credentials_setup.sh"
             clear -x
-            ./credentials_setup.sh || exit_types "$?"
+            ./credentials_setup.sh || exit_code_actions "$?"
             clear -x
             ;;
         8)

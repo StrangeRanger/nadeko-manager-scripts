@@ -20,13 +20,15 @@ new_database="NadekoTMPDir/NadekoBot/src/NadekoBot/bin/"
 current_data="NadekoBot/src/NadekoBot/data"
 new_data="NadekoTMPDir/NadekoBot/src/NadekoBot/data"
 netcoreapp_version="netcoreapp2.1"
+# To be implemented in a later version, when NadekoBot uses 'netcoreapp3.1' instead of
+# 'netcoreapp2.1'.
 #netcoreapp_version="netcoreapp3.1"
 
-## NOTE: 'cp' on macOS doesn't have the flag options "RT", while the Linux version does.
+## NOTE: 'cp' on macOS doesn't have the flag option "T", while the Linux version does.
 ## Use the "RT" flags if the OS is NOT macOS.
 if [[ $_DISTRO != "Darwin" ]]; then cp_flag="RT"
 ## If running on macOS, use the "r" flag. But if 'gcp' (GNU cp) is installed, then use
-## the "RT" flags and make 'cp' an alias of 'gcp'
+## the "RT" flags and make 'cp' an alias of 'gcp'.
 else
     if hash gcp; then
         # Enable 'expand_aliases' inside of this script.
@@ -45,8 +47,7 @@ fi
 #### [ Main ]
 
 
-printf "We will now download/update NadekoBot. "
-read -rp "Press [Enter] to begin."
+read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
 
 ########################################################################################
 #### [[ Stop service ]]
@@ -72,7 +73,7 @@ cd NadekoTMPDir || {
     exit 1
 }
 
-echo "Downloading NadekoBot..."
+echo "Downloading NadekoBot into 'NadekoTMPDir'..."
 # Download NadekoBot from a specified branch/tag.
 git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 \
         https://gitlab.com/Kwoth/NadekoBot || {
@@ -90,10 +91,6 @@ if [[ -d /tmp/NuGetScratch && $_DISTRO != "Darwin" ]]; then
     sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/"$USER"/.nuget || {
         echo "${_RED}Failed to to modify the ownership of '/tmp/NuGetScratch' and/or" \
             "'/home/$USER/.nuget'..." >&2
-        # NOTE: Unsure if this echo is applicable or not. May be removed in a future PR.
-        #       For now it will just remain commented, but left in the script.
-        #echo "${_CYAN}You can ignore this if you were not prompted about locked" \
-        #    "files/permission errors while attempting to download dependencies$_NC"
     }
 fi
 
