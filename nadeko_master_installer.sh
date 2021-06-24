@@ -340,8 +340,8 @@ while true; do
         else
             option_four_disabled=true
             option_five_disabled=true
-            stop_nadeko_service="${_GREY}4. Stop NadekoBot (Disabled until the status of NadekoBot isn't unkown)$_NC"
-            run_mode_status=" ${_YELLOW}(Status unkown)$_NC"
+            stop_nadeko_service="${_GREY}4. Stop NadekoBot (Disabled until the status of NadekoBot isn't unknown)$_NC"
+            run_mode_status=" ${_YELLOW}(Status unknown)$_NC"
         fi
 
         ## If NadekoBot is running in the background with auto restart...

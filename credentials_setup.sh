@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Sets up crendtials.json
+# Set up 'crendtials.json'.
 #
 ########################################################################################
 #### [ Variables ]
@@ -15,13 +15,13 @@ bak_credentials_path="NadekoBot/src/NadekoBot/credentials.json.bak"
 #### [ Main ]
 
 
-read -rp "We will now create a new 'credentials.json'. Press [Enter] to continue."
+read -rp "We will now create/update 'credentials.json'. Press [Enter] to continue."
 
 echo -e "\n-------------"
 echo "${_CYAN}This field is required and cannot be left blank"
 echo "Field 1 of 9$_NC"
 while true; do
-    read -rp "Enter your bot token (it is not bot secret, it should be ~59 characters long): " token
+    read -rp "Enter your bot token (it is not the bot secret, and should be ~59 characters long): " token
     if [[ -n $token ]]; then break
     fi
 done
@@ -81,11 +81,11 @@ read -rp "Enter your Timezone DB API Key: " timedbapi
 echo "Timezone DB API Key: $timedbapi"
 echo -e "-------------\n"
 
-## Back up the current credentials by renameing the file to 'credentials.json.bak'.
+## Back up the current credentials.
 if [[ -f $credentials_path ]]; then
     echo "Backing up current 'credentials.json' as 'credentials.json.bak'..."
-    mv "$credentials_path" "$bak_credentials_path"
-    echo "Creating new 'credentials.json'..."
+    cp "$credentials_path" "$bak_credentials_path"
+    echo "Updating 'credentials.json' with the new credentials..."
 ## Create a new 'credentials.json' file.
 else
     echo "Creating 'credentials.json'..."
@@ -93,7 +93,7 @@ else
     sudo chmod +x "$credentials_path"
 fi
 
-## Add the new credentials to the new 'credentials.json' file.
+## Overwrite 'credentials.json' with the new credentials.
 echo "{
     \"Token\": \"$token\",
     \"OwnerIds\": [
@@ -110,7 +110,7 @@ echo "{
     \"TotalShards\": 1 \
 }" > "$credentials_path"
 
-echo -e "\n${_GREEN}Finished creating 'credentials.json'$_NC"
+echo -e "\n${_GREEN}Finished creating/updating 'credentials.json'$_NC"
 read -rp "Press [Enter] to return the the installer menu"
 
 

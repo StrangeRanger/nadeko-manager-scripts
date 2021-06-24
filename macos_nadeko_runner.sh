@@ -30,7 +30,7 @@ nadeko_service_content="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 #### [ Main ]
 
 
-## Create '$_NADEKO_SERVICE_NAME', if it does not already exist.
+## Create the service, if it does not already exist.
 if [[ ! -f $_NADEKO_SERVICE ]]; then
     echo "Creating '$_NADEKO_SERVICE_NAME'..."
     ## Create '/Users/"$USER"/Library/LaunchAgents' if 'LaunchAgents' doesn't already
@@ -62,9 +62,8 @@ else
     sudo chmod +x NadekoRun.sh
 fi
 
-## Add the code required to run NadekoBot in the background, to 'NadekoRun.sh'.
-## Additionally update the service with the information needed to run NadekoBot in this
-## run mode.
+## Add the code required to run NadekoBot in the background, to 'NadekoRun.sh' and
+## the service.
 if [[ $_CODENAME = "NadekoRun" ]]; then
     printf '%s\n' \
         "#!/bin/bash" \
@@ -86,9 +85,9 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "    cd $_WORKING_DIR/NadekoBot" \
         "    $(which dotnet) build -c Release" \
         "    cd $_WORKING_DIR/NadekoBot/src/NadekoBot" \
-        "    echo \"Running NadekoBot...\"" \
+        "    echo \"Starting NadekoBot...\"" \
         "    $(which dotnet) run -c Release" \
-        "    echo \"Done\"" \
+        "    echo \"Stopping NadekoBot...\"" \
         "    cd $_WORKING_DIR" \
         "} | add_date >> $_WORKING_DIR/bot.nadeko.Nadeko.log" > NadekoRun.sh
     printf '%s\n' \
@@ -110,8 +109,7 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "</dict>" \
         "</plist>" > "$_NADEKO_SERVICE"
 ## Add the code required to run NadekoBot in the background with auto restart, to
-## 'NadekoRun.sh'. Additionally, update the service with the information needed to run
-## NadekoBot in this run mode.
+## 'NadekoRun.sh' and the service.
 else
     printf '%s\n' \
         "#!/bin/bash" \
@@ -133,6 +131,7 @@ else
         "    sleep 5" \
         "    cd $_WORKING_DIR/NadekoBot" \
         "    $(which dotnet) build -c Release" \
+        "    echo \"Starting NadekoBot...\"" \
         "} | add_date >> $_WORKING_DIR/bot.nadeko.Nadeko.log" \
         "" \
         "{" \
@@ -149,8 +148,9 @@ else
         "        }" \
         "" \
         "        brew upgrade youtube-dl" \
+        "        echo \"Restarting NadekoBot...\"" \
         "    done" \
-        "    echo \"Stopping NadekoBot\"" \
+        "    echo \"Stopping NadekoBot...\"" \
         "} | add_date >> $_WORKING_DIR/bot.nadeko.Nadeko.log" > NadekoRun.sh
     printf '%s\n' \
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
@@ -177,7 +177,7 @@ if [[ ! -d $_WORKING_DIR/bot.nadeko.Nadeko.log ]]; then
     touch "$_WORKING_DIR"/bot.nadeko.Nadeko.log
 fi
 
-## Restart '$_NADEKO_SERVICE_NAME' if it is currently running.
+## Restart the serviice if it is currently running.
 if [[ $_NADEKO_SERVICE_STATUS = "running" ]]; then
     echo "Restarting '$_NADEKO_SERVICE_NAME'..."
     launchctl kickstart -k gui/"$UID"/"$_NADEKO_SERVICE_NAME" || {
@@ -187,7 +187,7 @@ if [[ $_NADEKO_SERVICE_STATUS = "running" ]]; then
         read -rp "Press [Enter] to return to the installer menu"
         exit 4
     }
-## Start '$_NADEKO_SERVICE_NAME' if it is NOT currently running.
+## Start the service if it is NOT currently running.
 else
     echo "Starting '$_NADEKO_SERVICE_NAME'..."
     launchctl start "$_NADEKO_SERVICE_NAME" || {

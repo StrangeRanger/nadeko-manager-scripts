@@ -2,10 +2,14 @@
 #
 # Start NadekoBot in the specified run mode, on Linux distributions.
 #
+# Comment key for '[letter].[number].':
+#   A.1. - Used in conjunction with the 'systemctl' command.
+#   B.1. - Used in the text output.
+#
 ########################################################################################
 #### [ Variables ]
 
-
+# The contents of NadekoBot's service.
 nadeko_service_content="[Unit]
 Description=NadekoBot service
 
@@ -20,13 +24,14 @@ SyslogIdentifier=NadekoBot
 [Install]
 WantedBy=multi-user.target"
 
-### Decide whether we need to use 'disable' or 'enable'.
+### Indicate which actions ('disable' or 'enable') to be performed on NadekoBot's
+### service.
 if [[ $_CODENAME = "NadekoRun" ]]; then
-    dis_en_lower="disable"    # Used in conjunction with the 'systemctl' command.
-    dis_en_upper="Disabling"  # Used in the text output.
+    dis_en_lower="disable"    # A.1.
+    dis_en_upper="Disabling"  # B.1.
 else
-    dis_en_lower="enable"    # Used in conjunction with the 'systemctl' command.
-    dis_en_upper="Enabling"  # Used in the text output.
+    dis_en_lower="enable"    # A.1.
+    dis_en_upper="Enabling"  # B.1.
 fi
 
 
@@ -40,7 +45,7 @@ if [[ -f $_NADEKO_SERVICE ]]; then echo "Updating '$_NADEKO_SERVICE_NAME'..."
 else                               echo "Creating '$_NADEKO_SERVICE_NAME'..."
 fi
 
-# Create/update '$_NADEKO_SERVICE_NAME'.
+# Create/update the service.
 echo "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null \
         && sudo systemctl daemon-reload || {
     echo "${_RED}Failed to create '$_NADEKO_SERVICE_NAME'" >&2
@@ -49,7 +54,7 @@ echo "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null \
     exit 4
 }
 
-## Disable or enable '$_NADEKO_SERVICE_NAME'.
+## $dis_en_lower the service.
 echo "$dis_en_upper '$_NADEKO_SERVICE_NAME'..."
 sudo systemctl "$dis_en_lower" "$_NADEKO_SERVICE_NAME" || {
     echo "${_RED}Failed to $dis_en_lower '$_NADEKO_SERVICE_NAME'" >&2
@@ -80,9 +85,9 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "cd $_WORKING_DIR/NadekoBot" \
         "dotnet build -c Release" \
         "cd $_WORKING_DIR/NadekoBot/src/NadekoBot" \
-        "echo \"Running NadekoBot...\"" \
+        "echo \"Starting NadekoBot...\"" \
         "dotnet run -c Release" \
-        "echo \"Done\"" \
+        "echo \"Stopping NadekoBot...\"" \
         "cd $_WORKING_DIR" > NadekoRun.sh
 ## Add code required to run NadekoBot in the background with auto restart, to
 ## 'NadekoRun.sh'.
@@ -99,6 +104,7 @@ else
         "sleep 5" \
         "cd $_WORKING_DIR/NadekoBot" \
         "dotnet build -c Release" \
+        "echo \"Starting NadekoBot...\"" \
         "" \
         "while true; do" \
         "    {" \
@@ -113,12 +119,13 @@ else
         "    }" \
         "" \
         "    youtube-dl -U" \
+        "    echo \"Restarting NadekoBot...\"" \
         "done" \
         "" \
-        "echo \"Stopping NadekoBot\"" > NadekoRun.sh
+        "echo \"Stopping NadekoBot...\"" > NadekoRun.sh
 fi
 
-## Restart $_NADEKO_SERVICE_NAME if it is currently running.
+## Restart the service if it is currently running.
 if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
     echo "Restarting '$_NADEKO_SERVICE_NAME'..."
     sudo systemctl restart "$_NADEKO_SERVICE_NAME" || {
@@ -126,7 +133,7 @@ if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
         read -rp "Press [Enter] to return to the installer menu"
         exit 4
     }
-## Start $_NADEKO_SERVICE_NAME if it is NOT currently running.
+## Start the service if it is NOT currently running.
 else
     echo "Starting '$_NADEKO_SERVICE_NAME'..."
     sudo systemctl start "$_NADEKO_SERVICE_NAME" || {

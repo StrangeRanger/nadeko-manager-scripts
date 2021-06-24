@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Installs all of the packages and dependencies required for NadekoBot to run on macOS.
+# Install all of the packages and dependencies required for NadekoBot to run on macOS.
 #
 ########################################################################################
 #### [ Functions ]

@@ -13,8 +13,8 @@
 current_linuxAIO_revision="26"
 # Name of the master installer to be downloaded.
 # REASON: I placed the name in a variable just so there are no chances of accidentally
-#         misstyping the filename, in addition to it being slighlty shorter when
-#         refrencing the file.
+#         misstyping the filename, in addition to it being slightly shorter when
+#         referencing the file.
 master_installer="nadeko_master_installer.sh"
 
 ## Modify output text color.
@@ -91,7 +91,7 @@ linuxAIO_update() {
     #
     # ! Revision Note: As another important note, only 'linuxAIO.sh' files with a
     #                  revision number of 9 or later will utilize this function.
-    #                  Breaking changes occured between revision 8 and 9, and as a
+    #                  Breaking changes occurred between revision 8 and 9, and as a
     #                  result, I've decided that the end-user will be required to
     #                  manually download the latest version from github. The script will
     #                  provide the user with the appropriate command to do this, based
@@ -100,7 +100,7 @@ linuxAIO_update() {
 
     ## Save the values of the current Configuration Variables specified in
     ## 'linuxAIO.sh', to be set in the new 'linuxAIO.sh'.
-    ## NOTE: Declaration and instantiation is seperated at the recommendation by
+    ## NOTE: Declaration and instantiation is separated at the recommendation by
     ##       shellcheck.
     local installer_branch                                       # Grouping One
     local installer_branch_found                                 # Grouping One
@@ -222,7 +222,7 @@ clean_up() {
         "prereqs_installer.sh" "nadeko_latest_installer.sh" "nadeko_runner.sh"
         "nadeko_master_installer.sh")
 
-    ### PURPOSE: Sometimes the output requires the use of a new-line symbol to seperate
+    ### PURPOSE: Sometimes the output requires the use of a new-line symbol to separate
     ###          the previous text, though sometimes it doesn't.
     if [[ $3 = true ]]; then echo "Cleaning up..."
     else                     echo -e "\nCleaning up..."
@@ -258,7 +258,7 @@ _DOWNLOAD_SCRIPT() {
     #                permissions.
     #
     # Parameters:
-    #   $1 - Name of script to donwload.
+    #   $1 - Name of script to download.
     #   $2 - Name to rename $1 with.
     ####
 

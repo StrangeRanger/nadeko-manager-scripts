@@ -1,7 +1,13 @@
 #!/bin/bash
 #
-# Installs all of the packages and dependencies required for NadekoBot to run on Linux
-# Distributions.
+# Install all of the packages and dependencies required for NadekoBot to run on Linux
+# distributions.
+#
+# Comment key for '[letter].[number].':
+#   A.1. - NOTE: If the write perms are not applied to all users for this tool, attempts
+#                to update 'youtube-dl' by a non-root user will always fail.
+#   B.1. - FIXME: Find a better solution than modifying the perms in such a way that I
+#                 have.
 #
 ########################################################################################
 #### [ Functions ]
@@ -10,12 +16,12 @@
 install_prereqs() {
     ####
     # Function Info: Install required packages and dependencies needed by NadekoBot, on
-	#                all compatable Linux Distributions, besides Debian 9.
+	#                all compatible Linux distributions, besides Debian 9.
 	#
     # Parameters:
     # 	$1 - Distribution name.
     # 	$2 - Distribution version.
-    #   $3 - 'python' or 'python-is-python3' (dependant on the version of the distro).
+    #   $3 - 'python' or 'python-is-python3' (dependent on the distro version).
     ####
 
     echo "Installing .NET Core..."
@@ -29,13 +35,12 @@ install_prereqs() {
         && sudo apt-get install -y dotnet-sdk-5.0
 
     echo "Installing other prerequisites..."
-    sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg jq  \
+    sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg \
         redis-server git "$3" python3 jq ccze -y
     sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
         /usr/local/bin/youtube-dl
-    # NOTE: If the write perms are not applied to all users for this tool, attempts to
-    #       update 'youtube-dl' by a non-root user will always fail.
-    # FIXME: Find a better solution than modifying the perms in such a way that I have.
+    # A.1.
+    # B.1.
     sudo chmod a+rwx /usr/local/bin/youtube-dl
 }
 
@@ -97,10 +102,8 @@ elif [[ $_DISTRO = "debian" ]]; then
                 redis-server git jq python python3 ccze -y
             sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
                 /usr/local/bin/youtube-dl
-            # NOTE: If the write perms are not applied to all users for this tool,
-            #       attempts to update 'youtube-dl' by a non-root user will always fail.
-            # FIXME: Find a better solution than modifying the perms in such a way that
-            #        I have.
+            # A.1.
+            # B.1.
             sudo chmod a+rwx /usr/local/bin/youtube-dl
             ;;
         10) install_prereqs "debian" "10" "python" ;;

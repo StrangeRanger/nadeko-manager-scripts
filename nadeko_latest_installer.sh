@@ -2,12 +2,11 @@
 #
 # Downloads and updates NadekoBot.
 #
-# Comment key for '[letter].[number].'
-# ------------------------------------
-# A.1. - For reasons I'm unsure of, the installer MUST download the newest version of
-#        NadekoBot into a directory seperate from the where the installer, or the
-#        current version of NadekoBot, is located. Once NadekoBot has been built, it can
-#        then be moved back to the installer directory.
+# Comment key for '[letter].[number].':
+#   A.1. - For reasons I'm unsure of, the installer MUST download the newest version of
+#          NadekoBot into a directory separate from the where the installer, or the
+#          current version of NadekoBot, is located. Once NadekoBot has been built, it
+#          can then be moved back to the installer directory.
 #
 ########################################################################################
 #### [ Variables ]
@@ -25,14 +24,14 @@ netcoreapp_version="netcoreapp2.1"
 #netcoreapp_version="netcoreapp3.1"
 
 ## NOTE: 'cp' on macOS doesn't have the flag option "T", while the Linux version does.
-## Use the "RT" flags if the OS is NOT macOS.
+# Use the "RT" flags if the OS is NOT macOS.
 if [[ $_DISTRO != "Darwin" ]]; then cp_flag="RT"
 ## If running on macOS, use the "r" flag. But if 'gcp' (GNU cp) is installed, then use
 ## the "RT" flags and make 'cp' an alias of 'gcp'.
 else
     if hash gcp; then
-        # Enable 'expand_aliases' inside of this script.
-        # This makes it possible for the alias to take immediate effect.
+        # Enable 'expand_aliases' inside of this script. This makes it possible for the
+        # alias to take immediate effect.
         shopt -s expand_aliases
         alias cp="gcp"
         cp_flag="RT"
@@ -53,7 +52,7 @@ read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
 #### [[ Stop service ]]
 
 
-## Stop $_NADEKO_SERVICE_STATUS if it's currently running.
+## Stop the service if it's currently running.
 if [[ $_NADEKO_SERVICE_STATUS = "active" || $_NADEKO_SERVICE_STATUS = "running" ]]; then
     nadeko_service_active=true
     _SERVICE_ACTIONS "stop_service" "false"
@@ -85,12 +84,13 @@ git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 \
 if [[ -d /tmp/NuGetScratch && $_DISTRO != "Darwin" ]]; then
     echo "Modifying ownership of '/tmp/NuGetScratch' and '/home/$USER/.nuget'"
     # Due to permission errors cropping up every now and then, especially when the
-    # installer is executed with root privilege, it's neccessary to make sure that
+    # installer is executed with root privilege, it's necessary to make sure that
     # '/tmp/NuGetScratch' and '/home/$USER/.nuget' are owned by the user that the
     # installer is currently being run under.
     sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/"$USER"/.nuget || {
         echo "${_RED}Failed to to modify the ownership of '/tmp/NuGetScratch' and/or" \
-            "'/home/$USER/.nuget'..." >&2
+            "'/home/$USER/.nuget'...$_NC" >&2
+        exit 1
     }
 fi
 
@@ -111,18 +111,18 @@ cd "$_WORKING_DIR" || {
 
 ## Move credentials, database, and other data to the new version of NadekoBot.
 if [[ -d NadekoBot ]]; then
-    echo "Copping 'credentials.json' to new version..."
+    echo "Copying 'credentials.json' to new version..."
     cp -f "$current_credentials" "$new_credentials" &>/dev/null
-    echo "Copping database to the new version..."
+    echo "Copying database to the new version..."
     cp -"$cp_flag" "$current_database" "$new_database" &>/dev/null
 
     ## Check if an old netcoreapp version exists, then move the database within it, to
-    ## the new netcorapp version.
+    ## the current version of netcorapp ($netcoreapp_version).
     while read -r netcoreapp; do
         if [[ $netcoreapp != "$netcoreapp_version" \
                 && -f "$new_database"/Release/"$netcoreapp"/data/NadekoBot.db ]]; then
             echo "${_YELLOW}WARNING: Old netcoreapp version detected$_NC"
-            echo "Moving database to new netcoreapp version..."
+            echo "Moving database to current netcoreapp version..."
 
             cp "$new_database"/Release/"$netcoreapp"/data/NadekoBot.db \
                     "$new_database"/Release/"$netcoreapp_version"/data/NadekoBot.db || {
@@ -139,9 +139,9 @@ if [[ -d NadekoBot ]]; then
         fi
     done < <(ls "$_WORKING_DIR"/"$new_database"/Release/)
 
-    echo "Copping other data to the new version..."
+    echo "Copying other data to the new version..."
     ## 'alises.yml' and 'strings' are updated with every install, which could break the
-    ## bot if not changed...
+    ## bot if overwritten by existing versions of those files...
     if [[ -f "$current_data"/aliases.yml.old ]]; then
         rm -f "$current_data"/aliases.yml.old
     fi

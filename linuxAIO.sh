@@ -44,12 +44,12 @@ installer_branch="master"
 # Default: false
 allow_run_as_root=false
 
-# The branch or tag (also can be seen as NadekoBot's version) that the installer will
-# download NadekoBot from.
+# The branch or tag (can also be referred to as NadekoBot's version) that the installer
+# will download NadekoBot from.
 #
 # IMPORTANT: Having the installer download and use a version of NadekoBot that is older
-#            than the one currently on your system, increases the likelyhood of failed
-#            builds due to incompatible changes in Nadeko being moved over the the
+#            than the one currently on your system, increases the likelihood of failed
+#            builds due to incompatible changes in Nadeko being moved over to the
 #            downloaded version.
 #
 # Options:
@@ -69,7 +69,7 @@ export _NADEKO_INSTALL_VERSION="1.9"
 # Used to keep track of changes to 'linuxAIO.sh'.
 # Refer to the '[ Prepping ]' section of 'installer_prep.sh' for more information.
 export _LINUXAIO_REVISION="26"
-# URL to the raw version of a specified script.
+# URL of the raw version of a (to be) specified script.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
 
@@ -84,7 +84,7 @@ export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_br
 # If executed with root privilege and $allow_run_as_root is false...
 if [[ $EUID = 0 && $allow_run_as_root = false ]]; then
     echo "\033[1;31mPlease run this script without root privilege" >&2
-    echo "\033[0;36mWhile you will be performing specific tasks with root privilege," \
+    echo "\033[0;36mWhile specific tasks will be performed with root privilege," \
         "running the installer in it's entirety as root is not recommended\033[0m"
     echo -e "\nExiting..."
     exit 5
