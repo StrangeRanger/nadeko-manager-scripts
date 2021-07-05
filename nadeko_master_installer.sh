@@ -2,10 +2,9 @@
 #
 # The master/main installer for macOS and Linux Distributions.
 #
-# Comment key for '[letter].[number].'
-# ------------------------------------
-# A.1. - Return to prevent further code execution.
-# B.1. - Prevent the code from running if the options is disabled.
+# Comment key for '[letter].[number].':
+#   A.1. - Return to prevent further code execution.
+#   B.1. - Prevent the code from running if the option is disabled.
 #
 ########################################################################################
 #### [ OS Specific Variables and Functions ]
@@ -68,47 +67,20 @@ if [[ $_DISTRO != "Darwin" ]]; then
         fi
     }
 
-    # TODO: Merge the Linux and macOS version of this functions in a way that removes
-    #       duplicate code.
-    _WATCH_SERVICE_LOGS() {
+    _FOLLOW_SERVICE_LOGS() {
         ####
         # Function Info: Display the logs from 'nadeko.server' as they are created.
-        #
-        # Parameters:
-        #   $1 - Indicates if the function was called from one of the runner scripts or
-        #        from within the master installer.
         ####
 
-        if [[ $1 = "runner" ]]; then
-            echo "Displaying '$_NADEKO_SERVICE_NAME' startup logs, live..."
-        else
-            echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
-        fi
-
-        echo "${_CYAN}To stop displaying the startup logs:"
-        echo "1) Press 'Ctrl' + 'C'$_NC"
-        echo ""
-
-        ## REASON: Makes it possible for the end-user to use 'CTRL + C' without exiting
-        ##         the installer.
         (
             trap 'exit' SIGINT
             sudo journalctl -f -u "$_NADEKO_SERVICE_NAME"  | ccze -A
         )
-
-        if [[ $1 = "runner" ]]; then
-            echo -e "\n"
-            echo "Please check the logs above to make sure that there aren't any" \
-                "errors, and if there are, to resolve whatever issue is causing them"
-        fi
-
-        echo -e "\n"
-        read -rp "Press [Enter] to return to the installer menu"
     }
 
     hash_ccze() {
         ####
-        # Function Info: Return whether or not 'ccze' is installed or not.
+        # Function Info: Return whether or not 'ccze' is installed.
         ####
 
         if hash ccze &>/dev/null; then ccze_installed=true
@@ -178,42 +150,15 @@ else  ##########################################################################
         fi
     }
 
-    # TODO: Merge the Linux and macOS version of this functions in a way that removes
-    #       duplicate code.
-    _WATCH_SERVICE_LOGS() {
+    _FOLLOW_SERVICE_LOGS() {
         ####
-        # Function Info: Display the logs from 'nadeko.server' as they are created.
-        #
-        # Parameters:
-        #   $1 - Indicates if the function was called from one of the runner scripts or
-        #        from within the master installer.
+        # Function Info: Display the logs from 'bot.nadeko.Nadeko' as they are created.
         ####
 
-        if [[ $1 = "runner" ]]; then
-            echo "Displaying '$_NADEKO_SERVICE_NAME' startup logs, live..."
-        else
-            echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
-        fi
-
-        echo "${_CYAN}To stop displaying the startup logs:"
-        echo "1) Press 'Ctrl' + 'C'$_NC"
-        echo ""
-
-        ## REASON: Makes it possible for the end-user to use 'CTRL + C' without it
-        ##         exiting the installer.
         (
             trap 'exit' SIGINT
             tail -f "${_NADEKO_SERVICE_NAME}.log"
         )
-
-        if [[ $1 = "runner" ]]; then
-            echo -e "\n"
-            echo "Please check the logs above to make sure that there aren't any" \
-                "errors, and if there are, to resolve whatever issue is causing them"
-        fi
-
-        echo -e "\n"
-        read -rp "Press [Enter] to return to the installer menu"
     }
 
     hash_ccze() {
@@ -246,9 +191,8 @@ export _NADEKO_MASTER_INSTALLER_PID=$$
 
 exit_code_actions() {
     ####
-    # Function Info:
-    #   Depending on the return/exit code from any of the executed scripts, perform the
-    #   corresponding/appropriate actions.
+    # Function Info: Depending on the return/exit code from any of the executed scripts,
+    #                perform the corresponding/appropriate actions.
     #
     # Parameters:
     #   $1 - Return/exit code.
@@ -265,8 +209,40 @@ exit_code_actions() {
 
 }
 
+_WATCH_SERVICE_LOGS() {
+    ####
+    # Function Info: Output the general information to go along with the output of the
+    #                function '_FOLLOW_SERVICE_LOGS'.
+    #
+    # Parameters:
+    #   $1 - Indicates if the function was called from one of the runner scripts or
+    #        from within the master installer.
+    ####
 
-#### End of [ General Functions ]
+    if [[ $1 = "runner" ]]; then
+        echo "Displaying '$_NADEKO_SERVICE_NAME' startup logs, live..."
+    else
+        echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
+    fi
+
+    echo "${_CYAN}To stop displaying the startup logs:"
+    echo "1) Press 'Ctrl' + 'C'$_NC"
+    echo ""
+
+    _FOLLOW_SERVICE_LOGS
+
+    if [[ $1 = "runner" ]]; then
+        echo -e "\n"
+        echo "Please check the logs above to make sure that there aren't any" \
+            "errors, and if there are, to resolve whatever issue is causing them"
+    fi
+
+    echo -e "\n"
+    read -rp "Press [Enter] to return to the installer menu"
+}
+
+
+#### End of [ General Variables and Functions ]
 ########################################################################################
 #### [ Main ]
 
@@ -423,6 +399,7 @@ while true; do
             export _NADEKO_SERVICE_NAME
             export _NADEKO_SERVICE_STATUS
             export -f _WATCH_SERVICE_LOGS
+            export -f _FOLLOW_SERVICE_LOGS
 
             _DOWNLOAD_SCRIPT "$nadeko_runner" "nadeko_runner.sh"
             clear -x

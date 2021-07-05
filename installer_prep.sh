@@ -4,6 +4,12 @@
 # whether or not the system is supported by NadekoBot. Once the system is deemed as
 # supported, the master installer will be downloaded and executed.
 #
+# Comment key for '[letter].[number].':
+#   A.1. - Sed for linux || Sed for macOS.
+#   B.1. - Grouping One
+#   B.2. - Grouping Two
+#   B.3. - Grouping Three
+#
 ########################################################################################
 #### [ Exported and/or Globally Used Variables ]
 
@@ -12,9 +18,6 @@
 # Refer to the '[ Prepping ]' section of this script for more information.
 current_linuxAIO_revision="26"
 # Name of the master installer to be downloaded.
-# REASON: I placed the name in a variable just so there are no chances of accidentally
-#         misstyping the filename, in addition to it being slightly shorter when
-#         referencing the file.
 master_installer="nadeko_master_installer.sh"
 
 ## Modify output text color.
@@ -77,7 +80,6 @@ detect_sys_info() {
     esac
 }
 
-# TODO: Modify so there aren't so many repeated comments.
 linuxAIO_update() {
     ####
     # Function Info: Download the latest version of 'linuxAIO.sh' if $_LINUXAIO_REVISION
@@ -102,18 +104,18 @@ linuxAIO_update() {
     ## 'linuxAIO.sh', to be set in the new 'linuxAIO.sh'.
     ## NOTE: Declaration and instantiation is separated at the recommendation by
     ##       shellcheck.
-    local installer_branch                                       # Grouping One
-    local installer_branch_found                                 # Grouping One
-    installer_branch=$(grep '^installer_branch=.*' linuxAIO.sh)  # Grouping One
-    installer_branch_found="$?"	                                 # Grouping One
-    local allow_run_as_root                                        # Grouping Two
-    local allow_run_as_root_found                                  # Grouping Two
-    allow_run_as_root=$(grep '^allow_run_as_root=.*' linuxAIO.sh)  # Grouping Two
-    allow_run_as_root_found="$?"                                   # Grouping Two
-    local nadeko_install_version                                                     # Grouping Three
-    local nadeko_install_version_found                                               # Grouping Three
-    nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)  # Grouping Three
-    nadeko_install_version_found="$?"                                                # Grouping Three
+    local installer_branch                                       # B.1.
+    local installer_branch_found                                 # B.1.
+    installer_branch=$(grep '^installer_branch=.*' linuxAIO.sh)  # B.1.
+    installer_branch_found="$?"	                                 # B.1.
+    local allow_run_as_root                                        # B.2.
+    local allow_run_as_root_found                                  # B.2.
+    allow_run_as_root=$(grep '^allow_run_as_root=.*' linuxAIO.sh)  # B.2.
+    allow_run_as_root_found="$?"                                   # B.2.
+    local nadeko_install_version                                                     # B.3.
+    local nadeko_install_version_found                                               # B.3.
+    nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)  # B.3.
+    nadeko_install_version_found="$?"                                                # B.3.
 
     echo "$_YELLOW'linuxAIO.sh' is not up to date$_NC"
     echo "Downloading latest 'linuxAIO.sh'..."
@@ -128,7 +130,7 @@ linuxAIO_update() {
 
     ## Set $installer_branch inside of the new 'linuxAIO.sh'.
     if [[ $installer_branch_found = 0 ]]; then
-        # Sed for linux || Sed for macOS.
+        # A.1.
         sed -i "s/^installer_branch=.*/$installer_branch/" linuxAIO.sh \
             || sed -i '' "s/^installer_branch=.*/$installer_branch/" linuxAIO.sh
     fi
@@ -141,7 +143,7 @@ linuxAIO_update() {
 
     ## Set $allow_run_as_root inside of the new 'linuxAIO.sh'.
     if [[ $allow_run_as_root_found = 0 ]]; then
-        # Sed for linux || Sed for macOS.
+        # A.1.
         sed -i "s/^allow_run_as_root=.*/$allow_run_as_root/" linuxAIO.sh \
             || sed -i '' "s/^allow_run_as_root=.*/$allow_run_as_root/" linuxAIO.sh
     fi
@@ -154,7 +156,7 @@ linuxAIO_update() {
 
     ## Set $nadeko_install_version inside of the new 'linuxAIO.sh'.
     if [[ $nadeko_install_version_found = 0 ]]; then
-        # Sed for linux || Sed for macOS.
+        # A.1.
         sed -i "s/^export _NADEKO_INSTALL_VERSION=.*/$nadeko_install_version/" linuxAIO.sh \
             || sed -i '' "s/^export _NADEKO_INSTALL_VERSION=.*/$nadeko_install_version/" linuxAIO.sh
     fi

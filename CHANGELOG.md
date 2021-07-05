@@ -6,12 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [3.1.0] - 2021-07-05
+
 ### Changed
 
 - Instead of waiting 60 seconds to display NadekoBot's startup logs, the logs are immediately displayed in real time, and can be stopped by using '`CTRL` + `C`'.
-- When displaying the service logs, they are now output in colored text using `ccze` (which has become a new dependency installed via the `prereqs_installer` scripts) (only applicable when run on Linux).
+- When displaying the service logs, they are now output in colored text using `ccze` (which has become a new dependency installed via the `prereqs_installer` script) (only applicable when run on Linux).
 - `NadekoRunner.sh` will now exit if an error occurs, instead of being stuck in an infinite while loop.
-- Moved most non-assignment operators to the front of a continuation newline.
 - Used parameter substitution were possible.
 - Performed some refactoring and style changes to allow for better readability.
 - Removed unnecessary-redundant code.
@@ -23,8 +24,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - 3: Unexpected internal error.
   - 4: Some error occurred that required the installer to return the its main menu.
   - 5: The installer was executed with root perms when `linuxAIO.sh` was configured to prevent such action.
-  - NOTE:
-    - These error codes are only applicable if `linuxAIO.sh` executed `installer_prep.sh`.
 - `python-is-python3` is installed as a prerequisite instead of `python`, when running on Ubuntu 20.04 and Linux Mint 20.
 
 ## [3.0.4] - 2021-05-24
@@ -139,7 +138,8 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
   - CentOS: 7
 - Removed option to run NadekoBot with auto-update
 
-[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.0.4...HEAD
+[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.1.0
 [3.0.4]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.4
 [3.0.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.3
 [3.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.0
