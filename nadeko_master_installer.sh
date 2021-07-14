@@ -210,7 +210,11 @@ exit_code_actions() {
 }
 
 jq_checker() {
-    if hash jq; then
+    ####
+    #
+    ####
+
+    if hash jq &>/dev/null; then
         if [[ -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]]; then
             jq_check="empty"
         else
