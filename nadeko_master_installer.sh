@@ -209,6 +209,18 @@ exit_code_actions() {
 
 }
 
+jq_checker() {
+    if hash jq; then
+        if [[ -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]]; then
+            jq_check="empty"
+        else
+            jq_check="filled"
+        fi
+    else
+        jq_check="empty"
+    fi
+}
+
 _WATCH_SERVICE_LOGS() {
     ####
     # Function Info: Output the general information to go along with the output of the
@@ -256,6 +268,8 @@ while true; do
 
     # Determines if $ccze_installed is true or false.
     hash_ccze
+    # Determines if $jq_check is "empty" or "filled".
+    jq_checker
 
     ## Disable option 1 if any of the following tools are not installed.
     if (! hash dotnet \
@@ -277,11 +291,10 @@ while true; do
     if [[ ! -d NadekoBot/src/NadekoBot/ \
             || ! -f NadekoBot/src/NadekoBot/credentials.json \
             || ! -d NadekoBot/src/NadekoBot/bin/Release \
-            || -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]] \
+            || $jq_check = "empty" ]] \
             || ( ! hash dotnet \
                 || ! hash redis-server \
                 || ! hash git \
-                || ! hash jq \
                 || ! hash python3 \
                 || ! hash youtube-dl \
                 || [[ $ccze_installed = false ]]) &>/dev/null; then
