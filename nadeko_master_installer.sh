@@ -211,17 +211,22 @@ exit_code_actions() {
 
 jq_checker() {
     ####
-    #
+    # Function Info: Check if the value of "Token" in the 'credentials.json' file is
+    #                empty, if, and only if, 'jq' is currently installed.
     ####
 
     if hash jq &>/dev/null; then
         if [[ -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]]; then
-            jq_check="empty"
+            # Means that "Token" is empty.
+            jq_empty=true
         else
-            jq_check="filled"
+            # Means that "Token" is NOT empty.
+            jq_empty=false
         fi
     else
-        jq_check="empty"
+        # Means that 'jq' isn't installed, and therefore, it can be assumed that "Token"
+        # is empty.
+        jq_empty=true
     fi
 }
 
@@ -272,7 +277,7 @@ while true; do
 
     # Determines if $ccze_installed is true or false.
     hash_ccze
-    # Determines if $jq_check is "empty" or "filled".
+    # Determines if $jq_empty is true or false.
     jq_checker
 
     ## Disable option 1 if any of the following tools are not installed.
@@ -295,7 +300,7 @@ while true; do
     if [[ ! -d NadekoBot/src/NadekoBot/ \
             || ! -f NadekoBot/src/NadekoBot/credentials.json \
             || ! -d NadekoBot/src/NadekoBot/bin/Release \
-            || $jq_check = "empty" ]] \
+            || $jq_empty = true ]] \
             || ( ! hash dotnet \
                 || ! hash redis-server \
                 || ! hash git \
