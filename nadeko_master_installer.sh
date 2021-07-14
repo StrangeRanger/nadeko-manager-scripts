@@ -212,10 +212,11 @@ exit_code_actions() {
 jq_checker() {
     ####
     # Function Info: Check if the value of "Token" in the 'credentials.json' file is
-    #                empty, if, and only if, 'jq' is currently installed.
+    #                empty, if, and only if, 'jq' is currently installed and
+    #                'credentials.json' exists.
     ####
 
-    if hash jq &>/dev/null; then
+    if hash jq &>/dev/null && [[ -f NadekoBot/src/NadekoBot/credentials.json ]]; then
         if [[ -z $(jq -r ".Token" NadekoBot/src/NadekoBot/credentials.json) ]]; then
             # Means that "Token" is empty.
             jq_empty=true
