@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- The installer tried to use `jq` when it shouldn't have (including times when it wasn't installed).
+
 ## [3.1.0] - 2021-07-05
 
 ### Changed
