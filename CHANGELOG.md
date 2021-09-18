@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changes
+
+- No longer prevents the execution of the installer as root.
+- No longer compatible with `linuxAIO.sh` revision 8 and earlier.
+- Removed option to create and edit credentials to coincide with the official linux installer documentation.
+- Removed support for macOS, since this installer will not be adopted by Kwoth.
+- Option 4 is always enabled.
+
+## Unreleased Version - xxxx-xx-xx
+
 ### Fixed
 
 - The installer tried to use `jq` when it shouldn't have (including times when it wasn't installed).

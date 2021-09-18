@@ -12,11 +12,13 @@
 # The contents of NadekoBot's service.
 nadeko_service_content="[Unit]
 Description=NadekoBot service
+After=network.target
 
 [Service]
-ExecStart=/bin/bash $_WORKING_DIR/NadekoRun.sh
-User=$USER
 Type=simple
+User=$USER
+WorkingDirectory=$_WORKING_DIR
+ExecStart=/bin/bash NadekoRun.sh
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=NadekoBot
@@ -82,11 +84,9 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "echo \"Running NadekoBot in the background\"" \
         "youtube-dl -U" \
         "" \
-        "cd $_WORKING_DIR/NadekoBot" \
-        "dotnet build -c Release" \
-        "cd $_WORKING_DIR/NadekoBot/src/NadekoBot" \
         "echo \"Starting NadekoBot...\"" \
-        "dotnet run -c Release" \
+        "cd $_WORKING_DIR/nadekobot/output" \
+        "dotnet NadekoBot.dll" \
         "echo \"Stopping NadekoBot...\"" \
         "cd $_WORKING_DIR" > NadekoRun.sh
 ## Add code required to run NadekoBot in the background with auto restart, to
@@ -101,15 +101,12 @@ else
         "echo \"Running NadekoBot in the background with auto restart\"" \
         "youtube-dl -U" \
         "" \
-        "sleep 5" \
-        "cd $_WORKING_DIR/NadekoBot" \
-        "dotnet build -c Release" \
         "echo \"Starting NadekoBot...\"" \
         "" \
         "while true; do" \
         "    {" \
-        "        cd $_WORKING_DIR/NadekoBot/src/NadekoBot" \
-        "        dotnet run -c Release" \
+        "        cd $_WORKING_DIR/nadekobot/output" \
+        "        dotnet NadekoBot.dll" \
         "    # If a non-zero exit code is produced, exit this script." \
         "    } || {" \
         "        error_code=\"\$?\"" \

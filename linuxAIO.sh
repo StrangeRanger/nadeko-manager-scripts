@@ -35,15 +35,6 @@ installer_repo="StrangeRanger/NadekoBot-BashScript"
 # Default: master
 installer_branch="master"
 
-# Determines whether or not the installer can be run as the root user.
-#
-# Options:
-#   true  = Can be run with root privilege
-#   false = Cannot be run with root privilege (recommended)
-#
-# Default: false
-allow_run_as_root=false
-
 # The branch or tag (can also be referred to as NadekoBot's version) that the installer
 # will download NadekoBot from.
 #
@@ -53,12 +44,12 @@ allow_run_as_root=false
 #            downloaded version.
 #
 # Options:
-#   1.9   = Latest version (the master/main branch)
+#   v3    = Latest version (the master/main branch)
 #   x.x.x = Any other branch/tag (refer to the NadekoBot repo for available tags and
 #           branches)
 #
-# Default: 1.9
-export _NADEKO_INSTALL_VERSION="1.9"
+# Default: v3
+export _NADEKO_INSTALL_VERSION="v3"
 
 
 #### End of [[ Configuration Variables ]]
@@ -68,7 +59,7 @@ export _NADEKO_INSTALL_VERSION="1.9"
 
 # Used to keep track of changes to 'linuxAIO.sh'.
 # Refer to the '[ Prepping ]' section of 'installer_prep.sh' for more information.
-export _LINUXAIO_REVISION="26"
+export _LINUXAIO_REVISION="27"
 # URL of the raw version of a (to be) specified script.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
@@ -80,15 +71,6 @@ export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_br
 ########################################################################################
 #### [ Main ]
 
-
-# If executed with root privilege and $allow_run_as_root is false...
-if [[ $EUID = 0 && $allow_run_as_root = false ]]; then
-    echo "\033[1;31mPlease run this script without root privilege" >&2
-    echo "\033[0;36mWhile specific tasks will be performed with root privilege," \
-        "running the installer in it's entirety as root is not recommended\033[0m"
-    echo -e "\nExiting..."
-    exit 5
-fi
 
 echo "Downloading the latest installer..."
 curl -O "$_RAW_URL"/installer_prep.sh

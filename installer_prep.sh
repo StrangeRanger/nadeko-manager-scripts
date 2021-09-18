@@ -4,11 +4,10 @@
 # whether or not the system is supported by NadekoBot. Once the system is deemed as
 # supported, the master installer will be downloaded and executed.
 #
-# Comment key for '[letter].[number].':
+# Comment key:
 #   A.1. - Sed for linux || Sed for macOS.
 #   B.1. - Grouping One
 #   B.2. - Grouping Two
-#   B.3. - Grouping Three
 #
 ########################################################################################
 #### [ Exported and/or Globally Used Variables ]
@@ -16,8 +15,8 @@
 
 # Used to keep track of changes to 'linuxAIO.sh'.
 # Refer to the '[ Prepping ]' section of this script for more information.
-current_linuxAIO_revision="26"
-# Name of the master installer to be downloaded.
+current_linuxAIO_revision="27"
+# Name of the installer script to be downloaded.
 master_installer="nadeko_master_installer.sh"
 
 ## Modify output text color.
@@ -35,7 +34,7 @@ export _CLRLN=$'\r\033[K'
     journalctl_version=$(journalctl --version) \
         && journalctl_version=${journalctl_version:1:1}
 
-    if ((journalctl_version >= 230)) 2>/dev/null; then
+    if ((journalctl_version >= 230)); then
         export _NO_HOSTNAME="--no-hostname"
     fi
 } 2>/dev/null
@@ -52,23 +51,15 @@ detect_sys_info() {
     #                type (32 or 64), etc.
     ####
 
-    ## For Linux.
     if [[ -f /etc/os-release ]]; then
         . /etc/os-release
         _DISTRO="$ID"
         _VER="$VERSION_ID"  # Version: x.x.x...
         _SVER=${_VER//.*/}  # Version: x
         pname="$PRETTY_NAME"
-    ## For macOS.
     else
         _DISTRO=$(uname -s)
-        if [[ $_DISTRO = "Darwin" ]]; then
-            _VER=$(sw_vers -productVersion)  # macOS version: x.x.x
-            _SVER=${_VER%.*}                 # macOS version: x.x
-            pname="macOS"
-        else
-            _VER=$(uname -r)
-        fi
+        _VER=$(uname -r)
     fi
 
     ## Identify bit and architecture type.
@@ -90,14 +81,6 @@ linuxAIO_update() {
     #          system. Whenever the values of $_LINUXAIO_REVISION and
     #          $current_linuxAIO_revision do not match, the newest version of
     #          'linuxAIO.sh' is retrieved from github.
-    #
-    # ! Revision Note: As another important note, only 'linuxAIO.sh' files with a
-    #                  revision number of 9 or later will utilize this function.
-    #                  Breaking changes occurred between revision 8 and 9, and as a
-    #                  result, I've decided that the end-user will be required to
-    #                  manually download the latest version from github. The script will
-    #                  provide the user with the appropriate command to do this, based
-    #                  on the configurations in their current 'linuxAIO.sh'.
     ####
 
     ## Save the values of the current Configuration Variables specified in
@@ -108,14 +91,10 @@ linuxAIO_update() {
     local installer_branch_found                                 # B.1.
     installer_branch=$(grep '^installer_branch=.*' linuxAIO.sh)  # B.1.
     installer_branch_found="$?"	                                 # B.1.
-    local allow_run_as_root                                        # B.2.
-    local allow_run_as_root_found                                  # B.2.
-    allow_run_as_root=$(grep '^allow_run_as_root=.*' linuxAIO.sh)  # B.2.
-    allow_run_as_root_found="$?"                                   # B.2.
-    local nadeko_install_version                                                     # B.3.
-    local nadeko_install_version_found                                               # B.3.
-    nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)  # B.3.
-    nadeko_install_version_found="$?"                                                # B.3.
+    local nadeko_install_version                                                     # B.2.
+    local nadeko_install_version_found                                               # B.2.
+    nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)  # B.2.
+    nadeko_install_version_found="$?"                                                # B.2.
 
     echo "$_YELLOW'linuxAIO.sh' is not up to date$_NC"
     echo "Downloading latest 'linuxAIO.sh'..."
@@ -124,35 +103,12 @@ linuxAIO_update() {
 
     echo "Applying existing configurations to the new 'linuxAIO.sh'..."
 
-    ####################################################################################
-    #### [[ $installer_branch ]]
-
-
     ## Set $installer_branch inside of the new 'linuxAIO.sh'.
     if [[ $installer_branch_found = 0 ]]; then
         # A.1.
         sed -i "s/^installer_branch=.*/$installer_branch/" linuxAIO.sh \
             || sed -i '' "s/^installer_branch=.*/$installer_branch/" linuxAIO.sh
     fi
-
-
-    #### End of [[ $installer_branch ]]
-    ####################################################################################
-    #### [[ $allow_run_as_root ]]
-
-
-    ## Set $allow_run_as_root inside of the new 'linuxAIO.sh'.
-    if [[ $allow_run_as_root_found = 0 ]]; then
-        # A.1.
-        sed -i "s/^allow_run_as_root=.*/$allow_run_as_root/" linuxAIO.sh \
-            || sed -i '' "s/^allow_run_as_root=.*/$allow_run_as_root/" linuxAIO.sh
-    fi
-
-
-    #### End of [[ $allow_run_as_root ]]
-    ####################################################################################
-    #### [[ $_NADEKO_INSTALL_VERSION ]]
-
 
     ## Set $nadeko_install_version inside of the new 'linuxAIO.sh'.
     if [[ $nadeko_install_version_found = 0 ]]; then
@@ -161,19 +117,9 @@ linuxAIO_update() {
             || sed -i '' "s/^export _NADEKO_INSTALL_VERSION=.*/$nadeko_install_version/" linuxAIO.sh
     fi
 
-
-    #### End of [[ $_NADEKO_INSTALL_VERSION ]]
-    ####################################################################################
-    #### [[ Finishing up ]]
-
-
     echo "${_GREEN}Successfully downloaded the newest version of 'linuxAIO.sh' and" \
         "applied changes to the newest version of 'linuxAIO.sh'$_NC"
     clean_up "0" "Exiting" "true"
-
-
-    #### End of [[ Finishing up ]]
-    ####################################################################################
 }
 
 unsupported() {
@@ -203,7 +149,7 @@ execute_master_installer() {
     # Function Info: Download and execute 'nadeko_master_installer.sh'.
     ####
 
-    _DOWNLOAD_SCRIPT "$master_installer" "$master_installer" "true"
+    _DOWNLOAD_SCRIPT "$master_installer" "true"
     ./nadeko_master_installer.sh
     clean_up "$?" "Exiting"
 }
@@ -225,7 +171,7 @@ clean_up() {
         "nadeko_master_installer.sh")
 
     ### PURPOSE: Sometimes the output requires the use of a new-line symbol to separate
-    ###          the previous text, though sometimes it doesn't.
+    ###          the previous text.
     if [[ $3 = true ]]; then echo "Cleaning up..."
     else                     echo -e "\nCleaning up..."
     fi
@@ -235,7 +181,7 @@ clean_up() {
         exit 1
     }
 
-    # Remove the version of NadekoBot that had just been downloaded to the system.
+    ## Remove the version of NadekoBot that had just been downloaded to the system.
     if [[ -d NadekoTMPDir ]]; then rm -rf NadekoTMPDir
     fi
 
@@ -249,7 +195,6 @@ clean_up() {
     exit "$1"
 }
 
-
 ########################################################################################
 #### [[ Functions To Be Exported ]]
 
@@ -261,13 +206,13 @@ _DOWNLOAD_SCRIPT() {
     #
     # Parameters:
     #   $1 - Name of script to download.
-    #   $2 - Name to rename $1 with.
+    #   $2 - ...
     ####
 
-    if [[ ! $3 ]]; then echo "Downloading '$1'..."
+    if [[ ! $2 ]]; then echo "Downloading '$1'..."
     fi
-    curl -s "$_RAW_URL"/"$1" -o "$2"
-    sudo chmod +x "$2"
+    curl -O -s "$_RAW_URL"/"$1"
+    sudo chmod +x "$1"
 }
 
 
@@ -291,18 +236,10 @@ trap 'echo -e "\n\nScript forcefully stopped"
 #### [ Prepping ]
 
 
-# If the current 'linuxAIO.sh' revision is number 9 or later...
+# If the current 'linuxAIO.sh' revision number is not of equil value of the expected
+# revision number.
 if [[ $_LINUXAIO_REVISION && $_LINUXAIO_REVISION != "$current_linuxAIO_revision" ]]; then
     linuxAIO_update
-# If the current 'linuxAIO.sh' revision is number 8 or earlier...
-elif [[ $linuxAIO_revision && $linuxAIO_revision != "$current_linuxAIO_revision" ]]; then
-    echo "$_YELLOW'linuxAIO.sh' is not up to date"
-    echo "${_CYAN}Due to some breaking changes between revision 8 and 9 you are" \
-        "required to manually download the newest version of 'linuxAIO.sh'. You can" \
-        "do so by executing the following:"
-    echo "    mv linuxAIO.sh linuxAIO.sh.old && curl -O" \
-        "https://raw.githubusercontent.com/$installer_repo/$installer_branch/linuxAIO.sh" \
-        "&& sudo chmod +x linuxAIO.sh$_NC"
     clean_up "0" "Exiting" "true"
 fi
 
@@ -328,7 +265,7 @@ detect_sys_info
 export _DISTRO _SVER _VER _ARCH
 export -f _DOWNLOAD_SCRIPT
 
-# Use $_DISTRO if $pname is unset or null.
+# Use $_DISTRO if $pname is unset or null...
 echo "SYSTEM INFO
 Bit Type: $bits
 Architecture: $_ARCH
@@ -363,16 +300,6 @@ if [[ $bits = 64 ]]; then
         case "$_SVER" in
             18|19|20) execute_master_installer ;;
             *)        unsupported ;;
-        esac
-    # macOS:
-    #   10.14
-    #   10.15
-    #   11.*
-    elif [[ $_DISTRO = "Darwin" ]]; then
-        case "$_SVER" in
-            10.14|10.15) execute_master_installer ;;
-            11|11.*)     execute_master_installer ;;
-            *)           unsupported ;;
         esac
     else
         unsupported
