@@ -2,24 +2,16 @@
 #
 # Downloads and updates NadekoBot.
 #
-# Comment key for '[letter].[number].':
-#   A.1. - For reasons I'm unsure of, the installer MUST download the newest version of
-#          NadekoBot into a directory separate from the where the installer, or the
-#          current version of NadekoBot, is located. Once NadekoBot has been built, it
-#          can then be moved back to the installer directory.
-#
-# TODO: Before exiting (exit 1), have this script remove the temporary directory.
-#
 ########################################################################################
 #### [ Variables ]
 
 
 current_creds="nadekobot/output/creds.yml"
-new_creds="NadekoTMPDir/nadekobot/output/creds.yml"
+new_creds="nadekobot_tmp/nadekobot/output/creds.yml"
 current_database="nadekobot/output/data"
-new_database="NadekoTMPDir/nadekobot/output/data"
+new_database="nadekobot_tmp/nadekobot/output/data"
 current_data="nadekobot/src/NadekoBot/data"
-new_data="NadekoTMPDir/nadekobot/src/NadekoBot/data"
+new_data="nadekobot_tmp/nadekobot/src/NadekoBot/data"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Used when compiling code.
 
 
@@ -35,9 +27,9 @@ read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
 
 
 ## Stop the service if it's currently running.
-if [[ $_NADEKO_SERVICE_STATUS = "active" || $_NADEKO_SERVICE_STATUS = "running" ]]; then
+if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
     nadeko_service_active=true
-    _SERVICE_ACTIONS "stop_service" "false"
+    _STOP_SERVICE "false"
 fi
 
 
@@ -46,15 +38,14 @@ fi
 #### [[ Create Backup, Then Update ]]
 
 
-## A.1.
 ## Create a temporary folder to download NadekoBot into.
-mkdir NadekoTMPDir
-cd NadekoTMPDir || {
+mkdir nadekobot_tmp
+cd nadekobot_tmp || {
     echo "${_RED}Failed to change working directory$_NC" >&2
     exit 1
 }
 
-echo "Downloading NadekoBot into 'NadekoTMPDir'..."
+echo "Downloading NadekoBot into 'nadekobot_tmp'..."
 # Download NadekoBot from a specified branch/tag.
 git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 \
         https://gitlab.com/Kwoth/nadekobot || {
@@ -78,21 +69,21 @@ fi
 
 echo "Building NadekoBot..."
 {
-    cd nadekobot
-    dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/
-    cd "$_WORKING_DIR"
+    cd nadekobot \
+    && dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
+    && cd "$_WORKING_DIR"
 } || {
     echo "${_RED}Failed to build NadekoBot$_NC" >&2
     exit 1
 }
 
 ## Move credentials, database, and other data to the new version of NadekoBot.
-if [[ -d NadekoTMPDir/nadekobot && -d nadekobot ]]; then
-    echo "Copying 'creds.yml' to new version..."
+if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
+    echo "Copying 'creds.yml' to the new version..."
     cp -f "$current_creds" "$new_creds" &>/dev/null
     # Also copies 'credentials.json' for migration purposes.
     cp -f nadekobot/output/credentials.json \
-        NadekoTMPDir/nadekobot/output/credentials.json &>/dev/null
+        nadekobot_tmp/nadekobot/output/credentials.json &>/dev/null
     echo "Copying database to the new version..."
     cp -RT "$current_database" "$new_database" &>/dev/null
 
@@ -110,7 +101,7 @@ if [[ -d NadekoTMPDir/nadekobot && -d nadekobot ]]; then
     rm -rf nadekobot_old && mv -f nadekobot nadekobot_old
 fi
 
-mv NadekoTMPDir/nadekobot . && rmdir NadekoTMPDir
+mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 
 
 #### End of [[ Create Backup, Then Update ]]

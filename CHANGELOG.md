@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Using disabled options will now provide reason(s) for why it and other options are disabled.
+- New option (option 7) that can be used to back up important Nadeko files. These files can be configured within `linuxAIO.sh`. Do note that the installer doesn't move the current configuration of this option to the new version of `linuxAIO.sh`, unlike the other configurable options.
+
 ### Changes
 
 - No longer prevents the execution of the installer as root.
@@ -13,6 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Removed option to create and edit credentials to coincide with the official linux installer documentation.
 - Removed support for macOS, since this installer will not be adopted by Kwoth.
 - Option 4 is always enabled.
+- `jq` is no longer installed.
+
+### Fixed
+
+- Small fixes.
 
 ## Unreleased Version - xxxx-xx-xx
 

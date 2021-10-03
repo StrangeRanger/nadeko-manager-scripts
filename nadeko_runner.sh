@@ -2,7 +2,7 @@
 #
 # Start NadekoBot in the specified run mode, on Linux distributions.
 #
-# Comment key for '[letter].[number].':
+# Comment key:
 #   A.1. - Used in conjunction with the 'systemctl' command.
 #   B.1. - Used in the text output.
 #
@@ -47,16 +47,18 @@ if [[ -f $_NADEKO_SERVICE ]]; then echo "Updating '$_NADEKO_SERVICE_NAME'..."
 else                               echo "Creating '$_NADEKO_SERVICE_NAME'..."
 fi
 
-# Create/update the service.
-echo "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null \
-        && sudo systemctl daemon-reload || {
+{
+    # Create/update the service.
+    echo "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null \
+    && sudo systemctl daemon-reload
+} || {
     echo "${_RED}Failed to create '$_NADEKO_SERVICE_NAME'" >&2
     echo "${_CYAN}This service must exist for NadekoBot to work$_NC"
     read -rp "Press [Enter] to return to the installer menu"
     exit 4
 }
 
-## $dis_en_lower the service.
+## Disable/enable the service.
 echo "$dis_en_upper '$_NADEKO_SERVICE_NAME'..."
 sudo systemctl "$dis_en_lower" "$_NADEKO_SERVICE_NAME" || {
     echo "${_RED}Failed to $dis_en_lower '$_NADEKO_SERVICE_NAME'" >&2
@@ -77,7 +79,7 @@ fi
 ## Add the code required to run NadekoBot in the background, to 'NadekoRun.sh'.
 if [[ $_CODENAME = "NadekoRun" ]]; then
     printf '%s\n' \
-        "#!bin/bash" \
+        "#!/bin/bash" \
         "" \
         "_code_name_=\"NadekoRun\"" \
         "" \
@@ -105,8 +107,8 @@ else
         "" \
         "while true; do" \
         "    {" \
-        "        cd $_WORKING_DIR/nadekobot/output" \
-        "        dotnet NadekoBot.dll" \
+        "        cd $_WORKING_DIR/nadekobot/output \\" \
+        "        && dotnet NadekoBot.dll" \
         "    # If a non-zero exit code is produced, exit this script." \
         "    } || {" \
         "        error_code=\"\$?\"" \

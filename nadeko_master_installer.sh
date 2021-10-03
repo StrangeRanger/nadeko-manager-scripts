@@ -14,8 +14,8 @@
 # killed by a sub/child script.
 export _NADEKO_MASTER_INSTALLER_PID=$$
 ## To be exported.
-_NADEKO_SERVICE="/etc/systemd/system/nadeko.service"
 _NADEKO_SERVICE_NAME="nadeko.service"
+_NADEKO_SERVICE="/etc/systemd/system/$_NADEKO_SERVICE_NAME"
 
 
 #### End of [ Variables ]
@@ -23,36 +23,38 @@ _NADEKO_SERVICE_NAME="nadeko.service"
 #### [ Functions ]
 
 
-_SERVICE_ACTIONS() {
+_GET_SERVICE_STATUS() {
     ####
-    # Function Info: Actions dealing with the status/state of the NadekoBot's service.
-    #
-    # Parameters:
-    #   $1 - The actions to be performed (i.e. get service status or stop service).
-    #   $2 - Dictates whether or not the text indicating that the service has been
-    #        stopped or is not running, should be printed to the terminal.
+    # Function Info: Store the status of NadekoBot's service, inside of
+    #                $_NADEKO_SERVICE_STATUS.
     ####
 
-    ## Save the status of $_NADEKO_SERVICE_NAME to $_NADEKO_SERVICE_STATUS.
-    if [[ $1 = "nadeko_service_status" ]]; then
-        _NADEKO_SERVICE_STATUS=$(systemctl is-active "$_NADEKO_SERVICE_NAME")
-    ## Stops $_NADEKO_SERVICE_NAME if it's actively running.
-    elif [[ $1 = "stop_service" ]]; then
-        if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
-            echo "Stopping '$_NADEKO_SERVICE_NAME'..."
-            sudo systemctl stop "$_NADEKO_SERVICE_NAME" || {
-                echo "${_RED}Failed to stop '$_NADEKO_SERVICE_NAME'" >&2
-                echo "${_CYAN}You will need to restart '$2' to apply any updates" \
-                    "to NadekoBot$_NC"
-                return 1  # A.1.
-            }
-            if [[ $2 = true ]]; then
-                echo -e "\n${_GREEN}NadekoBot has been stopped$_NC"
-            fi
-        else
-            if [[ $2 = true ]]; then
-                echo -e "\n${_CYAN}NadekoBot is not currently running$_NC"
-            fi
+    _NADEKO_SERVICE_STATUS=$(systemctl is-active "$_NADEKO_SERVICE_NAME")
+}
+
+_STOP_SERVICE() {
+    ####
+    # Function Info: Stops NadekoBot's service.
+    #
+    # Parameters:
+    #   $1 - True when the function should output text indicating if the service has
+    #        been stopped or is currently not running, else false.
+    ####
+
+    if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
+        echo "Stopping '$_NADEKO_SERVICE_NAME'..."
+        sudo systemctl stop "$_NADEKO_SERVICE_NAME" || {
+            echo "${_RED}Failed to stop '$_NADEKO_SERVICE_NAME'" >&2
+            echo "${_CYAN}You will need to restart '$1' to apply any updates" \
+                "to NadekoBot$_NC"
+            return 1
+        }
+        if [[ $1 = true ]]; then
+            echo -e "\n${_GREEN}NadekoBot has been stopped$_NC"
+        fi
+    else
+        if [[ $1 = true ]]; then
+            echo -e "\n${_CYAN}NadekoBot is not currently running$_NC"
         fi
     fi
 }
@@ -70,7 +72,7 @@ _FOLLOW_SERVICE_LOGS() {
 
 _WATCH_SERVICE_LOGS() {
     ####
-    # Function Info: Output the general information to go along with the output of the
+    # Function Info: Output additional information to go along with the output of the
     #                function '_FOLLOW_SERVICE_LOGS'.
     #
     # Parameters:
@@ -130,6 +132,10 @@ hash_ccze() {
 }
 
 disabled_reasons() {
+    ####
+    # Function Info: Provide the reason(s) for why one or more options are disabled.
+    ####
+
     echo "${_CYAN}Reasons for the disabled option:"
 
     if (! hash dotnet \
@@ -137,11 +143,17 @@ disabled_reasons() {
             || (! hash python && (! hash python3 && ! hash python-is-python3)) \
             || [[ $ccze_installed = false ]]) &>/dev/null; then
         echo "  One or more prerequisites are not installed"
+        echo "    Use option 6 to install prerequisites"
     fi
 
-    if [[ ! -f nadekobot/output/creds.yml ]]; then
-        echo "  The 'creds.yml' could not be found"
-        echo "    Refer to the following link for help: https://nadekobot.readthedocs.io/en/v3/creds-guide/"
+    if [[ -d nadekobot ]]; then
+        if [[ ! -f nadekobot/output/creds.yml ]]; then
+            echo "  The 'creds.yml' could not be found"
+            echo "    Refer to the following link for help: https://nadekobot.readthedocs.io/en/v3/creds-guide/"
+        fi
+    else
+        echo "  NadekoBot could not be found"
+        echo "    Use option 1 to download NadekoBot"
     fi
 
     echo "${_NC}"
@@ -174,6 +186,9 @@ while true; do
     option_three_text="3. Run NadekoBot in the background with auto restart"
     ## Option 5.
     option_five_text="5. Display '$_NADEKO_SERVICE_NAME' logs in follow mode"
+    ## Option 7.
+    option_seven_disabled=false
+    option_seven_text="7. Back up important files"
 
 
     #### End of [[ Temporary Variables ]]
@@ -182,9 +197,10 @@ while true; do
 
 
     # Get the current status of $_NADEKO_SERVICE_NAME.
-    _SERVICE_ACTIONS "nadeko_service_status"
+    _GET_SERVICE_STATUS
 
-    # Determines if $ccze_installed is true or false.
+    # Determines if $ccze_installed is true or false, or in otherwords, if ccze is
+    # installed or not.
     hash_ccze
 
     ## Disable option 1 if any of the following tools are not installed.
@@ -197,25 +213,29 @@ while true; do
     fi
 
     ## Disable options 2, 3, and 5 if any of the tools in the previous if statement are
-    ## not installed or none of the specified directories/files could be found.
+    ## not installed, or none of the specified directories/files could be found.
     if [[ ! -f nadekobot/output/creds.yml \
             || $option_one_disabled = true ]]; then
-        ## Option 2 & 3.
+        ## Options 2 & 3.
         option_two_and_three_disabled=true
         option_two_text="${_GREY}${option_two_text}${disabled_option}${_NC}"
         option_three_text="${_GREY}${option_three_text}${disabled_option}${_NC}"
         ## Option 5.
         option_five_disabled=true
         option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
+
+        if [[ ! -d nadekobot ]]; then
+            ## Option 7.
+            option_seven_disabled=true
+            option_seven_text="${_GREY}${option_seven_text}${disabled_option}${_NC}"
+        fi
     ## Options 2 and 3 remain enabled, if 'NadekoRun.sh' exists.
     elif [[ -f NadekoRun.sh ]]; then
         ## Option 5 remains enabled, if NadekoBot's service is running.
-        if [[ $_NADEKO_SERVICE_STATUS = "active" \
-                || $_NADEKO_SERVICE_STATUS = "running" ]]; then
+        if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
             run_mode_status=" ${_GREEN}(Running in this mode)$_NC"
         ## Disable option 5 if NadekoBot's service NOT running.
-        elif [[ $_NADEKO_SERVICE_STATUS = "inactive" \
-                || $_NADEKO_SERVICE_STATUS = "waiting" ]]; then
+        elif [[ $_NADEKO_SERVICE_STATUS = "inactive" ]]; then
             ## Option 5.
             option_five_disabled=true
             option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
@@ -250,7 +270,8 @@ while true; do
     echo "4. Stop NadekoBot"
     echo "$option_five_text"
     echo "6. Install prerequisites"
-    echo "7. Exit"
+    echo "$option_seven_text"
+    echo "8. Exit"
     read -r choice
     case "$choice" in
         1)
@@ -263,7 +284,7 @@ while true; do
             fi
 
             export _NADEKO_SERVICE
-            export -f _SERVICE_ACTIONS
+            export -f _STOP_SERVICE
             export _NADEKO_SERVICE_NAME
             export _NADEKO_SERVICE_STATUS
 
@@ -310,7 +331,7 @@ while true; do
         4)
             clear -x
             read -rp "We will now stop NadekoBot. Press [Enter] to begin."
-            _SERVICE_ACTIONS "stop_service" "true"
+            _STOP_SERVICE "true"
             read -rp "Press [Enter] to return to the installer menu"
             clear -x
             ;;
@@ -333,11 +354,26 @@ while true; do
             clear -x
             ;;
         7)
+            ## B.1.
+            if [[ $option_seven_disabled = true ]]; then
+                clear -x
+                echo "${_RED}Option 7 is currently disabled$_NC"
+                disabled_reasons
+                continue
+            fi
+
+            _DOWNLOAD_SCRIPT "file_backup.sh"
+            clear -x
+            ./file_backup.sh || exit_code_actions "$?"
+            clear -x
+            ;;
+        8)
             exit 0
             ;;
         *)
             clear -x
             echo "${_RED}Invalid input: '$choice' is not a valid option$_NC" >&2
+            echo ""
             ;;
     esac
 

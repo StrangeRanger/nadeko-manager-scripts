@@ -1,0 +1,72 @@
+#!/bin/bash
+#
+# Back up some of the more important files, that of which, can be configured by adding
+# to $_FILES_TO_BACK_UP in 'linuxAIO.sh'.
+#
+########################################################################################
+#### [ Variables ]
+
+
+current_backup="important_file_backup"
+tmp_backup="important_file_backup_tmp"
+
+# Contains the files to be backed up.
+# NOTE: The array is purposefully unquoted to allow for word splitting.
+files_to_back_up=($_FILES_TO_BACK_UP)
+
+
+#### End of [ Variables ]
+########################################################################################
+#### [ Main ]
+
+
+echo "We will now back up the following files:$_CYAN"
+for file in "${files_to_back_up[@]}"; do echo "    $file"
+done
+echo -n "$_NC"
+read -rp "Press [Enter] to continue."
+
+## Create '$tmp_backup' if it doesn't exist.
+if [[ ! -d $tmp_backup ]]; then mkdir $tmp_backup
+fi
+
+## Copy all of the files listed in $files_to_back_up to $tmp_backup.
+echo "Backing up important files into '$tmp_backup'..."
+for file in "${files_to_back_up[@]}"; do
+    if [[ -f $file ]]; then
+        cp -f "$file" "$tmp_backup" \
+            || echo "${_RED}Failed to back up ${file}${_NC}" >&2
+    else
+        echo "${_YELLOW}${file} could not be found$_NC"
+    fi
+done
+
+if [[ -d $current_backup ]]; then
+    ## Copy all files from $current_backup that do not contain ".old" in its name, to
+    ## $tmp_backup with ".old" appended to the end of the file's name.
+    echo "Renaming the old backups and moving them to '$tmp_backup'..."
+    while read -r file; do
+        if [[ ! $file =~ ^.*.old$ ]]; then
+            cp "$current_backup"/"$file" "$tmp_backup"/"$file".old || {
+                echo "${_RED}Failed to rename and move ${file}${_NC}" >&2
+                exit 1
+            }
+        fi
+    done < <(ls "$current_backup")
+fi
+
+
+if [[ -d $current_backup ]]; then
+    echo "Removing '$current_backup' and renaming '$tmp_backup' as '$current_backup'..."
+    rm -rf "$current_backup" && mv "$tmp_backup" "$current_backup"
+else
+    echo "Renaming '$tmp_backup' as '$current_backup'..."
+    mv "$tmp_backup" "$current_backup"
+fi
+
+echo ""
+read -rp "Press [Enter] to return to the main menu"
+
+
+#### End of [ Main ]
+########################################################################################
