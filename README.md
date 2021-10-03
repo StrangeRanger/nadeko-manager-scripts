@@ -1,11 +1,10 @@
 # NadekoBot-BashScript
 
 [![Project Tracker](https://img.shields.io/badge/repo%20status-Project%20Tracker-lightgrey)](https://randomserver.xyz/project-tracker.html#nadekobot-bashscript)
-![Platform](https://img.shields.io/badge/platform-Linux%20|%20macOS-lightgrey)
 [![Style Guide](https://img.shields.io/badge/code%20style-Style%20Guide-blueviolet)](https://github.com/StrangeRanger/bash-style-guide)
 [![CodeFactor](https://www.codefactor.io/repository/github/strangeranger/nadekobot-bashscript/badge)](https://www.codefactor.io/repository/github/strangeranger/nadekobot-bashscript)
 
-This is the unofficial installer for NadekoBot 1.9 on Linux distributions and macOS.
+This is the unofficial installer for NadekoBot v3 on Linux distributions.
 
 For information on setting up NadekoBot using this installer, visit the repository's [wiki](https://github.com/StrangeRanger/NadekoBot-BashScript/wiki).
 
@@ -30,7 +29,7 @@ If the following command was successfully executed, a menu with the following op
 4. Stop NadekoBot
 5. Display 'nadeko.service' logs in follow mode
 6. Install prerequisites
-7. Set up credentials.json
+7. Back up important files
 8. Exit
 ```
 
@@ -45,4 +44,3 @@ The following is a list of all the Linux distributions and macOS versions that t
 | Ubuntu     | 16.04, 18.04, 20.04 |
 | Linux Mint | 18, 19, 20          |
 | Debian     | 9, 10               |
-| macOS      | 10.14, 10.15, 11    |

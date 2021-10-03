@@ -3,7 +3,7 @@
 # Install all of the packages and dependencies required for NadekoBot to run on Linux
 # distributions.
 #
-# Comment key for '[letter].[number].':
+# Comment key:
 #   A.1. - NOTE: If the write perms are not applied to all users for this tool, attempts
 #                to update 'youtube-dl' by a non-root user will always fail.
 #   B.1. - FIXME: Find a better solution than modifying the perms in such a way that I
@@ -27,20 +27,27 @@ install_prereqs() {
     echo "Installing .NET Core..."
     ## Microsoft package signing key.
     curl -O https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb
-    sudo dpkg -i packages-microsoft-prod.deb && sudo rm -f packages-microsoft-prod.deb
+    sudo dpkg -i packages-microsoft-prod.deb
+    sudo rm -f packages-microsoft-prod.deb
+
     ## Install the SDK.
     sudo apt-get update
     sudo apt-get install -y apt-transport-https \
         && sudo apt-get update \
         && sudo apt-get install -y dotnet-sdk-5.0
 
+    ## Install music prerequisites.
+    echo "Installing music prerequisites..."
+    sudo add-apt-repository ppa:chris-lea/libsodium -y
+    sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev -y
+
+    ## Other prerequisites.
     echo "Installing other prerequisites..."
-    sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg \
-        redis-server git "$3" python3 jq ccze -y
+    sudo apt-get install ffmpeg redis-server git python3 "$3" ccze -y
+
     sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
         /usr/local/bin/youtube-dl
-    # A.1.
-    # B.1.
+    # A.1. & B.1.
     sudo chmod a+rwx /usr/local/bin/youtube-dl
 }
 
@@ -70,10 +77,8 @@ read -rp "We will now install NadekoBot's prerequisites. Press [Enter] to contin
 #   20.04
 if [[ $_DISTRO = "ubuntu" ]]; then
     case "$_VER" in
-        16.04) install_prereqs "ubuntu" "16.04" "python" ;;
-        18.04) install_prereqs "ubuntu" "18.04" "python" ;;
-        20.04) install_prereqs "ubuntu" "20.04" "python-is-python3" ;;
-        *)     unsupported ;;
+        16.04|18.04|20.04) install_prereqs "ubuntu" "$_VER" "python" ;;
+        *)                 unsupported ;;
     esac
 # Linux Mint:
 #   9
@@ -97,14 +102,19 @@ elif [[ $_DISTRO = "debian" ]]; then
                 && sudo apt-get update \
                 && sudo apt-get install -y dotnet-sdk-5.0
 
+            ## Install music prerequisites.
+            echo "Installing music prerequisites..."
+            sudo add-apt-repository ppa:chris-lea/libsodium -y
+            sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev -y
+
+            ## Other prerequisites.
             echo "Installing other prerequisites..."
-            sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev ffmpeg \
-                redis-server git jq python python3 ccze -y
-            sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
-                /usr/local/bin/youtube-dl
-            # A.1.
-            # B.1.
-            sudo chmod a+rwx /usr/local/bin/youtube-dl
+            sudo apt-get install ffmpeg redis-server git python3 python ccze -y
+
+    sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
+        /usr/local/bin/youtube-dl
+    # A.1. & B.1.
+    sudo chmod a+rwx /usr/local/bin/youtube-dl
             ;;
         10) install_prereqs "debian" "10" "python" ;;
         *)  unsupported ;;

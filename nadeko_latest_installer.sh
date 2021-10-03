@@ -2,43 +2,17 @@
 #
 # Downloads and updates NadekoBot.
 #
-# Comment key for '[letter].[number].':
-#   A.1. - For reasons I'm unsure of, the installer MUST download the newest version of
-#          NadekoBot into a directory separate from the where the installer, or the
-#          current version of NadekoBot, is located. Once NadekoBot has been built, it
-#          can then be moved back to the installer directory.
-#
 ########################################################################################
 #### [ Variables ]
 
 
-current_credentials="NadekoBot/src/NadekoBot/credentials.json"
-new_credentials="NadekoTMPDir/NadekoBot/src/NadekoBot/credentials.json"
-current_database="NadekoBot/src/NadekoBot/bin/"
-new_database="NadekoTMPDir/NadekoBot/src/NadekoBot/bin/"
-current_data="NadekoBot/src/NadekoBot/data"
-new_data="NadekoTMPDir/NadekoBot/src/NadekoBot/data"
-netcoreapp_version="netcoreapp2.1"
-# To be implemented in a later version, when NadekoBot uses 'netcoreapp3.1' instead of
-# 'netcoreapp2.1'.
-#netcoreapp_version="netcoreapp3.1"
-
-## NOTE: 'cp' on macOS doesn't have the flag option "T", while the Linux version does.
-# Use the "RT" flags if the OS is NOT macOS.
-if [[ $_DISTRO != "Darwin" ]]; then cp_flag="RT"
-## If running on macOS, use the "r" flag. But if 'gcp' (GNU cp) is installed, then use
-## the "RT" flags and make 'cp' an alias of 'gcp'.
-else
-    if hash gcp; then
-        # Enable 'expand_aliases' inside of this script. This makes it possible for the
-        # alias to take immediate effect.
-        shopt -s expand_aliases
-        alias cp="gcp"
-        cp_flag="RT"
-    else
-        cp_flag="r"
-    fi
-fi
+current_creds="nadekobot/output/creds.yml"
+new_creds="nadekobot_tmp/nadekobot/output/creds.yml"
+current_database="nadekobot/output/data"
+new_database="nadekobot_tmp/nadekobot/output/data"
+current_data="nadekobot/src/NadekoBot/data"
+new_data="nadekobot_tmp/nadekobot/src/NadekoBot/data"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Used when compiling code.
 
 
 #### End of [ Variables ]
@@ -53,9 +27,9 @@ read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
 
 
 ## Stop the service if it's currently running.
-if [[ $_NADEKO_SERVICE_STATUS = "active" || $_NADEKO_SERVICE_STATUS = "running" ]]; then
+if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
     nadeko_service_active=true
-    _SERVICE_ACTIONS "stop_service" "false"
+    _STOP_SERVICE "false"
 fi
 
 
@@ -64,24 +38,23 @@ fi
 #### [[ Create Backup, Then Update ]]
 
 
-## A.1.
 ## Create a temporary folder to download NadekoBot into.
-mkdir NadekoTMPDir
-cd NadekoTMPDir || {
+mkdir nadekobot_tmp
+cd nadekobot_tmp || {
     echo "${_RED}Failed to change working directory$_NC" >&2
     exit 1
 }
 
-echo "Downloading NadekoBot into 'NadekoTMPDir'..."
+echo "Downloading NadekoBot into 'nadekobot_tmp'..."
 # Download NadekoBot from a specified branch/tag.
 git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 \
-        https://gitlab.com/Kwoth/NadekoBot || {
+        https://gitlab.com/Kwoth/nadekobot || {
     echo "${_RED}Failed to download NadekoBot$_NC" >&2
     exit 1
 }
 
-# If $_DISTRO isn't Darwin and '/tmp/NuGetScratch' exists...
-if [[ -d /tmp/NuGetScratch && $_DISTRO != "Darwin" ]]; then
+# If '/tmp/NuGetScratch' exists...
+if [[ -d /tmp/NuGetScratch ]]; then
     echo "Modifying ownership of '/tmp/NuGetScratch' and '/home/$USER/.nuget'"
     # Due to permission errors cropping up every now and then, especially when the
     # installer is executed with root privilege, it's necessary to make sure that
@@ -95,67 +68,40 @@ if [[ -d /tmp/NuGetScratch && $_DISTRO != "Darwin" ]]; then
 fi
 
 echo "Building NadekoBot..."
-cd NadekoBot || {
-    echo "${_RED}Failed to change working directory$_NC" >&2
-    exit 1
-}
-
-dotnet build --configuration Release || {
+{
+    cd nadekobot \
+    && dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
+    && cd "$_WORKING_DIR"
+} || {
     echo "${_RED}Failed to build NadekoBot$_NC" >&2
-    exit 1
-}
-cd "$_WORKING_DIR" || {
-    echo "${_RED}Failed to return to the project's root directory$_NC" >&2
     exit 1
 }
 
 ## Move credentials, database, and other data to the new version of NadekoBot.
-if [[ -d NadekoBot ]]; then
-    echo "Copying 'credentials.json' to new version..."
-    cp -f "$current_credentials" "$new_credentials" &>/dev/null
+if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
+    echo "Copying 'creds.yml' to the new version..."
+    cp -f "$current_creds" "$new_creds" &>/dev/null
+    # Also copies 'credentials.json' for migration purposes.
+    cp -f nadekobot/output/credentials.json \
+        nadekobot_tmp/nadekobot/output/credentials.json &>/dev/null
     echo "Copying database to the new version..."
-    cp -"$cp_flag" "$current_database" "$new_database" &>/dev/null
-
-    ## Check if an old netcoreapp version exists, then move the database within it, to
-    ## the current version of netcorapp ($netcoreapp_version).
-    while read -r netcoreapp; do
-        if [[ $netcoreapp != "$netcoreapp_version" \
-                && -f "$new_database"/Release/"$netcoreapp"/data/NadekoBot.db ]]; then
-            echo "${_YELLOW}WARNING: Old netcoreapp version detected$_NC"
-            echo "Moving database to current netcoreapp version..."
-
-            cp "$new_database"/Release/"$netcoreapp"/data/NadekoBot.db \
-                    "$new_database"/Release/"$netcoreapp_version"/data/NadekoBot.db || {
-                echo "${_RED}Failed to move database$_NC" >&2
-                exit 1
-            }
-
-            echo "Removing '$netcoreapp'..."
-            rm -rf "$new_database"/Release/"$netcoreapp" || {
-                echo "${_RED}Failed to remove '$netcoreapp'" >&2
-                echo "${_CYAN}Please manually remove '$netcoreapp' before continuing"
-                echo "Location: $_WORKING_DIR/$new_database/Release/$netcoreapp$_NC"
-            }
-        fi
-    done < <(ls "$_WORKING_DIR"/"$new_database"/Release/)
+    cp -RT "$current_database" "$new_database" &>/dev/null
 
     echo "Copying other data to the new version..."
-    ## 'alises.yml' and 'strings' are updated with every install, which could break the
-    ## bot if overwritten by existing versions of those files...
-    if [[ -f "$current_data"/aliases.yml.old ]]; then
-        rm -f "$current_data"/aliases.yml.old
-    fi
-    mv -f "$current_data"/aliases.yml "$current_data"/aliases.yml.old
-    if [[ -d "$current_data"/strings.old ]]; then
-        rm -rf "$current_data"/strings.old
-    fi
-    mv -f "$current_data"/strings "$current_data"/strings.old
+    ## On update, strings will be new version, user will have to manually re-add his
+    ## strings after each update as updates may cause big number of strings to become
+    ## obsolete, changed, etc. However, old user's strings will be backed up to
+    ## strings_old.
+    # Backup new strings to reverse rewrite.
+    mv -fT "$new_data"/strings "$new_data"/strings_new
+    # Backup new aliases to reverse rewrite.
+    mv -f "$new_data"/aliases.yml "$new_data"/aliases_new.yml
 
-    cp -"$cp_flag" "$current_data" "$new_data"
-    rm -rf NadekoBot.old && mv -f NadekoBot NadekoBot.old
+    cp -RT "$current_data" "$new_data"
+    rm -rf nadekobot_old && mv -f nadekobot nadekobot_old
 fi
 
-mv NadekoTMPDir/NadekoBot . && rmdir NadekoTMPDir
+mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 
 
 #### End of [[ Create Backup, Then Update ]]
