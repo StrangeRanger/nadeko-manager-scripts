@@ -29,7 +29,7 @@ If the following command was successfully executed, a menu with the following op
 4. Stop NadekoBot
 5. Display 'nadeko.service' logs in follow mode
 6. Install prerequisites
-7. Set up credentials.json
+7. Back up important files
 8. Exit
 ```
 
