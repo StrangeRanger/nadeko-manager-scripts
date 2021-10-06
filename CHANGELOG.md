@@ -6,14 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [3.2.0]
+## [3.2.1] 2021-10-5
+
+### Changed
+
+- Update the content of `nadeko.service` to restart on failure, etc.
+- Update the content of `NadekoRun.sh` when running NadekoBot in the background with auto-restart. It now does a better job at handling errors, etc.
+
+## [3.2.0] - 2021-10-4
 
 ### Added
 
 - Using disabled options will now provide reason(s) for why it and other options are disabled.
 - New option (option 7) that can be used to back up important Nadeko files. These files can be configured within `linuxAIO.sh`. Do note that the installer doesn't move the current configuration of this option to the new version of `linuxAIO.sh`, unlike the other configurable options.
 
-### Changes
+### Changed
 
 - No longer prevents the execution of the installer as root.
 - No longer compatible with `linuxAIO.sh` revision 8 and earlier.

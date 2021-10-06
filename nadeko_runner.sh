@@ -13,12 +13,16 @@
 nadeko_service_content="[Unit]
 Description=NadekoBot service
 After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=2
 
 [Service]
 Type=simple
 User=$USER
 WorkingDirectory=$_WORKING_DIR
 ExecStart=/bin/bash NadekoRun.sh
+Restart=on-failure
+RestartSec=5
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=NadekoBot
@@ -99,24 +103,32 @@ else
         "" \
         "_code_name_=\"NadekoRunAR\"" \
         "" \
-        "echo \"\"" \
         "echo \"Running NadekoBot in the background with auto restart\"" \
         "youtube-dl -U" \
         "" \
         "echo \"Starting NadekoBot...\"" \
         "" \
         "while true; do" \
-        "    {" \
-        "        cd $_WORKING_DIR/nadekobot/output \\" \
-        "        && dotnet NadekoBot.dll" \
-        "    # If a non-zero exit code is produced, exit this script." \
-        "    } || {" \
-        "        error_code=\"\$?\"" \
+        "    if [[ -d $_WORKING_DIR/nadekobot/output ]]; then" \
+        "        cd $_WORKING_DIR/nadekobot/output || {" \
+        "            echo \"Failed to change working directory to '$_WORKING_DIR/nadekobot/output'\" >&2" \
+        "            echo \"Ensure that the working directory inside of '/etc/systemd/system/nadeko.service' is correct\"" \
+        "            echo \"Exiting...\"" \
+        "            exit 1" \
+        "        }" \
+        "    else" \
+        "        echo \"'$_WORKING_DIR/nadekobot/output' doesn't exist\"" \
+        "        exit 1" \
+        "    fi" \
+        "" \
+        "    dotnet NadekoBot.dll || {" \
         "        echo \"An error occurred when trying to start NadekBot\"" \
-        "        echo \"EXIT CODE: \$?\"" \
-        "        exit \"\$error_code\"" \
+        "        echo \"Exiting...\"" \
+        "        exit 1" \
         "    }" \
         "" \
+        "    echo \"Waiting for 5 seconds...\"" \
+        "    sleep 5" \
         "    youtube-dl -U" \
         "    echo \"Restarting NadekoBot...\"" \
         "done" \
