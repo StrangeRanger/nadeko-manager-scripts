@@ -41,6 +41,6 @@ The following is a list of all the Linux distributions and macOS versions that t
 
 | Distro/OS  | Version Number      |
 | ---------- | ------------------- |
-| Ubuntu     | 16.04, 18.04, 20.04 |
-| Linux Mint | 18, 19, 20          |
-| Debian     | 9, 10               |
+| Ubuntu     | 20.04, 18.04, 16.04 |
+| Linux Mint | 20, 19, 18          |
+| Debian     | 10, 9               |
