@@ -6,12 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [3.2.1] 2021-10-5
+## [3.2.1] - 2022-xx-xx
 
 ### Changed
 
 - Update the content of `nadeko.service` to restart on failure, etc.
 - Update the content of `NadekoRun.sh` when running NadekoBot in the background with auto-restart. It now does a better job at handling errors, etc.
+- Installs dotnet v6 instead of v5.
+- Uses NadekoBot branch v4 by default instead of v3.
 
 ## [3.2.0] - 2021-10-4
 
@@ -33,7 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Small fixes.
 
-## [3.1.1] - 2021-xx-xx
+## [3.1.1] - 2021-??-??
 
 ### Fixed
 
