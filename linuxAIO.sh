@@ -58,7 +58,7 @@ installer_branch="master"
 #           branches)
 #
 # Default: "v3"
-export _NADEKO_INSTALL_VERSION="v3"
+export _NADEKO_INSTALL_VERSION="v4"
 
 # A list of files to be backed up when executing option 7.
 #
@@ -99,7 +99,7 @@ nadekobot/output/data/NadekoBot.db"
 
 # Revision number of this script.
 # Refer to the 'README' note at the beginning of this file for more information.
-export _LINUXAIO_REVISION="30"
+export _LINUXAIO_REVISION="31"
 # The URL to the raw code of a script that is specified by the other scripts.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
