@@ -34,7 +34,7 @@ install_prereqs() {
     sudo apt-get update
     sudo apt-get install -y apt-transport-https \
         && sudo apt-get update \
-        && sudo apt-get install -y dotnet-sdk-5.0
+        && sudo apt-get install -y dotnet-sdk-6.0
 
     ## Install music prerequisites.
     echo "Installing music prerequisites..."
@@ -100,7 +100,7 @@ elif [[ $_DISTRO = "debian" ]]; then
             sudo apt-get update
             sudo apt-get install -y apt-transport-https \
                 && sudo apt-get update \
-                && sudo apt-get install -y dotnet-sdk-5.0
+                && sudo apt-get install -y dotnet-sdk-6.0
 
             ## Install music prerequisites.
             echo "Installing music prerequisites..."
@@ -111,10 +111,10 @@ elif [[ $_DISTRO = "debian" ]]; then
             echo "Installing other prerequisites..."
             sudo apt-get install ffmpeg redis-server git python3 python ccze -y
 
-    sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
-        /usr/local/bin/youtube-dl
-    # A.1. & B.1.
-    sudo chmod a+rwx /usr/local/bin/youtube-dl
+            sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
+                /usr/local/bin/youtube-dl
+            # A.1. & B.1.
+            sudo chmod a+rwx /usr/local/bin/youtube-dl
             ;;
         10) install_prereqs "debian" "10" "python" ;;
         *)  unsupported ;;
