@@ -8,8 +8,8 @@
 
 current_creds="nadekobot/output/creds.yml"
 new_creds="nadekobot_tmp/nadekobot/output/creds.yml"
-current_database="nadekobot/output/data"
-new_database="nadekobot_tmp/nadekobot/output/data"
+current_database="nadekobot/output/data/NadekoBot.db"
+new_database="nadekobot_tmp/nadekobot/output/data/NadekoBot.db"
 current_data="nadekobot/output/data"
 new_data="nadekobot_tmp/nadekobot/output/data"
 export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Used when compiling code.
@@ -82,9 +82,6 @@ echo "Building NadekoBot..."
 if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
     echo "Copying 'creds.yml' to the new version..."
     cp -f "$current_creds" "$new_creds" &>/dev/null
-    # Also copies 'credentials.json' for migration purposes.
-    cp -f nadekobot/output/credentials.json \
-        nadekobot_tmp/nadekobot/output/credentials.json &>/dev/null
     echo "Copying database to the new version..."
     cp -RT "$current_database" "$new_database" &>/dev/null
 
@@ -97,30 +94,29 @@ if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
 
     ## Backup new strings to reverse rewrite.
     rm -rf "$new_data"/strings_new &>/dev/null
-    mv -fT "$new_data"/strings "$new_data"/strings_new &>/dev/null
+    mv -fT "$new_data"/strings "$new_data"/strings_new
 
     ## Delete old string backups.
     rm -rf "$current_data"/strings_old &>/dev/null
     rm -rf "$current_data"/strings_new &>/dev/null
 
     # Backup new aliases to reverse rewrite.
-    mv -f "$new_data"/aliases.yml "$new_data"/aliases_new.yml &>/dev/null
+    mv -f "$new_data"/aliases.yml "$new_data"/aliases_new.yml
 
     # Move old data folder contents (and overwrite).
-    cp -RT "$current_data" "$new_data" &>/dev/null
+    cp -RT "$current_data" "$new_data"
 
     # Backup old aliases.
-    mv -f "$new_data"/aliases.yml "$new_data"/aliases_old.yml &>/dev/null
+    mv -f "$new_data"/aliases.yml "$new_data"/aliases_old.yml
     # Restore new aliases.
-    mv -f "$new_data"/aliases_new.yml "$new_data"/aliases.yml &>/dev/null
+    mv -f "$new_data"/aliases_new.yml "$new_data"/aliases.yml
 
     # Backup old strings.
-    mv -f "$new_data"/strings "$new_data"/strings_old &>/dev/null
+    mv -f "$new_data"/strings "$new_data"/strings_old
     # Restore new strings.
-    mv -f "$new_data"/strings_new "$new_data"/strings &>/dev/null
+    mv -f "$new_data"/strings_new "$new_data"/strings
 
     rm -rf nadekobot_old && mv -f nadekobot nadekobot_old
-
 fi
 
 mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
