@@ -17,6 +17,9 @@ export _NADEKO_MASTER_INSTALLER_PID=$$
 _NADEKO_SERVICE_NAME="nadeko.service"
 _NADEKO_SERVICE="/etc/systemd/system/$_NADEKO_SERVICE_NAME"
 
+# Indicates which major version of dotnet is required.
+req_dotnet_version="6"
+
 
 #### End of [ Variables ]
 ########################################################################################
@@ -141,7 +144,8 @@ disabled_reasons() {
     if (! hash dotnet \
             || ! hash redis-server \
             || (! hash python && (! hash python3 && ! hash python-is-python3)) \
-            || [[ $ccze_installed = false ]]) &>/dev/null; then
+            || [[ $ccze_installed = false ]] \
+            || [[ $dotnet_version != "$req_dotnet_version" ]]) &>/dev/null; then
         echo "  One or more prerequisites are not installed"
         echo "    Use option 6 to install prerequisites"
     fi
@@ -193,6 +197,18 @@ while true; do
 
     #### End of [[ Temporary Variables ]]
     ####################################################################################
+    #### [[ Variable Checks ]]
+    #### The following variables re-check the status, existence, etc., of some service
+    #### or program, that has the possiblity of changing every time the while loop runs.
+
+
+    ## Dotnet version.
+    dotnet_version=$(dotnet --version)     # Version: x.x.x
+    dotnet_version=${dotnet_version//.*/}  # Version: x
+
+
+    #### End of [[ Variable Checks ]]
+    ####################################################################################
     #### [[ Main continued ]]
 
 
@@ -207,7 +223,8 @@ while true; do
     if (! hash dotnet \
             || ! hash redis-server \
             || (! hash python && (! hash python3 && ! hash python-is-python3)) \
-            || [[ $ccze_installed = false ]]) &>/dev/null; then
+            || [[ $ccze_installed = false ]] \
+            || [[ $dotnet_version != "$req_dotnet_version" ]]) &>/dev/null; then
         option_one_disabled=true
         option_one_text="${_GREY}${option_one_text}${disabled_option}${_NC}"
     fi
