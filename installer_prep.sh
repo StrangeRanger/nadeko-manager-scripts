@@ -85,7 +85,7 @@ linuxAIO_update() {
     ##         ensure there are not errors cropping up due to incompatible installer
     ##         and NadekoBot version, all variables in 'linuxAIO.sh' are reset to their
     ##         [new] defaults.
-    if ((_NADEKO_INSTALL_VERSION <= 30)); then
+    if ((_LINUXAIO_REVISION <= 30)); then
         curl -O "$_RAW_URL"/linuxAIO.sh \
             && sudo chmod +x linuxAIO.sh
         echo "${_CYAN}NOT applying existing configurations to the new 'linuxAIO.sh'..."
