@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed `nadeko_latest_installer.sh` not saving/backing up files to `nadekobot/output/data`, which somehow didn't break anything.
+- Fixed `nadeko_latest_installer.sh` copy the entire `nadekobot/output/data` when attempting to copy the database.
 
 ## [3.2.0] - 2021-10-04
 
