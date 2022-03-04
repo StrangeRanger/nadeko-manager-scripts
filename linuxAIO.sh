@@ -81,19 +81,21 @@ export _NADEKO_INSTALL_VERSION="v4"
 #      - Invalid: 'nadeko bot/output/data/NadekoBot.db'
 #
 # Default: "nadekobot/output/creds.yml
-#   nadekobot/output/data/gambling.yml
-#   nadekobot/output/data/xp.yml
-#   nadekobot/output/data/images.json
-#   nadekobot/output/data/xp_template.json
+#   nadekobot/output/data/NadekoBot.db
 #   nadekobot/output/data/bot.yml
-#   nadekobot/output/data/NadekoBot.db"
+#   nadekobot/output/data/gambling.yml
+#   nadekobot/output/data/games.yml
+#   nadekobot/output/data/images.yml
+#   nadekobot/output/data/xp.yml
+#   nadekobot/output/data/xp_template.json"
 export _FILES_TO_BACK_UP="nadekobot/output/creds.yml
-nadekobot/output/data/gambling.yml
-nadekobot/output/data/xp.yml
-nadekobot/output/data/images.json
-nadekobot/output/data/xp_template.json
+nadekobot/output/data/NadekoBot.db
 nadekobot/output/data/bot.yml
-nadekobot/output/data/NadekoBot.db"
+nadekobot/output/data/gambling.yml
+nadekobot/output/data/games.yml
+nadekobot/output/data/images.yml
+nadekobot/output/data/xp.yml
+nadekobot/output/data/xp_template.json"
 
 
 #### End of [[ Configuration Variables ]]
@@ -103,7 +105,7 @@ nadekobot/output/data/NadekoBot.db"
 
 # Revision number of this script.
 # Refer to the 'README' note at the beginning of this file for more information.
-export _LINUXAIO_REVISION="32"
+export _LINUXAIO_REVISION="33"
 # The URL to the raw code of a script that is specified by the other scripts.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
