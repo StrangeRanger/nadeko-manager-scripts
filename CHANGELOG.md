@@ -6,12 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [3.2.1] 2021-10-5
+## [3.2.1] 2022-3-4
+
+### Added
+
+- Checks the version number of the installed dotnet, to ensure the correct dotnet version is installed.
 
 ### Changed
 
 - Update the content of `nadeko.service` to restart on failure, etc.
 - Update the content of `NadekoRun.sh` when running NadekoBot in the background with auto-restart. It now does a better job at handling errors, etc.
+- Installs dotnet v6 instead of v5.
+- Uses NadekoBot branch v4 by default instead of v3.
 
 ## [3.2.0] - 2021-10-4
 
