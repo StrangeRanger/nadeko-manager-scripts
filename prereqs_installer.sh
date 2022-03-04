@@ -80,7 +80,7 @@ if [[ $_DISTRO = "ubuntu" ]]; then
         16.04|18.04|20.04) install_prereqs "ubuntu" "$_VER" "python" ;;
         *)                 unsupported ;;
     esac
-# Linux Mint:
+# Debian:
 #   9
 #   10
 elif [[ $_DISTRO = "debian" ]]; then
