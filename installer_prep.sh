@@ -14,7 +14,7 @@
 
 # Revision number of 'linuxAIO.sh'.
 # Refer to the 'README' note at the beginning of 'linuxAIO.sh' for more information.
-current_linuxAIO_revision="32"
+current_linuxAIO_revision="33"
 # Name of the master installer script.
 master_installer="nadeko_master_installer.sh"
 
