@@ -38,8 +38,9 @@ installer_repo="StrangeRanger/NadekoBot-BashScript"
 # The branch of $installer_repo that the installer will download its scripts from.
 #
 # Options:
-#   master = Production ready code (the latest stable code)
-#   dev    = Non-production ready code (has the possibility of breaking something)
+#   master   = Production ready code (the latest stable code)
+#   NadekoV3 = The version of the installer designed for NadekoBot v3
+#   dev      = Non-production ready code (has the possibility of breaking something)
 #
 # Default: "master"
 installer_branch="master"
@@ -50,15 +51,18 @@ installer_branch="master"
 # IMPORTANT: Using a branch/tag containing code older than the one currently on your
 #            system, increases the likelihood of failed builds due to incompatible
 #            changes in the code/files coppied from the current to the newly downloaded
-#            version.
+#            version. For this, and other reasons, it's generally not recommended to
+#            to modify $_NADEKO_INSTALL_VERSION. This is especially true when it comes
+#            to a difference of major version changes, such as v3 and v4.
 #
 # Options:
-#   v3    = Latest version (the master/main branch)
+#   v4    = Latest version (the master/main branch)
+#   v3    = NadekoBot v3
 #   x.x.x = Any other branch/tag (refer to the NadekoBot repo for available tags and
 #           branches)
 #
-# Default: "v3"
-export _NADEKO_INSTALL_VERSION="v3"
+# Default: "v4"
+export _NADEKO_INSTALL_VERSION="v4"
 
 # A list of files to be backed up when executing option 7.
 #
@@ -99,7 +103,7 @@ nadekobot/output/data/NadekoBot.db"
 
 # Revision number of this script.
 # Refer to the 'README' note at the beginning of this file for more information.
-export _LINUXAIO_REVISION="30"
+export _LINUXAIO_REVISION="32"
 # The URL to the raw code of a script that is specified by the other scripts.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 

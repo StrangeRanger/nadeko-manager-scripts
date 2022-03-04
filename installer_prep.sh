@@ -14,7 +14,7 @@
 
 # Revision number of 'linuxAIO.sh'.
 # Refer to the 'README' note at the beginning of 'linuxAIO.sh' for more information.
-current_linuxAIO_revision="30"
+current_linuxAIO_revision="32"
 # Name of the master installer script.
 master_installer="nadeko_master_installer.sh"
 
@@ -77,38 +77,53 @@ linuxAIO_update() {
     #                and $current_linuxAIO_revision aren't of equal value.
     ####
 
-    ## Save the values of the current Configuration Variables specified in
-    ## 'linuxAIO.sh', to be set in the new 'linuxAIO.sh'.
-    ## NOTE: Declaration and instantiation is separated at the recommendation by
-    ##       shellcheck.
-    local installer_branch                                       # A.1.
-    local installer_branch_found                                 # A.1.
-    installer_branch=$(grep '^installer_branch=.*' linuxAIO.sh)  # A.1.
-    installer_branch_found="$?"	                                 # A.1.
-    local nadeko_install_version                                                     # A.2.
-    local nadeko_install_version_found                                               # A.2.
-    nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)  # A.2.
-    nadeko_install_version_found="$?"                                                # A.2.
-
     echo "${_YELLOW}You are using an older version of 'linuxAIO.sh'$_NC"
     echo "Downloading latest 'linuxAIO.sh'..."
-    curl -O "$_RAW_URL"/linuxAIO.sh \
-        && sudo chmod +x linuxAIO.sh
 
-    echo "Applying existing configurations to the new 'linuxAIO.sh'..."
+    ## Only download the newest version of 'linuxAIO.sh'.
+    ## Reason: Starting with revision 31, the default version of NadekoBot is v4. To
+    ##         ensure there are not errors cropping up due to incompatible installer
+    ##         and NadekoBot version, all variables in 'linuxAIO.sh' are reset to their
+    ##         [new] defaults.
+    if ((_NADEKO_INSTALL_VERSION <= 30)); then
+        curl -O "$_RAW_URL"/linuxAIO.sh \
+            && sudo chmod +x linuxAIO.sh
+        echo "${_CYAN}NOT applying existing configurations to the new 'linuxAIO.sh'..."
+        echo "${_GREEN}Successfully downloaded the newest version of 'linuxAIO.sh'.$_NC"
+    ## Download the newest version of 'linuxAIO.sh' and apply existing changes to it.
+    else
+        ## Save the values of the current Configuration Variables specified in
+        ## 'linuxAIO.sh', to be set in the new 'linuxAIO.sh'.
+        ## NOTE: Declaration and instantiation is separated at the recommendation by
+        ##       shellcheck.
+        local installer_branch                                       # A.1.
+        local installer_branch_found                                 # A.1.
+        installer_branch=$(grep '^installer_branch=.*' linuxAIO.sh)  # A.1.
+        installer_branch_found="$?"	                                 # A.1.
+        local nadeko_install_version                                                     # A.2.
+        local nadeko_install_version_found                                               # A.2.
+        nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)  # A.2.
+        nadeko_install_version_found="$?"                                                # A.2.
 
-    ## Set $installer_branch inside of the new 'linuxAIO.sh'.
-    if [[ $installer_branch_found = 0 ]]; then
-        sed -i "s/^installer_branch=.*/$installer_branch/" linuxAIO.sh
+        curl -O "$_RAW_URL"/linuxAIO.sh \
+            && sudo chmod +x linuxAIO.sh
+
+        echo "Applying existing configurations to the new 'linuxAIO.sh'..."
+
+        ## Set $installer_branch inside of the new 'linuxAIO.sh'.
+        if [[ $installer_branch_found = 0 ]]; then
+            sed -i "s/^installer_branch=.*/$installer_branch/" linuxAIO.sh
+        fi
+
+        ## Set $nadeko_install_version inside of the new 'linuxAIO.sh'.
+        if [[ $nadeko_install_version_found = 0 ]]; then
+            sed -i "s/^export _NADEKO_INSTALL_VERSION=.*/$nadeko_install_version/" linuxAIO.sh
+        fi
+
+        echo "${_GREEN}Successfully downloaded the newest version of 'linuxAIO.sh'" \
+            "and applied changes to the newest version of 'linuxAIO.sh'$_NC"
     fi
 
-    ## Set $nadeko_install_version inside of the new 'linuxAIO.sh'.
-    if [[ $nadeko_install_version_found = 0 ]]; then
-        sed -i "s/^export _NADEKO_INSTALL_VERSION=.*/$nadeko_install_version/" linuxAIO.sh
-    fi
-
-    echo "${_GREEN}Successfully downloaded the newest version of 'linuxAIO.sh' and" \
-        "applied changes to the newest version of 'linuxAIO.sh'$_NC"
     clean_up "0" "Exiting" "true"
 }
 

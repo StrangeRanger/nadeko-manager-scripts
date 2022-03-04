@@ -70,6 +70,7 @@ fi
 echo "Building NadekoBot..."
 {
     cd nadekobot \
+    && dotnet restore -f --no-cache \
     && dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
     && cd "$_WORKING_DIR"
 } || {
