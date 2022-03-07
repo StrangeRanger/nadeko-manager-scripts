@@ -72,7 +72,8 @@ sudo systemctl "$dis_en_lower" "$_NADEKO_SERVICE_NAME" || {
 }
 
 # Check if 'NadekoRun.sh' exists.
-if [[ -f NadekoRun.sh ]]; then echo "Updating 'NadekoRun.sh'..."
+if [[ -f NadekoRun.sh ]]; then
+    echo "Updating 'NadekoRun.sh'..."
 ## Create 'NadekoRun.sh' if it doesn't exist.
 else
     echo "Creating 'NadekoRun.sh'..."
@@ -92,7 +93,11 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "" \
         "echo \"Starting NadekoBot...\"" \
         "cd $_WORKING_DIR/nadekobot/output" \
-        "dotnet NadekoBot.dll" \
+        "dotnet NadekoBot.dll || {" \
+        "    echo \"An error occurred when trying to start Mewdeko\"" \
+        "    echo \"Exiting...\"" \
+        "    exit 1" \
+        "}" \
         "echo \"Stopping NadekoBot...\"" \
         "cd $_WORKING_DIR" > NadekoRun.sh
 ## Add code required to run NadekoBot in the background with auto restart, to
