@@ -38,13 +38,11 @@ install_prereqs() {
 
     ## Install music prerequisites.
     echo "Installing music prerequisites..."
-    sudo add-apt-repository ppa:chris-lea/libsodium -y
     sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev -y
 
     ## Other prerequisites.
     echo "Installing other prerequisites..."
     sudo apt-get install ffmpeg redis-server git python3 "$3" ccze -y
-
     sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
         /usr/local/bin/youtube-dl
     # A.1. & B.1.
@@ -72,19 +70,21 @@ unsupported() {
 read -rp "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
 # Ubuntu:
-#   16.04
-#   18.04
 #   20.04
+#   18.04
+#   16.04
 if [[ $_DISTRO = "ubuntu" ]]; then
     case "$_VER" in
-        16.04|18.04|20.04) install_prereqs "ubuntu" "$_VER" "python" ;;
-        *)                 unsupported ;;
+        20.04)       install_prereqs "ubuntu" "$_VER" "python-is-python3" ;;
+        18.04|16.04) install_prereqs "ubuntu" "$_VER" "python" ;;
+        *)           unsupported ;;
     esac
 # Debian:
-#   9
 #   10
+#   9
 elif [[ $_DISTRO = "debian" ]]; then
     case "$_SVER" in
+        10) install_prereqs "debian" "10" "python" ;;
         9)
             echo "Installing .NET Core..."
             ## Microsoft package signing key.
@@ -104,7 +104,6 @@ elif [[ $_DISTRO = "debian" ]]; then
 
             ## Install music prerequisites.
             echo "Installing music prerequisites..."
-            sudo add-apt-repository ppa:chris-lea/libsodium -y
             sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev -y
 
             ## Other prerequisites.
@@ -116,18 +115,17 @@ elif [[ $_DISTRO = "debian" ]]; then
             # A.1. & B.1.
             sudo chmod a+rwx /usr/local/bin/youtube-dl
             ;;
-        10) install_prereqs "debian" "10" "python" ;;
         *)  unsupported ;;
     esac
 # Linux Mint:
-#   18
-#   19
 #   20
+#   19
+#   18
 elif [[ $_DISTRO = "linuxmint" ]]; then
     case "$_SVER" in
-        18) install_prereqs "ubuntu" "16.04" "python" ;;
-        19) install_prereqs "ubuntu" "18.04" "python" ;;
         20) install_prereqs "ubuntu" "20.04" "python-is-python3" ;;
+        19) install_prereqs "ubuntu" "18.04" "python" ;;
+        18) install_prereqs "ubuntu" "16.04" "python" ;;
         *)  unsupported ;;
     esac
 fi
