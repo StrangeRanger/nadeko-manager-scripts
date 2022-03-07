@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# The master/main installer for macOS and Linux Distributions.
+# The master/main installer for Linux Distributions.
 #
 # Comment key:
 #   A.1. - Return to prevent further code execution.
@@ -202,9 +202,11 @@ while true; do
     #### or program, that has the possiblity of changing every time the while loop runs.
 
 
-    ## Dotnet version.
-    dotnet_version=$(dotnet --version)     # Version: x.x.x
-    dotnet_version=${dotnet_version//.*/}  # Version: x
+    if hash dotnet &>/dev/null; then
+        ## Dotnet version.
+        dotnet_version=$(dotnet --version)     # Version: x.x.x
+        dotnet_version=${dotnet_version//.*/}  # Version: x
+    fi
 
 
     #### End of [[ Variable Checks ]]
@@ -222,9 +224,9 @@ while true; do
     ## Disable option 1 if any of the following tools are not installed.
     if (! hash dotnet \
             || ! hash redis-server \
-            || (! hash python && (! hash python3 && ! hash python-is-python3)) \
+            || ! hash python3 \
             || [[ $ccze_installed = false ]] \
-            || [[ $dotnet_version != "$req_dotnet_version" ]]) &>/dev/null; then
+            || [[ ${dotnet_version:-false} != "$req_dotnet_version" ]]) &>/dev/null; then
         option_one_disabled=true
         option_one_text="${_GREY}${option_one_text}${disabled_option}${_NC}"
     fi
