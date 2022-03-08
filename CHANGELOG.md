@@ -10,12 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - No longer says "Script forcefully stopped" when the end-user uses 'Ctrl' + 'C' or 'Ctrl' + 'Z'.
 - Ensures that dotnet is installed, before attempting to retrieve it's version number.
--
+
 ### Fixed
 
 - Fixed `python-is-python3` not being installed in place of `python`.
 
-## [3.2.2] 2022-03-04+
+## [3.2.2] - 2022-03-04
  
 ### Added
 
