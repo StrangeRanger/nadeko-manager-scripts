@@ -16,17 +16,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed `python-is-python3` not being installed in place of `python`.
 
 ## [3.2.2] - 2022-03-04
+
+⚠️ This version of the bash scripts, makes them compataible with the new version (v4) of NadekoBot, but loses compatability with NadekoBot v3.
  
 ### Added
 
 - Checks the version number of the installed dotnet, to ensure the correct dotnet version is installed.
+- Adds compatability for NadekoBot v4.
 
 ### Changed
 
 - Update the content of `nadeko.service` to restart on failure, etc.
 - Update the content of `NadekoRun.sh` when running NadekoBot in the background with auto-restart. It now does a better job at handling errors, etc.
-- Installs dotnet v6 instead of v5.
-- Uses NadekoBot branch v4 by default instead of v3.
+- ⚠️ Installs dotnet v6 instead of v5.
+  - ⚠️ This will result in the loss of compatability with Nadeko v3.
+- ⚠️ Uses NadekoBot branch v4 by default instead of v3.
 - Modified `$_FILES_TO_BACK_UP`.
 
 ### Fixed
