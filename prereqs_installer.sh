@@ -70,20 +70,23 @@ unsupported() {
 read -rp "We will now install NadekoBot's prerequisites. Press [Enter] to continue."
 
 # Ubuntu:
+#   22.04
 #   20.04
 #   18.04
 #   16.04
 if [[ $_DISTRO = "ubuntu" ]]; then
     case "$_VER" in
-        20.04)       install_prereqs "ubuntu" "$_VER" "python-is-python3" ;;
+        20.04|22.04) install_prereqs "ubuntu" "$_VER" "python-is-python3" ;;
         18.04|16.04) install_prereqs "ubuntu" "$_VER" "python" ;;
         *)           unsupported ;;
     esac
 # Debian:
+#   11
 #   10
 #   9
 elif [[ $_DISTRO = "debian" ]]; then
     case "$_SVER" in
+        11) install_prereqs "debian" "11" "python-is-python3" ;;
         10) install_prereqs "debian" "10" "python" ;;
         9)
             echo "Installing .NET Core..."

@@ -6,10 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Added support for Ubuntu 22.04.
+- Added support for Debian 11.
+- Added shellcheck disable comments.
+
 ### Changed
 
 - No longer says "Script forcefully stopped" when the end-user uses 'Ctrl' + 'C' or 'Ctrl' + 'Z'.
 - Ensures that dotnet is installed, before attempting to retrieve it's version number.
+- Chained the default branch from master to main.
+  - This is not a breaking change, as github redirects attempts to master to the new default branch.
+- Removed non-existing file from local variable `installer_files`.
 
 ### Fixed
 
@@ -18,7 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [3.2.2] - 2022-03-04
 
 ⚠️ This version of the bash scripts, makes them compataible with the new version (v4) of NadekoBot, but loses compatability with NadekoBot v3.
- 
+
 ### Added
 
 - Checks the version number of the installed dotnet, to ensure the correct dotnet version is installed.

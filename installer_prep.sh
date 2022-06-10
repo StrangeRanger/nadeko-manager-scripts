@@ -43,6 +43,7 @@ export _CLRLN=$'\r\033[K'
 #### [ Functions ]
 
 
+# shellcheck disable=SC1091
 detect_sys_info() {
     ####
     # Function Info: Identify the operating system, version number, architecture, bit
@@ -159,9 +160,8 @@ clean_up() {
     ####
 
     # Files to be removed.
-    local installer_files=("credentials_setup.sh" "installer_prep.sh"  "file_backup.sh"
-        "prereqs_installer.sh" "nadeko_latest_installer.sh" "nadeko_runner.sh"
-        "nadeko_master_installer.sh")
+    local installer_files=("installer_prep.sh"  "file_backup.sh" "prereqs_installer.sh"
+        "nadeko_latest_installer.sh" "nadeko_runner.sh" "nadeko_master_installer.sh")
 
     if [[ $3 = true ]]; then echo "Cleaning up..."
     else                     echo -e "\nCleaning up..."
@@ -262,7 +262,7 @@ export _INSTALLER_PREP="$_WORKING_DIR/installer_prep.sh"
 #### [ Main ]
 
 
-clear -x  # Clear the screen of any text.
+clear -x
 
 detect_sys_info
 export _DISTRO _SVER _VER _ARCH
@@ -279,21 +279,23 @@ Distro Version: $_VER
 ### Check if the operating system is supported by NadekoBot and installer.
 if [[ $bits = 64 ]]; then
     # Ubuntu:
+    #   22.04
     #   20.04
     #   18.04
     #   16.04
     if [[ $_DISTRO = "ubuntu" ]]; then
         case "$_VER" in
-            16.04|18.04|20.04) execute_master_installer ;;
-            *)                 unsupported ;;
+            16.04|18.04|20.04|22.04) execute_master_installer ;;
+            *)                       unsupported ;;
         esac
     # Debian:
+    #   11
     #   10
     #   9
     elif [[ $_DISTRO = "debian" ]]; then
         case "$_SVER" in
-            9|10) execute_master_installer ;;
-            *)    unsupported ;;
+            9|10|11) execute_master_installer ;;
+            *)       unsupported ;;
         esac
     # Linux Mint:
     #   20

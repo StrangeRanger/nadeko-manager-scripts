@@ -11,7 +11,9 @@ current_backup="important_file_backup"
 tmp_backup="important_file_backup_tmp"
 
 # Contains the files to be backed up.
-# NOTE: The array is purposefully unquoted to allow for word splitting.
+# NOTE: The array is purposefully unquoted to allow for word splitting, for easy arrray
+#       itteration.
+# shellcheck disable=SC2206
 files_to_back_up=($_FILES_TO_BACK_UP)
 
 

@@ -38,12 +38,12 @@ installer_repo="StrangeRanger/NadekoBot-BashScript"
 # The branch of $installer_repo that the installer will download its scripts from.
 #
 # Options:
-#   master   = Production ready code (the latest stable code)
+#   main     = Production ready code (the latest stable code)
 #   NadekoV3 = The version of the installer designed for NadekoBot v3
 #   dev      = Non-production ready code (has the possibility of breaking something)
 #
-# Default: "master"
-installer_branch="master"
+# Default: "main"
+installer_branch="main"
 
 # The branch/tag, of NadekoBot's official repo, that the installer will download the bot
 # from.
@@ -105,7 +105,7 @@ nadekobot/output/data/xp_template.json"
 
 # Revision number of this script.
 # Refer to the 'README' note at the beginning of this file for more information.
-export _LINUXAIO_REVISION="33"
+export _LINUXAIO_REVISION="34"
 # The URL to the raw code of a script that is specified by the other scripts.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
