@@ -76,7 +76,7 @@ export _NADEKO_INSTALL_VERSION="v4"
 #       - Valid:   "nadekobot/output/creds.yml nadekobot/output/data/bot.yml"
 #       - Invalid: "nadekobot/output/creds.yml, nadekobot/output/data/bot.yml"
 #       - Invalid: "nadekobot/output/creds.yml,nadekobot/output/data/bot.yml"
-#   3. Both the file nor the path to the file can contain a space.
+#   3. Niether the file nor the path to the file can contain a space.
 #      - Valid:   'nadekobot/output/data/NadekoBot.db'
 #      - Invalid: 'nadeko bot/output/data/NadekoBot.db'
 #
