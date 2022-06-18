@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Chained the default branch from master to main.
   - This is not a breaking change, as github redirects attempts to master to the new default branch.
 - Removed non-existing file from local variable `installer_files`.
-- Removed support of Linux Mint 18 due to EOL.
+- ⚠️ Removed support of Linux Mint 18 due to EOL.
 - `nadeko_master_installer` has been renamed to `nadeko_main_installer`.
 
 ### Fixed
@@ -28,7 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [3.2.2] - 2022-03-04
 
-⚠️ This version of the bash scripts, makes them compataible with the new version (v4) of NadekoBot, but loses compatability with NadekoBot v3.
+⚠️ This version of the bash scripts, makes them compatible with the new version (v4) of NadekoBot, but loses compatibility with NadekoBot v3.
 
 ### Added
 
@@ -40,7 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Update the content of `nadeko.service` to restart on failure, etc.
 - Update the content of `NadekoRun.sh` when running NadekoBot in the background with auto-restart. It now does a better job at handling errors, etc.
 - ⚠️ Installs dotnet v6 instead of v5.
-  - ⚠️ This will result in the loss of compatability with Nadeko v3.
+  - ⚠️ This will result in the loss of compatibility with Nadeko v3.
 - ⚠️ Uses NadekoBot branch v4 by default instead of v3.
 - Modified `$_FILES_TO_BACK_UP`.
 
