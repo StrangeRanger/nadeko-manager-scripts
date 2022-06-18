@@ -10,7 +10,7 @@
 #### [ Variables ]
 
 
-# Store process id of 'nadeko_master_installer.sh', in case it needs to be manually
+# Store process id of 'nadeko_main_installer.sh', in case it needs to be manually
 # killed by a sub/child script.
 export _NADEKO_MASTER_INSTALLER_PID=$$
 ## To be exported.

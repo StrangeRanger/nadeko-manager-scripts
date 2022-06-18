@@ -16,7 +16,7 @@
 # Refer to the 'README' note at the beginning of 'linuxAIO.sh' for more information.
 current_linuxAIO_revision="34"
 # Name of the master installer script.
-master_installer="nadeko_master_installer.sh"
+master_installer="nadeko_main_installer.sh"
 
 ## Modify output text color.
 export _YELLOW=$'\033[1;33m'
@@ -161,7 +161,7 @@ clean_up() {
 
     # Files to be removed.
     local installer_files=("installer_prep.sh"  "file_backup.sh" "prereqs_installer.sh"
-        "nadeko_latest_installer.sh" "nadeko_runner.sh" "nadeko_master_installer.sh")
+        "nadeko_latest_installer.sh" "nadeko_runner.sh" "nadeko_main_installer.sh")
 
     if [[ $3 = true ]]; then echo "Cleaning up..."
     else                     echo -e "\nCleaning up..."
@@ -195,7 +195,7 @@ execute_master_installer() {
     ####
 
     _DOWNLOAD_SCRIPT "$master_installer" "true"
-    ./nadeko_master_installer.sh
+    ./nadeko_main_installer.sh
     clean_up "$?" "Exiting"
 }
 
@@ -300,11 +300,10 @@ if [[ $bits = 64 ]]; then
     # Linux Mint:
     #   20
     #   19
-    #   18
     elif [[ $_DISTRO = "linuxmint" ]]; then
         case "$_SVER" in
-            18|19|20) execute_master_installer ;;
-            *)        unsupported ;;
+            19|20) execute_master_installer ;;
+            *)     unsupported ;;
         esac
     else
         unsupported

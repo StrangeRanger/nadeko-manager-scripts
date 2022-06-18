@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Chained the default branch from master to main.
   - This is not a breaking change, as github redirects attempts to master to the new default branch.
 - Removed non-existing file from local variable `installer_files`.
+- Removed support of Linux Mint 18 due to EOL.
+- `nadeko_master_installer` has been renamed to `nadeko_main_installer`.
 
 ### Fixed
 

@@ -123,12 +123,10 @@ elif [[ $_DISTRO = "debian" ]]; then
 # Linux Mint:
 #   20
 #   19
-#   18
 elif [[ $_DISTRO = "linuxmint" ]]; then
     case "$_SVER" in
         20) install_prereqs "ubuntu" "20.04" "python-is-python3" ;;
         19) install_prereqs "ubuntu" "18.04" "python" ;;
-        18) install_prereqs "ubuntu" "16.04" "python" ;;
         *)  unsupported ;;
     esac
 fi
