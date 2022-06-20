@@ -14,7 +14,7 @@ For information on setting up NadekoBot using this installer, visit the reposito
 
 The only script that needs to be manually downloaded to your system is `linuxAIO.sh`. To do this, execute the following set of commands:
 
-`curl -O https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/master/linuxAIO.sh && sudo chmod +x linuxAIO.sh`
+`curl -O https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/main/linuxAIO.sh && sudo chmod +x linuxAIO.sh`
 
 ### Usage
 
@@ -35,10 +35,10 @@ If the following command was successfully executed, a menu with the following op
 
 ## Officially Supported Distributions
 
-The following is a list of all the Linux distributions and macOS versions that the installer has been tested and are officially support on:
+The following is a list of all the Linux distributions that the installer has been tested and are officially support on:
 
-| Distro/OS  | Version Number      |
-| ---------- | ------------------- |
-| Ubuntu     | 20.04, 18.04, 16.04 |
-| Linux Mint | 20, 19, 18          |
-| Debian     | 10, 9               |
+| Distro/OS  | Version Number            |
+| ---------- | ------------------------- |
+| Ubuntu     | 22.04 20.04, 18.04, 16.04 |
+| Linux Mint | 20, 19                    |
+| Debian     | 11, 10, 9                 |
