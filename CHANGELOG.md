@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [3.2.3] - 2022-06-20
+
 ### Added
 
 - Added support for Ubuntu 22.04.
@@ -33,7 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Checks the version number of the installed dotnet, to ensure the correct dotnet version is installed.
-- Adds compatability for NadekoBot v4.
+- Adds compatibility for NadekoBot v4.
 
 ### Changed
 
@@ -207,7 +209,8 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
   - CentOS: 7
 - Removed option to run NadekoBot with auto-update
 
-[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.2.2...HEAD
+[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.2.3...HEAD
+[3.2.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.3
 [3.2.2]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.2
 [3.2.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.0
 [3.1.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.1.1
