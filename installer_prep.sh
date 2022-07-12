@@ -164,8 +164,8 @@ clean_up() {
     local installer_files=("installer_prep.sh" "file_backup.sh" "prereqs_installer.sh"
         "nadeko_latest_installer.sh" "nadeko_runner.sh" "nadeko_main_installer.sh")
 
-    if "$3"; then echo "Cleaning up..."
-    else          echo -e "\nCleaning up..."
+    if $3; then echo "Cleaning up..."
+    else        echo -e "\nCleaning up..."
     fi
 
     cd "$_WORKING_DIR" || {
@@ -248,7 +248,7 @@ if [[ $_LINUXAIO_REVISION && $_LINUXAIO_REVISION != "$current_linuxAIO_revision"
 fi
 
 # Change the working directory to the location of the executed scrpt.
-cd "${1%/*}" || {
+cd "${0%/*}" || {
     echo "${_RED}Failed to change working directory" >&2
     echo "${_CYAN}Change your working directory to that of the executed script${_NC}"
     clean_up "1" "Exiting" "true"
