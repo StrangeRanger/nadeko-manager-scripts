@@ -189,6 +189,7 @@ while true; do
     option_two_text="2. Run NadekoBot in the background"
     option_three_text="3. Run NadekoBot in the background with auto restart"
     ## Option 5.
+    option_five_disabled=false
     option_five_text="5. Display '$_NADEKO_SERVICE_NAME' logs in follow mode"
     ## Option 7.
     option_seven_disabled=false
