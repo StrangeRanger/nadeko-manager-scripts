@@ -40,23 +40,24 @@ _STOP_SERVICE() {
     # Function Info: Stops NadekoBot's service.
     #
     # Parameters:
-    #   $1 - True when the function should output text indicating if the service has
-    #        been stopped or is currently not running, else false.
+    #   $1 - optional
+    #       True when the function should output text indicating if the service has been
+    #       stopped or is currently not running.
     ####
 
     if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
         echo "Stopping '$_NADEKO_SERVICE_NAME'..."
         sudo systemctl stop "$_NADEKO_SERVICE_NAME" || {
             echo "${_RED}Failed to stop '$_NADEKO_SERVICE_NAME'" >&2
-            echo "${_CYAN}You will need to restart '$1' to apply any updates" \
-                "to NadekoBot${_NC}"
+            echo "${_CYAN}You will need to restart '$_NADEKO_SERVICE_NAME' to apply" \
+                "any updates to NadekoBot${_NC}"
             return 1
         }
-        if "$1"; then
+        if [[ $1 = true ]]; then
             echo -e "\n${_GREEN}NadekoBot has been stopped${_NC}"
         fi
     else
-        if "$1"; then
+        if [[ $1 = true ]]; then
             echo -e "\n${_CYAN}NadekoBot is not currently running${_NC}"
         fi
     fi
@@ -79,8 +80,9 @@ _WATCH_SERVICE_LOGS() {
     #                function '_FOLLOW_SERVICE_LOGS'.
     #
     # Parameters:
-    #   $1 - Indicates if the function was called from one of the runner scripts or
-    #        from within the master installer.
+    #   $1 - required
+    #       Indicates if the function was called from one of the runner scripts or from
+    #       within the master installer.
     ####
 
     if [[ $1 = "runner" ]]; then
@@ -111,7 +113,8 @@ exit_code_actions() {
     #                perform the corresponding/appropriate actions.
     #
     # Parameters:
-    #   $1 - Return/exit code.
+    #   $1 - required
+    #       Return/exit code.
     #
     # Code Meaning:
     #	1   - Something happened that requires the exit of the entire installer.
@@ -144,7 +147,7 @@ disabled_reasons() {
     if (! hash dotnet \
             || ! hash redis-server \
             || (! hash python && (! hash python3 && ! hash python-is-python3)) \
-            || [[ $ccze_installed = false ]] \
+            || ! "$ccze_installed" \
             || [[ $dotnet_version != "$req_dotnet_version" ]]) &>/dev/null; then
         echo "  One or more prerequisites are not installed"
         echo "    Use option 6 to install prerequisites"
@@ -307,7 +310,7 @@ while true; do
             export _NADEKO_SERVICE_NAME
             export _NADEKO_SERVICE_STATUS
 
-            _DOWNLOAD_SCRIPT "nadeko_latest_installer.sh" "nadeko_latest_installer.sh"
+            _DOWNLOAD_SCRIPT "nadeko_latest_installer.sh" "true"
             clear -x
             ./nadeko_latest_installer.sh || exit_code_actions "$?"
 

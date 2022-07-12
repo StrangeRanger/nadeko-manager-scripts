@@ -155,17 +155,21 @@ clean_up() {
     #                unless the installer is currently running.
     #
     # Parameters:
-    #   $1 - Exit status code.
-    #   $2 - Output text.
-    #   $3 - Determines if 'Cleaning up...' needs to be printed with a new-line symbol.
+    #   $1 - required
+    #       Exit status code.
+    #   $2 - required
+    #       Output text.
+    #   $3 - optional
+    #       Determines if 'Cleaning up...' needs to be printed with a new-line symbol.
+    #
     ####
 
     # Files to be removed.
     local installer_files=("installer_prep.sh" "file_backup.sh" "prereqs_installer.sh"
         "nadeko_latest_installer.sh" "nadeko_runner.sh" "nadeko_main_installer.sh")
 
-    if [[ $3 ]]; then echo "Cleaning up..."
-    else              echo -e "\nCleaning up..."
+    if [[ $3 = true ]]; then echo "Cleaning up..."
+    else                     echo -e "\nCleaning up..."
     fi
 
     cd "$_WORKING_DIR" || {
@@ -210,11 +214,13 @@ _DOWNLOAD_SCRIPT() {
     #                permissions.
     #
     # Parameters:
-    #   $1 - Name of script to download.
-    #   $2 - True if the script shouldn't output text indicating $1 is being downloaded.
+    #   $1 - required
+    #       Name of script to download.
+    #   $2 - optional
+    #       True if the script shouldn't output text indicating $1 is being downloaded.
     ####
 
-    if [[ ! $2 ]]; then echo "Downloading '$1'..."
+    if [[ $2 = true ]]; then echo "Downloading '$1'..."
     fi
     curl -O -s "$_RAW_URL"/"$1"
     sudo chmod +x "$1"

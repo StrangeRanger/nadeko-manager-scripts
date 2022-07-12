@@ -19,9 +19,12 @@ install_prereqs() {
 	#                all compatible Linux distributions, besides Debian 9.
 	#
     # Parameters:
-    # 	$1 - Distribution name.
-    # 	$2 - Distribution version.
-    #   $3 - 'python' or 'python-is-python3' (dependent on the distro version).
+    # 	$1 - required
+    #       Distribution name.
+    # 	$2 - required
+    #       Distribution version.
+    #   $3 - required
+    #       'python' or 'python-is-python3' (dependent on the distro version).
     ####
 
     echo "Installing .NET Core..."
