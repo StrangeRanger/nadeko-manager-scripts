@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2155
 #
 # This script looks at the operating system, architecture, bit type, etc., to determine
 # whether or not the system is supported by NadekoBot. Once the system is deemed as
@@ -19,13 +20,13 @@ current_linuxAIO_revision="34"
 master_installer="nadeko_main_installer.sh"
 
 ## Modify output text color.
-export _YELLOW=$'\033[1;33m'
-export _GREEN=$'\033[0;32m'
-export _CYAN=$'\033[0;36m'
-export _RED=$'\033[1;31m'
-export _NC=$'\033[0m'
-export _GREY=$'\033[0;90m'
-export _CLRLN=$'\r\033[K'
+export _YELLOW="$(printf '\033[1;33m')";
+export _GREEN="$(printf '\033[0;32m')";
+export _CYAN="$(printf '\033[0;36m')";
+export _RED="$(printf '\033[1;31m')";
+export _NC="$(printf '\033[0m')";
+export _GREY="$(printf '\033[0;90m')";
+export _CLRLN="$(printf '\r\033[K')";
 
 ## PURPOSE: The '--no-hostname' flag for 'journalctl' only works with systemd 230 and
 ##          later. So if systemd is older than 230, $_NO_HOSTNAME will not be created.
@@ -78,7 +79,7 @@ linuxAIO_update() {
     #                and $current_linuxAIO_revision aren't of equal value.
     ####
 
-    echo "${_YELLOW}You are using an older version of 'linuxAIO.sh'$_NC"
+    echo "${_YELLOW}You are using an older version of 'linuxAIO.sh'${_NC}"
     echo "Downloading latest 'linuxAIO.sh'..."
 
     ## Only download the newest version of 'linuxAIO.sh'.
@@ -90,7 +91,7 @@ linuxAIO_update() {
         curl -O "$_RAW_URL"/linuxAIO.sh \
             && sudo chmod +x linuxAIO.sh
         echo "${_CYAN}NOT applying existing configurations to the new 'linuxAIO.sh'..."
-        echo "${_GREEN}Successfully downloaded the newest version of 'linuxAIO.sh'.$_NC"
+        echo "${_GREEN}Successfully downloaded the newest version of 'linuxAIO.sh'.${_NC}"
     ## Download the newest version of 'linuxAIO.sh' and apply existing changes to it.
     else
         ## Save the values of the current Configuration Variables specified in
@@ -122,7 +123,7 @@ linuxAIO_update() {
         fi
 
         echo "${_GREEN}Successfully downloaded the newest version of 'linuxAIO.sh'" \
-            "and applied changes to the newest version of 'linuxAIO.sh'$_NC"
+            "and applied changes to the newest version of 'linuxAIO.sh'${_NC}"
     fi
 
     clean_up "0" "Exiting" "true"
@@ -138,7 +139,7 @@ unsupported() {
         "for the installation, setup, and/or use of NadekoBot" >&2
     echo "${_YELLOW}WARNING: By continuing, you accept that unexpected behaviors" \
         "may occur. If you run into any errors or problems with the installation and" \
-        "use of the NadekoBot, you are on your own.$_NC"
+        "use of the NadekoBot, you are on your own.${_NC}"
     read -rp "Would you like to continue anyways? [y/N] " choice
 
     choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
@@ -160,15 +161,15 @@ clean_up() {
     ####
 
     # Files to be removed.
-    local installer_files=("installer_prep.sh"  "file_backup.sh" "prereqs_installer.sh"
+    local installer_files=("installer_prep.sh" "file_backup.sh" "prereqs_installer.sh"
         "nadeko_latest_installer.sh" "nadeko_runner.sh" "nadeko_main_installer.sh")
 
-    if [[ $3 = true ]]; then echo "Cleaning up..."
-    else                     echo -e "\nCleaning up..."
+    if "$3"; then echo "Cleaning up..."
+    else          echo -e "\nCleaning up..."
     fi
 
     cd "$_WORKING_DIR" || {
-        echo "${_RED}Failed to move to project root directory$_NC" >&2
+        echo "${_RED}Failed to move to project root directory${_NC}" >&2
         exit 1
     }
 
@@ -249,7 +250,7 @@ fi
 # Change the working directory to the location of the executed scrpt.
 cd "$(dirname "$0")" || {
     echo "${_RED}Failed to change working directory" >&2
-    echo "${_CYAN}Change your working directory to that of the executed script$_NC"
+    echo "${_CYAN}Change your working directory to that of the executed script${_NC}"
     clean_up "1" "Exiting" "true"
 }
 
