@@ -248,7 +248,7 @@ if [[ $_LINUXAIO_REVISION && $_LINUXAIO_REVISION != "$current_linuxAIO_revision"
 fi
 
 # Change the working directory to the location of the executed scrpt.
-cd "$(dirname "$0")" || {
+cd "${1%/*}" || {
     echo "${_RED}Failed to change working directory" >&2
     echo "${_CYAN}Change your working directory to that of the executed script${_NC}"
     clean_up "1" "Exiting" "true"
