@@ -49,15 +49,15 @@ _STOP_SERVICE() {
         sudo systemctl stop "$_NADEKO_SERVICE_NAME" || {
             echo "${_RED}Failed to stop '$_NADEKO_SERVICE_NAME'" >&2
             echo "${_CYAN}You will need to restart '$1' to apply any updates" \
-                "to NadekoBot$_NC"
+                "to NadekoBot${_NC}"
             return 1
         }
-        if [[ $1 = true ]]; then
-            echo -e "\n${_GREEN}NadekoBot has been stopped$_NC"
+        if "$1"; then
+            echo -e "\n${_GREEN}NadekoBot has been stopped${_NC}"
         fi
     else
-        if [[ $1 = true ]]; then
-            echo -e "\n${_CYAN}NadekoBot is not currently running$_NC"
+        if "$1"; then
+            echo -e "\n${_CYAN}NadekoBot is not currently running${_NC}"
         fi
     fi
 }
@@ -90,7 +90,7 @@ _WATCH_SERVICE_LOGS() {
     fi
 
     echo "${_CYAN}To stop displaying the startup logs:"
-    echo "1) Press 'Ctrl' + 'C'$_NC"
+    echo "1) Press 'Ctrl' + 'C'${_NC}"
     echo ""
 
     _FOLLOW_SERVICE_LOGS
@@ -225,7 +225,7 @@ while true; do
     if (! hash dotnet \
             || ! hash redis-server \
             || ! hash python3 \
-            || [[ $ccze_installed = false ]] \
+            || ! "$ccze_installed" \
             || [[ ${dotnet_version:-false} != "$req_dotnet_version" ]]) &>/dev/null; then
         option_one_disabled=true
         option_one_text="${_GREY}${option_one_text}${disabled_option}${_NC}"
@@ -233,8 +233,7 @@ while true; do
 
     ## Disable options 2, 3, and 5 if any of the tools in the previous if statement are
     ## not installed, or none of the specified directories/files could be found.
-    if [[ ! -f nadekobot/output/creds.yml \
-            || $option_one_disabled = true ]]; then
+    if "$option_one_disabled" || [[ ! -f nadekobot/output/creds.yml ]]; then
         ## Options 2 & 3.
         option_two_and_three_disabled=true
         option_two_text="${_GREY}${option_two_text}${disabled_option}${_NC}"
@@ -252,21 +251,21 @@ while true; do
     elif [[ -f NadekoRun.sh ]]; then
         ## Option 5 remains enabled, if NadekoBot's service is running.
         if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
-            run_mode_status=" ${_GREEN}(Running in this mode)$_NC"
+            run_mode_status=" ${_GREEN}(Running in this mode)${_NC}"
         ## Disable option 5 if NadekoBot's service NOT running.
         elif [[ $_NADEKO_SERVICE_STATUS = "inactive" ]]; then
             ## Option 5.
             option_five_disabled=true
             option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
 
-            run_mode_status=" ${_YELLOW}(Set up to run in this mode)$_NC"
+            run_mode_status=" ${_YELLOW}(Set up to run in this mode)${_NC}"
         ## Disable option 5.
         else
             ## Option 5.
             option_five_disabled=true
             option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
 
-            run_mode_status=" ${_YELLOW}(Status unknown)$_NC"
+            run_mode_status=" ${_YELLOW}(Status unknown)${_NC}"
         fi
 
         ## If NadekoBot is running in the background with auto restart...
@@ -295,9 +294,9 @@ while true; do
     case "$choice" in
         1)
             ## B.1.
-            if [[ $option_one_disabled = true ]]; then
+            if "$option_one_disabled"; then
                 clear -x
-                echo "${_RED}Option 1 is currently disabled$_NC"
+                echo "${_RED}Option 1 is currently disabled${_NC}"
                 disabled_reasons
                 continue
             fi
@@ -317,9 +316,9 @@ while true; do
             ;;
         2|3)
             ## B.1.
-            if [[ $option_two_and_three_disabled = true ]]; then
+            if "$option_two_and_three_disabled"; then
                 clear -x
-                echo "${_RED}Option $choice is currently disabled$_NC"
+                echo "${_RED}Option $choice is currently disabled${_NC}"
                 disabled_reasons
                 continue
             fi
@@ -357,8 +356,8 @@ while true; do
         5)
             clear -x
             ## B.1.
-            if [[ $option_five_disabled = true ]]; then
-                echo "${_RED}Option 5 is currently disabled$_NC"
+            if "$option_five_disabled"; then
+                echo "${_RED}Option 5 is currently disabled${_NC}"
                 echo ""
                 continue
             fi
@@ -374,9 +373,9 @@ while true; do
             ;;
         7)
             ## B.1.
-            if [[ $option_seven_disabled = true ]]; then
+            if "$option_seven_disabled"; then
                 clear -x
-                echo "${_RED}Option 7 is currently disabled$_NC"
+                echo "${_RED}Option 7 is currently disabled${_NC}"
                 disabled_reasons
                 continue
             fi
@@ -391,7 +390,7 @@ while true; do
             ;;
         *)
             clear -x
-            echo "${_RED}Invalid input: '$choice' is not a valid option$_NC" >&2
+            echo "${_RED}Invalid input: '$choice' is not a valid option${_NC}" >&2
             echo ""
             ;;
     esac

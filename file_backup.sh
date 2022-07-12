@@ -29,7 +29,7 @@ echo -n "$_NC"
 read -rp "Press [Enter] to continue."
 
 ## Create '$tmp_backup' if it doesn't exist.
-if [[ ! -d $tmp_backup ]]; then mkdir $tmp_backup
+if [[ ! -d $tmp_backup ]]; then mkdir "$tmp_backup"
 fi
 
 ## Copy all of the files listed in $files_to_back_up to $tmp_backup.
@@ -39,7 +39,7 @@ for file in "${files_to_back_up[@]}"; do
         cp -f "$file" "$tmp_backup" \
             || echo "${_RED}Failed to back up ${file}${_NC}" >&2
     else
-        echo "${_YELLOW}${file} could not be found$_NC"
+        echo "${_YELLOW}${file} could not be found${_NC}"
     fi
 done
 

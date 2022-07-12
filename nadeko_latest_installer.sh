@@ -41,7 +41,7 @@ fi
 ## Create a temporary folder to download NadekoBot into.
 mkdir nadekobot_tmp
 cd nadekobot_tmp || {
-    echo "${_RED}Failed to change working directory$_NC" >&2
+    echo "${_RED}Failed to change working directory${_NC}" >&2
     exit 1
 }
 
@@ -49,7 +49,7 @@ echo "Downloading NadekoBot into 'nadekobot_tmp'..."
 # Download NadekoBot from a specified branch/tag.
 git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 \
         https://gitlab.com/Kwoth/nadekobot || {
-    echo "${_RED}Failed to download NadekoBot$_NC" >&2
+    echo "${_RED}Failed to download NadekoBot${_NC}" >&2
     exit 1
 }
 
@@ -62,7 +62,7 @@ if [[ -d /tmp/NuGetScratch ]]; then
     # installer is currently being run under.
     sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/"$USER"/.nuget || {
         echo "${_RED}Failed to to modify the ownership of '/tmp/NuGetScratch' and/or" \
-            "'/home/$USER/.nuget'...$_NC" >&2
+            "'/home/$USER/.nuget'...${_NC}" >&2
         exit 1
     }
 fi
@@ -74,7 +74,7 @@ echo "Building NadekoBot..."
         && dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
         && cd "$_WORKING_DIR"
 } || {
-    echo "${_RED}Failed to build NadekoBot$_NC" >&2
+    echo "${_RED}Failed to build NadekoBot${_NC}" >&2
     exit 1
 }
 
@@ -127,11 +127,11 @@ mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 #### [[ Clean Up and Present Results ]]
 
 
-echo -e "\n${_GREEN}Finished downloading/updating NadekoBot$_NC"
+echo -e "\n${_GREEN}Finished downloading/updating NadekoBot${_NC}"
 
 if [[ $nadeko_service_active ]]; then
     echo "${_CYAN}NOTE: '$_NADEKO_SERVICE_NAME' was stopped to update NadekoBot and" \
-        "needs to be started using one of the run modes in the installer menu$_NC"
+        "needs to be started using one of the run modes in the installer menu${_NC}"
 fi
 
 read -rp "Press [Enter] to apply any existing changes to the installers"

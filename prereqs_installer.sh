@@ -56,7 +56,7 @@ unsupported() {
     ####
 
     echo "${_RED}The installer does not support the automatic installation and setup" \
-        "of NadekoBot's prerequisites for your OS: $_DISTRO $_VER $_ARCH$_NC"
+        "of NadekoBot's prerequisites for your OS: $_DISTRO $_VER ${_ARCH}${_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exit 4
 }
@@ -131,7 +131,7 @@ elif [[ $_DISTRO = "linuxmint" ]]; then
     esac
 fi
 
-echo -e "\n${_GREEN}Finished installing prerequisites$_NC"
+echo -e "\n${_GREEN}Finished installing prerequisites${_NC}"
 read -rp "Press [Enter] to return to the installer menu"
 
 

@@ -57,7 +57,7 @@ fi
     && sudo systemctl daemon-reload
 } || {
     echo "${_RED}Failed to create '$_NADEKO_SERVICE_NAME'" >&2
-    echo "${_CYAN}This service must exist for NadekoBot to work$_NC"
+    echo "${_CYAN}This service must exist for NadekoBot to work${_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exit 4
 }
@@ -66,7 +66,7 @@ fi
 echo "$dis_en_upper '$_NADEKO_SERVICE_NAME'..."
 sudo systemctl "$dis_en_lower" "$_NADEKO_SERVICE_NAME" || {
     echo "${_RED}Failed to $dis_en_lower '$_NADEKO_SERVICE_NAME'" >&2
-    echo "${_CYAN}This service must be ${dis_en_lower}d in order to use this run mode$_NC"
+    echo "${_CYAN}This service must be ${dis_en_lower}d in order to use this run mode${_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exit 4
 }
@@ -145,7 +145,7 @@ fi
 if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
     echo "Restarting '$_NADEKO_SERVICE_NAME'..."
     sudo systemctl restart "$_NADEKO_SERVICE_NAME" || {
-        echo "${_RED}Failed to restart '$_NADEKO_SERVICE_NAME'$_NC" >&2
+        echo "${_RED}Failed to restart '$_NADEKO_SERVICE_NAME'${_NC}" >&2
         read -rp "Press [Enter] to return to the installer menu"
         exit 4
     }
@@ -153,7 +153,7 @@ if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
 else
     echo "Starting '$_NADEKO_SERVICE_NAME'..."
     sudo systemctl start "$_NADEKO_SERVICE_NAME" || {
-        echo "${_RED}Failed to start '$_NADEKO_SERVICE_NAME'$_NC" >&2
+        echo "${_RED}Failed to start '$_NADEKO_SERVICE_NAME'${_NC}" >&2
         read -rp "Press [Enter] to return to the installer menu"
         exit 4
     }
