@@ -6,6 +6,7 @@
 #### [ Variables ]
 
 
+nadeko_service_active=false
 current_creds="nadekobot/output/creds.yml"
 new_creds="nadekobot_tmp/nadekobot/output/creds.yml"
 current_database="nadekobot/output/data/NadekoBot.db"
@@ -47,8 +48,7 @@ cd nadekobot_tmp || {
 
 echo "Downloading NadekoBot into 'nadekobot_tmp'..."
 # Download NadekoBot from a specified branch/tag.
-git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 \
-        https://gitlab.com/Kwoth/nadekobot || {
+git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 https://gitlab.com/Kwoth/nadekobot || {
     echo "${_RED}Failed to download NadekoBot${_NC}" >&2
     exit 1
 }
@@ -129,7 +129,7 @@ mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 
 echo -e "\n${_GREEN}Finished downloading/updating NadekoBot${_NC}"
 
-if [[ $nadeko_service_active ]]; then
+if "$nadeko_service_active"; then
     echo "${_CYAN}NOTE: '$_NADEKO_SERVICE_NAME' was stopped to update NadekoBot and" \
         "needs to be started using one of the run modes in the installer menu${_NC}"
 fi

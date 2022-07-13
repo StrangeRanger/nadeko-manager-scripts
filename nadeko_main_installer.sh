@@ -18,7 +18,7 @@ _NADEKO_SERVICE_NAME="nadeko.service"
 _NADEKO_SERVICE="/etc/systemd/system/$_NADEKO_SERVICE_NAME"
 
 # Indicates which major version of dotnet is required.
-req_dotnet_version="6"
+req_dotnet_version=6
 
 
 #### End of [ Variables ]
@@ -163,7 +163,7 @@ disabled_reasons() {
         echo "    Use option 1 to download NadekoBot"
     fi
 
-    echo "${_NC}"
+    echo "$_NC"
 }
 
 

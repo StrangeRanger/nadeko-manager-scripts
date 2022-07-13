@@ -9,8 +9,43 @@
 ########################################################################################
 #### [ Variables ]
 
-# The contents of NadekoBot's service.
-nadeko_service_content="[Unit]
+
+### Indicate which actions ('disable' or 'enable') to be performed on NadekoBot's
+### service.
+if [[ $_CODENAME = "NadekoRun" ]]; then
+    dis_en_lower="disable"    # A.1.
+    dis_en_upper="Disabling"  # B.1.
+else
+    dis_en_lower="enable"    # A.1.
+    dis_en_upper="Enabling"  # B.1.
+fi
+
+## PURPOSE: 'StandardOutput' and 'StandardError' no longer support 'syslog', starting in
+##          version 246 of systemd.
+## The contents of NadekoBot's service.
+if ((_SYSTEMD_VERSION >= 246)); then
+    nadeko_service_content="[Unit]
+Description=NadekoBot service
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=2
+
+[Service]
+Type=simple
+User=$USER
+WorkingDirectory=$_WORKING_DIR
+ExecStart=/bin/bash NadekoRun.sh
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=NadekoBot
+
+[Install]
+WantedBy=multi-user.target"
+else
+    # The contents of NadekoBot's service.
+    nadeko_service_content="[Unit]
 Description=NadekoBot service
 After=network.target
 StartLimitIntervalSec=60
@@ -29,15 +64,6 @@ SyslogIdentifier=NadekoBot
 
 [Install]
 WantedBy=multi-user.target"
-
-### Indicate which actions ('disable' or 'enable') to be performed on NadekoBot's
-### service.
-if [[ $_CODENAME = "NadekoRun" ]]; then
-    dis_en_lower="disable"    # A.1.
-    dis_en_upper="Disabling"  # B.1.
-else
-    dis_en_lower="enable"    # A.1.
-    dis_en_upper="Enabling"  # B.1.
 fi
 
 

@@ -15,7 +15,7 @@
 
 # Revision number of 'linuxAIO.sh'.
 # Refer to the 'README' note at the beginning of 'linuxAIO.sh' for more information.
-current_linuxAIO_revision="34"
+current_linuxAIO_revision=35
 # Name of the master installer script.
 master_installer="nadeko_main_installer.sh"
 
@@ -31,10 +31,10 @@ export _CLRLN="$(printf '\r\033[K')";
 ## PURPOSE: The '--no-hostname' flag for 'journalctl' only works with systemd 230 and
 ##          later. So if systemd is older than 230, $_NO_HOSTNAME will not be created.
 {
-    journalctl_version=$(journalctl --version)
-    journalctl_version=${journalctl_version:1:1}
+    _SYSTEMD_VERSION=$(journalctl --version)
+    export _SYSTEMD_VERSION=${_SYSTEMD_VERSION:1:1}
 
-    if ((journalctl_version >= 230)); then export _NO_HOSTNAME="--no-hostname"
+    if ((_SYSTEMD_VERSION >= 230)); then export _NO_HOSTNAME="--no-hostname"
     fi
 } 2>/dev/null
 
@@ -71,8 +71,8 @@ detect_sys_info() {
     esac
 }
 
-# TODO: Add error checking to sed... If they fail, print the tracked variables into
-#       a new file.
+# TODO: Add error checking to sed... If they fail, print the tracked variables into a
+#       new file.
 linuxAIO_update() {
     ####
     # Function Info: Download the latest version of 'linuxAIO.sh' if $_LINUXAIO_REVISION
@@ -160,7 +160,7 @@ clean_up() {
     #   $2 - required
     #       Output text.
     #   $3 - optional
-    #       Determines if 'Cleaning up...' needs to be printed with a new-line symbol.
+    #       True if 'Cleaning up...' should be printed without a new-line symbol.
     #
     ####
 
@@ -178,9 +178,6 @@ clean_up() {
     }
 
     ## Remove 'nadekobot_tmp' if it exists.
-    ## EXPLANATION: 'nadekobot_tmp' contains a newly downloaded version of NadekoBot. If
-    ##              the installer is stopped while downloading NadekoBot, this directory
-    ##              will remain on the system, if this if statement doesn't exist.
     if [[ -d nadekobot_tmp ]]; then rm -rf nadekobot_tmp
     fi
 
@@ -237,8 +234,7 @@ _DOWNLOAD_SCRIPT() {
 
 # Execute when the user uses 'Ctrl + Z', 'Ctrl + C', or otherwise forcefully exits the
 # installer.
-trap 'clean_up "2" "Exiting" "true"' \
-    SIGINT SIGTSTP SIGTERM
+trap 'clean_up "2" "Exiting" "true"' SIGINT SIGTSTP SIGTERM
 
 
 #### End of [ Error Traps ]
