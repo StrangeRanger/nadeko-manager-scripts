@@ -237,6 +237,7 @@ _DOWNLOAD_SCRIPT() {
 # installer.
 trap 'clean_up "130" "Exiting" "true"' SIGINT
 trap 'clean_up "143" "Exiting" "true"' SIGTERM
+trap 'clean_up "148" "Exiting" "true"' SIGTSTP
 
 
 #### End of [ Error Traps ]
