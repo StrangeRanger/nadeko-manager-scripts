@@ -172,7 +172,7 @@ disabled_reasons() {
 #### [ Main ]
 
 
-echo -e "Welcome to the NadekoBot installer\n"
+printf "%sWelcome to the NadekoBot installer\n\n" "$_CLRLN"
 
 while true; do
     ####################################################################################

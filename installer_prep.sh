@@ -219,7 +219,7 @@ _DOWNLOAD_SCRIPT() {
     #       True if the script shouldn't output text indicating $1 is being downloaded.
     ####
 
-    if [[ $2 = true ]]; then echo "Downloading '$1'..."
+    if [[ $2 = true ]]; then printf "Downloading '%s'..." "$1"
     fi
     curl -O -s "$_RAW_URL"/"$1"
     sudo chmod +x "$1"
