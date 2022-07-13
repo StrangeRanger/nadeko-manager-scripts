@@ -128,7 +128,7 @@ linuxAIO_update() {
             "and applied changes to the newest version of 'linuxAIO.sh'${_NC}"
     fi
 
-    clean_up "0" "Exiting" "true"
+    clean_up "0" "Exiting"
 }
 
 unsupported() {
@@ -170,11 +170,9 @@ clean_up() {
     local installer_files=("installer_prep.sh" "file_backup.sh" "prereqs_installer.sh"
         "nadeko_latest_installer.sh" "nadeko_runner.sh" "nadeko_main_installer.sh")
 
-    echo -e "\nCleaning up..."
-
-    #if [[ $3 = true ]]; then echo "Cleaning up..."
-    #else                     echo -e "\nCleaning up..."
-    #fi
+    if [[ $3 = true ]]; then echo -e "\n\nCleaning up..."
+    else                     echo -e "\nCleaning up..."
+    fi
 
     cd "$_WORKING_DIR" || {
         echo "${_RED}Failed to move to project root directory${_NC}" >&2
@@ -250,14 +248,14 @@ trap 'clean_up "2" "Exiting" "true"' SIGINT SIGTSTP SIGTERM
 # revision number.
 if [[ $_LINUXAIO_REVISION && $_LINUXAIO_REVISION != "$current_linuxAIO_revision" ]]; then
     linuxAIO_update
-    clean_up "0" "Exiting" "true"
+    clean_up "0" "Exiting"
 fi
 
 # Change the working directory to the location of the executed scrpt.
 cd "${0%/*}" || {
     echo "${_RED}Failed to change working directory" >&2
     echo "${_CYAN}Change your working directory to that of the executed script${_NC}"
-    clean_up "1" "Exiting" "true"
+    clean_up "1" "Exiting"
 }
 
 export _WORKING_DIR="$PWD"
