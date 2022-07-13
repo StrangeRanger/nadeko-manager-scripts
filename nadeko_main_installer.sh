@@ -107,26 +107,6 @@ _WATCH_SERVICE_LOGS() {
     read -rp "Press [Enter] to return to the installer menu"
 }
 
-exit_code_actions() {
-    ####
-    # Function Info: Depending on the return/exit code from any of the executed scripts,
-    #                perform the corresponding/appropriate actions.
-    #
-    # Parameters:
-    #   $1 - required
-    #       Return/exit code.
-    #
-    # Code Meaning:
-    #	1   - Something happened that requires the exit of the entire installer.
-    #   127 - When the end-user uses 'CTRL' + 'C' or 'CTRL' + 'Z'.
-    ####
-
-    case "$1" in
-        1|127) exit "$1" ;;
-    esac
-
-}
-
 hash_ccze() {
     ####
     # Function Info: Return whether or not 'ccze' is installed.
@@ -312,8 +292,9 @@ while true; do
 
             _DOWNLOAD_SCRIPT "nadeko_latest_installer.sh" "true"
             clear -x
-            ./nadeko_latest_installer.sh || exit_code_actions "$?"
+            ./nadeko_latest_installer.sh || exit
 
+            trap '' SIGINT SIGTSTP SIGTERM
             # Execute the newly downloaded version of 'installer_prep.sh', so that all
             # changes are applied.
             exec "$_INSTALLER_PREP"
@@ -347,7 +328,7 @@ while true; do
             fi
 
             read -rp "Press [Enter] to begin."
-            ./nadeko_runner.sh || exit_code_actions "$?"
+            ./nadeko_runner.sh || exit
             clear -x
             ;;
         4)
@@ -372,7 +353,7 @@ while true; do
         6)
             _DOWNLOAD_SCRIPT "prereqs_installer.sh"
             clear -x
-            ./prereqs_installer.sh || exit_code_actions "$?"
+            ./prereqs_installer.sh || exit
             clear -x
             ;;
         7)
@@ -386,7 +367,7 @@ while true; do
 
             _DOWNLOAD_SCRIPT "file_backup.sh"
             clear -x
-            ./file_backup.sh || exit_code_actions "$?"
+            ./file_backup.sh || exit
             clear -x
             ;;
         8)

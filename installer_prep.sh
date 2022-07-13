@@ -162,8 +162,7 @@ clean_up() {
     #   $2 - required
     #       Output text.
     #   $3 - optional
-    #       True if 'Cleaning up...' should be printed without a new-line symbol.
-    #
+    #       True if 'Cleaning up...' should be printed with two new-line symbols.
     ####
 
     # Files to be removed.
@@ -236,7 +235,8 @@ _DOWNLOAD_SCRIPT() {
 
 # Execute when the user uses 'Ctrl + Z', 'Ctrl + C', or otherwise forcefully exits the
 # installer.
-trap 'clean_up "2" "Exiting" "true"' SIGINT SIGTSTP SIGTERM
+trap 'clean_up "130" "Exiting" "true"' SIGINT
+trap 'clean_up "143" "Exiting" "true"' SIGTERM
 
 
 #### End of [ Error Traps ]
