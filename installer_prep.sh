@@ -20,13 +20,13 @@ current_linuxAIO_revision=35
 master_installer="nadeko_main_installer.sh"
 
 ## Modify output text color.
-export _YELLOW="$(printf '\033[1;33m')";
-export _GREEN="$(printf '\033[0;32m')";
-export _CYAN="$(printf '\033[0;36m')";
-export _RED="$(printf '\033[1;31m')";
-export _NC="$(printf '\033[0m')";
-export _GREY="$(printf '\033[0;90m')";
-export _CLRLN="$(printf '\r\033[K')";
+export _YELLOW="$(printf '\033[1;33m')"
+export _GREEN="$(printf '\033[0;32m')"
+export _CYAN="$(printf '\033[0;36m')"
+export _RED="$(printf '\033[1;31m')"
+export _NC="$(printf '\033[0m')"
+export _GREY="$(printf '\033[0;90m')"
+export _CLRLN="$(printf '\r\033[K')"
 
 ## PURPOSE: The '--no-hostname' flag for 'journalctl' only works with systemd 230 and
 ##          later. So if systemd is older than 230, $_NO_HOSTNAME will not be created.
