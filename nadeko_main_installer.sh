@@ -292,9 +292,9 @@ while true; do
 
             _DOWNLOAD_SCRIPT "nadeko_latest_installer.sh" "true"
             clear -x
-            ./nadeko_latest_installer.sh || exit
+            ./nadeko_latest_installer.sh || exit "$?"
 
-            trap '' SIGINT SIGTSTP SIGTERM
+            trap 'exit' SIGINT SIGTSTP SIGTERM
             # Execute the newly downloaded version of 'installer_prep.sh', so that all
             # changes are applied.
             exec "$_INSTALLER_PREP"
