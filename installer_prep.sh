@@ -31,8 +31,10 @@ export _CLRLN="$(printf '\r\033[K')"
 ## PURPOSE: The '--no-hostname' flag for 'journalctl' only works with systemd 230 and
 ##          later. So if systemd is older than 230, $_NO_HOSTNAME will not be created.
 {
-    _SYSTEMD_VERSION=$(journalctl --version)
-    export _SYSTEMD_VERSION=${_SYSTEMD_VERSION:1:1}
+    _SYSTEMD_VERSION_TMP=$(systemd --version)
+    # shellcheck disable=SC2206
+    _SYSTEMD_VERSION_TMP=($_SYSTEMD_VERSION)
+    _SYSTEMD_VERSION=${_SYSTEMD_VERSION[1]}
 
     if ((_SYSTEMD_VERSION >= 230)); then export _NO_HOSTNAME="--no-hostname"
     fi
