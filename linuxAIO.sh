@@ -105,7 +105,7 @@ nadekobot/output/data/xp_template.json"
 
 # Revision number of this script.
 # Refer to the 'README' note at the beginning of this file for more information.
-export _LINUXAIO_REVISION=35
+export _LINUXAIO_REVISION=36
 # The URL to the raw code of a script that is specified by the other scripts.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
