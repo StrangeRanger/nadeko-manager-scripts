@@ -33,7 +33,7 @@ export _CLRLN="$(printf '\r\033[K')"
 {
     _SYSTEMD_VERSION_TMP=$(systemd --version)
     # shellcheck disable=SC2206
-    _SYSTEMD_VERSION_TMP=($_SYSTEMD_VERSION)
+    _SYSTEMD_VERSION_TMP=($_SYSTEMD_VERSION_TMP)
     export _SYSTEMD_VERSION=${_SYSTEMD_VERSION[1]}
 
     if ((_SYSTEMD_VERSION >= 230)); then export _NO_HOSTNAME="--no-hostname"
