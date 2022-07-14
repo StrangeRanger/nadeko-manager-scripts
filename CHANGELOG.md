@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - NadekoBot daemon uses `journal` for `StandardOutput` and `StandardError`, instead of `syslog`, if systemd version is 246 and above.
 - Updated function info formatting.
 - Small style changes.
-<!-- - Downloading 'nadeko_main_installer' text gets replaced with with the Welcome to the installer text.>
+<!-- - Downloading 'nadeko_main_installer' text gets replaced with with the Welcome to the installer text.-->
 
 ### Fixed
 
