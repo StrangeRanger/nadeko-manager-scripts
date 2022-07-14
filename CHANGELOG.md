@@ -6,7 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [3.2.3] - 2022-06-20
+### Changed
+
+- Replaced commands with Parameter Expansion, where possible.
+- Changed how the variables used to change the color of output text, are formatted, in the hopes of increasing portability.
+- Refactored if statements to be more simplistic, where applicable.
+- Improve exit code functionality:
+  - Modified traps to provide proper signal exit codes.
+    - Example: 128+n where n is the signal number, such as 9 being SIGKILL.
+  - Changed exit codes to non-reserved exit codes.
+- NadekoBot daemon uses `journal` for `StandardOutput` and `StandardError`, instead of `syslog`, if systemd version is 246 and above.
+- Updated function info formatting.
+- Small style changes.
+<!-- - Downloading 'nadeko_main_installer' text gets replaced with with the Welcome to the installer text.>
+
+### Fixed
+
+- Not properly retrieving `systemd` version number.
+- Small fix for bad formatting of the output of cleaning and exit text.
+- Fix incorrect text printed to terminal.
+
+## [v3.2.3] - 2022-06-20
 
 ### Added
 
@@ -28,7 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Fixed `python-is-python3` not being installed in place of `python`.
 
-## [3.2.2] - 2022-03-04
+## [v3.2.2] - 2022-03-04
 
 ⚠️ This version of the bash scripts, makes them compatible with the new version (v4) of NadekoBot, but loses compatibility with NadekoBot v3.
 
@@ -51,7 +71,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed `nadeko_latest_installer.sh` not saving/backing up files to `nadekobot/output/data`, which somehow didn't break anything.
 - Fixed `nadeko_latest_installer.sh` copy the entire `nadekobot/output/data` when attempting to copy the database.
 
-## [3.2.0] - 2021-10-04
+## [v3.2.0] - 2021-10-04
 
 ### Added
 
@@ -71,13 +91,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Small fixes.
 
-## [3.1.1] - 2021-xx-xx
+## [v3.1.1] - 2021-xx-xx
 
 ### Fixed
 
 - The installer tried to use `jq` when it shouldn't have (including times when it wasn't installed).
 
-## [3.1.0] - 2021-07-05
+## [v3.1.0] - 2021-07-05
 
 ### Changed
 
@@ -97,14 +117,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - 5: The installer was executed with root perms when `linuxAIO.sh` was configured to prevent such action.
 - `python-is-python3` is installed as a prerequisite instead of `python`, when running on Ubuntu 20.04 and Linux Mint 20.
 
-## [3.0.4] - 2021-05-24
+## [v3.0.4] - 2021-05-24
 
 ### Changed
 
 - Modified code to allow more flexibility for the [following fix](https://github.com/StrangeRanger/NadekoBot-BashScript/commit/4092d925677ade7a8f1ce18dc9d1b94baa80d531).
 - Slightly changed the way that the new version of NadekoBot is downloaded and built
 
-## [3.0.3] - 2021-05-23
+## [v3.0.3] - 2021-05-23
 
 ### Summary
 
@@ -131,7 +151,7 @@ The most notable change in this version is the refactoring of the code used to d
 - Fixed `cp` flags that weren't compatible with macOS's version of `cp`.
 - Fixed a strange problem where if NadekoBot wasn't downloaded a specific way, errors could occur when trying to start NadekoBot.
 
-## [3.0.0] - 2021-05-15
+## [v3.0.0] - 2021-05-15
 
 ### Breaking Changes
 
@@ -157,7 +177,7 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 - Fixed several shellcheck errors and warnings.
 - Fixed a bug where the `NadekoBot` directory could be deleted when trying to restore NadekoBot after canceling a download, even if `NadekoBot.bak`/`NadekoBot.old` doesn't exist.
 
-## [2.1.1] - 2021-03-26
+## [v2.1.1] - 2021-03-26
 
 ### Added
 
@@ -176,7 +196,7 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 - Fixed several other shellcheck warnings.
 - Fixed issue #14.
 
-## [2.1.0] - 2020-12-10
+## [v2.1.0] - 2020-12-10
 
 Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous Bash Scripts. Below is a list of the most significant changes to the installer.
 
@@ -210,13 +230,13 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
 - Removed option to run NadekoBot with auto-update
 
 [unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.2.3...HEAD
-[3.2.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.3
-[3.2.2]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.2
-[3.2.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.0
-[3.1.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.1.1
-[3.1.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.1.0
-[3.0.4]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.4
-[3.0.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.3
-[3.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.0
-[2.1.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.1
-[2.1.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.0
+[v3.2.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.3
+[v3.2.2]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.2
+[v3.2.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.0
+[v3.1.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.1.1
+[v3.1.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.1.0
+[v3.0.4]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.4
+[v3.0.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.3
+[v3.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.0
+[v2.1.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.1
+[v2.1.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.0
