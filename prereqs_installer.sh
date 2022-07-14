@@ -61,7 +61,7 @@ unsupported() {
     echo "${_RED}The installer does not support the automatic installation and setup" \
         "of NadekoBot's prerequisites for your OS: $_DISTRO $_VER ${_ARCH}${_NC}"
     read -rp "Press [Enter] to return to the installer menu"
-    exit 1
+    exit 3
 }
 
 

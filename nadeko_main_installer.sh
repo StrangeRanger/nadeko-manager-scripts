@@ -69,7 +69,7 @@ _FOLLOW_SERVICE_LOGS() {
     ####
 
     (
-        trap 'exit' SIGINT
+        trap 'exit 130' SIGINT
         sudo journalctl -f -u "$_NADEKO_SERVICE_NAME"  | ccze -A
     )
 }
@@ -105,6 +105,22 @@ _WATCH_SERVICE_LOGS() {
 
     echo -e "\n"
     read -rp "Press [Enter] to return to the installer menu"
+}
+
+exit_code_actions() {
+    ####
+    # Function Info: Depending on the return/exit code from any of the executed scripts,
+    #                perform the corresponding/appropriate actions.
+    #
+    # Parameters:
+    #   $1 - Return/exit code.
+    ####
+
+    case "$1" in
+        3) return 0 ;;
+        *) exit "$1" ;;
+    esac
+
 }
 
 hash_ccze() {
@@ -292,9 +308,11 @@ while true; do
 
             _DOWNLOAD_SCRIPT "nadeko_latest_installer.sh" "true"
             clear -x
-            ./nadeko_latest_installer.sh || exit "$?"
+            ./nadeko_latest_installer.sh || exit_code_actions "$?"
 
-            trap 'exit' SIGINT SIGTSTP SIGTERM
+            # TODO: Figure out way to kill previous execution of the installer, possibly
+            #       an array of PIDs and the 'clean_up()' function. This way, cleaning
+            #       up and exiting text doesn't print duplicates.
             # Execute the newly downloaded version of 'installer_prep.sh', so that all
             # changes are applied.
             exec "$_INSTALLER_PREP"
@@ -328,7 +346,7 @@ while true; do
             fi
 
             read -rp "Press [Enter] to begin."
-            ./nadeko_runner.sh || exit
+            ./nadeko_runner.sh || exit_code_actions "$?"
             clear -x
             ;;
         4)
@@ -353,7 +371,7 @@ while true; do
         6)
             _DOWNLOAD_SCRIPT "prereqs_installer.sh"
             clear -x
-            ./prereqs_installer.sh || exit
+            ./prereqs_installer.sh || exit_code_actions "$?"
             clear -x
             ;;
         7)
@@ -367,7 +385,7 @@ while true; do
 
             _DOWNLOAD_SCRIPT "file_backup.sh"
             clear -x
-            ./file_backup.sh || exit
+            ./file_backup.sh || exit_code_actions "$?"
             clear -x
             ;;
         8)
