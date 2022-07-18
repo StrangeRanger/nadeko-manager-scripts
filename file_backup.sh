@@ -11,8 +11,8 @@ current_backup="important_file_backup"
 tmp_backup="important_file_backup_tmp"
 
 # Contains the files to be backed up.
-# NOTE: The array is purposefully unquoted to allow for word splitting, for easy arrray
-#       itteration.
+# REASON: The array is purposefully unquoted to allow for word splitting, for easy
+#         arrray itteration.
 # shellcheck disable=SC2206
 files_to_back_up=($_FILES_TO_BACK_UP)
 
@@ -22,15 +22,14 @@ files_to_back_up=($_FILES_TO_BACK_UP)
 #### [ Main ]
 
 
-echo "We will now back up the following files:$_CYAN"
+echo "We will now back up the following files:${_CYAN}"
 for file in "${files_to_back_up[@]}"; do echo "    $file"
 done
 echo -n "$_NC"
 read -rp "Press [Enter] to continue."
 
 ## Create '$tmp_backup' if it doesn't exist.
-if [[ ! -d $tmp_backup ]]; then mkdir "$tmp_backup"
-fi
+[[ ! -d $tmp_backup ]] && mkdir "$tmp_backup"
 
 ## Copy all of the files listed in $files_to_back_up to $tmp_backup.
 echo "Backing up important files into '$tmp_backup'..."
