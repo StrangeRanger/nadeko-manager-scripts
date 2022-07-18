@@ -12,7 +12,7 @@
 
 # Store process id of 'nadeko_main_installer.sh', in case it needs to be manually
 # killed by a sub/child script.
-export _NADEKO_MASTER_INSTALLER_PID=$$
+#export _NADEKO_MASTER_INSTALLER_PID=$$
 ## To be exported.
 _NADEKO_SERVICE_NAME="nadeko.service"
 _NADEKO_SERVICE="/etc/systemd/system/$_NADEKO_SERVICE_NAME"
@@ -53,13 +53,9 @@ _STOP_SERVICE() {
                 "any updates to NadekoBot${_NC}"
             return 1
         }
-        if [[ $1 = true ]]; then
-            echo -e "\n${_GREEN}NadekoBot has been stopped${_NC}"
-        fi
+        [[ $1 = true ]] && echo -e "\n${_GREEN}NadekoBot has been stopped${_NC}"
     else
-        if [[ $1 = true ]]; then
-            echo -e "\n${_CYAN}NadekoBot is not currently running${_NC}"
-        fi
+        [[ $1 = true ]] && echo -e "\n${_CYAN}NadekoBot is not currently running${_NC}"
     fi
 }
 
@@ -85,11 +81,8 @@ _WATCH_SERVICE_LOGS() {
     #       within the master installer.
     ####
 
-    if [[ $1 = "runner" ]]; then
-        echo "Displaying '$_NADEKO_SERVICE_NAME' startup logs, live..."
-    else
-        echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
-    fi
+    [[ $1 = "runner" ]] && echo "Displaying '$_NADEKO_SERVICE_NAME' startup logs, live..." \
+                        || echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
 
     echo "${_CYAN}To stop displaying the startup logs:"
     echo "1) Press 'Ctrl' + 'C'${_NC}"
@@ -97,11 +90,9 @@ _WATCH_SERVICE_LOGS() {
 
     _FOLLOW_SERVICE_LOGS
 
-    if [[ $1 = "runner" ]]; then
-        echo -e "\n"
-        echo "Please check the logs above to make sure that there aren't any" \
-            "errors, and if there are, to resolve whatever issue is causing them"
-    fi
+    [[ $1 = "runner" ]] && echo -e "\nPlease check the logs above to make sure that" \
+        "there aren't any errors, and if there are, to resolve whatever issue is" \
+        "causing them"
 
     echo -e "\n"
     read -rp "Press [Enter] to return to the installer menu"
@@ -113,7 +104,8 @@ exit_code_actions() {
     #                perform the corresponding/appropriate actions.
     #
     # Parameters:
-    #   $1 - Return/exit code.
+    #   $1 - required
+    #       Return/exit code.
     ####
 
     case "$1" in
@@ -128,9 +120,8 @@ hash_ccze() {
     # Function Info: Return whether or not 'ccze' is installed.
     ####
 
-    if hash ccze &>/dev/null; then ccze_installed=true
-    else                           ccze_installed=false
-    fi
+    hash ccze &>/dev/null && ccze_installed=true \
+                          || ccze_installed=false
 }
 
 disabled_reasons() {
@@ -144,7 +135,7 @@ disabled_reasons() {
             || ! hash redis-server \
             || (! hash python && (! hash python3 && ! hash python-is-python3)) \
             || ! "$ccze_installed" \
-            || [[ $dotnet_version != "$req_dotnet_version" ]]) &>/dev/null; then
+            || [[ ${dotnet_version:-false} != "$req_dotnet_version" ]]) &>/dev/null; then
         echo "  One or more prerequisites are not installed"
         echo "    Use option 6 to install prerequisites"
     fi
@@ -152,7 +143,7 @@ disabled_reasons() {
     if [[ -d nadekobot ]]; then
         if [[ ! -f nadekobot/output/creds.yml ]]; then
             echo "  The 'creds.yml' could not be found"
-            echo "    Refer to the following link for help: https://nadekobot.readthedocs.io/en/v3/creds-guide/"
+            echo "    Refer to the following link for help: https://nadekobot.readthedocs.io/en/latest/creds-guide/"
         fi
     else
         echo "  NadekoBot could not be found"
