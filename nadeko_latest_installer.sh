@@ -2,6 +2,12 @@
 #
 # Downloads and updates NadekoBot.
 #
+# Comment Key:
+#   A.1. - Due to permission errors cropping up every now and then, especially when the
+#          installer is executed with root privilege then later as a non-root user, it's
+#          necessary to make sure that '/tmp/NuGetScratch' and '/home/$USER/.nuget' are
+#          owned by the user that the installer is currently being run under.
+#
 ########################################################################################
 #### [ Variables ]
 
@@ -47,22 +53,25 @@ cd nadekobot_tmp || {
 }
 
 echo "Downloading NadekoBot into 'nadekobot_tmp'..."
-# Download NadekoBot from a specified branch/tag.
 git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 https://gitlab.com/Kwoth/nadekobot || {
     echo "${_RED}Failed to download NadekoBot${_NC}" >&2
     exit 1
 }
 
-# If '/tmp/NuGetScratch' exists...
+## A.1.
 if [[ -d /tmp/NuGetScratch ]]; then
-    echo "Modifying ownership of '/tmp/NuGetScratch' and '/home/$USER/.nuget'"
-    # Due to permission errors cropping up every now and then, especially when the
-    # installer is executed with root privilege, it's necessary to make sure that
-    # '/tmp/NuGetScratch' and '/home/$USER/.nuget' are owned by the user that the
-    # installer is currently being run under.
-    sudo chown -R "$USER":"$USER" /tmp/NuGetScratch /home/"$USER"/.nuget || {
-        echo "${_RED}Failed to to modify the ownership of '/tmp/NuGetScratch' and/or" \
-            "'/home/$USER/.nuget'...${_NC}" >&2
+    echo "Modifying ownership of '/tmp/NuGetScratch'..."
+    sudo chown -R "$USER":"$USER" /tmp/NuGetScratch || {
+        echo "${_RED}Failed to to modify the ownership of '/tmp/NuGetScratch'${_NC}" >&2
+        exit 1
+    }
+fi
+
+## A.1.
+if [[ -d  /home/$USER/.nuget ]]; then
+    echo "Modifying ownership of '/home/$USER/.nuget'..."
+    sudo chown -R "$USER":"$USER" /home/"$USER"/.nuget || {
+        echo "${_RED}Failed to to modify the ownership of '/home/$USER/.nuget'...${_NC}" >&2
         exit 1
     }
 fi
