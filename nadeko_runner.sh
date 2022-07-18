@@ -13,11 +13,11 @@
 ### Indicate which actions ('disable' or 'enable') to be performed on NadekoBot's
 ### service.
 if [[ $_CODENAME = "NadekoRun" ]]; then
-    dis_en_lower="disable"    # A.1.
-    dis_en_upper="Disabling"  # B.1.
+    lower="disable"    # A.1.
+    upper="Disabling"  # B.1.
 else
-    dis_en_lower="enable"    # A.1.
-    dis_en_upper="Enabling"  # B.1.
+    lower="enable"    # A.1.
+    upper="Enabling"  # B.1.
 fi
 
 ## PURPOSE: 'StandardOutput' and 'StandardError' no longer support 'syslog', starting in
@@ -44,7 +44,6 @@ SyslogIdentifier=NadekoBot
 [Install]
 WantedBy=multi-user.target"
 else
-    # The contents of NadekoBot's service.
     nadeko_service_content="[Unit]
 Description=NadekoBot service
 After=network.target
@@ -73,14 +72,13 @@ fi
 
 
 # Check if the service exists.
-if [[ -f $_NADEKO_SERVICE ]]; then echo "Updating '$_NADEKO_SERVICE_NAME'..."
-else                               echo "Creating '$_NADEKO_SERVICE_NAME'..."
-fi
+[[ -f $_NADEKO_SERVICE ]] && echo "Updating '$_NADEKO_SERVICE_NAME'..." \
+                          || echo "Creating '$_NADEKO_SERVICE_NAME'..."
 
 {
     # Create/update the service.
     echo "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null \
-    && sudo systemctl daemon-reload
+        && sudo systemctl daemon-reload
 } || {
     echo "${_RED}Failed to create '$_NADEKO_SERVICE_NAME'" >&2
     echo "${_CYAN}This service must exist for NadekoBot to work${_NC}"
@@ -89,10 +87,10 @@ fi
 }
 
 ## Disable/enable the service.
-echo "$dis_en_upper '$_NADEKO_SERVICE_NAME'..."
-sudo systemctl "$dis_en_lower" "$_NADEKO_SERVICE_NAME" || {
-    echo "${_RED}Failed to $dis_en_lower '$_NADEKO_SERVICE_NAME'" >&2
-    echo "${_CYAN}This service must be ${dis_en_lower}d in order to use this run mode${_NC}"
+echo "$upper '$_NADEKO_SERVICE_NAME'..."
+sudo systemctl "$lower" "$_NADEKO_SERVICE_NAME" || {
+    echo "${_RED}Failed to $lower '$_NADEKO_SERVICE_NAME'" >&2
+    echo "${_CYAN}This service must be ${lower}d in order to use this run mode${_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exti 1
 }
