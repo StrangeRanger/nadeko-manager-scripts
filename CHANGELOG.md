@@ -6,26 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [v3.2.4] - 2022-07-19
+
 ### Changed
 
-- Replaced commands with Parameter Expansion, where possible.
+- Where possible, replaced commands with Parameter Expansion.
+- Where applicable, refactored if statements to be more simplistic and functional.
 - Changed how the variables used to change the color of output text, are formatted, in the hopes of increasing portability.
-- Refactored if statements to be more simplistic, where applicable.
 - Improve exit code functionality:
   - Modified traps to provide proper signal exit codes.
     - Example: 128+n where n is the signal number, such as 9 being SIGKILL.
   - Changed exit codes to non-reserved exit codes.
-- NadekoBot daemon uses `journal` for `StandardOutput` and `StandardError`, instead of `syslog`, if systemd version is 246 and above.
-- Updated function info formatting.
+- NadekoBot daemon uses `journal` for `StandardOutput` and `StandardError`, instead of `syslog`, if systemd version is 246 or later.
 - Checks if `/home/$USER/.nuget` exists before attempting to chown it.
-- Small style changes.
-<!-- - Downloading 'nadeko_main_installer' text gets replaced with with the Welcome to the installer text.-->
+- Small formatting and style changes.
 
 ### Fixed
 
 - Not properly retrieving `systemd` version number.
-- Small fix for bad formatting of the output of cleaning and exit text.
-- Fix incorrect text printed to terminal.
+- Bad formatting of some output.
+- Incorrect text printed to terminal.
 
 ## [v3.2.3] - 2022-06-20
 
@@ -230,7 +230,8 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
   - CentOS: 7
 - Removed option to run NadekoBot with auto-update
 
-[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.2.3...HEAD
+[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.2.4...HEAD
+[v3.2.4]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.4
 [v3.2.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.3
 [v3.2.2]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.2
 [v3.2.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.0
