@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Replaced the use of master with main.
 
+### Fixed
+
+- Used `exti` instead of `exit`
+
 ## [v3.2.4] - 2022-07-19
 
 ### Changed
