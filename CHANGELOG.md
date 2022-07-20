@@ -31,27 +31,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added support for Ubuntu 22.04.
-- Added support for Debian 11.
-- Added shellcheck disable comments.
+- Support for:
+  - Ubuntu 22.04
+  - Debian 11
+- Shellcheck disable comments.
 
 ### Changed
 
-- No longer says "Script forcefully stopped" when the end-user uses 'Ctrl' + 'C' or 'Ctrl' + 'Z'.
+- No longer outputs "Script forcefully stopped" when 'Ctrl' + 'C' or 'Ctrl' + 'Z' is issued.
 - Ensures that dotnet is installed, before attempting to retrieve it's version number.
-- Chained the default branch from master to main.
-  - This is not a breaking change, as github redirects attempts to master to the new default branch.
+- Changed the default branch from master to main.
 - Removed non-existing file from local variable `installer_files`.
-- ⚠️ Removed support of Linux Mint 18 due to EOL.
 - `nadeko_master_installer` has been renamed to `nadeko_main_installer`.
+
+### Removed
+
+- ⚠️ No longer supports Linux Mint 18, due to EOL.
 
 ### Fixed
 
-- Fixed `python-is-python3` not being installed in place of `python`.
+- `python-is-python3` not installed in place of `python`.
 
 ## [v3.2.2] - 2022-03-04
 
-⚠️ This version of the bash scripts, makes them compatible with the new version (v4) of NadekoBot, but loses compatibility with NadekoBot v3.
+⚠️ This version of the bash scripts, enables compatibility with the new version (v4) of NadekoBot, but also results in the loss of compatibility with NadekoBot v3.
 
 ### Added
 
@@ -60,97 +63,106 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Update the content of `nadeko.service` to restart on failure, etc.
-- Update the content of `NadekoRun.sh` when running NadekoBot in the background with auto-restart. It now does a better job at handling errors, etc.
 - ⚠️ Installs dotnet v6 instead of v5.
   - ⚠️ This will result in the loss of compatibility with Nadeko v3.
 - ⚠️ Uses NadekoBot branch v4 by default instead of v3.
+- `nadeko.service` restarts on failure.
+- `NadekoRun.sh` does a better job at handling errors, etc.
 - Modified `$_FILES_TO_BACK_UP`.
 
 ### Fixed
 
-- Fixed `nadeko_latest_installer.sh` not saving/backing up files to `nadekobot/output/data`, which somehow didn't break anything.
-- Fixed `nadeko_latest_installer.sh` copy the entire `nadekobot/output/data` when attempting to copy the database.
+- `nadeko_latest_installer.sh` didn't save/back up files to `nadekobot/output/data`
+- `nadeko_latest_installer.sh` copied the entire `nadekobot/output/data` when attempting to copy the database.
 
 ## [v3.2.0] - 2021-10-04
+
+⚠️ One of the biggest take away's from this update, is that the installer no longer supports macOS.
 
 ### Added
 
 - Using disabled options will now provide reason(s) for why it and other options are disabled.
-- New option (option 7) that can be used to back up important Nadeko files. These files can be configured within `linuxAIO.sh`. Do note that the installer doesn't move the current configuration of this option to the new version of `linuxAIO.sh`, unlike the other configurable options.
+- An option (option 7) that can be used to back up important Nadeko files. These files can be configured within `linuxAIO.sh`. Do note that the installer doesn't move the current configuration of this option to the new version of `linuxAIO.sh`, unlike the other configurable options.
 
 ### Changed
 
+- ⚠️ No longer compatible with `linuxAIO.sh` revision 8 and earlier.
 - No longer prevents the execution of the installer as root.
-- No longer compatible with `linuxAIO.sh` revision 8 and earlier.
-- Removed option to create and edit credentials to coincide with the official linux installer documentation.
-- Removed support for macOS, since this installer will not be adopted by Kwoth.
 - Option 4 is always enabled.
 - `jq` is no longer installed.
 
+### Removed
+
+- ⚠️ Removed support for macOS, since this installer will not be adopted by Kwoth.
+- The option to create and edit credentials to coincide with the official linux installer documentation.
+
 ### Fixed
 
-- Small fixes.
+- Several small fixes.
 
-## [v3.1.1] - 2021-xx-xx
+## [v3.1.1] - 2021-??-??
 
 ### Fixed
 
-- The installer tried to use `jq` when it shouldn't have (including times when it wasn't installed).
+- The installer tried to use `jq` when it shouldn't have, even when it wasn't installed.
 
 ## [v3.1.0] - 2021-07-05
 
 ### Changed
 
-- Instead of waiting 60 seconds to display NadekoBot's startup logs, the logs are immediately displayed in real time, and can be stopped by using '`CTRL` + `C`'.
-- When displaying the service logs, they are now output in colored text using `ccze` (which has become a new dependency installed via the `prereqs_installer` script) (only applicable when run on Linux).
-- `NadekoRunner.sh` will now exit if an error occurs, instead of being stuck in an infinite while loop.
-- Used parameter substitution were possible.
-- Performed some refactoring and style changes to allow for better readability.
-- Removed unnecessary-redundant code.
-- Replaced all instances of `wget` with `curl`.
-- Improved error catching/trapping.
-- Improved system exiting by using exit codes instead of just executing `_CLEAN_EXIT` (which is no longer exported and was renamed to `clean_up`):
+- ⚠️ Improved system exiting by using exit codes instead of just executing `_CLEAN_EXIT` (which is no longer exported and was renamed to `clean_up`):
   - 1: Some error occurred that required the installer to be exited.
   - 2: Produced when the end-user uses `CTRL + C` or `CTRL + Z`.
   - 3: Unexpected internal error.
   - 4: Some error occurred that required the installer to return the its main menu.
   - 5: The installer was executed with root perms when `linuxAIO.sh` was configured to prevent such action.
-- `python-is-python3` is installed as a prerequisite instead of `python`, when running on Ubuntu 20.04 and Linux Mint 20.
+- ⚠️ `python-is-python3` is installed as a prerequisite instead of `python`, when running on Ubuntu 20.04 and Linux Mint 20.
+- NadekoBot's startup logs are displayed in realtime, instead of waiting 60 seconds.
+- NadekoBot's logs are displayed in color (only applicable when run on Linux).
+- Used parameter substitution were possible.
+- Refactored and modified coding style to allow for better readability.
+- Replaced ALL instances of `wget` with `curl`.
+- Improved error catching/trapping.
+
+### Removed
+
+- Unnecessary and redundant code.
+
+### Fixed
+
+- `NadekoRunner.sh` getting stuck in an infinite while loop.
 
 ## [v3.0.4] - 2021-05-24
 
 ### Changed
 
-- Modified code to allow more flexibility for the [following fix](https://github.com/StrangeRanger/NadekoBot-BashScript/commit/4092d925677ade7a8f1ce18dc9d1b94baa80d531).
-- Slightly changed the way that the new version of NadekoBot is downloaded and built
+- Refactored code to allow for better flexibility for the [following fixes](https://github.com/StrangeRanger/NadekoBot-BashScript/commit/4092d925677ade7a8f1ce18dc9d1b94baa80d531).
+- Slightly changed the way that the new version of NadekoBot is downloaded and built.
 
 ## [v3.0.3] - 2021-05-23
 
 ### Summary
 
-The most notable change in this version is the refactoring of the code used to download NadekoBot. I've provided information and what and how exactly it was refactored down below in the changed portion of this changelog. The change was done in the hopes that it will allow for the installer to be just a bit easier to maintain and modify, and organized.
+The most notable change in this version is the refactoring of the code used to download NadekoBot. I've provided information on what and how exactly it was refactored down below in the changed portion of this changelog.
 
 ### Changed
 
-- Option four will become disabled if NadekoBot is not currently running.
+- ⚠️ Installs `dotnet-sdk-5.0` instead of `dotnet-sdk-3.1`.
+- Option four is disabled if NadekoBot is not currently running.
 - Major refactoring:
   - Code used to download NadekoBot has been moved to two files. One file specific to Linux and the other macOS.
-  - Moving duplicate code into new functions.
+  - Moved duplicate code into new functions.
   - etc.
 - No longer creates NadekoBot's service at the time of execution. The service is created after a run mode is chosen and during the bot's startup.
-- Current `linuxAIO.sh` revision number: 17
-  - This means that the script has been modified in some way.
 - Curl related error catching has been removed.
   - Will be re-implemented in the future.
-- Installs `dotnet-sdk-5.0` instead of `dotnet-sdk-3.1`.
-- Update and add more comments.
+- Updated and added more comments.
 
 ### Fixed
 
-- Fixed typos in the menu output.
-- Fixed `cp` flags that weren't compatible with macOS's version of `cp`.
-- Fixed a strange problem where if NadekoBot wasn't downloaded a specific way, errors could occur when trying to start NadekoBot.
+- Typos in the menu output.
+- Some `cp` flags weren't compatible with macOS's version of `cp`.
+- A strange problem where if NadekoBot wasn't downloaded a specific way, errors could occur when trying to start NadekoBot.
 
 ## [v3.0.0] - 2021-05-15
 
@@ -162,40 +174,41 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 
 ### Added
 
-- End-user can now configure what branch/tag to download NadekoBot from (i.e., `1.9`, `2.39.1`, etc.).
-- `$allow_run_as_root` and `$_NADEKO_INSTALL_VERSION` are now set the same way that `$installer_branch` is set, whenever a new version of 'linuxAIO.sh' is retrieved.
+- The branch/tag to download NadekoBot from (i.e., `1.9`, `2.39.1`, etc.) is now configurable via `linuxAIO.sh`.
+- The current value of `$allow_run_as_root` and `$_NADEKO_INSTALL_VERSION` is set whenever downloading the latest version of `linuxAIO`.
 
 ### Changed
 
-- ⚠️ The majority of exported variables are now styled as `_UPPER_CASE`.
+- ⚠️ Exported variables are now styled as `_UPPER_CASE`.
+- ⚠️ `nadeko.service` is created in `/etc/systemd/system/`, instead of `/lib/systemd/system/`.
 - Updated and added A LOT of comments.
 - Minor refactoring.
-- ⚠️ `nadeko.service` will now be created and placed in `/etc/systemd/system/`, instead of `/lib/systemd/system/`.
 
 ### Fixed
 
-- Fixed macOS version scheme, so installer works on all minor revisions of macOS 11.
-- Fixed several shellcheck errors and warnings.
-- Fixed a bug where the `NadekoBot` directory could be deleted when trying to restore NadekoBot after canceling a download, even if `NadekoBot.bak`/`NadekoBot.old` doesn't exist.
+- macOS version scheme did not include minor versions of macOS 11.
+- Several shellcheck errors and warnings.
+- A bug where the `NadekoBot` directory could be deleted when trying to restore NadekoBot after canceling a download, even if `NadekoBot.bak`/`NadekoBot.old` didn't exist.
 
 ## [v2.1.1] - 2021-03-26
 
 ### Added
 
-- Whenever downloading the latest `linuxAIO.sh`, the current `installer_branch` will be applied to the new `linuxAIO.sh`.
-- Added `release/latest` as an optional branch for the `installer_branch`.
-- Officially supports macOS Big Sur.
-- Officially supports macOS Mojave.
+- The current value of `$installer_branch` is set whenever downloading the latest version of `linuxAIO`.
+- `release/latest` is an optional branch for the `$installer_branch`.
+- Officially supports:
+  - macOS Big Sur
+  - macOS Mojave
 
 ### Changed
 
-- Modified comment and programming style.
+- Comment and programming style.
 
 ### Fixed
 
-- Fixed shellcheck warnings SC2064 SC2053.
-- Fixed several other shellcheck warnings.
-- Fixed issue #14.
+- Shellcheck warnings [SC2064](https://github.com/koalaman/shellcheck/wiki/SC2064) and [SC2053](https://github.com/koalaman/shellcheck/wiki/SC2053).
+- Several other shellcheck warnings.
+- Issue [#14](https://github.com/StrangeRanger/NadekoBot-BashScript/issues/14).
 
 ## [v2.1.0] - 2020-12-10
 
@@ -203,32 +216,33 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
 
 ### Added
 
-- Added support for:
+- Support for:
   - Ubuntu 20.04
   - Mint Linux: 19, 20
   - Debian 10
-- Indicates what run-mode NadekoBot is currently set up to or is running in.
-- Added an option to watch NadekoBot's logs live (as they are created).
-- Better error catching.
-- End-user has more control over the installer.
-  - `linuxAIO.sh` consists of a few configurable settings the end-user can modify.
-- Installs both Homebrew and prerequisite on macOS (previously required manual installation).
-- After starting NadekoBot, a startup log is displayed to allow the end-user to identify possible errors better.
+- An option to watch NadekoBot's logs live (as they are created).
+- Indicates what mode NadekoBot is set up to or is currently running in.
+- Improved error catching.
+- End-user can configure the installer's behavior.
+  - `linuxAIO.sh` consists of a few configurable settings that the end-user can modify.
+- Installs both Homebrew and prerequisites on macOS.
+  - Previously required manual installation.
+- Displays NadekoBot's startup logs, when starting or restarting the bot.
 
 ### Changed
 
-- Installer disables specific options until a prerequisite is met.
-- Uses systemctl (Linux) and launchctl (macOS) to run NadekoBot, instead of PM2.
-- Relies on curl more than wget.
+- Some options are disabled until certain prerequisites are met.
+- Uses `systemctl` (Linux) and `launchctl` (macOS) to run NadekoBot, instead of PM2.
+- Uses `curl` instead of `wget`.
 
-### Removed
+#### Removed
 
-- Removed support for:
+- Support for:
   - Ubuntu: 14.04, 16.10, 17.04, 17.10
   - Linux Mint: 17
   - Debian: 8
   - CentOS: 7
-- Removed option to run NadekoBot with auto-update
+- The option to run NadekoBot with auto-update.
 
 [unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.2.4...HEAD
 [v3.2.4]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.4
