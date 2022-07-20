@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# The master/main installer for Linux Distributions.
+# The main installer for Linux Distributions.
 #
 # Comment key:
 #   A.1. - Return to prevent further code execution.
@@ -12,7 +12,7 @@
 
 # Store process id of 'nadeko_main_installer.sh', in case it needs to be manually
 # killed by a sub/child script.
-#export _NADEKO_MASTER_INSTALLER_PID=$$
+#export _NADEKO_MAIN_INSTALLER_PID=$$
 ## To be exported.
 _NADEKO_SERVICE_NAME="nadeko.service"
 _NADEKO_SERVICE="/etc/systemd/system/$_NADEKO_SERVICE_NAME"
@@ -78,7 +78,7 @@ _WATCH_SERVICE_LOGS() {
     # Parameters:
     #   $1 - required
     #       Indicates if the function was called from one of the runner scripts or from
-    #       within the master installer.
+    #       within the main installer.
     ####
 
     [[ $1 = "runner" ]] && echo "Displaying '$_NADEKO_SERVICE_NAME' startup logs, live..." \
@@ -112,7 +112,6 @@ exit_code_actions() {
         3) return 0 ;;
         *) exit "$1" ;;
     esac
-
 }
 
 hash_ccze() {

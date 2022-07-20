@@ -2,7 +2,7 @@
 #
 # This script looks at the operating system, architecture, bit type, etc., to determine
 # whether or not the system is supported by NadekoBot. Once the system is deemed as
-# supported, the master installer will be downloaded and executed.
+# supported, the main installer will be downloaded and executed.
 #
 # Comment key:
 #   A.1. - Grouping One
@@ -15,8 +15,8 @@
 # Revision number of 'linuxAIO.sh'.
 # Refer to the 'README' note at the beginning of 'linuxAIO.sh' for more information.
 current_linuxAIO_revision=36
-# Name of the master installer script.
-master_installer="nadeko_main_installer.sh"
+# Name of the main installer script.
+main_installer="nadeko_main_installer.sh"
 
 ## Modify output text color.
 # shellcheck disable=SC2155
@@ -140,7 +140,7 @@ unsupported() {
 
     choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
     case "$choice" in
-        y|yes) clear -x; execute_master_installer ;;
+        y|yes) clear -x; execute_main_installer ;;
         *)     clean_up "0" "Exiting" ;;
     esac
 }
@@ -181,12 +181,12 @@ clean_up() {
     exit "$1"
 }
 
-execute_master_installer() {
+execute_main_installer() {
     ####
-    # Function Info: Download and execute $master_installer.
+    # Function Info: Download and execute $main_installer.
     ####
 
-    _DOWNLOAD_SCRIPT "$master_installer" "true"
+    _DOWNLOAD_SCRIPT "$main_installer" "true"
     ./nadeko_main_installer.sh
     clean_up "$?" "Exiting"
 }
@@ -272,17 +272,17 @@ Distro Version: $_VER
 if [[ $bits = 64 ]]; then
     if [[ $_DISTRO = "ubuntu" ]]; then
         case "$_VER" in
-            16.04|18.04|20.04|22.04) execute_master_installer ;;
+            16.04|18.04|20.04|22.04) execute_main_installer ;;
             *)                       unsupported ;;
         esac
     elif [[ $_DISTRO = "debian" ]]; then
         case "$_SVER" in
-            9|10|11) execute_master_installer ;;
+            9|10|11) execute_main_installer ;;
             *)       unsupported ;;
         esac
     elif [[ $_DISTRO = "linuxmint" ]]; then
         case "$_SVER" in
-            19|20) execute_master_installer ;;
+            19|20) execute_main_installer ;;
             *)     unsupported ;;
         esac
     else
