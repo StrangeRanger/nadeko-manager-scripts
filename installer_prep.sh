@@ -163,8 +163,9 @@ clean_up() {
     local installer_files=("installer_prep.sh" "file_backup.sh" "prereqs_installer.sh"
         "nadeko_latest_installer.sh" "nadeko_runner.sh" "nadeko_main_installer.sh")
 
-    [[ $3 = true ]] && echo -e "\n\nCleaning up..." \
-                    || echo -e "\nCleaning up..."
+    if [[ $3 = true ]]; then echo -e "\n\nCleaning up..."
+    else                     echo -e "\nCleaning up..."
+    fi
 
     cd "$_WORKING_DIR" || {
         echo "${_RED}Failed to move to project root directory${_NC}" >&2
