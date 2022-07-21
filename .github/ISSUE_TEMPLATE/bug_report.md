@@ -3,7 +3,7 @@ name: Bug report
 about: Create a report to help us improve
 title: ''
 labels: awaiting review, bug
-assignees: 'StrangeRanger'
+assignees: StrangeRanger
 
 ---
 
@@ -23,10 +23,10 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
+**Specifics (please complete the following information):**
  - OS: [e.g. Ubuntu]
- - Version [e.g. v2.0.0]
- - Branch [e.g. release/latest]
+ - Version: [e.g. v1.2.3]
+ - Branch: [e.g. main]
 
 **Additional context**
 Add any other context about the problem here.
