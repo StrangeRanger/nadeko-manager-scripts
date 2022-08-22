@@ -240,8 +240,8 @@ while true; do
             option_seven_disabled=true
             option_seven_text="${_GREY}${option_seven_text}${disabled_option}${_NC}"
         fi
-    ## Options 2 and 3 remain enabled, if 'NadekoRun.sh' exists.
-    elif [[ -f NadekoRun.sh ]]; then
+    ## Options 2 and 3 remain enabled, if 'NadekoRun' exists.
+    elif [[ -f NadekoRun ]]; then
         ## Option 5 remains enabled, if NadekoBot's service is running.
         if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
             run_mode_status=" ${_GREEN}(Running in this mode)${_NC}"
@@ -262,10 +262,10 @@ while true; do
         fi
 
         ## If NadekoBot is running in the background with auto restart...
-        if grep -q '_code_name_="NadekoRunAR"' NadekoRun.sh; then
+        if grep -q '_code_name_="NadekoRunAR"' NadekoRun; then
             option_three_text="${option_three_text}${run_mode_status}"
         ## If NadekoBot is running in the background...
-        elif grep -q '_code_name_="NadekoRun"' NadekoRun.sh; then
+        elif grep -q '_code_name_="NadekoRun"' NadekoRun; then
             option_two_text="${option_two_text}${run_mode_status}"
         fi
     ## Options 2 and 3 remained enabled, but option 5 becomes disabled.
