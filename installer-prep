@@ -16,7 +16,7 @@
 # Refer to the 'README' note at the beginning of 'linuxAIO.sh' for more information.
 current_linuxAIO_revision=36
 # Name of the main installer script.
-main_installer="nadeko_main_installer.sh"
+main_installer="nadeko-main-installer"
 
 ## Modify output text color.
 # shellcheck disable=SC2155
@@ -160,8 +160,8 @@ clean_up() {
     ####
 
     # Files to be removed.
-    local installer_files=("installer_prep.sh" "file_backup.sh" "prereqs_installer.sh"
-        "nadeko_latest_installer.sh" "nadeko_runner.sh" "nadeko_main_installer.sh")
+    local installer_files=("installer-prep" "file-backup" "prereqs-installer"
+        "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer")
 
     if [[ $3 = true ]]; then echo -e "\n\nCleaning up..."
     else                     echo -e "\nCleaning up..."
@@ -188,7 +188,7 @@ execute_main_installer() {
     ####
 
     _DOWNLOAD_SCRIPT "$main_installer" "true"
-    ./nadeko_main_installer.sh
+    ./nadeko-main-installer
     clean_up "$?" "Exiting"
 }
 
@@ -247,7 +247,7 @@ cd "${0%/*}" || {
 }
 
 export _WORKING_DIR="$PWD"
-export _INSTALLER_PREP="$_WORKING_DIR/installer_prep.sh"
+export _INSTALLER_PREP="$_WORKING_DIR/installer-prep"
 
 
 #### End of [ Prepping ]

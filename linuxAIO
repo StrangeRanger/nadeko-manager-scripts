@@ -1,16 +1,16 @@
 #!/bin/bash
 #
 # 'linuxAIO.sh' acts as the intermediary between the system NadekoBot is being hosted on
-# and 'installer_prep.sh'. To prevent any conflicts with updates to the installer, this
+# and 'installer-prep'. To prevent any conflicts with updates to the installer, this
 # script has as little code as deemed necessary.
 #
 # README: Because this script remains on the user's system, any changes to the code that
 #         are pushed to github, are never applied to the version on the user's system.
 #         To get around this, the variable $_LINUXAIO_REVISION contains a revision
 #         number that is updated every time any changes are made to 'linuxAIO.sh'.
-#         Another variable in 'installer_prep.sh' ($current_linuxAIO_revision) gets
+#         Another variable in 'installer-prep' ($current_linuxAIO_revision) gets
 #         updated alongside with $_LINUXAIO_REVISION. Whenever the user executes the
-#         installer, 'installer_prep.sh' will compare the two variables. If they are not
+#         installer, 'installer-prep' will compare the two variables. If they are not
 #         of equal value, the newest version of 'linuxAIO.sh' is retrieved from github.
 #
 ########################################################################################
@@ -119,9 +119,9 @@ export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_br
 
 
 echo "Downloading the latest installer..."
-curl -O "$_RAW_URL"/installer_prep.sh
-sudo chmod +x installer_prep.sh && ./installer_prep.sh
-exit "$?"  # Uses the exit code passed by 'installer_prep.sh'.
+curl -O "$_RAW_URL"/installer-prep
+sudo chmod +x installer-prep && ./installer-prep
+exit "$?"  # Uses the exit code passed by 'installer-prep'.
 
 
 #### End of [ Main ]

@@ -10,7 +10,7 @@
 #### [ Variables ]
 
 
-# Store process id of 'nadeko_main_installer.sh', in case it needs to be manually
+# Store process id of 'nadeko-main-installer', in case it needs to be manually
 # killed by a sub/child script.
 #export _NADEKO_MAIN_INSTALLER_PID=$$
 ## To be exported.
@@ -299,14 +299,14 @@ while true; do
             export _NADEKO_SERVICE_NAME
             export _NADEKO_SERVICE_STATUS
 
-            _DOWNLOAD_SCRIPT "nadeko_latest_installer.sh" "true"
+            _DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
             clear -x
-            ./nadeko_latest_installer.sh || exit_code_actions "$?"
+            ./nadeko-latest-installer || exit_code_actions "$?"
 
             # TODO: Figure out way to kill previous execution of the installer, possibly
             #       an array of PIDs and the 'clean_up()' function. This way, cleaning
             #       up and exiting text doesn't print duplicates.
-            # Execute the newly downloaded version of 'installer_prep.sh', so that all
+            # Execute the newly downloaded version of 'installer-prep', so that all
             # changes are applied.
             exec "$_INSTALLER_PREP"
             ;;
@@ -325,7 +325,7 @@ while true; do
             export -f _WATCH_SERVICE_LOGS
             export -f _FOLLOW_SERVICE_LOGS
 
-            _DOWNLOAD_SCRIPT "nadeko_runner.sh"
+            _DOWNLOAD_SCRIPT "nadeko-runner"
             clear -x
 
             # If option 2 was executed...
@@ -339,7 +339,7 @@ while true; do
             fi
 
             read -rp "Press [Enter] to begin."
-            ./nadeko_runner.sh || exit_code_actions "$?"
+            ./nadeko-runner || exit_code_actions "$?"
             clear -x
             ;;
         4)
@@ -362,9 +362,9 @@ while true; do
             clear -x
             ;;
         6)
-            _DOWNLOAD_SCRIPT "prereqs_installer.sh"
+            _DOWNLOAD_SCRIPT "prereqs-installer"
             clear -x
-            ./prereqs_installer.sh || exit_code_actions "$?"
+            ./prereqs-installer || exit_code_actions "$?"
             clear -x
             ;;
         7)
@@ -376,9 +376,9 @@ while true; do
                 continue
             fi
 
-            _DOWNLOAD_SCRIPT "file_backup.sh"
+            _DOWNLOAD_SCRIPT "file-backup"
             clear -x
-            ./file_backup.sh || exit_code_actions "$?"
+            ./file-backup || exit_code_actions "$?"
             clear -x
             ;;
         8)
