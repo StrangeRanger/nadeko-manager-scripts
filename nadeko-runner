@@ -34,7 +34,7 @@ StartLimitBurst=2
 Type=simple
 User=$USER
 WorkingDirectory=$_WORKING_DIR
-ExecStart=/bin/bash NadekoRun.sh
+ExecStart=/bin/bash NadekoRun
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal
@@ -54,7 +54,7 @@ StartLimitBurst=2
 Type=simple
 User=$USER
 WorkingDirectory=$_WORKING_DIR
-ExecStart=/bin/bash NadekoRun.sh
+ExecStart=/bin/bash NadekoRun
 Restart=on-failure
 RestartSec=5
 StandardOutput=syslog
@@ -96,17 +96,17 @@ sudo systemctl "$lower" "$_NADEKO_SERVICE_NAME" || {
     exit 1
 }
 
-# Check if 'NadekoRun.sh' exists.
-if [[ -f NadekoRun.sh ]]; then
-    echo "Updating 'NadekoRun.sh'..."
-## Create 'NadekoRun.sh' if it doesn't exist.
+# Check if 'NadekoRun' exists.
+if [[ -f NadekoRun ]]; then
+    echo "Updating 'NadekoRun'..."
+## Create 'NadekoRun' if it doesn't exist.
 else
-    echo "Creating 'NadekoRun.sh'..."
-    touch NadekoRun.sh
-    sudo chmod +x NadekoRun.sh
+    echo "Creating 'NadekoRun'..."
+    touch NadekoRun
+    sudo chmod +x NadekoRun
 fi
 
-## Add the code required to run NadekoBot in the background, to 'NadekoRun.sh'.
+## Add the code required to run NadekoBot in the background, to 'NadekoRun'.
 if [[ $_CODENAME = "NadekoRun" ]]; then
     printf '%s\n' \
         "#!/bin/bash" \
@@ -124,9 +124,9 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "    exit 1" \
         "}" \
         "echo \"Stopping NadekoBot...\"" \
-        "cd $_WORKING_DIR" > NadekoRun.sh
+        "cd $_WORKING_DIR" > NadekoRun
 ## Add code required to run NadekoBot in the background with auto restart, to
-## 'NadekoRun.sh'.
+## 'NadekoRun'.
 else
     printf '%s\n' \
         "#!/bin/bash" \
@@ -163,7 +163,7 @@ else
         "    echo \"Restarting NadekoBot...\"" \
         "done" \
         "" \
-        "echo \"Stopping NadekoBot...\"" > NadekoRun.sh
+        "echo \"Stopping NadekoBot...\"" > NadekoRun
 fi
 
 ## Restart the service if it is currently running.
