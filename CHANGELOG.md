@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Renamed all files and removed their extension `.sh`.
 - Replaced the use of master with main.
 - Revert some if statements to fix possible SC2015 problems.
 
