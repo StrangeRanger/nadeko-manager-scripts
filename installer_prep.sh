@@ -56,7 +56,8 @@ custom_dotnet() {
     if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
         {
             echo "Upating prefered dotnet install method..."
-            echo -e "Package: *" \
+            echo -e "Explanation: https://github.com/dotnet/core/issues/7699" \
+                "\nPackage: *" \
                 "\nPin: origin \"packages.microsoft.com\"" \
                 "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref
         } || {
