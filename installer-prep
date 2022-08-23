@@ -87,7 +87,8 @@ linuxAIO_update() {
     #                and $current_linuxAIO_revision aren't of equal value.
     ####
 
-    echo "${_YELLOW}You are using an older version of 'linuxAIO'${_NC}"
+    echo -n "${_YELLOW}You are using an older version of 'linuxAIO'. "
+    read -rp "Press [Enter] to download the latest version of 'linuxAIO'.${_NC}"
     echo "Downloading latest 'linuxAIO'..."
 
     ## Only download the newest version of 'linuxAIO'.
