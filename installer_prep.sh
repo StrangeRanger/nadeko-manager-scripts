@@ -72,8 +72,6 @@ custom_dotnet() {
                 "'/etc/apt/preferences.d/custom-dotnet.pref'${nc}" >&2
             exit 1
         }
-
-        echo "Reinstalling .NET Core..."
     fi
 }
 
