@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `installer_prep.sh` has been modified to easily transition between the change.
 - Replaced the use of master with main.
 - Revert some if statements to fix possible SC2015 problems.
+- When new version of 'linuxAIO' is found, wait for user input before downloading the latest version.
 
 ### Removed
 
