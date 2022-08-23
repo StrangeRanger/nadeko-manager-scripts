@@ -46,16 +46,22 @@ nadeko_install_version_found="$?"
 
 custom_dotnet() {
     ####
-    # Function Info: Create the neccessary preference file to ensure dotnet is installed
-    #                from 'packages.microsoft.com'.
+    # Function Info: Ensure that dotnet is set up to work with 'packages.microsoft.com'.
+    #                For more information, please visit
+    #                https://github.com/dotnet/core/issues/7699.
     ####
 
-    echo "Uninstalling current version of dotnet..."
-    sudo apt remove dotnet* aspnetcore*
+    if hash dotnet && [[ ! $(dotnet --version &>/dev/null) ]]; then
+        echo "${_YELLOW}While the .NET runtime is installed, the .NET SDK is not${_NC}"
+        echo "Uninstalling existing .NET Core 6.0 installation..."
+        sudo apt remove dotnet-sdk-6.0 -y
+        sudo apt autoremove -y
+    fi
 
     if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
+        echo "Upating prefered .NET Core install method..."
+
         {
-            echo "Upating prefered dotnet install method..."
             echo -e "Explanation: https://github.com/dotnet/core/issues/7699" \
                 "\nPackage: *" \
                 "\nPin: origin \"packages.microsoft.com\"" \
@@ -65,6 +71,8 @@ custom_dotnet() {
                 "'/etc/apt/preferences.d/custom-dotnet.pref'${_NC}" >&2
             exit 1
         }
+
+        echo "Reinstalling .NET Core..."
     fi
 }
 
