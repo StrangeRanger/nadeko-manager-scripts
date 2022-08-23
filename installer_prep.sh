@@ -50,8 +50,12 @@ custom_dotnet() {
     #                from 'packages.microsoft.com'.
     ####
 
+    echo "Uninstalling current version of dotnet..."
+    sudo apt remove dotnet* aspnetcore*
+
     if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
         {
+            echo "Upating prefered dotnet install method..."
             echo -e "Package: *" \
                 "\nPin: origin \"packages.microsoft.com\"" \
                 "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref
@@ -68,9 +72,9 @@ custom_dotnet() {
 #### [ Main ]
 
 
-echo -n "${cyan}There've been some changes that require special intervention. When" \
-    "the installer has exited, log out of your account, log back in, execute the" \
-    "installer, and re-run NadekoBot in your chosen run mode. "
+echo -n "${cyan}There has been some changes that require special intervention. When" \
+    "the installer has exited, re-execute the installer, and re-run NadekoBot in your" \
+    "chosen run mode. "
 read -rp "Press [Enter] to continue.${nc}"
 
 ########################################################################################
