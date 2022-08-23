@@ -6,12 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Officially supports Linux Mint 21
+
 ### Changed
 
 - ⚠️ Renamed all of the scripts and removed their extension `.sh`.
   - `installer_prep.sh` has been modified to easily transition between the change.
 - Replaced the use of master with main.
 - Revert some if statements to fix possible SC2015 problems.
+
+### Removed
+
+- ⚠️ Support for the following have been removed:
+  - Debian 9      (due to end of life)
+  - Ubuntu 16.04  (due to end of active support)
+  - Linux Mint 19 (due to end of active support)
 
 ### Fixed
 
@@ -43,7 +54,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Support for:
+- Officially supports:
   - Ubuntu 22.04
   - Debian 11
 - Shellcheck disable comments.
@@ -76,7 +87,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - ⚠️ Installs dotnet v6 instead of v5.
-  - ⚠️ This will result in the loss of compatibility with Nadeko v3.
+  - This will result in the loss of compatibility with Nadeko v3.
 - ⚠️ Uses NadekoBot branch v4 by default instead of v3.
 - `nadeko.service` restarts on failure.
 - `NadekoRun.sh` does a better job at handling errors, etc.
