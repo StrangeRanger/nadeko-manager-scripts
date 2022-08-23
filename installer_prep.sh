@@ -12,23 +12,88 @@ cyan="$(printf '\033[0;36m')"
 red="$(printf '\033[1;31m')"
 nc="$(printf '\033[0m')"
 
+### Identify distro and distro version.
+if [[ -f /etc/os-release ]]; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    distro="$ID"
+    ver="$VERSION_ID"  # Version: x.x.x...
+    sver=${ver//.*/}   # Version: x
+else
+    distro=$(uname -s)
+    ver=$(uname -r)
+fi
+
+## Identify bit and architecture type.
+case $(uname -m) in
+    x86_64) bits="64"; _ARCH="x64" ;;
+    i*86)   bits="32"; _ARCH="x86" ;;
+    armv*)  bits="32"; _ARCH="?" ;;
+    *)      bits="?";  _ARCH="?" ;;
+esac
+
+## Save the values of the current Configuration Variables specified in 'linuxAIO.sh', to
+## be set in 'linuxAIO'.
+installer_branch=$(grep '^installer_branch=.*' linuxAIO.sh)
+installer_branch_found="$?"
+nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)
+nadeko_install_version_found="$?"
+
 
 #### End of [ Variables ]
+########################################################################################
+#### [ Functions ]
+
+custom_dotnet() {
+    ####
+    # Function Info: Create the neccessary preference file to ensure dotnet is installed
+    #                from 'packages.microsoft.com'.
+    ####
+
+    if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
+        {
+            echo -e "Package: *" \
+                "\nPin: origin \"packages.microsoft.com\"" \
+                "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref
+        } || {
+            echo "${_RED}Failed to create" \
+                "'/etc/apt/preferences.d/custom-dotnet.pref'${_NC}" >&2
+            exit 1
+        }
+    fi
+}
+
+#### End of [ Functions ]
 ########################################################################################
 #### [ Main ]
 
 
 echo -n "${cyan}There've been some changes that require special intervention. When" \
-    "the installer has exited, re-execute the installer and re-run NadekoBot in your" \
-    "chosen run mode. "
+    "the installer has exited, log out of your account, log back in, execute the" \
+    "installer, and re-run NadekoBot in your chosen run mode. "
 read -rp "Press [Enter] to continue.${nc}"
 
-## Save the values of the current Configuration Variables specified in 'linuxAIO.sh', to
-## be set in 'linuxAIO'.
-installer_branch=$(grep '^installer_branch=.*' linuxAIO.sh)  # A.1.
-installer_branch_found="$?"	                                 # A.1.
-nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO.sh)  # A.2.
-nadeko_install_version_found="$?"                                                # A.2.
+########################################################################################
+#### [[ Set Dotnet Preferences ]]
+
+
+if [[ $bits = 64 ]]; then
+    if [[ $distro = "ubuntu" ]]; then
+        case "$ver" in
+            22.04) custom_dotnet ;;
+        esac
+    elif [[ $distro = "linuxmint" ]]; then
+        case "$sver" in
+            21) custom_dotnet ;;
+        esac
+    fi
+fi
+
+
+#### End of [[ Set Dotnet Preferences ]]
+########################################################################################
+#### [[ Update Files ]]
+
 
 curl -O "$_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
 echo "Applying existing configurations to 'linuxAIO'..."
@@ -52,6 +117,9 @@ else
     exit 1
 fi
 
+
+#### End of [[ Update Files ]]
+########################################################################################
 
 #### End of [ Main ]
 ########################################################################################
