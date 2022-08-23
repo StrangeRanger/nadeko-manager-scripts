@@ -8,13 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Renamed all files and removed their extension `.sh`.
+- ⚠️ Renamed all of the scripts and removed their extension `.sh`.
+  - `installer_prep.sh` has been modified to easily transition between the change.
 - Replaced the use of master with main.
 - Revert some if statements to fix possible SC2015 problems.
 
 ### Fixed
 
 - Used `exti` instead of `exit`
+- Dotnet SDK not installing/being removed due to a [change made by Microsoft](https://github.com/dotnet/core/issues/7699).
 
 ## [v3.2.4] - 2022-07-19
 
