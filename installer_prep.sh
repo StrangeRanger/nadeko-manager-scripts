@@ -52,7 +52,7 @@ custom_dotnet() {
     #                https://github.com/dotnet/core/issues/7699.
     ####
 
-    if hash dotnet && [[ ! $(dotnet --version &>/dev/null) ]]; then
+    if hash dotnet &>/dev/null && [[ ! $(dotnet --version &>/dev/null) ]]; then
         echo "${yellow}While the .NET runtime is installed, the .NET SDK is not${nc}"
         echo "Uninstalling existing .NET Core 6.0 installation..."
         sudo apt remove dotnet-sdk-6.0 -y
