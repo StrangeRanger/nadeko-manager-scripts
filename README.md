@@ -10,15 +10,15 @@ For information on setting up NadekoBot using this installer, visit the reposito
 
 ## Getting Started
 
-### Downloading linuxAIO.sh
+### Downloading linuxAIO
 
-The only script that needs to be manually downloaded to your system is `linuxAIO.sh`. To do this, execute the following set of commands:
+The only script that needs to be manually downloaded to your system is `linuxAIO`. To do this, execute the following set of commands:
 
-`curl -O https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/main/linuxAIO.sh && sudo chmod +x linuxAIO.sh`
+`curl -O https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/main/linuxAIO && sudo chmod +x linuxAIO`
 
 ### Usage
 
-To use the installer, execute the following command: `./linuxAIO.sh`
+To use the installer, execute the following command: `./linuxAIO`
 
 If the following command was successfully executed, a menu with the following options (or something very similar) should be displayed:
 
@@ -40,5 +40,5 @@ The following is a list of all the Linux distributions that the installer has be
 | Distro/OS  | Version Number            |
 | ---------- | ------------------------- |
 | Ubuntu     | 22.04 20.04, 18.04, 16.04 |
-| Linux Mint | 20, 19                    |
+| Linux Mint | 21, 20, 19                |
 | Debian     | 11, 10, 9                 |
