@@ -8,6 +8,7 @@
 
 
 ## Modify output text color.
+yellow="$(printf '\033[1;33m')"
 cyan="$(printf '\033[0;36m')"
 red="$(printf '\033[1;31m')"
 nc="$(printf '\033[0m')"
@@ -52,7 +53,7 @@ custom_dotnet() {
     ####
 
     if hash dotnet && [[ ! $(dotnet --version &>/dev/null) ]]; then
-        echo "${_YELLOW}While the .NET runtime is installed, the .NET SDK is not${_NC}"
+        echo "${yellow}While the .NET runtime is installed, the .NET SDK is not${nc}"
         echo "Uninstalling existing .NET Core 6.0 installation..."
         sudo apt remove dotnet-sdk-6.0 -y
         sudo apt autoremove -y
@@ -67,8 +68,8 @@ custom_dotnet() {
                 "\nPin: origin \"packages.microsoft.com\"" \
                 "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref
         } || {
-            echo "${_RED}Failed to create" \
-                "'/etc/apt/preferences.d/custom-dotnet.pref'${_NC}" >&2
+            echo "${red}Failed to create" \
+                "'/etc/apt/preferences.d/custom-dotnet.pref'${nc}" >&2
             exit 1
         }
 
