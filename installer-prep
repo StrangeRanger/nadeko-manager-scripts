@@ -273,17 +273,17 @@ Distro Version: $_VER
 if [[ $bits = 64 ]]; then
     if [[ $_DISTRO = "ubuntu" ]]; then
         case "$_VER" in
-            16.04|18.04|20.04|22.04) execute_main_installer ;;
-            *)                       unsupported ;;
+            18.04|20.04|22.04) execute_main_installer ;;
+            *)                 unsupported ;;
         esac
     elif [[ $_DISTRO = "debian" ]]; then
         case "$_SVER" in
-            9|10|11) execute_main_installer ;;
-            *)       unsupported ;;
+            10|11) execute_main_installer ;;
+            *)     unsupported ;;
         esac
     elif [[ $_DISTRO = "linuxmint" ]]; then
         case "$_SVER" in
-            19|20) execute_main_installer ;;
+            20|21) execute_main_installer ;;
             *)     unsupported ;;
         esac
     else
