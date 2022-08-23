@@ -41,7 +41,8 @@ install_prereqs() {
         if [[ ! -d /etc/apt/preferences.d/custom-dotnet.pref ]]; then
             echo -e "Package: *" \
                     "\nPin: origin \"packages.microsoft.com\"" \
-                    "\nPin-Priority: 1001" > /etc/apt/preferences.d/custom-dotnet.pref || {
+                    "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref \
+            || {
                 echo "${_RED}Failed to create '/etc/apt/preferences.d/custom-dotnet.pref'" >&2
                 exit 1
             }
