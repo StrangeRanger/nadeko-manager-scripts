@@ -25,6 +25,8 @@ install_prereqs() {
     #       Distribution version.
     #   $3 - required
     #       'python' or 'python-is-python3' (dependent on the distro version).
+    #   $4 - optional
+    #       True if dotnet preferences must be set.
     ####
 
     echo "Installing .NET Core..."
@@ -32,6 +34,19 @@ install_prereqs() {
     curl -O https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb
     sudo rm -f packages-microsoft-prod.deb
+
+    ### TODO: Think of a better way to resolve possible problems where something might
+    ###       go wrong here.
+    if [[ $4 = true ]]; then
+        if [[ ! -d /etc/apt/preferences.d/custom-dotnet.pref ]]; then
+            echo -e "Package: *" \
+                    "\nPin: origin \"packages.microsoft.com\"" \
+                    "\nPin-Priority: 1001" > /etc/apt/preferences.d/custom-dotnet.pref || {
+                echo "${_RED}Failed to create '/etc/apt/preferences.d/custom-dotnet.pref'" >&2
+                exit 1
+            }
+        fi
+    fi
 
     ## Install the SDK.
     sudo apt-get update
