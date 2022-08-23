@@ -37,8 +37,8 @@ If the following command was successfully executed, a menu with the following op
 
 The following is a list of all the Linux distributions that the installer has been tested and are officially support on:
 
-| Distro/OS  | Version Number            |
-| ---------- | ------------------------- |
-| Ubuntu     | 22.04 20.04, 18.04, 16.04 |
-| Linux Mint | 21, 20, 19                |
-| Debian     | 11, 10, 9                 |
+| Distro/OS  | Version Number     |
+| ---------- | ------------------ |
+| Ubuntu     | 22.04 20.04, 18.04 |
+| Linux Mint | 21, 20             |
+| Debian     | 11, 10             |
