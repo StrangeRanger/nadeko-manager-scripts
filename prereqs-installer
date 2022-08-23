@@ -38,7 +38,7 @@ install_prereqs() {
     ### TODO: Think of a better way to resolve possible problems where something might
     ###       go wrong here.
     if [[ $4 = true ]]; then
-        if [[ ! -d /etc/apt/preferences.d/custom-dotnet.pref ]]; then
+        if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
             echo -e "Package: *" \
                     "\nPin: origin \"packages.microsoft.com\"" \
                     "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref \
@@ -47,6 +47,7 @@ install_prereqs() {
                     "'/etc/apt/preferences.d/custom-dotnet.pref'${_NC}" >&2
                 exit 1
             }
+
         fi
     fi
 
