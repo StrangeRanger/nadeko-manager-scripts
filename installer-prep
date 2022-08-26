@@ -12,8 +12,8 @@
 #### [ Exported and/or Globally Used Variables ]
 
 
-# Revision number of 'linuxAIO'.
-# Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
+# 'linuxAIO' revision number. Refer to the 'README' note at the beginning of 'linuxAIO'
+# for more information.
 current_linuxAIO_revision=37
 # Name of the main installer script.
 main_installer="nadeko-main-installer"
@@ -36,18 +36,6 @@ export _NADEKO_REVISION_NUMBER=1
     export _CLRLN="$(printf '\r\033[K')"
 }
 
-## PURPOSE: The '--no-hostname' flag for 'journalctl' only works with systemd 230 and
-##          later. So if systemd is older than 230, $_NO_HOSTNAME will not be created.
-# shellcheck disable=SC2206
-{
-    _SYSTEMD_VERSION_TMP=$(systemd --version)
-    _SYSTEMD_VERSION_TMP=($_SYSTEMD_VERSION_TMP)
-    _SYSTEMD_VERSION=${_SYSTEMD_VERSION_TMP[1]}
-
-    export _SYSTEMD_VERSION
-    ((_SYSTEMD_VERSION >= 230)) && export _NO_HOSTNAME="--no-hostname"
-} 2>/dev/null
-
 
 #### End of [ Exported and/or Globally Used Variables ]
 ########################################################################################
@@ -57,8 +45,11 @@ export _NADEKO_REVISION_NUMBER=1
 # shellcheck disable=SC1091
 detect_sys_info() {
     ####
-    # Function Info: Identify the operating system, version number, architecture, bit
-    #                type (32 or 64), etc.
+    # Identify the operating system, version number, architecture, bit type (32 or 64),
+    # etc.
+    #
+    # Arguments:
+    #   None
     ####
 
     if [[ -f /etc/os-release ]]; then
@@ -83,8 +74,11 @@ detect_sys_info() {
 
 linuxAIO_update() {
     ####
-    # Function Info: Download the latest version of 'linuxAIO' if $_LINUXAIO_REVISION
-    #                and $current_linuxAIO_revision aren't of equal value.
+    # Download the latest version of 'linuxAIO' if $_LINUXAIO_REVISION and
+    # $current_linuxAIO_revision aren't of equal value.
+    #
+    # Arguments:
+    #   None
     ####
 
     echo -n "${_YELLOW}You are using an older version of 'linuxAIO'. "
@@ -93,9 +87,9 @@ linuxAIO_update() {
 
     ## Only download the newest version of 'linuxAIO'.
     ## Reason: Starting with revision 31, the default version of NadekoBot is v4. To
-    ##         ensure there are not errors cropping up due to incompatible installer
-    ##         and NadekoBot version, all variables in 'linuxAIO' are reset to their
-    ##         [new] defaults.
+    ##         ensure there are not errors cropping up due to incompatible installer and
+    ##         NadekoBot version, all variables in 'linuxAIO' are reset to their [new]
+    ##         defaults.
     if ((_LINUXAIO_REVISION <= 30)); then
         curl -O "$_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
         echo "${_CYAN}NOT applying existing configurations to the new 'linuxAIO'..."
@@ -104,16 +98,17 @@ linuxAIO_update() {
     else
         ## Save the values of the current Configuration Variables specified in
         ## 'linuxAIO', to be set in the new 'linuxAIO'.
-        local installer_branch                                       # A.1.
-        local installer_branch_found                                 # A.1.
+        local installer_branch                                    # A.1.
+        local installer_branch_found                              # A.1.
         installer_branch=$(grep '^installer_branch=.*' linuxAIO)  # A.1.
-        installer_branch_found="$?"	                                 # A.1.
-        local nadeko_install_version                                                     # A.2.
-        local nadeko_install_version_found                                               # A.2.
+        installer_branch_found="$?"	                              # A.1.
+        local nadeko_install_version                                                  # A.2.
+        local nadeko_install_version_found                                            # A.2.
         nadeko_install_version=$(grep '^export _NADEKO_INSTALL_VERSION=.*' linuxAIO)  # A.2.
-        nadeko_install_version_found="$?"                                                # A.2.
+        nadeko_install_version_found="$?"                                             # A.2.
 
-        curl -O "$_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
+        curl -O "$_RAW_URL"/linuxAIO \
+            && sudo chmod +x linuxAIO
 
         echo "Applying existing configurations to the new 'linuxAIO'..."
 
@@ -134,8 +129,11 @@ linuxAIO_update() {
 
 unsupported() {
     ####
-    # Function Info: Provide the end-user with the option to continue, even if their
-    #                system isn't officially supported.
+    # Provide the end-user with the option to continue, even if their system isn't
+    # officially supported.
+    #
+    # Arguments:
+    #   None
     ####
 
     echo "${_RED}Your operating system/Linux Distribution is not OFFICIALLY supported" \
@@ -154,10 +152,10 @@ unsupported() {
 
 clean_up() {
     ####
-    # Function Info: Cleanly exit the installer by removing files that aren't required
-    #                unless the installer is currently running.
+    # Cleanly exit the installer by removing files that aren't required unless the
+    # installer is currently running.
     #
-    # Parameters:
+    # Arguments:
     #   $1 - required
     #       Exit status code.
     #   $2 - required
@@ -191,7 +189,10 @@ clean_up() {
 
 execute_main_installer() {
     ####
-    # Function Info: Download and execute $main_installer.
+    # Download and execute $main_installer.
+    #
+    # Arguments:
+    #   None
     ####
 
     _DOWNLOAD_SCRIPT "$main_installer" "true"
@@ -205,10 +206,9 @@ execute_main_installer() {
 
 _DOWNLOAD_SCRIPT() {
     ####
-    # Function Info: Download the specified script and modify it's execution
-    #                permissions.
+    # Download the specified script and modify it's execution permissions.
     #
-    # Parameters:
+    # Arguments:
     #   $1 - required
     #       Name of script to download.
     #   $2 - optional
