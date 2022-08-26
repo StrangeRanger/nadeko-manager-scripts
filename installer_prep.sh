@@ -86,7 +86,7 @@ echo -n "${cyan}There has been some changes that require special intervention. W
 read -rp "Press [Enter] to continue.${nc}"
 
 ########################################################################################
-#### [[ Set Dotnet Preferences ]]
+#### [[ Set .NET Preferences ]]
 
 
 if [[ $bits = 64 ]]; then
@@ -102,7 +102,7 @@ if [[ $bits = 64 ]]; then
 fi
 
 
-#### End of [[ Set Dotnet Preferences ]]
+#### End of [[ Set .NET Preferences ]]
 ########################################################################################
 #### [[ Update Files ]]
 
