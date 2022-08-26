@@ -32,15 +32,16 @@
 # The only time that this variable should be modified, is if you have created a fork of
 # the repo and plan on making your own modifications to the installer.
 #
-# Format: installer_repo="[github username]/[repository name]"
+# Format:  installer_repo="[github username]/[repository name]"
+# Default: "StrangeRanger/NadekoBot-BashScript"
 installer_repo="StrangeRanger/NadekoBot-BashScript"
 
 # The branch of $installer_repo that the installer will download its scripts from.
 #
 # Options:
 #   main     = Production ready code (the latest stable code)
-#   NadekoV3 = The version of the installer designed for NadekoBot v3
 #   dev      = Non-production ready code (has the possibility of breaking something)
+#   NadekoV3 = The version of the installer designed for NadekoBot v3
 #
 # Default: "main"
 installer_branch="main"
@@ -53,7 +54,7 @@ installer_branch="main"
 #            changes in the code/files coppied from the current to the newly downloaded
 #            version. For this, and other reasons, it's generally not recommended to
 #            to modify $_NADEKO_INSTALL_VERSION. This is especially true when it comes
-#            to a difference of major version changes, such as v3 and v4.
+#            to a difference in major versions, such as v3 and v4.
 #
 # Options:
 #   v4    = Latest version (the master/main branch)
@@ -103,10 +104,9 @@ nadekobot/output/data/xp_template.json"
 #### [[ General Variables ]]
 
 
-# Revision number of this script.
-# Refer to the 'README' note at the beginning of this file for more information.
+# 'linuxAIO' revision number.
 export _LINUXAIO_REVISION=37
-# The URL to the raw code of a script that is specified by the other scripts.
+# The URL to the raw code of a specified script.
 export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
 

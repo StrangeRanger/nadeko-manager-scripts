@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Downloads and updates NadekoBot.
+# Download and update NadekoBot.
 #
 # Comment Key:
 #   A.1. - Due to permission errors cropping up every now and then, especially when the
@@ -36,7 +36,7 @@ read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
 ## Stop the service if it's currently running.
 if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
     nadeko_service_active=true
-    _STOP_SERVICE "false"
+    _STOP_SERVICE
 fi
 
 
@@ -96,12 +96,11 @@ if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
 
     echo "Copying other data to the new version..."
 
-    ### On update, strings will be new version, user will have to manually re-add his
-    ### strings after each update as updates may cause big number of strings to become
-    ### obsolete, changed, etc. However, old user's strings will be backed up to
-    ### strings_old.
+    ### The end-user will have to manually re-add their strings after each update as
+    ### updates may cause big number of strings to become obsolete, changed, etc.
+    ### However, old user's strings will be backed up as strings_old.
 
-    ## Backup new strings to reverse rewrite.
+    ## Back up new strings to reverse rewrite.
     rm -rf "$new_data"/strings_new &>/dev/null
     mv -fT "$new_data"/strings "$new_data"/strings_new
 
@@ -109,18 +108,18 @@ if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
     rm -rf "$current_data"/strings_old &>/dev/null
     rm -rf "$current_data"/strings_new &>/dev/null
 
-    # Backup new aliases to reverse rewrite.
+    # Back up new aliases to reverse rewrite.
     mv -f "$new_data"/aliases.yml "$new_data"/aliases_new.yml
 
     # Move old data folder contents (and overwrite).
     cp -RT "$current_data" "$new_data"
 
-    # Backup old aliases.
+    # Back up old aliases.
     mv -f "$new_data"/aliases.yml "$new_data"/aliases_old.yml
     # Restore new aliases.
     mv -f "$new_data"/aliases_new.yml "$new_data"/aliases.yml
 
-    # Backup old strings.
+    # Back up old strings.
     mv -f "$new_data"/strings "$new_data"/strings_old
     # Restore new strings.
     mv -f "$new_data"/strings_new "$new_data"/strings
@@ -128,7 +127,8 @@ if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
     rm -rf nadekobot_old && mv -f nadekobot nadekobot_old
 fi
 
-mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
+mv nadekobot_tmp/nadekobot . \
+    && rmdir nadekobot_tmp
 
 
 #### End of [[ Create Backup, Then Update ]]
