@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Debian 9      (due to end of life)
   - Ubuntu 16.04  (due to end of active support)
   - Linux Mint 19 (due to end of active support)
+- Removed code that is no longer applicable, due to other changes.
 
 ### Fixed
 
