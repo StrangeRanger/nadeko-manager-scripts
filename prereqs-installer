@@ -12,22 +12,21 @@
 #### [ Functions ]
 
 
+########
+# Install the packages and dependencies required by NadekoBot, on all compatible
+# Linux distributions.
+#
+# Arguments:
+# 	$1 - required
+#       Distribution name.
+# 	$2 - required
+#       Distribution version.
+#   $3 - required
+#       'python' or 'python-is-python3' (dependent on the distro version).
+#   $4 - optional
+#       True if .NET preferences must be set.
+########
 install_prereqs() {
-    ####
-    # Install the packages and dependencies required by NadekoBot, on all compatible
-    # Linux distributions.
-	#
-    # Arguments:
-    # 	$1 - required
-    #       Distribution name.
-    # 	$2 - required
-    #       Distribution version.
-    #   $3 - required
-    #       'python' or 'python-is-python3' (dependent on the distro version).
-    #   $4 - optional
-    #       True if .NET preferences must be set.
-    ####
-
     echo "Installing .NET Core..."
     ## Microsoft package signing key.
     curl -O https://packages.microsoft.com/config/"$1"/"$2"/packages-microsoft-prod.deb
@@ -41,29 +40,21 @@ install_prereqs() {
             echo "Uninstalling existing .NET Core 6.0 installation..."
             sudo apt remove dotnet-sdk-6.0 -y
             sudo apt autoremove -y
+        fi
 
-            if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
-                echo "Upating prefered .NET Core install method..."
-
-                {
-                    echo -e "Explanation: https://github.com/dotnet/core/issues/7699" \
-                        "\nPackage: *" \
-                        "\nPin: origin \"packages.microsoft.com\"" \
-                        "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref
-                } || {
-                    echo "${_RED}Failed to create" \
-                        "'/etc/apt/preferences.d/custom-dotnet.pref'${_NC}" >&2
-                    exit 1
-                }
-
-                echo "Reinstalling .NET Core..."
-            fi
+        if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
+            echo "Upating prefered .NET Core install method..."
+            echo -e "Explanation: https://github.com/dotnet/core/issues/7699" \
+                "\nPackage: *" \
+                "\nPin: origin \"packages.microsoft.com\"" \
+                "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref \
+                || _STDERR "Failed to create '/etc/apt/preferences.d/custom-dotnet.pref'" "1"
+            echo "Reinstalling .NET Core..."
         fi
     fi
 
     ## Install the SDK.
-    sudo apt-get update \
-        && sudo apt-get install -y dotnet-sdk-6.0
+    sudo apt-get update && sudo apt-get install -y dotnet-sdk-6.0
 
     ## Install music prerequisites.
     echo "Installing music prerequisites..."
@@ -78,15 +69,14 @@ install_prereqs() {
     sudo chmod a+rwx /usr/local/bin/youtube-dl
 }
 
+########
+# Inform the end-user that their system is not supported by the automatic installation
+# of the prerequisites.
+#
+# Arguments:
+#   None
+########
 unsupported() {
-    ####
-    # Informs the end-user that their system is not supported by the automatic
-    # installation of the prerequisites.
-    #
-    # Arguments:
-    #   None
-    ####
-
     echo "${_RED}The installer does not support the automatic installation and setup" \
         "of NadekoBot's prerequisites for your OS: $_DISTRO $_VER ${_ARCH}${_NC}"
     read -rp "Press [Enter] to return to the installer menu"
