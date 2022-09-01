@@ -12,14 +12,15 @@
 #### [ Variables ]
 
 
-nadeko_service_active=false
+export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Used when compiling code.
+
+service_is_active=false
 current_creds="nadekobot/output/creds.yml"
 new_creds="nadekobot_tmp/nadekobot/output/creds.yml"
 current_database="nadekobot/output/data/NadekoBot.db"
 new_database="nadekobot_tmp/nadekobot/output/data/NadekoBot.db"
 current_data="nadekobot/output/data"
 new_data="nadekobot_tmp/nadekobot/output/data"
-export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Used when compiling code.
 
 
 #### End of [ Variables ]
@@ -34,8 +35,8 @@ read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
 
 
 ## Stop the service if it's currently running.
-if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
-    nadeko_service_active=true
+if [[ $_SERVICE_STATUS = "active" ]]; then
+    service_is_active=true
     _STOP_SERVICE
 fi
 
@@ -47,45 +48,33 @@ fi
 
 ## Create a temporary folder to download NadekoBot into.
 mkdir nadekobot_tmp
-cd nadekobot_tmp || {
-    echo "${_RED}Failed to change working directory${_NC}" >&2
-    exit 1
-}
+cd nadekobot_tmp || _STDERR "Failed to change working directory" "1"
 
 echo "Downloading NadekoBot into 'nadekobot_tmp'..."
-git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 https://gitlab.com/Kwoth/nadekobot || {
-    echo "${_RED}Failed to download NadekoBot${_NC}" >&2
-    exit 1
-}
+git clone -b "$_NADEKO_INSTALL_VERSION" --recursive --depth 1 https://gitlab.com/Kwoth/nadekobot \
+    || _STDERR "Failed to download NadekoBot" "1"
 
 ## A.1.
 if [[ -d /tmp/NuGetScratch ]]; then
     echo "Modifying ownership of '/tmp/NuGetScratch'..."
-    sudo chown -R "$USER":"$USER" /tmp/NuGetScratch || {
-        echo "${_RED}Failed to to modify the ownership of '/tmp/NuGetScratch'${_NC}" >&2
-        exit 1
-    }
+    sudo chown -R "$USER":"$USER" /tmp/NuGetScratch \
+        || _STDERR "Failed to to modify the ownership of '/tmp/NuGetScratch'" "1"
 fi
 
 ## A.1.
 if [[ -d  /home/$USER/.nuget ]]; then
     echo "Modifying ownership of '/home/$USER/.nuget'..."
-    sudo chown -R "$USER":"$USER" /home/"$USER"/.nuget || {
-        echo "${_RED}Failed to to modify the ownership of '/home/$USER/.nuget'...${_NC}" >&2
-        exit 1
-    }
+    sudo chown -R "$USER":"$USER" /home/"$USER"/.nuget \
+        || _STDERR "Failed to to modify the ownership of '/home/$USER/.nuget'..." "1"
 fi
 
 echo "Building NadekoBot..."
-{
-    cd nadekobot \
-        && dotnet restore -f --no-cache \
-        && dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
-        && cd "$_WORKING_DIR"
-} || {
-    echo "${_RED}Failed to build NadekoBot${_NC}" >&2
-    exit 1
-}
+# shellcheck disable=SC2015
+cd nadekobot \
+    && dotnet restore -f --no-cache \
+    && dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
+    && cd "$_WORKING_DIR" \
+    || _STDERR "Failed to build NadekoBot" "1"
 
 ## Move credentials, database, and other data to the new version of NadekoBot.
 if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
@@ -96,9 +85,9 @@ if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
 
     echo "Copying other data to the new version..."
 
-    ### The end-user will have to manually re-add their strings after each update as
-    ### updates may cause big number of strings to become obsolete, changed, etc.
-    ### However, old user's strings will be backed up as strings_old.
+    #### The end-user will have to manually re-add their strings after each update as
+    #### updates may cause big number of strings to become obsolete, changed, etc.
+    #### However, old user's strings will be backed up as strings_old.
 
     ## Back up new strings to reverse rewrite.
     rm -rf "$new_data"/strings_new &>/dev/null
@@ -127,8 +116,7 @@ if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
     rm -rf nadekobot_old && mv -f nadekobot nadekobot_old
 fi
 
-mv nadekobot_tmp/nadekobot . \
-    && rmdir nadekobot_tmp
+mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 
 
 #### End of [[ Create Backup, Then Update ]]
@@ -138,8 +126,8 @@ mv nadekobot_tmp/nadekobot . \
 
 echo -e "\n${_GREEN}Finished downloading/updating NadekoBot${_NC}"
 
-if "$nadeko_service_active"; then
-    echo "${_CYAN}NOTE: '$_NADEKO_SERVICE_NAME' was stopped to update NadekoBot and" \
+if "$service_is_active"; then
+    echo "${_CYAN}NOTE: '$_SERVICE_NAME' was stopped to update NadekoBot and" \
         "needs to be started using one of the run modes in the installer menu${_NC}"
 fi
 
