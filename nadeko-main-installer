@@ -11,8 +11,8 @@
 
 
 ## To be exported.
-_NADEKO_SERVICE_NAME="nadeko.service"
-_NADEKO_SERVICE="/etc/systemd/system/$_NADEKO_SERVICE_NAME"
+_SERVICE_NAME="nadeko.service"
+_SERVICE="/etc/systemd/system/$_SERVICE_NAME"
 
 # Indicates which major version of .NET is required.
 req_dotnet_version=6
@@ -23,122 +23,39 @@ req_dotnet_version=6
 #### [ Functions ]
 
 
-_GET_SERVICE_STATUS() {
-    ####
-    # Store the status of NadekoBot's service, inside of $_MEWDEKO_SERVICE_STATUS.
-    #
-    # Arguments:
-    #   None
-    ####
-
-    _NADEKO_SERVICE_STATUS=$(systemctl is-active "$_NADEKO_SERVICE_NAME")
-}
-
-_STOP_SERVICE() {
-    ####
-    # Stops NadekoBot's service.
-    #
-    # Arguments:
-    #   $1 - optional
-    #       True when the function should output text indicating if the service has been
-    #       stopped or is currently not running.
-    ####
-
-    if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
-        echo "Stopping '$_NADEKO_SERVICE_NAME'..."
-        sudo systemctl stop "$_NADEKO_SERVICE_NAME" || {
-            echo "${_RED}Failed to stop '$_NADEKO_SERVICE_NAME'" >&2
-            echo "${_CYAN}You will need to restart '$_NADEKO_SERVICE_NAME' to apply" \
-                "any updates to NadekoBot${_NC}"
-            return 1
-        }
-        [[ $1 = true ]] && echo -e "\n${_GREEN}NadekoBot has been stopped${_NC}"
-    else
-        [[ $1 = true ]] && echo -e "\n${_CYAN}NadekoBot is not currently running${_NC}"
-    fi
-}
-
-_FOLLOW_SERVICE_LOGS() {
-    ####
-    # Display the logs from 'nadeko.server' as they are created.
-    #
-    # Arguments:
-    #   None
-    ####
-
-    (
-        trap 'exit 130' SIGINT
-        sudo journalctl --no-hostname -f -u "$_NADEKO_SERVICE_NAME"  | ccze -A
-    )
-}
-
-_WATCH_SERVICE_LOGS() {
-    ####
-    # Output additional information to go along with the output of the function
-    # '_FOLLOW_SERVICE_LOGS'.
-    #
-    # Arguments:
-    #   $1 - required
-    #       Indicates if the function was called from one of the runner scripts or from
-    #       within the main installer.
-    ####
-
-    if [[ $1 = "runner" ]]; then
-        echo "Displaying '$_NADEKO_SERVICE_NAME' startup logs, live..."
-    else
-        echo "Watching '$_NADEKO_SERVICE_NAME' logs, live..."
-    fi
-
-    echo "${_CYAN}To stop displaying the startup logs:"
-    echo "1) Press 'Ctrl' + 'C'${_NC}"
-    echo ""
-
-    _FOLLOW_SERVICE_LOGS
-
-    [[ $1 = "runner" ]] && echo -e "\nPlease check the logs above to make sure that" \
-        "there aren't any errors, and if there are, to resolve whatever issue is" \
-        "causing them"
-
-    echo -e "\n"
-    read -rp "Press [Enter] to return to the installer menu"
-}
-
+########
+# Depending on the return/exit code from any of the executed scripts, perform the
+# corresponding/appropriate actions.
+#
+# Arguments:
+#   $1 - required
+#       Return/exit code.
+########
 exit_code_actions() {
-    ####
-    # Depending on the return/exit code from any of the executed scripts, perform the
-    # corresponding/appropriate actions.
-    #
-    # Arguments:
-    #   $1 - required
-    #       Return/exit code.
-    ####
-
     case "$1" in
         3) return 0 ;;
         *) exit "$1" ;;
     esac
 }
 
+########
+# Return whether or not 'ccze' is installed.
+#
+# Arguments:
+#   None
+########
 hash_ccze() {
-    ####
-    # Return whether or not 'ccze' is installed.
-    #
-    # Arguments:
-    #   None
-    ####
-
     hash ccze &>/dev/null && ccze_installed=true \
                           || ccze_installed=false
 }
 
+########
+# Provide the reason(s) for why one or more options are disabled.
+#
+# Arguments:
+#   None
+########
 disabled_reasons() {
-    ####
-    # Provide the reason(s) for why one or more options are disabled.
-    #
-    # Arguments:
-    #   None
-    ####
-
     echo "${_CYAN}Reasons for the disabled option:"
 
     if (! hash dotnet \
@@ -163,6 +80,91 @@ disabled_reasons() {
     echo "$_NC"
 }
 
+########################################################################################
+#### [[ Functions To Be Exported ]]
+
+
+########
+# Store the status of NadekoBot's service, inside of $_SERVICE_STATUS.
+#
+# Arguments:
+#   None
+########
+_GET_SERVICE_STATUS() {
+    _SERVICE_STATUS=$(systemctl is-active "$_SERVICE_NAME")
+}
+
+########
+# Stops NadekoBot's service.
+#
+# Arguments:
+#   $1 - optional
+#       True when the function should output text indicating if the service has been
+#       stopped or is currently not running.
+########
+_STOP_SERVICE() {
+    if [[ $_SERVICE_STATUS = "active" ]]; then
+        echo "Stopping '$_SERVICE_NAME'..."
+        sudo systemctl stop "$_SERVICE_NAME" || {
+            echo "${_RED}Failed to stop '$_SERVICE_NAME'" >&2
+            echo "${_CYAN}You will need to restart '$_SERVICE_NAME' to apply" \
+                "any updates to NadekoBot${_NC}"
+            return 1
+        }
+        [[ $1 = true ]] && echo -e "\n${_GREEN}NadekoBot has been stopped${_NC}"
+    else
+        [[ $1 = true ]] && echo -e "\n${_CYAN}NadekoBot is not currently running${_NC}"
+    fi
+}
+
+########
+# Display the logs from 'nadeko.server' as they are created.
+#
+# Arguments:
+#   None
+########
+_FOLLOW_SERVICE_LOGS() {
+    (
+        trap 'exit 130' SIGINT
+        sudo journalctl --no-hostname -f -u "$_SERVICE_NAME"  | ccze -A
+    )
+}
+
+########
+# Output additional information to go along with the output of the function
+# '_FOLLOW_SERVICE_LOGS'.
+#
+# Arguments:
+#   $1 - required
+#       Indicates if the function was called from one of the runner scripts or from
+#       within the main installer.
+########
+_WATCH_SERVICE_LOGS() {
+    if [[ $1 = "runner" ]]; then
+        echo "Displaying '$_SERVICE_NAME' startup logs, live..."
+    elif [[ $1 = "option_five" ]]; then
+        echo "Watching '$_SERVICE_NAME' logs, live..."
+    else
+        _STDERR "INTERNAL ERROR: Invalid argument for '_WATCH_SERVICE_LOGS': $1" "4"
+    fi
+
+    echo "${_CYAN}To stop displaying the startup logs:"
+    echo "1) Press 'Ctrl' + 'C'${_NC}"
+    echo ""
+
+    _FOLLOW_SERVICE_LOGS
+
+    [[ $1 = "runner" ]] && echo -e "\nPlease check the logs above to make sure that" \
+        "there aren't any errors, and if there are, to resolve whatever issue is" \
+        "causing them"
+
+    echo -e "\n"
+    read -rp "Press [Enter] to return to the installer menu"
+}
+
+
+#### End of [[ Functions To Be Exported ]]
+########################################################################################
 
 #### End of [ Functions ]
 ########################################################################################
@@ -175,7 +177,7 @@ while true; do
     ####################################################################################
     #### [[ Temporary Variables ]]
     #### The variables below constantly get modified later in the code, and are required
-    #### to be reset everytime the while loop is run through.
+    #### to be reset everytime the while loop starts from the top.
 
 
     ## Disabled option text.
@@ -190,7 +192,7 @@ while true; do
     option_three_text="3. Run NadekoBot in the background with auto restart"
     ## Option 5.
     option_five_disabled=false
-    option_five_text="5. Display '$_NADEKO_SERVICE_NAME' logs in follow mode"
+    option_five_text="5. Display '$_SERVICE_NAME' logs in follow mode"
     ## Option 7.
     option_seven_disabled=false
     option_seven_text="7. Back up important files"
@@ -215,7 +217,7 @@ while true; do
     #### [[ Main continued ]]
 
 
-    # Get the current status of $_NADEKO_SERVICE_NAME.
+    # Get the current status of $_SERVICE_NAME.
     _GET_SERVICE_STATUS
 
     # Determines if $ccze_installed is true or false, or in otherwords, if ccze is
@@ -235,34 +237,29 @@ while true; do
     ## Disable options 2, 3, and 5 if any of the tools in the previous if statement are
     ## not installed, or none of the specified directories/files could be found.
     if "$option_one_disabled" || [[ ! -f nadekobot/output/creds.yml ]]; then
-        ## Options 2 & 3.
         option_two_and_three_disabled=true
         option_two_text="${_GREY}${option_two_text}${disabled_option}${_NC}"
         option_three_text="${_GREY}${option_three_text}${disabled_option}${_NC}"
-        ## Option 5.
         option_five_disabled=true
         option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
 
         if [[ ! -d nadekobot ]]; then
-            ## Option 7.
             option_seven_disabled=true
             option_seven_text="${_GREY}${option_seven_text}${disabled_option}${_NC}"
         fi
     ## Options 2 and 3 remain enabled, if 'NadekoRun' exists.
     elif [[ -f NadekoRun ]]; then
         ## Option 5 remains enabled, if NadekoBot's service is running.
-        if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
+        if [[ $_SERVICE_STATUS = "active" ]]; then
             run_mode_status=" ${_GREEN}(Running in this mode)${_NC}"
         ## Disable option 5 if NadekoBot's service NOT running.
-        elif [[ $_NADEKO_SERVICE_STATUS = "inactive" ]]; then
-            ## Option 5.
+        elif [[ $_SERVICE_STATUS = "inactive" ]]; then
             option_five_disabled=true
             option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
 
             run_mode_status=" ${_YELLOW}(Set up to run in this mode)${_NC}"
         ## Disable option 5.
         else
-            ## Option 5.
             option_five_disabled=true
             option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
 
@@ -278,7 +275,6 @@ while true; do
         fi
     ## Options 2 and 3 remained enabled, but option 5 becomes disabled.
     else
-        ## Option 5.
         option_five_disabled=true
         option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
     fi
@@ -302,10 +298,10 @@ while true; do
                 continue
             fi
 
-            export _NADEKO_SERVICE
+            export _SERVICE
             export -f _STOP_SERVICE
-            export _NADEKO_SERVICE_NAME
-            export _NADEKO_SERVICE_STATUS
+            export _SERVICE_NAME
+            export _SERVICE_STATUS
 
             _DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
             clear -x
@@ -327,9 +323,9 @@ while true; do
                 continue
             fi
 
-            export _NADEKO_SERVICE
-            export _NADEKO_SERVICE_NAME
-            export _NADEKO_SERVICE_STATUS
+            export _SERVICE
+            export _SERVICE_NAME
+            export _SERVICE_STATUS
             export -f _WATCH_SERVICE_LOGS
             export -f _FOLLOW_SERVICE_LOGS
 
