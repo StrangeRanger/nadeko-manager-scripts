@@ -3,7 +3,7 @@
 # Start NadekoBot in a specified run mode.
 #
 # Comment key:
-#   A.1. - Used in conjunction with the 'systemctl' command.
+#   A.1. - Used in conjunction with 'systemctl'.
 #   B.1. - Used in the text output.
 #
 ########################################################################################
@@ -29,7 +29,7 @@ systemd_version=${systemd_version_tmp[1]}
 ##          version 246 of systemd.
 ## The contents of NadekoBot's service.
 if ((systemd_version >= 246)); then
-    nadeko_service_content="[Unit]
+    service_content="[Unit]
 Description=NadekoBot service
 After=network.target
 StartLimitIntervalSec=60
@@ -49,7 +49,7 @@ SyslogIdentifier=NadekoBot
 [Install]
 WantedBy=multi-user.target"
 else
-    nadeko_service_content="[Unit]
+    service_content="[Unit]
 Description=NadekoBot service
 After=network.target
 StartLimitIntervalSec=60
@@ -77,25 +77,25 @@ fi
 
 
 # Check if the service exists.
-if [[ -f $_NADEKO_SERVICE ]]; then echo "Updating '$_NADEKO_SERVICE_NAME'..."
-else                               echo "Creating '$_NADEKO_SERVICE_NAME'..."
+if [[ -f $_SERVICE ]]; then echo "Updating '$_SERVICE_NAME'..."
+else                        echo "Creating '$_SERVICE_NAME'..."
 fi
 
 {
     # Create/update the service.
-    echo "$nadeko_service_content" | sudo tee "$_NADEKO_SERVICE" &>/dev/null \
+    echo "$service_content" | sudo tee "$_SERVICE" &>/dev/null \
         && sudo systemctl daemon-reload
 } || {
-    echo "${_RED}Failed to create '$_NADEKO_SERVICE_NAME'" >&2
+    echo "${_RED}Failed to create '$_SERVICE_NAME'" >&2
     echo "${_CYAN}This service must exist for NadekoBot to work${_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exit 3
 }
 
 ## Disable/enable the service.
-echo "$upper '$_NADEKO_SERVICE_NAME'..."
-sudo systemctl "$lower" "$_NADEKO_SERVICE_NAME" || {
-    echo "${_RED}Failed to $lower '$_NADEKO_SERVICE_NAME'" >&2
+echo "$upper '$_SERVICE_NAME'..."
+sudo systemctl "$lower" "$_SERVICE_NAME" || {
+    echo "${_RED}Failed to $lower '$_SERVICE_NAME'" >&2
     echo "${_CYAN}This service must be ${lower}d in order to use this run mode${_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exit 3
@@ -130,7 +130,8 @@ if [[ $_CODENAME = "NadekoRun" ]]; then
         "}" \
         "echo \"Stopping NadekoBot...\"" \
         "cd $_WORKING_DIR" > NadekoRun
-## Add code required to run NadekoBot in the background with auto restart, to 'NadekoRun'.
+## Add code required to run NadekoBot in the background with auto restart, to
+## 'NadekoRun'.
 else
     printf '%s\n' \
         "#!/bin/bash" \
@@ -171,18 +172,18 @@ else
 fi
 
 ## Restart the service if it is currently running.
-if [[ $_NADEKO_SERVICE_STATUS = "active" ]]; then
-    echo "Restarting '$_NADEKO_SERVICE_NAME'..."
-    sudo systemctl restart "$_NADEKO_SERVICE_NAME" || {
-        echo "${_RED}Failed to restart '$_NADEKO_SERVICE_NAME'${_NC}" >&2
+if [[ $_SERVICE_STATUS = "active" ]]; then
+    echo "Restarting '$_SERVICE_NAME'..."
+    sudo systemctl restart "$_SERVICE_NAME" || {
+        echo "${_RED}Failed to restart '$_SERVICE_NAME'${_NC}" >&2
         read -rp "Press [Enter] to return to the installer menu"
         exit 3
     }
 ## Start the service if it is NOT currently running.
 else
-    echo "Starting '$_NADEKO_SERVICE_NAME'..."
-    sudo systemctl start "$_NADEKO_SERVICE_NAME" || {
-        echo "${_RED}Failed to start '$_NADEKO_SERVICE_NAME'${_NC}" >&2
+    echo "Starting '$_SERVICE_NAME'..."
+    sudo systemctl start "$_SERVICE_NAME" || {
+        echo "${_RED}Failed to start '$_SERVICE_NAME'${_NC}" >&2
         read -rp "Press [Enter] to return to the installer menu"
         exit 3
     }
