@@ -37,8 +37,8 @@ install_prereqs() {
     if [[ $4 = true ]]; then
         if (hash dotnet &>/dev/null && [[ ! $(dotnet --version) ]]) &>/dev/null; then
             echo "${_YELLOW}While the .NET runtime is installed, the .NET SDK is not${_NC}"
-            echo "Uninstalling existing .NET Core 6.0 installation..."
-            sudo apt remove dotnet-sdk-6.0 -y
+            echo "Uninstalling existing .NET Core installation..."
+            sudo apt remove -y dotnet-sdk-6.0
             sudo apt autoremove -y
         fi
 
@@ -54,19 +54,17 @@ install_prereqs() {
     fi
 
     ## Install the SDK.
-    sudo apt-get update && sudo apt-get install -y dotnet-sdk-6.0
+    sudo apt update && sudo apt install -y dotnet-sdk-6.0
 
     ## Install music prerequisites.
     echo "Installing music prerequisites..."
-    sudo apt-get install libopus0 opus-tools libopus-dev libsodium-dev -y
+    sudo apt install -y libopus0 opus-tools libopus-dev libsodium-dev
 
     ## Other prerequisites.
     echo "Installing other prerequisites..."
-    sudo apt-get install ffmpeg redis-server git ccze apt-transport-https python3 "$3" -y
-    sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o \
-        /usr/local/bin/youtube-dl
-    # A.1. & B.1.
-    sudo chmod a+rwx /usr/local/bin/youtube-dl
+    sudo apt install -y redis-server git ccze apt-transport-https ffmpeg python3 "$3"
+    sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o  /usr/local/bin/youtube-dl
+    sudo chmod a+rwx /usr/local/bin/youtube-dl  # A.1. & B.1.
 }
 
 ########
