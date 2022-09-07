@@ -2,7 +2,7 @@
 #
 # The main installer for Linux.
 #
-# Comment key:
+# Comment Key:
 #   A.1. - Return to prevent further code execution.
 #   B.1. - Prevent the code from running if the option is disabled.
 #
@@ -64,7 +64,7 @@ disabled_reasons() {
             || ! "$ccze_installed" \
             || [[ ${dotnet_version:-false} != "$req_dotnet_version" ]]) &>/dev/null; then
         echo "  One or more prerequisites are not installed"
-        echo "    Use option 6 to install prerequisites"
+        echo "    Use option 6 to install them all"
     fi
 
     if [[ -d nadekobot ]]; then
@@ -101,14 +101,17 @@ _GET_SERVICE_STATUS() {
 #   $1 - optional
 #       True when the function should output text indicating if the service has been
 #       stopped or is currently not running.
+#
+# Returns:
+#   1 - If $_SERVICE_NAME is not currently running.
 ########
 _STOP_SERVICE() {
     if [[ $_SERVICE_STATUS = "active" ]]; then
         echo "Stopping '$_SERVICE_NAME'..."
         sudo systemctl stop "$_SERVICE_NAME" || {
             echo "${_RED}Failed to stop '$_SERVICE_NAME'" >&2
-            echo "${_CYAN}You will need to restart '$_SERVICE_NAME' to apply" \
-                "any updates to NadekoBot${_NC}"
+            echo "${_CYAN}You will need to restart '$_SERVICE_NAME' to apply any" \
+                "updates to NadekoBot${_NC}"
             return 1
         }
         [[ $1 = true ]] && echo -e "\n${_GREEN}NadekoBot has been stopped${_NC}"
@@ -142,7 +145,7 @@ _FOLLOW_SERVICE_LOGS() {
 _WATCH_SERVICE_LOGS() {
     if [[ $1 = "runner" ]]; then
         echo "Displaying '$_SERVICE_NAME' startup logs, live..."
-    elif [[ $1 = "option_five" ]]; then
+    elif [[ $1 = "opt_five" ]]; then
         echo "Watching '$_SERVICE_NAME' logs, live..."
     else
         _STDERR "INTERNAL ERROR: Invalid argument for '_WATCH_SERVICE_LOGS': $1" "4"
@@ -176,26 +179,26 @@ printf "%sWelcome to the NadekoBot installer menu\n\n" "$_CLRLN"
 while true; do
     ####################################################################################
     #### [[ Temporary Variables ]]
-    #### The variables below constantly get modified later in the code, and are required
-    #### to be reset everytime the while loop starts from the top.
+    #### The variables below constantly get modified later in the while loop, and are
+    #### required to be reset everytime the loop starts back at the top.
 
 
     ## Disabled option text.
-    disabled_option=" (Execute option to display the reason it's disabled)"
-    disabled_option_v2=" (Disabled until NadekoBot is running)"
+    dis_option=" (Execute option to display the reason it's disabled)"
+    dis_opt_v2=" (Disabled until NadekoBot is running)"
     ## Option 1.
-    option_one_disabled=false
-    option_one_text="1. Download NadekoBot"
+    opt_one_dis=false
+    opt_one_text="1. Download NadekoBot"
     ## Option 2 & 3.
-    option_two_and_three_disabled=false
-    option_two_text="2. Run NadekoBot in the background"
-    option_three_text="3. Run NadekoBot in the background with auto restart"
+    opt_two_and_three_dis=false
+    opt_two_text="2. Run NadekoBot in the background"
+    opt_three_text="3. Run NadekoBot in the background with auto restart"
     ## Option 5.
-    option_five_disabled=false
-    option_five_text="5. Display '$_SERVICE_NAME' logs in follow mode"
+    opt_five_dis=false
+    opt_five_text="5. Display '$_SERVICE_NAME' logs in follow mode"
     ## Option 7.
-    option_seven_disabled=false
-    option_seven_text="7. Back up important files"
+    opt_seven_dis=false
+    opt_seven_text="7. Back up important files"
 
 
     #### End of [[ Temporary Variables ]]
@@ -206,7 +209,6 @@ while true; do
 
 
     if hash dotnet &>/dev/null; then
-        ## .NET version.
         dotnet_version=$(dotnet --version)     # Version: x.x.x
         dotnet_version=${dotnet_version//.*/}  # Version: x
     fi
@@ -214,14 +216,10 @@ while true; do
 
     #### End of [[ Variable Checks ]]
     ####################################################################################
-    #### [[ Main continued ]]
+    #### [[ Main Continued ]]
 
 
-    # Get the current status of $_SERVICE_NAME.
     _GET_SERVICE_STATUS
-
-    # Determines if $ccze_installed is true or false, or in otherwords, if ccze is
-    # installed or not.
     hash_ccze
 
     ## Disable option 1 if any of the following tools are not installed.
@@ -230,22 +228,22 @@ while true; do
             || ! hash python3 \
             || ! "$ccze_installed" \
             || [[ ${dotnet_version:-false} != "$req_dotnet_version" ]]) &>/dev/null; then
-        option_one_disabled=true
-        option_one_text="${_GREY}${option_one_text}${disabled_option}${_NC}"
+        opt_one_dis=true
+        opt_one_text="${_GREY}${opt_one_text}${dis_option}${_NC}"
     fi
 
     ## Disable options 2, 3, and 5 if any of the tools in the previous if statement are
     ## not installed, or none of the specified directories/files could be found.
-    if "$option_one_disabled" || [[ ! -f nadekobot/output/creds.yml ]]; then
-        option_two_and_three_disabled=true
-        option_two_text="${_GREY}${option_two_text}${disabled_option}${_NC}"
-        option_three_text="${_GREY}${option_three_text}${disabled_option}${_NC}"
-        option_five_disabled=true
-        option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
+    if "$opt_one_dis" || [[ ! -f nadekobot/output/creds.yml ]]; then
+        opt_two_and_three_dis=true
+        opt_two_text="${_GREY}${opt_two_text}${dis_option}${_NC}"
+        opt_three_text="${_GREY}${opt_three_text}${dis_option}${_NC}"
+        opt_five_dis=true
+        opt_five_text="${_GREY}${opt_five_text}${dis_opt_v2}${_NC}"
 
         if [[ ! -d nadekobot ]]; then
-            option_seven_disabled=true
-            option_seven_text="${_GREY}${option_seven_text}${disabled_option}${_NC}"
+            opt_seven_dis=true
+            opt_seven_text="${_GREY}${opt_seven_text}${dis_option}${_NC}"
         fi
     ## Options 2 and 3 remain enabled, if 'NadekoRun' exists.
     elif [[ -f NadekoRun ]]; then
@@ -254,44 +252,42 @@ while true; do
             run_mode_status=" ${_GREEN}(Running in this mode)${_NC}"
         ## Disable option 5 if NadekoBot's service NOT running.
         elif [[ $_SERVICE_STATUS = "inactive" ]]; then
-            option_five_disabled=true
-            option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
-
+            opt_five_dis=true
+            opt_five_text="${_GREY}${opt_five_text}${dis_opt_v2}${_NC}"
             run_mode_status=" ${_YELLOW}(Set up to run in this mode)${_NC}"
         ## Disable option 5.
         else
-            option_five_disabled=true
-            option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
-
+            opt_five_dis=true
+            opt_five_text="${_GREY}${opt_five_text}${dis_opt_v2}${_NC}"
             run_mode_status=" ${_YELLOW}(Status unknown)${_NC}"
         fi
 
         ## If NadekoBot is running in the background with auto restart...
         if grep -q '_code_name_="NadekoRunAR"' NadekoRun; then
-            option_three_text="${option_three_text}${run_mode_status}"
+            opt_three_text="${opt_three_text}${run_mode_status}"
         ## If NadekoBot is running in the background...
         elif grep -q '_code_name_="NadekoRun"' NadekoRun; then
-            option_two_text="${option_two_text}${run_mode_status}"
+            opt_two_text="${opt_two_text}${run_mode_status}"
         fi
     ## Options 2 and 3 remained enabled, but option 5 becomes disabled.
     else
-        option_five_disabled=true
-        option_five_text="${_GREY}${option_five_text}${disabled_option_v2}${_NC}"
+        opt_five_dis=true
+        opt_five_text="${_GREY}${opt_five_text}${dis_opt_v2}${_NC}"
     fi
 
-    echo "$option_one_text"
-    echo "$option_two_text"
-    echo "$option_three_text"
+    echo "$opt_one_text"
+    echo "$opt_two_text"
+    echo "$opt_three_text"
     echo "4. Stop NadekoBot"
-    echo "$option_five_text"
+    echo "$opt_five_text"
     echo "6. Install prerequisites"
-    echo "$option_seven_text"
+    echo "$opt_seven_text"
     echo "8. Exit"
     read -r choice
     case "$choice" in
         1)
             ## B.1.
-            if "$option_one_disabled"; then
+            if "$opt_one_dis"; then
                 clear -x
                 echo "${_RED}Option 1 is currently disabled${_NC}"
                 disabled_reasons
@@ -310,13 +306,14 @@ while true; do
             # TODO: Figure out way to kill previous execution of the installer, possibly
             #       an array of PIDs and the 'clean_up()' function. This way, cleaning
             #       up and exiting text doesn't print duplicates.
+            # TODO: Re-due comments...
             # Execute the newly downloaded version of 'installer-prep', so that all
             # changes are applied.
             exec "$_INSTALLER_PREP"
             ;;
         2|3)
             ## B.1.
-            if "$option_two_and_three_disabled"; then
+            if "$opt_two_and_three_dis"; then
                 clear -x
                 echo "${_RED}Option $choice is currently disabled${_NC}"
                 disabled_reasons
@@ -356,13 +353,13 @@ while true; do
         5)
             clear -x
             ## B.1.
-            if "$option_five_disabled"; then
+            if "$opt_five_dis"; then
                 echo "${_RED}Option 5 is currently disabled${_NC}"
                 echo ""
                 continue
             fi
 
-            _WATCH_SERVICE_LOGS "option_five"
+            _WATCH_SERVICE_LOGS "opt_five"
             clear -x
             ;;
         6)
@@ -373,7 +370,7 @@ while true; do
             ;;
         7)
             ## B.1.
-            if "$option_seven_disabled"; then
+            if "$opt_seven_dis"; then
                 clear -x
                 echo "${_RED}Option 7 is currently disabled${_NC}"
                 disabled_reasons
@@ -396,7 +393,7 @@ while true; do
     esac
 
 
-    #### End of [[ Main continued ]]
+    #### End of [[ Main Continued ]]
     ####################################################################################
 done
 
