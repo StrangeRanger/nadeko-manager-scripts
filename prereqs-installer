@@ -1,30 +1,26 @@
 #!/bin/bash
 #
-# Install the packages and dependencies required for NadekoBot to run on Linux.
-#
-# Comment key:
-#   A.1. - NOTE: If the write perms are not applied to all users for this tool, attempts
-#                to update 'youtube-dl' by a non-root user will always fail.
-#   B.1. - FIXME: Find a better solution than modifying the perms in such a way that I
-#                 have.
+# Install the prerequisites required by NadekoBot on Linux distributions.
 #
 ########################################################################################
 ####[ Functions ]#######################################################################
 
 
 ####
-# Install the packages and dependencies required by NadekoBot, on all compatible
-# Linux distributions.
+# Install all prerequisites.
 #
 # PARAMETERS:
 # 	- $1: distro_name (Required)
-#       Distribution name.
+#       - Distribution name.
 # 	- $2: distro_ver (Required)
-#       Distribution version.
+#       - Distribution version.
 #   - $3: python_pkg (Required)
-#       'python' or 'python-is-python3' (dependent on the distro version).
+#       - Python package to install.
+#       - Acceptable values:
+#           - python
+#           - python-is-python3
 #   - $4: dotnet_pref (Optional, Default: false)
-#       True if .NET preferences must be set.
+#       - True if .NET preferences must be set.
 install_prereqs() {
     local distro_name="$1"
     local distro_ver="$2"
@@ -53,30 +49,32 @@ install_prereqs() {
                 "\nPin: origin \"packages.microsoft.com\"" \
                 "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref \
                 || E_STDERR "Failed to create '/etc/apt/preferences.d/custom-dotnet.pref'" "1"
-            echo "${E_INFO}Reinstalling .NET Core..."
+        else
+            echo "${E_WARNING}The preferred .NET Core installation method is already set"
+            echo "${E_INFO}Skipping modification of the preferences..."
         fi
     fi
 
-    ## Install the SDK.
+    echo "${E_INFO}(Re)installing .NET Core..."
     sudo apt update && sudo apt install -y dotnet-sdk-6.0
 
-    ## Install music prerequisites.
     echo "${E_INFO}Installing music prerequisites..."
     sudo apt install -y libopus0 opus-tools libopus-dev libsodium-dev
 
-    ## Other prerequisites.
     echo "${E_INFO}Installing other prerequisites..."
     sudo apt install -y redis-server git ccze apt-transport-https ffmpeg python3 "$python_pkg"
     sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o  /usr/local/bin/youtube-dl
-    sudo chmod a+rwx /usr/local/bin/youtube-dl  # A.1. & B.1.
+    # If the write perms are not applied to all users for this tool, attempts to update
+    # 'youtube-dl' by a non-root user will always fail.
+    # TODO: Find a better solution than modifying the perms in such a way that I have.
+    sudo chmod a+rwx /usr/local/bin/youtube-dl
 }
 
 ####
-# Inform the end-user that their system is not supported by the automatic installation
-# of the prerequisites.
+# Display a message indicating that the installer does not support the current OS.
 unsupported() {
-    echo "${E_ERROR}The installer does not support the automatic installation and setup" \
-        "of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH"
+    echo "${E_ERROR}The installer does not support the automatic installation and" \
+        "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH"
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit 3
 }
