@@ -22,7 +22,7 @@ for file in "${C_FILES_TO_BACK_UP[@]}";
     do echo "${E_INFO}    $file"
 done
 echo -n "$E_NC"
-read -rp "${E_NOTICE}Press [Enter] to continue."
+read -rp "${E_NOTE}Press [Enter] to continue."
 
 [[ ! -d $C_TMP_BACKUP ]] && mkdir "$C_TMP_BACKUP"
 
@@ -61,4 +61,4 @@ else
 fi
 
 echo ""
-read -rp "${E_NOTICE}Press [Enter] to return to the main menu"
+read -rp "${E_NOTE}Press [Enter] to return to the main menu"

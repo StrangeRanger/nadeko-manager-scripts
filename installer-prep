@@ -61,7 +61,7 @@ detect_sys_info() {
 # $C_CURRENT_LINUXAIO_REVISION aren't of equal value.
 linuxAIO_update() {
     echo "${E_WARNING}You are using an older version of 'linuxAIO'"
-    read -rp "${E_NOTICE}Press [Enter] to download the latest version"
+    read -rp "${E_NOTE}Press [Enter] to download the latest version"
     echo "Downloading latest version of 'linuxAIO'..."
 
     ## Due to changes in 'linuxAIO', the existing configurations cannot be directly
@@ -82,7 +82,7 @@ linuxAIO_update() {
         fi
 
         curl -O "$_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
-        echo "${E_NOTICE}NOT applying existing configurations to 'linuxAIO'"
+        echo "${E_NOTE}NOT applying existing configurations to 'linuxAIO'"
         echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'.${E_NC}"
     ## Download the newest version of 'linuxAIO' and apply existing changes to it.
     else
@@ -242,7 +242,7 @@ fi
 # Change the working directory to the location of the executed script.
 cd "${0%/*}" || {
     echo "${E_ERROR}Failed to change working directory" >&2
-    echo "${E_NOTICE}Change your working directory to that of the executed script"
+    echo "${E_NOTE}Change your working directory to that of the executed script"
     clean_up "1" "Exiting"
 }
 
