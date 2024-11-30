@@ -4,8 +4,9 @@
 # and 'installer-prep'. To prevent any conflicts with updates to the installer, this
 # script has as little code as deemed necessary.
 #
-# README: Because this script remains on the user's system, any changes to the code that
-#         are pushed to github, are never applied to the version on the user's system.
+# README:
+#   Because this script remains on the user's system, any changes to the code that are
+#   pushed to github, are never applied to the version on the user's system.
 #         To get around this, the variable $E_LINUXAIO_REVISION contains a revision
 #         number that is updated every time any changes are made to 'linuxAIO'.
 #         Another variable in 'installer-prep' ($current_linuxAIO_revision) gets
@@ -16,16 +17,18 @@
 ########################################################################################
 #### [ Variables ]
 
-########################################################################################
-#### [[ Configuration Variables ]]
-#### Variables used to modify the behavior of the installer.
-####
-#### ~~~ THESE VARIABLES CAN BE MODIFIED BY THE END-USER ~~~
-####
-#### Whenever the installer retrieves the newest version of 'linuxAIO', all modified
-#### variables, with the exception of $installer_repo and $E_FILES_TO_BACK_UP, will be
-#### applied to the new version of this script.
 
+###
+### [ Configurable Variables ]
+###
+### Variables used to modify the behavior of the installer.
+###
+### ~~~ THESE VARIABLES CAN BE MODIFIED BY THE END-USER ~~~
+###
+### Whenever the installer retrieves the newest version of 'linuxAIO', all modified
+### variables, with the exception of $installer_repo and $E_FILES_TO_BACK_UP, will be
+### applied to the new version of this script.
+###
 
 # The repository containing all of the scripts used by the installer.
 #
@@ -49,12 +52,13 @@ installer_branch="main"
 # The branch/tag, of NadekoBot's official repo, that the installer will download the bot
 # from.
 #
-# IMPORTANT: Using a branch/tag containing code older than the one currently on your
-#            system, increases the likelihood of failed builds due to incompatible
-#            changes in the code/files coppied from the current to the newly downloaded
-#            version. For this, and other reasons, it's generally not recommended to
-#            to modify $E_BOT_INSTALL_VERSION. This is especially true when it comes
-#            to a difference in major versions, such as v3 and v4.
+# IMPORTANT:
+#   Using a branch/tag containing code older than the one currently on your system,
+#   increases the likelihood of failed builds due to incompatible changes in the
+#   code/files copied from the current to the newly downloaded version. For this, and
+#   other reasons, it's generally not recommended to to modify $E_BOT_INSTALL_VERSION.
+#   This is especially true when it comes to a difference in major versions, such as v3
+#   and v4.
 #
 # Options:
 #   v4    = Latest version (the master/main branch)
@@ -98,11 +102,9 @@ nadekobot/output/data/images.yml
 nadekobot/output/data/xp.yml
 nadekobot/output/data/xp_template.json"
 
-
-#### End of [[ Configuration Variables ]]
-########################################################################################
-#### [[ General Variables ]]
-
+###
+### [ General Variables ]
+###
 
 # 'linuxAIO' revision number.
 export E_LINUXAIO_REVISION=38
@@ -110,19 +112,10 @@ export E_LINUXAIO_REVISION=38
 export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
 
-#### End of [[ General Variables ]]
-########################################################################################
-
-#### End of [ Variables ]
-########################################################################################
-#### [ Main ]
+####[ Main ]############################################################################
 
 
 echo "Downloading the latest installer..."
 curl -O "$E_RAW_URL"/installer-prep
 sudo chmod +x installer-prep && ./installer-prep
 exit "$?"
-
-
-#### End of [ Main ]
-########################################################################################

@@ -5,7 +5,7 @@
 # supported, the main installer will be downloaded and executed.
 #
 ########################################################################################
-#### [ Exported and/or Globally Used Variables ]
+####[ Exported and/or Globally Used Variables ]#########################################
 
 
 # Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
@@ -26,9 +26,7 @@ main_installer="nadeko-main-installer"
 }
 
 
-#### End of [ Exported and/or Globally Used Variables ]
-########################################################################################
-#### [ Functions ]
+####[ Functions ]#######################################################################
 
 
 ########
@@ -184,9 +182,9 @@ execute_main_installer() {
     clean_up "$?" "Exiting"
 }
 
-########################################################################################
-#### [[ Functions To Be Exported ]]
-
+###
+### [ Functions To Be Exported ]
+###
 
 ########
 # Download the specified script and modify it's execution permissions.
@@ -221,12 +219,7 @@ E_STDERR() {
 }
 
 
-#### End of [[ Functions To Be Exported ]]
-########################################################################################
-
-#### End of [ Functions ]
-########################################################################################
-#### [ Error Traps ]
+####[ Error Traps ]#####################################################################
 
 
 trap 'clean_up "130" "Exiting" "true"' SIGINT
@@ -234,9 +227,7 @@ trap 'clean_up "143" "Exiting" "true"' SIGTERM
 trap 'clean_up "148" "Exiting" "true"' SIGTSTP
 
 
-#### End of [ Error Traps ]
-########################################################################################
-#### [ Prepping ]
+####[ Prepping ]########################################################################
 
 
 # If the current 'linuxAIO' revision number is not of equil value of the expected
@@ -257,9 +248,7 @@ export E_WORKING_DIR="$PWD"
 export E_INSTALLER_PREP="$E_WORKING_DIR/installer-prep"
 
 
-#### End of [ Prepping ]
-########################################################################################
-#### [ Main ]
+####[ Main ]############################################################################
 
 
 clear -x
@@ -299,7 +288,3 @@ if [[ $bits = 64 ]]; then
 else
     unsupported
 fi
-
-
-#### End of [ Main ]
-########################################################################################

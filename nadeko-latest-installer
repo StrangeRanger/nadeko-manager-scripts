@@ -9,7 +9,7 @@
 #          owned by the user that the installer is currently being run under.
 #
 ########################################################################################
-#### [ Variables ]
+####[ Variables ]#######################################################################
 
 
 export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Used when compiling code.
@@ -23,16 +23,14 @@ current_data="nadekobot/output/data"
 new_data="nadekobot_tmp/nadekobot/output/data"
 
 
-#### End of [ Variables ]
-########################################################################################
-#### [ Main ]
+####[ Main ]############################################################################
 
 
 read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
 
-########################################################################################
-#### [[ Stop Service ]]
-
+###
+### [ Stop Service ]]
+###
 
 ## Stop the service if it's currently running.
 if [[ $E_SERVICE_STATUS = "active" ]]; then
@@ -41,10 +39,9 @@ if [[ $E_SERVICE_STATUS = "active" ]]; then
 fi
 
 
-#### End of [[ Stop Service ]]
-########################################################################################
-#### [[ Create Backup and Update ]]
-
+###
+### [ Create Backup and Update ]
+###
 
 ## Create a temporary folder to download NadekoBot into.
 mkdir nadekobot_tmp
@@ -118,11 +115,9 @@ fi
 
 mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 
-
-#### End of [[ Create Backup and Update ]]
-########################################################################################
-#### [[ Clean Up and Present Results ]]
-
+###
+### [ Clean Up and Present Results ]
+###
 
 echo -e "\n${E_GREEN}Finished downloading/updating NadekoBot${E_NC}"
 
@@ -132,10 +127,3 @@ if "$service_is_active"; then
 fi
 
 read -rp "Press [Enter] to apply any existing changes to the installers"
-
-
-#### End of [[ Clean Up and Present Results ]]
-########################################################################################
-
-#### End of [ Main ]
-########################################################################################

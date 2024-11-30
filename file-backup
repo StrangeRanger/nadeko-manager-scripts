@@ -4,7 +4,7 @@
 # to $E_FILES_TO_BACK_UP in 'linuxAIO'.
 #
 ########################################################################################
-#### [ Variables ]
+####[ Variables ]#######################################################################
 
 
 current_backup="important_file_backup"
@@ -12,14 +12,12 @@ tmp_backup="important_file_backup_tmp"
 
 # Contains the files to be backed up.
 # REASON: The array is purposefully unquoted to allow for word splitting, for easy
-#         arrray itteration.
+#         array iteration.
 # shellcheck disable=SC2206
 files_to_back_up=($E_FILES_TO_BACK_UP)
 
 
-#### End of [ Variables ]
-########################################################################################
-#### [ Main ]
+####[ Main ]############################################################################
 
 
 echo "We will now back up the following files:${E_CYAN}"
@@ -67,7 +65,3 @@ fi
 
 echo ""
 read -rp "Press [Enter] to return to the main menu"
-
-
-#### End of [ Main ]
-########################################################################################

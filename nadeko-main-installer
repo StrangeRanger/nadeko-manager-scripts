@@ -7,7 +7,7 @@
 #   B.1. - Prevent the code from running if the option is disabled.
 #
 ########################################################################################
-#### [ Variables ]
+####[ Variables ]#######################################################################
 
 
 ## To be exported.
@@ -18,9 +18,7 @@ E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
 req_dotnet_version=6
 
 
-#### End of [ Variables ]
-########################################################################################
-#### [ Functions ]
+####[ Functions ]#######################################################################
 
 
 ########
@@ -80,9 +78,9 @@ disabled_reasons() {
     echo "$E_NC"
 }
 
-########################################################################################
-#### [[ Functions To Be Exported ]]
-
+###
+### [ Functions To Be Exported ]
+###
 
 ########
 # Store the status of NadekoBot's service, inside of $E_SERVICE_STATUS.
@@ -165,22 +163,18 @@ E_WATCH_SERVICE_LOGS() {
 }
 
 
-#### End of [[ Functions To Be Exported ]]
-########################################################################################
-
-#### End of [ Functions ]
-########################################################################################
-#### [ Main ]
+####[ Main ]############################################################################
 
 
 printf "%sWelcome to the NadekoBot installer menu\n\n" "$E_CLRLN"
 
 while true; do
-    ####################################################################################
-    #### [[ Temporary Variables ]]
-    #### The variables below constantly get modified later in the while loop, and are
-    #### required to be reset everytime the loop starts back at the top.
-
+    ###
+    ### [ Temporary Variables ]
+    ###
+    ### The variables below constantly get modified later in the while loop, and are
+    ### required to be reset everytime the loop starts back at the top.
+    ###
 
     ## Disabled option text.
     dis_option=" (Execute option to display the reason it's disabled)"
@@ -199,24 +193,21 @@ while true; do
     opt_seven_dis=false
     opt_seven_text="7. Back up important files"
 
-
-    #### End of [[ Temporary Variables ]]
-    ####################################################################################
-    #### [[ Variable Checks ]]
-    #### The following variables re-check the status, existence, etc., of some service
-    #### or program, that has the possibility of changing every time the while loop runs.
-
+    ###
+    ### [ Variable Checks ]
+    ###
+    ### The following variables re-check the status, existence, etc., of some service
+    ### or program, that has the possibility of changing every time the while loop runs.
+    ###
 
     if hash dotnet &>/dev/null; then
         dotnet_version=$(dotnet --version)     # Version: x.x.x
         dotnet_version=${dotnet_version//.*/}  # Version: x
     fi
 
-
-    #### End of [[ Variable Checks ]]
-    ####################################################################################
-    #### [[ Main Continued ]]
-
+    ###
+    ### [ Main Continued ]
+    ###
 
     E_GET_SERVICE_STATUS
     hash_ccze
@@ -390,12 +381,4 @@ while true; do
             echo ""
             ;;
     esac
-
-
-    #### End of [[ Main Continued ]]
-    ####################################################################################
 done
-
-
-#### End of [ Main ]
-########################################################################################
