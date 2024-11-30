@@ -6,9 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Improved script comments.
+- Improved the syntax and colorization of the output text.
+
 ### Fixed
 
-- Fixed where it says Mewdeko instead of NadekoBot
+- Fixed where it says Mewdeko instead of NadekoBot.
 
 ## [v3.2.5] - 2022-09-06
 
