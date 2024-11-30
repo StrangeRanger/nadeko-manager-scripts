@@ -6,6 +6,9 @@
         "creds",
         "DISTRO",
         "everytime",
+        "journalctl",
+        "libopus",
+        "libsodium",
         "LINUXAIO",
         "linuxmint",
         "Mewdeko",
@@ -16,7 +19,6 @@
         "pname",
         "prereqs",
         "SIGTSTP",
-        "SVER",
-        "journalctl"
+        "SVER"
     ]
 }
