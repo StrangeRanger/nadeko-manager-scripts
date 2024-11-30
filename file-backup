@@ -1,73 +1,63 @@
 #!/bin/bash
 #
-# Back up some of the more important files, that of which, can be configured by adding
-# to $_FILES_TO_BACK_UP in 'linuxAIO'.
+# Back up the files listed in the $C_FILES_TO_BACK_UP array.
 #
 ########################################################################################
-#### [ Variables ]
+####[ Global Variables ]################################################################
 
 
-current_backup="important_file_backup"
-tmp_backup="important_file_backup_tmp"
+readonly C_CURRENT_BACKUP="backed_up_files"
+readonly C_TMP_BACKUP="backed_up_files_tmp"
 
-# Contains the files to be backed up.
-# REASON: The array is purposefully unquoted to allow for word splitting, for easy
-#         arrray itteration.
 # shellcheck disable=SC2206
-files_to_back_up=($_FILES_TO_BACK_UP)
+#   The array is purposefully unquoted to allow for for easy array iteration.
+readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 
-#### End of [ Variables ]
-########################################################################################
-#### [ Main ]
+####[ Main ]############################################################################
 
 
-echo "We will now back up the following files:${_CYAN}"
-for file in "${files_to_back_up[@]}"; do echo "    $file"
+echo "${E_NOTE}We will now back up the following files:"
+for file in "${C_FILES_TO_BACK_UP[@]}";
+    do echo "  ${E_CYAN}| ${E_NC}    $file"
 done
-echo -n "$_NC"
-read -rp "Press [Enter] to continue."
+read -rp "${E_NOTE}Press [Enter] to continue."
 
-## Create '$tmp_backup' if it doesn't exist.
-[[ ! -d $tmp_backup ]] && mkdir "$tmp_backup"
+[[ ! -d $C_TMP_BACKUP ]] && mkdir "$C_TMP_BACKUP"
 
-## Copy all of the files listed in $files_to_back_up to $tmp_backup.
-echo "Backing up important files into '$tmp_backup'..."
-for file in "${files_to_back_up[@]}"; do
+echo "${E_INFO}Backing up important files into '$C_TMP_BACKUP'..."
+for file in "${C_FILES_TO_BACK_UP[@]}"; do
     if [[ -f $file ]]; then
-        cp -f "$file" "$tmp_backup" \
-            || echo "${_RED}Failed to back up ${file}${_NC}" >&2
+        cp -f "$file" "$C_TMP_BACKUP" || {
+            echo "${E_ERROR}Failed to back up '${file}'" >&2
+            exit 1
+        }
     else
-        echo "${_YELLOW}${file} could not be found${_NC}"
+        echo "${E_WARNING}'${file}' could not be found${E_NC}"
     fi
 done
 
-if [[ -d $current_backup ]]; then
-    ## Copy all files from $current_backup that do not contain ".old" in its name, to
-    ## $tmp_backup with ".old" appended to the end of the file's name.
-    echo "Renaming the old backups and moving them to '$tmp_backup'..."
+if [[ -d $C_CURRENT_BACKUP ]]; then
+    echo "${E_INFO}Renaming and moving old backups to '$C_TMP_BACKUP'..."
     while read -r file; do
         if [[ ! $file =~ ^.*.old$ ]]; then
-            cp "$current_backup"/"$file" "$tmp_backup"/"$file".old || {
-                echo "${_RED}Failed to rename and move ${file}${_NC}" >&2
+            cp "$C_CURRENT_BACKUP"/"$file" "$C_TMP_BACKUP"/"$file".old || {
+                echo "${E_ERROR}Failed to rename and move '${file}'${E_NC}" >&2
                 exit 1
             }
         fi
-    done < <(ls "$current_backup")
+    done < <(ls "$C_CURRENT_BACKUP")
 fi
 
 
-if [[ -d $current_backup ]]; then
-    echo "Removing '$current_backup' and renaming '$tmp_backup' as '$current_backup'..."
-    rm -rf "$current_backup" && mv "$tmp_backup" "$current_backup"
+if [[ -d $C_CURRENT_BACKUP ]]; then
+    echo "${E_INFO}Removing '$C_CURRENT_BACKUP' and renaming '$C_TMP_BACKUP' as" \
+        "'$C_CURRENT_BACKUP'..."
+    rm -rf "$C_CURRENT_BACKUP" && mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP"
 else
-    echo "Renaming '$tmp_backup' as '$current_backup'..."
-    mv "$tmp_backup" "$current_backup"
+    echo "${E_INFO}Renaming '$C_TMP_BACKUP' as '$C_CURRENT_BACKUP'..."
+    mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP"
 fi
 
 echo ""
-read -rp "Press [Enter] to return to the main menu"
-
-
-#### End of [ Main ]
-########################################################################################
+read -rp "${E_NOTE}Press [Enter] to return to the main menu"
