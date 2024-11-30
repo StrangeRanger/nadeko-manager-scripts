@@ -3,8 +3,8 @@
 # The main installer for Linux.
 #
 # Comment Key:
-#   A.1. - Return to prevent further code execution.
-#   B.1. - Prevent the code from running if the option is disabled.
+#   A.1.: Return to prevent further code execution.
+#   B.1.: Prevent the code from running if the option is disabled.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
@@ -14,53 +14,48 @@
 E_SERVICE_NAME="nadeko.service"
 E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
 
-# Indicates which major version of .NET is required.
-req_dotnet_version=6
+readonly C_REQ_DOTNET_VERSION=6
 
 
 ####[ Functions ]#######################################################################
 
 
-########
+####
 # Depending on the return/exit code from any of the executed scripts, perform the
 # corresponding/appropriate actions.
 #
 # Arguments:
-#   $1 - required
-#       Return/exit code.
-########
+#   - $1: exit_code (Required)
+#       - Return/exit code.
 exit_code_actions() {
-    case "$1" in
+    local exit_code="$1"
+
+    case "$exit_code" in
         3) return 0 ;;
-        *) exit "$1" ;;
+        *) exit "$exit_code" ;;
     esac
 }
 
-########
+####
 # Return whether or not 'ccze' is installed.
-#
-# Arguments:
-#   None
-########
 hash_ccze() {
-    hash ccze &>/dev/null && ccze_installed=true \
-                          || ccze_installed=false
+    if hash ccze &>/dev/null; then
+        C_CCZE_INSTALLED=true
+    else
+        C_CCZE_INSTALLED=false
+    fi
 }
 
-########
+####
 # Provide the reason(s) for why one or more options are disabled.
-#
-# Arguments:
-#   None
-########
 disabled_reasons() {
     echo "${E_CYAN}Reasons for the disabled option:"
 
     if (! hash dotnet \
             || ! hash redis-server \
             || (! hash python && (! hash python3 && ! hash python-is-python3)) \
-            || ! "$ccze_installed" \
-            || [[ ${dotnet_version:-false} != "$req_dotnet_version" ]]) &>/dev/null; then
+            || ! "$C_CCZE_INSTALLED" \
+            || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null; then
         echo "  One or more prerequisites are not installed"
         echo "    Use option 6 to install them all"
     fi
@@ -82,12 +77,8 @@ disabled_reasons() {
 ### [ Functions To Be Exported ]
 ###
 
-########
+####
 # Store the status of NadekoBot's service, inside of $E_SERVICE_STATUS.
-#
-# Arguments:
-#   None
-########
 E_GET_SERVICE_STATUS() {
     E_SERVICE_STATUS=$(systemctl is-active "$E_SERVICE_NAME")
 }
@@ -95,16 +86,17 @@ E_GET_SERVICE_STATUS() {
 ########
 # Stops NadekoBot's service.
 #
-# Arguments:
-#   $1 - optional
-#       True when the function should output text indicating if the service has been
-#       stopped or is currently not running.
+# PARAMETERS:
+#   - $1: output_text (Optional, Default: false)
+#       - True when the function should output text indicating if the service has been
+#         stopped or is currently not running.
 #
-# Returns:
-#   1 - If $E_SERVICE_NAME is not currently running.
-########
+# RETURNS:
+#   - 1: If $E_SERVICE_NAME is not currently running.
 E_STOP_SERVICE() {
-    if [[ $E_SERVICE_STATUS = "active" ]]; then
+    local output_text="${1:-false}"
+
+    if [[ $E_SERVICE_STATUS == "active" ]]; then
         echo "Stopping '$E_SERVICE_NAME'..."
         sudo systemctl stop "$E_SERVICE_NAME" || {
             echo "${E_RED}Failed to stop '$E_SERVICE_NAME'" >&2
@@ -112,18 +104,16 @@ E_STOP_SERVICE() {
                 "updates to NadekoBot${E_NC}"
             return 1
         }
-        [[ $1 = true ]] && echo -e "\n${E_GREEN}NadekoBot has been stopped${E_NC}"
+        [[ $output_text == true ]] \
+            && echo -e "\n${E_GREEN}NadekoBot has been stopped${E_NC}"
     else
-        [[ $1 = true ]] && echo -e "\n${E_CYAN}NadekoBot is not currently running${E_NC}"
+        [[ $output_text == true ]] \
+            && echo -e "\n${E_CYAN}NadekoBot is not currently running${E_NC}"
     fi
 }
 
 ########
 # Display the logs from 'nadeko.server' as they are created.
-#
-# Arguments:
-#   None
-########
 E_FOLLOW_SERVICE_LOGS() {
     (
         trap 'exit 130' SIGINT
@@ -135,15 +125,19 @@ E_FOLLOW_SERVICE_LOGS() {
 # Output additional information to go along with the output of the function
 # 'E_FOLLOW_SERVICE_LOGS'.
 #
-# Arguments:
-#   $1 - required
-#       Indicates if the function was called from one of the runner scripts or from
-#       within the main installer.
-########
+# PARAMETERS:
+#   - $1: log_type (Required)
+#       - Indicates if the function was called from one of the runner scripts or from
+#         within the main installer.
+#       - Acceptable values:
+#           - "runner": Called from one of the runner scripts.
+#           - "opt_five": Called from the main installer.
 E_WATCH_SERVICE_LOGS() {
-    if [[ $1 = "runner" ]]; then
+    local log_type="$1"
+
+    if [[ $log_type == "runner" ]]; then
         echo "Displaying '$E_SERVICE_NAME' startup logs, live..."
-    elif [[ $1 = "opt_five" ]]; then
+    elif [[ $log_type == "opt_five" ]]; then
         echo "Watching '$E_SERVICE_NAME' logs, live..."
     else
         E_STDERR "INTERNAL ERROR: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" "4"
@@ -155,7 +149,7 @@ E_WATCH_SERVICE_LOGS() {
 
     E_FOLLOW_SERVICE_LOGS
 
-    [[ $1 = "runner" ]] && echo -e "\nPlease check the logs above to make sure that" \
+    [[ $1 == "runner" ]] && echo -e "\nPlease check the logs above to make sure that" \
         "there aren't any errors, and if there are, to resolve whatever issue is" \
         "causing them"
 
@@ -216,8 +210,8 @@ while true; do
     if (! hash dotnet \
             || ! hash redis-server \
             || ! hash python3 \
-            || ! "$ccze_installed" \
-            || [[ ${dotnet_version:-false} != "$req_dotnet_version" ]]) &>/dev/null; then
+            || ! "$C_CCZE_INSTALLED" \
+            || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null; then
         opt_one_dis=true
         opt_one_text="${E_GREY}${opt_one_text}${dis_option}${E_NC}"
     fi

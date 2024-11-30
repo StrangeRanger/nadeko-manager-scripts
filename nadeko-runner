@@ -3,8 +3,8 @@
 # Start NadekoBot in a specified run mode.
 #
 # Comment key:
-#   A.1. - Used in conjunction with 'systemctl'.
-#   B.1. - Used in the text output.
+#   A.1.: Used in conjunction with 'systemctl'.
+#   B.1.: Used in the text output.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
@@ -12,23 +12,21 @@
 
 ### Indicate which actions to be performed on NadekoBot's service.
 if [[ $E_CODENAME = "NadekoRun" ]]; then
-    lower="disable"    # A.1.
-    upper="Disabling"  # B.1.
+    readonly C_LOWER="disable"    # A.1.
+    readonly C_UPPER="Disabling"  # B.1.
 else
-    lower="enable"    # A.1.
-    upper="Enabling"  # B.1.
+    readonly C_LOWER="enable"    # A.1.
+    readonly C_UPPER="Enabling"  # B.1.
 fi
 
-systemd_version_tmp=$(systemd --version)
-# shellcheck disable=SC2206
-systemd_version_tmp=($systemd_version_tmp)
-systemd_version=${systemd_version_tmp[1]}
+systemd_version=$(systemd --version | awk 'NR==1 {print $2}')
 
 ## The contents of NadekoBot's service.
-## NOTE: 'StandardOutput' and 'StandardError' no longer supports 'syslog' starting in
-##       version 246 of systemd.
-if ((systemd_version >= 246)); then
-    service_content="[Unit]
+## NOTE:
+##  'StandardOutput' and 'StandardError' no longer supports 'syslog' starting in
+##  version 246 of systemd.
+if (( systemd_version >= 246)); then
+    readonly C_SERVICE_CONTENT="[Unit]
 Description=NadekoBot service
 After=network.target
 StartLimitIntervalSec=60
@@ -48,7 +46,7 @@ SyslogIdentifier=NadekoBot
 [Install]
 WantedBy=multi-user.target"
 else
-    service_content="[Unit]
+    readonly C_SERVICE_CONTENT="[Unit]
 Description=NadekoBot service
 After=network.target
 StartLimitIntervalSec=60
@@ -69,6 +67,8 @@ SyslogIdentifier=NadekoBot
 WantedBy=multi-user.target"
 fi
 
+unset systemd_version
+
 
 ####[ Main ]############################################################################
 
@@ -80,7 +80,7 @@ fi
 
 {
     # Create/update the service.
-    echo "$service_content" | sudo tee "$E_SERVICE" &>/dev/null \
+    echo "$C_SERVICE_CONTENT" | sudo tee "$E_SERVICE" &>/dev/null \
         && sudo systemctl daemon-reload
 } || {
     echo "${E_RED}Failed to create '$E_SERVICE_NAME'" >&2
@@ -90,10 +90,10 @@ fi
 }
 
 ## Disable/enable the service.
-echo "$upper '$E_SERVICE_NAME'..."
-sudo systemctl "$lower" "$E_SERVICE_NAME" || {
-    echo "${E_RED}Failed to $lower '$E_SERVICE_NAME'" >&2
-    echo "${E_CYAN}This service must be ${lower}d in order to use this run mode${E_NC}"
+echo "$C_UPPER '$E_SERVICE_NAME'..."
+sudo systemctl "$C_LOWER" "$E_SERVICE_NAME" || {
+    echo "${E_RED}Failed to $C_LOWER '$E_SERVICE_NAME'" >&2
+    echo "${E_CYAN}This service must be ${C_LOWER}d in order to use this run mode${E_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exit 3
 }
@@ -154,7 +154,7 @@ else
         "    fi" \
         "" \
         "    dotnet NadekoBot.dll || {" \
-        "        echo \"An error occurred when trying to start NadekBot\"" \
+        "        echo \"An error occurred when trying to start NadekoBot\"" \
         "        echo \"Exiting...\"" \
         "        exit 1" \
         "    }" \

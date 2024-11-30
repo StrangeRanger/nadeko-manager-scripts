@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# Download and update NadekoBot.
+# This script downloads and updates NadekoBot.
 #
 # Comment Key:
-#   A.1. - Due to permission errors cropping up every now and then, especially when the
-#          installer is executed with root privilege then later as a non-root user, it's
-#          necessary to make sure that '/tmp/NuGetScratch' and '/home/$USER/.nuget' are
-#          owned by the user that the installer is currently being run under.
+#   - A.1.: To prevent permission errors that can occur, especially when the installer
+#       is run with root privileges and later as a non-root user, it's necessary to
+#       ensure that '/tmp/NuGetScratch' and '/home/$USER/.nuget' are owned by the user
+#       currently running the installer.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
@@ -14,13 +14,15 @@
 
 export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Used when compiling code.
 
+readonly C_NADEKOBOT_URL="https://gitlab.com/Kwoth/nadekobot"
+readonly C_CURRENT_CREDS="nadekobot/output/creds.yml"
+readonly C_NEW_CREDS="nadekobot_tmp/nadekobot/output/creds.yml"
+readonly C_CURRENT_DATABASE="nadekobot/output/data/NadekoBot.db"
+readonly C_NEW_DATABASE="nadekobot_tmp/nadekobot/output/data/NadekoBot.db"
+readonly C_CURRENT_DATA="nadekobot/output/data"
+readonly C_NEW_DATA="nadekobot_tmp/nadekobot/output/data"
+
 service_is_active=false
-current_creds="nadekobot/output/creds.yml"
-new_creds="nadekobot_tmp/nadekobot/output/creds.yml"
-current_database="nadekobot/output/data/NadekoBot.db"
-new_database="nadekobot_tmp/nadekobot/output/data/NadekoBot.db"
-current_data="nadekobot/output/data"
-new_data="nadekobot_tmp/nadekobot/output/data"
 
 
 ####[ Main ]############################################################################
@@ -29,11 +31,11 @@ new_data="nadekobot_tmp/nadekobot/output/data"
 read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
 
 ###
-### [ Stop Service ]]
+### [ Stop Service ]
 ###
 
 ## Stop the service if it's currently running.
-if [[ $E_SERVICE_STATUS = "active" ]]; then
+if [[ $E_SERVICE_STATUS == "active" ]]; then
     service_is_active=true
     E_STOP_SERVICE
 fi
@@ -48,7 +50,7 @@ mkdir nadekobot_tmp
 cd nadekobot_tmp || E_STDERR "Failed to change working directory" "1"
 
 echo "Downloading NadekoBot into 'nadekobot_tmp'..."
-git clone -b "$E_BOT_INSTALL_VERSION" --recursive --depth 1 https://gitlab.com/Kwoth/nadekobot \
+git clone -b "$E_BOT_INSTALL_VERSION" --recursive --depth 1 "$C_NADEKOBOT_URL" \
     || E_STDERR "Failed to download NadekoBot" "1"
 
 ## A.1.
@@ -66,6 +68,7 @@ if [[ -d  /home/$USER/.nuget ]]; then
 fi
 
 echo "Building NadekoBot..."
+# TODO: Improve the following line(s).
 # shellcheck disable=SC2015
 cd nadekobot \
     && dotnet restore -f --no-cache \
@@ -76,39 +79,40 @@ cd nadekobot \
 ## Move credentials, database, and other data to the new version of NadekoBot.
 if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
     echo "Copying 'creds.yml' to the new version..."
-    cp -f "$current_creds" "$new_creds" &>/dev/null
+    cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS" &>/dev/null
     echo "Copying database to the new version..."
-    cp -RT "$current_database" "$new_database" &>/dev/null
+    cp -RT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE" &>/dev/null
 
     echo "Copying other data to the new version..."
 
-    #### The end-user will have to manually re-add their strings after each update as
-    #### updates may cause a number of strings to become obsolete, changed, etc.
-    #### However, old user's strings will be backed up as strings_old.
+    ### IMPORTANT:
+    ###     The end-user will have to manually re-add their strings after each update as
+    ###     updates may cause a number of strings to become obsolete, changed, etc.
+    ###     However, old user's strings will be backed up as strings_old.
 
     ## Back up new strings to reverse rewrite.
-    rm -rf "$new_data"/strings_new &>/dev/null
-    mv -fT "$new_data"/strings "$new_data"/strings_new
+    rm -rf "$C_NEW_DATA"/strings_new &>/dev/null
+    mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_new
 
     ## Delete old string backups.
-    rm -rf "$current_data"/strings_old &>/dev/null
-    rm -rf "$current_data"/strings_new &>/dev/null
+    rm -rf "$C_CURRENT_DATA"/strings_old &>/dev/null
+    rm -rf "$C_CURRENT_DATA"/strings_new &>/dev/null
 
     # Back up new aliases to reverse rewrite.
-    mv -f "$new_data"/aliases.yml "$new_data"/aliases_new.yml
+    mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_new.yml
 
     # Move old data folder contents (and overwrite).
-    cp -RT "$current_data" "$new_data"
+    cp -RT "$C_CURRENT_DATA" "$C_NEW_DATA"
 
     # Back up old aliases.
-    mv -f "$new_data"/aliases.yml "$new_data"/aliases_old.yml
+    mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_old.yml
     # Restore new aliases.
-    mv -f "$new_data"/aliases_new.yml "$new_data"/aliases.yml
+    mv -f "$C_NEW_DATA"/aliases_new.yml "$C_NEW_DATA"/aliases.yml
 
     # Back up old strings.
-    mv -f "$new_data"/strings "$new_data"/strings_old
+    mv -f "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_old
     # Restore new strings.
-    mv -f "$new_data"/strings_new "$new_data"/strings
+    mv -f "$C_NEW_DATA"/strings_new "$C_NEW_DATA"/strings
 
     rm -rf nadekobot_old && mv -f nadekobot nadekobot_old
 fi
@@ -121,7 +125,7 @@ mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 
 echo -e "\n${E_GREEN}Finished downloading/updating NadekoBot${E_NC}"
 
-if "$service_is_active"; then
+if [[ $service_is_active == true ]]; then
     echo "${E_CYAN}NOTE: '$E_SERVICE_NAME' was stopped to update NadekoBot and" \
         "needs to be started using one of the run modes in the installer menu${E_NC}"
 fi

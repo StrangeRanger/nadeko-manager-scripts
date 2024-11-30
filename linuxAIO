@@ -1,18 +1,17 @@
 #!/bin/bash
 #
-# 'linuxAIO' acts as the intermediary between the system NadekoBot is being hosted on
-# and 'installer-prep'. To prevent any conflicts with updates to the installer, this
-# script has as little code as deemed necessary.
+# 'linuxAIO' serves as an intermediary between the system running Mewdeko and
+# 'installer-prep'. To prevent conflicts with installer updates, this script contains
+# only the essential code.
 #
 # README:
-#   Because this script remains on the user's system, any changes to the code that are
-#   pushed to github, are never applied to the version on the user's system.
-#         To get around this, the variable $E_LINUXAIO_REVISION contains a revision
-#         number that is updated every time any changes are made to 'linuxAIO'.
-#         Another variable in 'installer-prep' ($current_linuxAIO_revision) gets
-#         updated alongside with $E_LINUXAIO_REVISION. Whenever the user executes the
-#         installer, 'installer-prep' will compare the two variables. If they are not
-#         of equal value, the newest version of 'linuxAIO' is retrieved from github.
+#   Since this script resides on the user's system, any code changes pushed to GitHub
+#   are not automatically applied to the user's version. To address this, the variable
+#   $E_LINUXAIO_REVISION holds a revision number updated whenever 'linuxAIO' changes.
+#   The 'installer-prep' script also contains a variable, $current_linuxAIO_revision,
+#   updated alongside $E_LINUXAIO_REVISION. When the user runs the installer,
+#   'installer-prep' compares these two variables. If they differ, the latest version
+#   of 'linuxAIO' is fetched from GitHub.
 #
 ########################################################################################
 #### [ Variables ]
@@ -21,13 +20,11 @@
 ###
 ### [ Configurable Variables ]
 ###
-### Variables used to modify the behavior of the installer.
-###
 ### ~~~ THESE VARIABLES CAN BE MODIFIED BY THE END-USER ~~~
 ###
 ### Whenever the installer retrieves the newest version of 'linuxAIO', all modified
-### variables, with the exception of $installer_repo and $E_FILES_TO_BACK_UP, will be
-### applied to the new version of this script.
+### variables, except $installer_repo and $E_FILES_TO_BACK_UP, will be applied to the
+### new version of this script.
 ###
 
 # The repository containing all of the scripts used by the installer.
