@@ -86,7 +86,7 @@ unsupported() {
 
 
 printf "%sWe will now install NadekoBot's prerequisites." "${E_NOTE}"
-echo "Press [Enter] to continue."
+read -rp "Press [Enter] to continue."
 
 if [[ $E_DISTRO == "ubuntu" ]]; then
     case "$E_VER" in
