@@ -62,7 +62,7 @@ detect_sys_info() {
 linuxAIO_update() {
     echo "${E_WARNING}You are using an older version of 'linuxAIO'"
     read -rp "${E_NOTE}Press [Enter] to download the latest version"
-    echo "Downloading latest version of 'linuxAIO'..."
+    echo "${E_INFO}Downloading latest version of 'linuxAIO'..."
 
     ## Due to changes in 'linuxAIO', the existing configurations cannot be directly
     ## applied to the newest version of 'linuxAIO'. As a result, the existing
