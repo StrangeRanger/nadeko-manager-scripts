@@ -19,7 +19,7 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 echo "${E_NOTE}We will now back up the following files:"
 for file in "${C_FILES_TO_BACK_UP[@]}";
-    do echo "${E_CYAN}|${E_NC}    $file"
+    do echo "  ${E_CYAN}| ${E_NC}    $file"
 done
 read -rp "${E_NOTE}Press [Enter] to continue."
 
