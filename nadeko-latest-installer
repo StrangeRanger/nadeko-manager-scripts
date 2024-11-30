@@ -28,7 +28,7 @@ service_is_active=false
 ####[ Main ]############################################################################
 
 
-read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
+read -rp "${E_NOTE}We will now download/update NadekoBot. Press [Enter] to begin."
 
 ###
 ### [ Stop Service ]
@@ -49,20 +49,20 @@ fi
 mkdir nadekobot_tmp
 cd nadekobot_tmp || E_STDERR "Failed to change working directory" "1"
 
-echo "Downloading NadekoBot into 'nadekobot_tmp'..."
+echo "${E_INFO}Downloading NadekoBot into 'nadekobot_tmp'..."
 git clone -b "$E_BOT_INSTALL_VERSION" --recursive --depth 1 "$C_NADEKOBOT_URL" \
     || E_STDERR "Failed to download NadekoBot" "1"
 
 ## A.1.
 if [[ -d /tmp/NuGetScratch ]]; then
-    echo "Modifying ownership of '/tmp/NuGetScratch'..."
+    echo "${E_INFO}Modifying ownership of '/tmp/NuGetScratch'..."
     sudo chown -R "$USER":"$USER" /tmp/NuGetScratch \
         || E_STDERR "Failed to to modify the ownership of '/tmp/NuGetScratch'" "1"
 fi
 
 ## A.1.
 if [[ -d  /home/$USER/.nuget ]]; then
-    echo "Modifying ownership of '/home/$USER/.nuget'..."
+    echo "${E_INFO}Modifying ownership of '/home/$USER/.nuget'..."
     sudo chown -R "$USER":"$USER" /home/"$USER"/.nuget \
         || E_STDERR "Failed to to modify the ownership of '/home/$USER/.nuget'..." "1"
 fi
@@ -78,12 +78,12 @@ cd nadekobot \
 
 ## Move credentials, database, and other data to the new version of NadekoBot.
 if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
-    echo "Copying 'creds.yml' to the new version..."
+    echo "${E_INFO}Copying 'creds.yml' to the new version..."
     cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS" &>/dev/null
-    echo "Copying database to the new version..."
+    echo "${E_INFO}Copying database to the new version..."
     cp -RT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE" &>/dev/null
 
-    echo "Copying other data to the new version..."
+    echo "${E_INFO}Copying other data to the new version..."
 
     ### IMPORTANT:
     ###     The end-user will have to manually re-add their strings after each update as
@@ -123,11 +123,11 @@ mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 ### [ Clean Up and Present Results ]
 ###
 
-echo -e "\n${E_GREEN}Finished downloading/updating NadekoBot${E_NC}"
+echo -e "\n${E_SUCCESS}Finished downloading/updating NadekoBot${E_NC}"
 
 if [[ $service_is_active == true ]]; then
-    echo "${E_CYAN}NOTE: '$E_SERVICE_NAME' was stopped to update NadekoBot and" \
-        "needs to be started using one of the run modes in the installer menu${E_NC}"
+    echo "${E_NOTE}'$E_SERVICE_NAME' was stopped to update NadekoBot and needs to be" \
+        "started using one of the run modes in the installer menu${E_NC}"
 fi
 
-read -rp "Press [Enter] to apply any existing changes to the installers"
+read -rp "${E_NOTE}Press [Enter] to apply any existing changes to the installers"
