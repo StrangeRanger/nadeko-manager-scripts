@@ -81,7 +81,8 @@ linuxAIO_update() {
             mv linuxAIO linuxAIO.old
         fi
 
-        curl -O "$_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
+        curl -O "$_RAW_URL/linuxAIO"
+        sudo chmod +x linuxAIO
         echo "${E_NOTE}NOT applying existing configurations to 'linuxAIO'"
         echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'.${E_NC}"
     ## Download the newest version of 'linuxAIO' and apply existing changes to it.
