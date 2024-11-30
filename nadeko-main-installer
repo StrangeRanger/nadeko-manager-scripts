@@ -2,6 +2,9 @@
 #
 # The main installer for Linux.
 #
+# TODO: Create creds.yml if it doesn't exist, instead of just saying it doesn't exist.
+# TODO: Have script check if creds.yml has a token set, and if not, prompt the user to set one.
+#
 # Comment Key:
 #   A.1.: Return to prevent further code execution.
 #   B.1.: Prevent the code from running if the option is disabled.
