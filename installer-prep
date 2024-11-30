@@ -13,13 +13,6 @@ current_linuxAIO_revision=38
 # Name of the main installer script.
 main_installer="nadeko-main-installer"
 
-# Similar to 'current_linuxAIO_revision', expecpt it's used as a more general tracking
-# number. Instead of only being used to represent the relationship between this script
-# and 'linuxAIO', it represents major changes to the installer that requires a change in
-# behavior, that would otherwise result in conflict with older verisons of the script.
-# TODO: Remove variable; it's not being used.
-export _REVISION_NUMBER=1
-
 ## Modify output text color.
 # shellcheck disable=SC2155
 {
