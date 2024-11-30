@@ -21,7 +21,6 @@ echo "${E_NOTE}We will now back up the following files:"
 for file in "${C_FILES_TO_BACK_UP[@]}";
     do echo "${E_CYAN}|${E_NC}    $file"
 done
-echo -n "$E_NC"
 read -rp "${E_NOTE}Press [Enter] to continue."
 
 [[ ! -d $C_TMP_BACKUP ]] && mkdir "$C_TMP_BACKUP"
