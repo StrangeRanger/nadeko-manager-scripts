@@ -7,6 +7,8 @@
         "DISTRO",
         "everytime",
         "LINUXAIO",
+        "linuxmint",
+        "Mewdeko",
         "Nadeko",
         "nadekobot",
         "Niether",
@@ -14,6 +16,7 @@
         "pname",
         "prereqs",
         "SIGTSTP",
-        "SVER"
+        "SVER",
+        "journalctl"
     ]
 }
