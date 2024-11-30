@@ -99,7 +99,7 @@ E_STOP_SERVICE() {
     if [[ $E_SERVICE_STATUS == "active" ]]; then
         echo "Stopping '$E_SERVICE_NAME'..."
         sudo systemctl stop "$E_SERVICE_NAME" || {
-            echo "${E_RED}Failed to stop '$E_SERVICE_NAME'" >&2
+            echo "${E_ERROR}Failed to stop '$E_SERVICE_NAME'" >&2
             echo "${E_CYAN}You will need to restart '$E_SERVICE_NAME' to apply any" \
                 "updates to NadekoBot${E_NC}"
             return 1
@@ -232,10 +232,10 @@ while true; do
     ## Options 2 and 3 remain enabled, if 'NadekoRun' exists.
     elif [[ -f NadekoRun ]]; then
         ## Option 5 remains enabled, if NadekoBot's service is running.
-        if [[ $E_SERVICE_STATUS = "active" ]]; then
+        if [[ $E_SERVICE_STATUS == "active" ]]; then
             run_mode_status=" ${E_GREEN}(Running in this mode)${E_NC}"
         ## Disable option 5 if NadekoBot's service NOT running.
-        elif [[ $E_SERVICE_STATUS = "inactive" ]]; then
+        elif [[ $E_SERVICE_STATUS == "inactive" ]]; then
             opt_five_dis=true
             opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
             run_mode_status=" ${E_YELLOW}(Set up to run in this mode)${E_NC}"
@@ -273,7 +273,7 @@ while true; do
             ## B.1.
             if "$opt_one_dis"; then
                 clear -x
-                echo "${E_RED}Option 1 is currently disabled${E_NC}"
+                echo "${E_ERROR}Option 1 is currently disabled${E_NC}"
                 disabled_reasons
                 continue
             fi
@@ -299,7 +299,7 @@ while true; do
             ## B.1.
             if "$opt_two_and_three_dis"; then
                 clear -x
-                echo "${E_RED}Option $choice is currently disabled${E_NC}"
+                echo "${E_ERROR}Option $choice is currently disabled${E_NC}"
                 disabled_reasons
                 continue
             fi
@@ -314,7 +314,7 @@ while true; do
             clear -x
 
             # If option 2 was executed...
-            if [[ $choice = 2 ]]; then
+            if [[ $choice == 2 ]]; then
                 export E_CODENAME="NadekoRun"
                 printf "We will now run NadekoBot in the background. "
             # If option 3 was executed...
@@ -338,7 +338,7 @@ while true; do
             clear -x
             ## B.1.
             if "$opt_five_dis"; then
-                echo "${E_RED}Option 5 is currently disabled${E_NC}"
+                echo "${E_ERROR}Option 5 is currently disabled${E_NC}"
                 echo ""
                 continue
             fi
@@ -356,7 +356,7 @@ while true; do
             ## B.1.
             if "$opt_seven_dis"; then
                 clear -x
-                echo "${E_RED}Option 7 is currently disabled${E_NC}"
+                echo "${E_ERROR}Option 7 is currently disabled${E_NC}"
                 disabled_reasons
                 continue
             fi
@@ -371,7 +371,7 @@ while true; do
             ;;
         *)
             clear -x
-            echo "${E_RED}Invalid input: '$choice' is not a valid option${E_NC}" >&2
+            echo "${E_ERROR}Invalid input: '$choice' is not a valid option${E_NC}" >&2
             echo ""
             ;;
     esac

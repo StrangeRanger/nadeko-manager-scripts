@@ -10,39 +10,40 @@ readonly C_CURRENT_BACKUP="backed_up_files"
 readonly C_TMP_BACKUP="backed_up_files_tmp"
 
 # shellcheck disable=SC2206
-#   The array is purposefully unquoted to allow for word splitting, for easy array
-#   iteration.
+#   The array is purposefully unquoted to allow for for easy array iteration.
 readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 
 ####[ Main ]############################################################################
 
 
-echo "We will now back up the following files:${E_CYAN}"
+echo "{$E_INFO}We will now back up the following files:${E_CYAN}"
 for file in "${C_FILES_TO_BACK_UP[@]}";
-    do echo "    $file"
+    do echo "${E_INFO}    $file"
 done
 echo -n "$E_NC"
-read -rp "Press [Enter] to continue."
+read -rp "${E_NOTICE}Press [Enter] to continue."
 
 [[ ! -d $C_TMP_BACKUP ]] && mkdir "$C_TMP_BACKUP"
 
-echo "Backing up important files into '$C_TMP_BACKUP'..."
+echo "${E_INFO}Backing up important files into '$C_TMP_BACKUP'..."
 for file in "${C_FILES_TO_BACK_UP[@]}"; do
     if [[ -f $file ]]; then
-        cp -f "$file" "$C_TMP_BACKUP" \
-            || echo "${E_RED}Failed to back up ${file}${E_NC}" >&2
+        cp -f "$file" "$C_TMP_BACKUP" || {
+            echo "${E_ERROR}Failed to back up '${file}'" >&2
+            exit 1
+        }
     else
-        echo "${E_YELLOW}${file} could not be found${E_NC}"
+        echo "${E_WARNING}'${file}' could not be found${E_NC}"
     fi
 done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
-    echo "Renaming the old backups and moving them to '$C_TMP_BACKUP'..."
+    echo "${E_INFO}Renaming and moving old backups to '$C_TMP_BACKUP'..."
     while read -r file; do
         if [[ ! $file =~ ^.*.old$ ]]; then
             cp "$C_CURRENT_BACKUP"/"$file" "$C_TMP_BACKUP"/"$file".old || {
-                echo "${E_RED}Failed to rename and move ${file}${E_NC}" >&2
+                echo "${E_ERROR}Failed to rename and move '${file}'${E_NC}" >&2
                 exit 1
             }
         fi
@@ -51,12 +52,13 @@ fi
 
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
-    echo "Removing '$C_CURRENT_BACKUP' and renaming '$C_TMP_BACKUP' as '$C_CURRENT_BACKUP'..."
+    echo "${E_INFO}Removing '$C_CURRENT_BACKUP' and renaming '$C_TMP_BACKUP' as" \
+        "'$C_CURRENT_BACKUP'..."
     rm -rf "$C_CURRENT_BACKUP" && mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP"
 else
-    echo "Renaming '$C_TMP_BACKUP' as '$C_CURRENT_BACKUP'..."
+    echo "${E_INFO}Renaming '$C_TMP_BACKUP' as '$C_CURRENT_BACKUP'..."
     mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP"
 fi
 
 echo ""
-read -rp "Press [Enter] to return to the main menu"
+read -rp "${E_NOTICE}Press [Enter] to return to the main menu"

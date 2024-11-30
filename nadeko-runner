@@ -11,7 +11,7 @@
 
 
 ### Indicate which actions to be performed on NadekoBot's service.
-if [[ $E_CODENAME = "NadekoRun" ]]; then
+if [[ $E_CODENAME == "NadekoRun" ]]; then
     readonly C_LOWER="disable"    # A.1.
     readonly C_UPPER="Disabling"  # B.1.
 else
@@ -25,7 +25,7 @@ systemd_version=$(systemd --version | awk 'NR==1 {print $2}')
 ## NOTE:
 ##  'StandardOutput' and 'StandardError' no longer supports 'syslog' starting in
 ##  version 246 of systemd.
-if (( systemd_version >= 246)); then
+if ((systemd_version >= 246)); then
     readonly C_SERVICE_CONTENT="[Unit]
 Description=NadekoBot service
 After=network.target
@@ -74,8 +74,10 @@ unset systemd_version
 
 
 # Check if the service exists.
-if [[ -f $E_SERVICE ]]; then echo "Updating '$E_SERVICE_NAME'..."
-else                        echo "Creating '$E_SERVICE_NAME'..."
+if [[ -f $E_SERVICE ]]; then
+    echo "Updating '$E_SERVICE_NAME'..."
+else
+    echo "Creating '$E_SERVICE_NAME'..."
 fi
 
 {
@@ -83,7 +85,7 @@ fi
     echo "$C_SERVICE_CONTENT" | sudo tee "$E_SERVICE" &>/dev/null \
         && sudo systemctl daemon-reload
 } || {
-    echo "${E_RED}Failed to create '$E_SERVICE_NAME'" >&2
+    echo "${E_ERROR}Failed to create '$E_SERVICE_NAME'" >&2
     echo "${E_CYAN}This service must exist for NadekoBot to work${E_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exit 3
@@ -92,16 +94,14 @@ fi
 ## Disable/enable the service.
 echo "$C_UPPER '$E_SERVICE_NAME'..."
 sudo systemctl "$C_LOWER" "$E_SERVICE_NAME" || {
-    echo "${E_RED}Failed to $C_LOWER '$E_SERVICE_NAME'" >&2
+    echo "${E_ERROR}Failed to $C_LOWER '$E_SERVICE_NAME'" >&2
     echo "${E_CYAN}This service must be ${C_LOWER}d in order to use this run mode${E_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exit 3
 }
 
-# Check if 'NadekoRun' exists.
 if [[ -f NadekoRun ]]; then
     echo "Updating 'NadekoRun'..."
-## Create 'NadekoRun' if it doesn't exist.
 else
     echo "Creating 'NadekoRun'..."
     touch NadekoRun
@@ -109,7 +109,7 @@ else
 fi
 
 ## Add the code required to run NadekoBot in the background, to 'NadekoRun'.
-if [[ $E_CODENAME = "NadekoRun" ]]; then
+if [[ $E_CODENAME == "NadekoRun" ]]; then
     printf '%s\n' \
         "#!/bin/bash" \
         "" \
@@ -169,10 +169,10 @@ else
 fi
 
 ## Restart the service if it is currently running.
-if [[ $E_SERVICE_STATUS = "active" ]]; then
+if [[ $E_SERVICE_STATUS == "active" ]]; then
     echo "Restarting '$E_SERVICE_NAME'..."
     sudo systemctl restart "$E_SERVICE_NAME" || {
-        echo "${E_RED}Failed to restart '$E_SERVICE_NAME'${E_NC}" >&2
+        echo "${E_ERROR}Failed to restart '$E_SERVICE_NAME'${E_NC}" >&2
         read -rp "Press [Enter] to return to the installer menu"
         exit 3
     }
@@ -180,7 +180,7 @@ if [[ $E_SERVICE_STATUS = "active" ]]; then
 else
     echo "Starting '$E_SERVICE_NAME'..."
     sudo systemctl start "$E_SERVICE_NAME" || {
-        echo "${E_RED}Failed to start '$E_SERVICE_NAME'${E_NC}" >&2
+        echo "${E_ERROR}Failed to start '$E_SERVICE_NAME'${E_NC}" >&2
         read -rp "Press [Enter] to return to the installer menu"
         exit 3
     }

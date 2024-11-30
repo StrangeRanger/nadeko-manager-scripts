@@ -20,7 +20,15 @@ E_RED="$(printf '\033[1;31m')"
 E_NC="$(printf '\033[0m')"
 E_GREY="$(printf '\033[0;90m')"
 E_CLRLN="$(printf '\r\033[K')"
-export E_YELLOW E_GREEN E_CYAN E_RED E_NC E_GREY E_CLRLN
+export E_YELLOW E_GREEN E_CYAN E_ERROR E_NC E_GREY E_CLRLN
+
+## Short-hand colorized messages.
+E_SUCCESS="${E_GREEN}==>${E_NC} "
+E_WARNING="${E_YELLOW}==>${E_NC} "
+E_ERROR="${E_RED}ERROR:${E_NC} "
+E_INFO="${E_BLUE}==>${E_NC} "
+E_NOTE="${E_CYAN}==>${E_NC} "
+export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
 
 
 ####[ Functions ]#######################################################################
@@ -52,8 +60,8 @@ detect_sys_info() {
 # Download the latest version of 'linuxAIO' if $E_LINUXAIO_REVISION and
 # $C_CURRENT_LINUXAIO_REVISION aren't of equal value.
 linuxAIO_update() {
-    echo -n "${E_YELLOW}You are using an older version of 'linuxAIO'. "
-    read -rp "Press [Enter] to download the latest version.${E_NC}"
+    echo "${E_WARNING}You are using an older version of 'linuxAIO'"
+    read -rp "${E_NOTICE}Press [Enter] to download the latest version"
     echo "Downloading latest version of 'linuxAIO'..."
 
     ## Due to changes in 'linuxAIO', the existing configurations cannot be directly
@@ -66,16 +74,16 @@ linuxAIO_update() {
     #   that the if statement doesn't need to test for $E_LINUXAIO_REVISION.
     if ((_LINUXAIO_REVISION <= 38)); then
         if [[ -f linuxAIO.sh ]]; then
-            echo "Backing up 'linuxAIO.sh' as 'linuxAIO.sh.old'..."
+            echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.sh.old'..."
             mv linuxAIO.sh linuxAIO.sh.old
         elif [[ -f linuxAIO ]]; then
-            echo "Backing up 'linuxAIO' as 'linuxAIO.old'..."
+            echo "${E_INFO}Backing up 'linuxAIO' as 'linuxAIO.old'..."
             mv linuxAIO linuxAIO.old
         fi
 
         curl -O "$_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
-        echo "${E_CYAN}NOT applying existing configurations to 'linuxAIO'"
-        echo "${E_GREEN}Successfully downloaded the newest version of 'linuxAIO'.${E_NC}"
+        echo "${E_NOTICE}NOT applying existing configurations to 'linuxAIO'"
+        echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'.${E_NC}"
     ## Download the newest version of 'linuxAIO' and apply existing changes to it.
     else
         local installer_branch
@@ -88,8 +96,7 @@ linuxAIO_update() {
         bot_install_version_found="$?"
 
         curl -O "$E_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
-
-        echo "Applying existing configurations to the new 'linuxAIO'..."
+        echo "${E_INFO}Applying existing configurations to the new 'linuxAIO'..."
 
         [[ $installer_branch_found == 0 ]] \
             && sed -i "s/^installer_branch=.*/$installer_branch/" linuxAIO
@@ -97,8 +104,8 @@ linuxAIO_update() {
         [[ $bot_install_version_found == 0 ]] \
             && sed -i "s/^export E_BOT_INSTALL_VERSION=.*/$bot_install_version/" linuxAIO
 
-        echo "${E_GREEN}Successfully downloaded the newest version of 'linuxAIO' and" \
-            "applied existing changes${E_NC}"
+        echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO' and" \
+            "applied existing changes"
     fi
 
     clean_up "0" "Exiting" "true"
@@ -108,12 +115,12 @@ linuxAIO_update() {
 # Provide the end-user with the option to continue, even if their system isn't
 # officially supported.
 unsupported() {
-    echo "${E_RED}Your operating system is not OFFICIALLY supported for the" \
+    echo "${E_ERROR}Your operating system is not OFFICIALLY supported for the" \
         "installation, setup, and/or use of NadekoBot" >&2
-    echo "${E_YELLOW}WARNING: By continuing, you accept that unexpected behaviors" \
-        "may occur. If you run into any errors or problems with the installation and" \
-        "use of the NadekoBot, you are on your own.${E_NC}"
-    read -rp "Would you like to continue anyways? [y/N] " choice
+    echo "${E_WARNING}${E_YELLOW}WARNING${E_NC}: By continuing, you accept that" \
+        "unexpected behaviors may occur. If you run into any errors or problems with" \
+        "the installation and use of the NadekoBot, you are on your own."
+    read -rp "${E_INFO}Would you like to continue anyways? [y/N] " choice
 
     choice=${choice,,}
     case "$choice" in
@@ -148,9 +155,9 @@ clean_up() {
         "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer")
 
     if [[ $clean_up_text == true ]]; then
-        echo -e "\n\nCleaning up..."
+        echo -e "\n\n${E_INFO}Cleaning up..."
     else
-        echo -e "\nCleaning up..."
+        echo -e "\n${E_INFO}Cleaning up..."
     fi
 
     cd "$E_WORKING_DIR" || E_STDERR "Failed to move to NadekoBot's root directory" "1"
@@ -160,7 +167,7 @@ clean_up() {
         [[ -f $file ]] && rm "$file"
     done
 
-    echo "$output_text..."
+    echo "${E_INFO}$output_text..."
     exit "$exit_code"
 }
 
@@ -188,7 +195,7 @@ E_DOWNLOAD_SCRIPT() {
     local script_name="$1"
     local script_output="${2:-false}"
 
-    [[ $script_output == true ]] && printf "Downloading '%s'..." "$script_name"
+    [[ $script_output == true ]] && printf "${E_INFO}Downloading '%s'..." "$script_name"
 
     curl -O -s "$E_RAW_URL"/"$script_name"
     sudo chmod +x "$script_name"
@@ -209,7 +216,7 @@ E_STDERR() {
     local exit_code="${2:-}"
     local additional_message="${3:-}"
 
-    echo "${E_RED}$error_message${E_NC}" >&2
+    echo "${E_ERROR}$error_message" >&2
     [[ $additional_message ]] && echo -e "$additional_message" >&2
     [[ $exit_code ]] && exit "$exit_code"
 }
@@ -234,8 +241,8 @@ fi
 
 # Change the working directory to the location of the executed script.
 cd "${0%/*}" || {
-    echo "${E_RED}Failed to change working directory" >&2
-    echo "${E_CYAN}Change your working directory to that of the executed script${E_NC}"
+    echo "${E_ERROR}Failed to change working directory" >&2
+    echo "${E_NOTICE}Change your working directory to that of the executed script"
     clean_up "1" "Exiting"
 }
 
@@ -261,18 +268,18 @@ Distro Version: $E_VER
 "
 
 ### Check if the operating system is supported by NadekoBot and the installer.
-if [[ $bits = 64 ]]; then
-    if [[ $E_DISTRO = "ubuntu" ]]; then
+if [[ $bits == 64 ]]; then
+    if [[ $E_DISTRO == "ubuntu" ]]; then
         case "$E_VER" in
             22.04|20.04|18.04) execute_main_installer ;;
             *)                 unsupported ;;
         esac
-    elif [[ $E_DISTRO = "debian" ]]; then
+    elif [[ $E_DISTRO == "debian" ]]; then
         case "$E_SVER" in
             11|10) execute_main_installer ;;
             *)     unsupported ;;
         esac
-    elif [[ $E_DISTRO = "linuxmint" ]]; then
+    elif [[ $E_DISTRO == "linuxmint" ]]; then
         case "$E_SVER" in
             21|20) execute_main_installer ;;
             *)     unsupported ;;

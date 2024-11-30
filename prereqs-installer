@@ -75,7 +75,7 @@ install_prereqs() {
 # Inform the end-user that their system is not supported by the automatic installation
 # of the prerequisites.
 unsupported() {
-    echo "${E_RED}The installer does not support the automatic installation and setup" \
+    echo "${E_ERROR}The installer does not support the automatic installation and setup" \
         "of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER ${E_ARCH}${E_NC}"
     read -rp "Press [Enter] to return to the installer menu"
     exit 3
