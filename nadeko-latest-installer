@@ -67,7 +67,7 @@ if [[ -d  /home/$USER/.nuget ]]; then
         || E_STDERR "Failed to to modify the ownership of '/home/$USER/.nuget'..." "1"
 fi
 
-echo "Building NadekoBot..."
+echo "${E_INFO}Building NadekoBot..."
 # TODO: Improve the following line(s).
 # shellcheck disable=SC2015
 cd nadekobot \
