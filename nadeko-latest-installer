@@ -35,9 +35,9 @@ read -rp "We will now download/update NadekoBot. Press [Enter] to begin."
 
 
 ## Stop the service if it's currently running.
-if [[ $_SERVICE_STATUS = "active" ]]; then
+if [[ $E_SERVICE_STATUS = "active" ]]; then
     service_is_active=true
-    _STOP_SERVICE
+    E_STOP_SERVICE
 fi
 
 
@@ -48,24 +48,24 @@ fi
 
 ## Create a temporary folder to download NadekoBot into.
 mkdir nadekobot_tmp
-cd nadekobot_tmp || _STDERR "Failed to change working directory" "1"
+cd nadekobot_tmp || E_STDERR "Failed to change working directory" "1"
 
 echo "Downloading NadekoBot into 'nadekobot_tmp'..."
-git clone -b "$_BOT_INSTALL_VERSION" --recursive --depth 1 https://gitlab.com/Kwoth/nadekobot \
-    || _STDERR "Failed to download NadekoBot" "1"
+git clone -b "$E_BOT_INSTALL_VERSION" --recursive --depth 1 https://gitlab.com/Kwoth/nadekobot \
+    || E_STDERR "Failed to download NadekoBot" "1"
 
 ## A.1.
 if [[ -d /tmp/NuGetScratch ]]; then
     echo "Modifying ownership of '/tmp/NuGetScratch'..."
     sudo chown -R "$USER":"$USER" /tmp/NuGetScratch \
-        || _STDERR "Failed to to modify the ownership of '/tmp/NuGetScratch'" "1"
+        || E_STDERR "Failed to to modify the ownership of '/tmp/NuGetScratch'" "1"
 fi
 
 ## A.1.
 if [[ -d  /home/$USER/.nuget ]]; then
     echo "Modifying ownership of '/home/$USER/.nuget'..."
     sudo chown -R "$USER":"$USER" /home/"$USER"/.nuget \
-        || _STDERR "Failed to to modify the ownership of '/home/$USER/.nuget'..." "1"
+        || E_STDERR "Failed to to modify the ownership of '/home/$USER/.nuget'..." "1"
 fi
 
 echo "Building NadekoBot..."
@@ -73,8 +73,8 @@ echo "Building NadekoBot..."
 cd nadekobot \
     && dotnet restore -f --no-cache \
     && dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
-    && cd "$_WORKING_DIR" \
-    || _STDERR "Failed to build NadekoBot" "1"
+    && cd "$E_WORKING_DIR" \
+    || E_STDERR "Failed to build NadekoBot" "1"
 
 ## Move credentials, database, and other data to the new version of NadekoBot.
 if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
@@ -124,11 +124,11 @@ mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 #### [[ Clean Up and Present Results ]]
 
 
-echo -e "\n${_GREEN}Finished downloading/updating NadekoBot${_NC}"
+echo -e "\n${E_GREEN}Finished downloading/updating NadekoBot${E_NC}"
 
 if "$service_is_active"; then
-    echo "${_CYAN}NOTE: '$_SERVICE_NAME' was stopped to update NadekoBot and" \
-        "needs to be started using one of the run modes in the installer menu${_NC}"
+    echo "${E_CYAN}NOTE: '$E_SERVICE_NAME' was stopped to update NadekoBot and" \
+        "needs to be started using one of the run modes in the installer menu${E_NC}"
 fi
 
 read -rp "Press [Enter] to apply any existing changes to the installers"

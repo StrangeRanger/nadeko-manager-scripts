@@ -6,10 +6,10 @@
 #
 # README: Because this script remains on the user's system, any changes to the code that
 #         are pushed to github, are never applied to the version on the user's system.
-#         To get around this, the variable $_LINUXAIO_REVISION contains a revision
+#         To get around this, the variable $E_LINUXAIO_REVISION contains a revision
 #         number that is updated every time any changes are made to 'linuxAIO'.
 #         Another variable in 'installer-prep' ($current_linuxAIO_revision) gets
-#         updated alongside with $_LINUXAIO_REVISION. Whenever the user executes the
+#         updated alongside with $E_LINUXAIO_REVISION. Whenever the user executes the
 #         installer, 'installer-prep' will compare the two variables. If they are not
 #         of equal value, the newest version of 'linuxAIO' is retrieved from github.
 #
@@ -23,7 +23,7 @@
 #### ~~~ THESE VARIABLES CAN BE MODIFIED BY THE END-USER ~~~
 ####
 #### Whenever the installer retrieves the newest version of 'linuxAIO', all modified
-#### variables, with the exception of $installer_repo and $_FILES_TO_BACK_UP, will be
+#### variables, with the exception of $installer_repo and $E_FILES_TO_BACK_UP, will be
 #### applied to the new version of this script.
 
 
@@ -53,7 +53,7 @@ installer_branch="main"
 #            system, increases the likelihood of failed builds due to incompatible
 #            changes in the code/files coppied from the current to the newly downloaded
 #            version. For this, and other reasons, it's generally not recommended to
-#            to modify $_BOT_INSTALL_VERSION. This is especially true when it comes
+#            to modify $E_BOT_INSTALL_VERSION. This is especially true when it comes
 #            to a difference in major versions, such as v3 and v4.
 #
 # Options:
@@ -63,7 +63,7 @@ installer_branch="main"
 #           branches)
 #
 # Default: "v4"
-export _BOT_INSTALL_VERSION="v4"
+export E_BOT_INSTALL_VERSION="v4"
 
 # A list of files to be backed up when executing option 7.
 #
@@ -71,7 +71,7 @@ export _BOT_INSTALL_VERSION="v4"
 #   1. The path, starting at the project's parent directory, to the file must always be
 #      included. This means that unless modified by the end-user, the beginning of the
 #      path will start with 'nadekobot/', followed by the rest of the path to the file.
-#   2. Each file must be seperated by a single space or placed on its own line.
+#   2. Each file must be separated by a single space or placed on its own line.
 #       - Valid:   "nadekobot/output/creds.yml
 #                   nadekobot/output/data/bot.yml"
 #       - Valid:   "nadekobot/output/creds.yml nadekobot/output/data/bot.yml"
@@ -89,7 +89,7 @@ export _BOT_INSTALL_VERSION="v4"
 #   nadekobot/output/data/images.yml
 #   nadekobot/output/data/xp.yml
 #   nadekobot/output/data/xp_template.json"
-export _FILES_TO_BACK_UP="nadekobot/output/creds.yml
+export E_FILES_TO_BACK_UP="nadekobot/output/creds.yml
 nadekobot/output/data/NadekoBot.db
 nadekobot/output/data/bot.yml
 nadekobot/output/data/gambling.yml
@@ -105,9 +105,9 @@ nadekobot/output/data/xp_template.json"
 
 
 # 'linuxAIO' revision number.
-export _LINUXAIO_REVISION=38
+export E_LINUXAIO_REVISION=38
 # The URL to the raw code of a specified script.
-export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
+export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
 
 #### End of [[ General Variables ]]
@@ -119,7 +119,7 @@ export _RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_br
 
 
 echo "Downloading the latest installer..."
-curl -O "$_RAW_URL"/installer-prep
+curl -O "$E_RAW_URL"/installer-prep
 sudo chmod +x installer-prep && ./installer-prep
 exit "$?"
 
