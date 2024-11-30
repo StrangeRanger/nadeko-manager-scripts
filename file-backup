@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Back up the files listed in the $C_FILES_T0_BACK_UP array.
+# Back up the files listed in the $C_FILES_TO_BACK_UP array.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -12,14 +12,14 @@ readonly C_TMP_BACKUP="backed_up_files_tmp"
 # shellcheck disable=SC2206
 #   The array is purposefully unquoted to allow for word splitting, for easy array
 #   iteration.
-readonly C_FILES_T0_BACK_UP=($E_FILES_TO_BACK_UP)
+readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 
 ####[ Main ]############################################################################
 
 
 echo "We will now back up the following files:${E_CYAN}"
-for file in "${C_FILES_T0_BACK_UP[@]}";
+for file in "${C_FILES_TO_BACK_UP[@]}";
     do echo "    $file"
 done
 echo -n "$E_NC"
@@ -28,7 +28,7 @@ read -rp "Press [Enter] to continue."
 [[ ! -d $C_TMP_BACKUP ]] && mkdir "$C_TMP_BACKUP"
 
 echo "Backing up important files into '$C_TMP_BACKUP'..."
-for file in "${C_FILES_T0_BACK_UP[@]}"; do
+for file in "${C_FILES_TO_BACK_UP[@]}"; do
     if [[ -f $file ]]; then
         cp -f "$file" "$C_TMP_BACKUP" \
             || echo "${E_RED}Failed to back up ${file}${E_NC}" >&2
