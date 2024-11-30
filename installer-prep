@@ -9,7 +9,7 @@
 
 
 # Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
-current_linuxAIO_revision=38
+current_linuxAIO_revision=39
 # Name of the main installer script.
 main_installer="nadeko-main-installer"
 
@@ -69,10 +69,17 @@ linuxAIO_update() {
     read -rp "Press [Enter] to download the latest version.${E_NC}"
     echo "Downloading latest version of 'linuxAIO'..."
 
-    ## Only download the newest version of 'linuxAIO', as there are some incompatible
-    ## changes to 'linuxAIO' making it difficult or impossible to merge existing
-    ## configurations.
-    if ((E_LINUXAIO_REVISION <= 37)); then
+    ## Due to changes in 'linuxAIO', the existing configurations cannot be directly
+    ## applied to the newest version of 'linuxAIO'. As a result, the existing
+    ## configurations will not be applied to the newest version of 'linuxAIO', and the
+    ## end-user will have to reconfigure 'linuxAIO' manually.
+    ##
+    ## NOTE:
+    ##  $_LINUXAIO_REVISION and $_RAW_URL are from revision 38 and below. This means
+    ##  that the if statement doesn't need to test for $E_LINUXAIO_REVISION.
+    ##
+    # shellcheck disable=SC2153
+    if ((_LINUXAIO_REVISION <= 38)); then
         if [[ -f linuxAIO.sh ]]; then
             echo "Backing up 'linuxAIO.sh' as 'linuxAIO.sh.old'..."
             mv linuxAIO.sh linuxAIO.sh.old
@@ -81,7 +88,7 @@ linuxAIO_update() {
             mv linuxAIO linuxAIO.old
         fi
 
-        curl -O "$E_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
+        curl -O "$_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
         echo "${E_CYAN}NOT applying existing configurations to 'linuxAIO'"
         echo "${E_GREEN}Successfully downloaded the newest version of 'linuxAIO'.${E_NC}"
     ## Download the newest version of 'linuxAIO' and apply existing changes to it.
