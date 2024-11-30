@@ -63,7 +63,7 @@ install_prereqs() {
 
     echo "${E_INFO}Installing other prerequisites..."
     sudo apt install -y redis-server git ccze apt-transport-https ffmpeg python3 "$python_pkg"
-    sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o  /usr/local/bin/youtube-dl
+    sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
     # If the write perms are not applied to all users for this tool, attempts to update
     # 'youtube-dl' by a non-root user will always fail.
     # TODO: Find a better solution than modifying the perms in such a way that I have.
