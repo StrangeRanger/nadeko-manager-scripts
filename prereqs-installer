@@ -109,5 +109,5 @@ elif [[ $E_DISTRO == "linuxmint" ]]; then
     esac
 fi
 
-echo -e "\n${E_GREEN}Finished installing prerequisites${E_NC}"
-read -rp "Press [Enter] to return to the installer menu"
+echo -e "\n${E_SUCCESS}Finished installing prerequisites"
+read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
