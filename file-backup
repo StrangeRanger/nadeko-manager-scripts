@@ -10,7 +10,8 @@ readonly C_CURRENT_BACKUP="backed_up_files"
 readonly C_TMP_BACKUP="backed_up_files_tmp"
 
 # shellcheck disable=SC2206
-#   The array is purposefully unquoted to allow for for easy array iteration.
+#   $E_FILES_TO_BACK_UP is purposely unquoted to allow word splitting. This will make
+#   the contents of $C_FILES_TO_BACK_UP iterable.
 readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 
@@ -21,11 +22,11 @@ echo "${E_NOTE}We will now back up the following files:"
 for file in "${C_FILES_TO_BACK_UP[@]}";
     do echo "  ${E_CYAN}| ${E_NC}    $file"
 done
-read -rp "${E_NOTE}Press [Enter] to continue."
+read -rp "${E_NOTE}Press [Enter] to continue"
 
 [[ ! -d $C_TMP_BACKUP ]] && mkdir "$C_TMP_BACKUP"
 
-echo "${E_INFO}Backing up important files into '$C_TMP_BACKUP'..."
+echo "${E_INFO}Backing up files into '$C_TMP_BACKUP'..."
 for file in "${C_FILES_TO_BACK_UP[@]}"; do
     if [[ -f $file ]]; then
         cp -f "$file" "$C_TMP_BACKUP" || {
@@ -33,7 +34,7 @@ for file in "${C_FILES_TO_BACK_UP[@]}"; do
             exit 1
         }
     else
-        echo "${E_WARNING}'${file}' could not be found${E_NC}"
+        echo "${E_WARNING}'${file}' could not be found"
     fi
 done
 
@@ -42,7 +43,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     while read -r file; do
         if [[ ! $file =~ ^.*.old$ ]]; then
             cp "$C_CURRENT_BACKUP"/"$file" "$C_TMP_BACKUP"/"$file".old || {
-                echo "${E_ERROR}Failed to rename and move '${file}'${E_NC}" >&2
+                echo "${E_ERROR}Failed to rename and move '${file}'" >&2
                 exit 1
             }
         fi
