@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This script downloads and updates NadekoBot.
+# This script downloads and updates NadekoBot to the latest version.
 #
 # Comment Key:
 #   - A.1.: To prevent permission errors that can occur, especially when the installer
@@ -34,12 +34,10 @@ read -rp "${E_NOTE}We will now download/update NadekoBot. Press [Enter] to begin
 ### [ Stop Service ]
 ###
 
-## Stop the service if it's currently running.
 if [[ $E_SERVICE_STATUS == "active" ]]; then
     service_is_active=true
     E_STOP_SERVICE
 fi
-
 
 ###
 ### [ Create Backup and Update ]
@@ -68,13 +66,11 @@ if [[ -d  /home/$USER/.nuget ]]; then
 fi
 
 echo "${E_INFO}Building NadekoBot..."
-# TODO: Improve the following line(s).
-# shellcheck disable=SC2015
-cd nadekobot \
-    && dotnet restore -f --no-cache \
-    && dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
-    && cd "$E_WORKING_DIR" \
+cd nadekobot || E_STDERR "Failed to change directory to 'nadekobot'" "1"
+dotnet restore -f --no-cache || E_STDERR "Failed to restore .NET packages" "1"
+dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
     || E_STDERR "Failed to build NadekoBot" "1"
+cd "$E_WORKING_DIR" || E_STDERR "Failed to change directory to '$E_WORKING_DIR'" "1"
 
 ## Move credentials, database, and other data to the new version of NadekoBot.
 if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
