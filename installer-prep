@@ -21,7 +21,7 @@ E_RED="$(printf '\033[1;31m')"
 E_NC="$(printf '\033[0m')"
 E_GREY="$(printf '\033[0;90m')"
 E_CLRLN="$(printf '\r\033[K')"
-export E_YELLOW E_GREEN E_CYAN E_ERROR E_NC E_GREY E_CLRLN
+export E_YELLOW E_GREEN E_BLUE E_CYAN E_RED E_NC E_GREY E_CLRLN
 
 ## Short-hand colorized messages.
 E_SUCCESS="${E_GREEN}==>${E_NC} "
@@ -37,6 +37,14 @@ export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
 
 ####
 # Identify the operating system, version number, architecture, bit type (32 or 64), etc.
+#
+# NEW GLOBALS:
+#   - E_DISTRO: Distribution name.
+#   - E_VER: Distribution version.
+#   - E_SVER: Distribution short version.
+#   - E_ARCH: Architecture.
+#   - pname: Pretty name.
+#   - bits: Bit type.
 detect_sys_info() {
     if [[ -f /etc/os-release ]]; then
         . /etc/os-release
@@ -67,12 +75,13 @@ linuxAIO_update() {
 
     ## Due to changes in 'linuxAIO', the existing configurations cannot be directly
     ## applied to the newest version of 'linuxAIO'. As a result, the existing
-    ## configurations will not be applied to the newest version of 'linuxAIO', and the
-    ## end-user will have to reconfigure 'linuxAIO' manually.
+    ## configurations will instead be backed up as 'linuxAIO.old', and the end-user will
+    ## have to reconfigure 'linuxAIO' manually.
     ##
     # shellcheck disable=SC2153
     #   $_LINUXAIO_REVISION and $_RAW_URL are from revision 38 and earlier. This means
-    #   that the if statement doesn't need to test for $E_LINUXAIO_REVISION.
+    #   that the if statement doesn't need to test for $E_LINUXAIO_REVISION to check if
+    #   the current version of 'linuxAIO' is revision 38 or earlier.
     if ((_LINUXAIO_REVISION <= 38)); then
         if [[ -f linuxAIO.sh ]]; then
             echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.sh.old'..."
@@ -117,6 +126,8 @@ linuxAIO_update() {
 # Provide the end-user with the option to continue, even if their system isn't
 # officially supported.
 unsupported() {
+    local choice
+
     echo "${E_ERROR}Your operating system is not OFFICIALLY supported for the" \
         "installation, setup, and/or use of NadekoBot" >&2
     echo "${E_WARNING}${E_YELLOW}WARNING${E_NC}: By continuing, you accept that" \
@@ -137,26 +148,39 @@ unsupported() {
 }
 
 ####
-# Cleanly exit the installer by removing files that aren't required unless the installer
-# is currently running.
+# Remove unnecessary files and cleanly exit the script.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#       Exit code.
 #   - $2: output_text (Required)
-#       Output text.
-#   - $3: clean_up_text (Optional, Default: false)
-#       True if 'Cleaning up...' should be printed with two new-line symbols.
+#   - $3: use_two_newlines (Optional, Default: false)
+#       - Whether to output two newlines before the 'Cleaning up...' text.
+#       - Acceptable values:
+#           - true: Use two newline symbols.
+#           - false: Use one newline symbol.
 clean_up() {
     local exit_code="$1"
     local output_text="$2"
-    local clean_up_text="${3:-false}"
+    local use_two_newlines="${3:-false}"
 
     # Files to be removed.
     local installer_files=("installer-prep" "file-backup" "prereqs-installer"
         "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer")
 
-    if [[ $clean_up_text == true ]]; then
+    # Unset the EXIT trap to prevent re-entry.
+    trap - EXIT
+
+    case "$exit_code" in
+        0)   exit 0 ;;
+        1)   echo "" ;;
+        130) echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
+        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
+        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
+        131) echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)" ;;
+        *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
+    esac
+
+    if [[ $use_two_newlines == true ]]; then
         echo -e "\n\n${E_INFO}Cleaning up..."
     else
         echo -e "\n${E_INFO}Cleaning up..."
@@ -190,9 +214,12 @@ execute_main_installer() {
 #
 # PARAMETERS:
 #   - $1: script_name (Required)
-#       Name of the script to download.
+#       - The name of the script to download.
 #   - $2: script_output (Optional, Default: false)
-#       True if the script should output text indicating $1 is being downloaded.
+#       - Whether to indicated that the script is being downloaded.
+#       - Acceptable values:
+#           - true
+#           - false
 E_DOWNLOAD_SCRIPT() {
     local script_name="$1"
     local script_output="${2:-false}"
@@ -208,11 +235,10 @@ E_DOWNLOAD_SCRIPT() {
 #
 # PARAMETERS:
 #   - $1: error_message (Required)
-#       Error message.
-#   - $2: exit_code (Optional)
-#       If provided, exit with the provided value.
-#   - $3: additional_message (Optional)
-#       If provided, output an additional message.
+#   - $2: exit_code (Optional, Default: "")
+#       - If provided, exit with the provided value.
+#   - $3: additional_message (Optional, Default: "")
+#       - If provided, output an additional message.
 E_STDERR() {
     local error_message="$1"
     local exit_code="${2:-}"
@@ -227,17 +253,18 @@ E_STDERR() {
 ####[ Error Traps ]#####################################################################
 
 
-# TODO: Update with better trapping...
-trap 'clean_up "130" "Exiting" "true"' SIGINT
-trap 'clean_up "143" "Exiting" "true"' SIGTERM
-trap 'clean_up "148" "Exiting" "true"' SIGTSTP
+trap 'clean_exit 130' SIGINT
+trap 'clean_exit 143' SIGTERM
+trap 'clean_exit 129' SIGHUP
+trap 'clean_exit 131' SIGQUIT
+trap 'clean_exit $?'  EXIT
 
 
 ####[ Prepping ]########################################################################
 
 
 if [[ $E_LINUXAIO_REVISION != "$C_CURRENT_LINUXAIO_REVISION" ]]; then
-    # NOTE: Script will exit after updating 'linuxAIO'.
+    # NOTE: The script will exit after the function has run.
     linuxAIO_update
 fi
 
