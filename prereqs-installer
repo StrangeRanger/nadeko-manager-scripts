@@ -76,9 +76,42 @@ install_prereqs() {
 unsupported() {
     echo "${E_ERROR}The installer does not support the automatic installation and" \
         "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH"
-    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit 3
 }
+
+####
+# Cleanly exit the script, providing an informational message based on the exit code.
+#
+# PARAMETERS:
+#   - $1: exit_code (Required)
+clean_exit() {
+    local exit_code="$1"
+
+    # Unset all current traps to make the traps in `installer-prep` work as intended.
+    trap - SIGINT SIGTERM SIGHUP SIGQUIT EXIT
+
+    case "$exit_code" in
+        0|1) ;;
+        130) echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
+        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
+        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
+        131) echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)" ;;
+        *)   echo -e "\n${E_WARNING}Stopping with exit code: $exit_code" ;;
+    esac
+
+    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
+    exit "$exit_code"
+}
+
+
+####[ Error Trapping ]##################################################################
+
+
+trap 'clean_exit "130"' SIGINT
+trap 'clean_exit "143"' SIGTERM
+trap 'clean_exit "129"' SIGHUP
+trap 'clean_exit "131"' SIGQUIT
+trap 'clean_exit "$?"' EXIT
 
 
 ####[ Main ]############################################################################
@@ -109,4 +142,3 @@ elif [[ $E_DISTRO == "linuxmint" ]]; then
 fi
 
 echo -e "\n${E_SUCCESS}Finished installing prerequisites"
-read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
