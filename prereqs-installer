@@ -56,6 +56,7 @@ install_prereqs() {
         fi
     fi
 
+    (
     echo "${E_INFO}Installing .NET Core..."
     sudo apt update && sudo apt install -y dotnet-sdk-6.0
 
@@ -69,6 +70,7 @@ install_prereqs() {
     # 'youtube-dl' by a non-root user will always fail.
     # TODO: Find a better solution than modifying the perms in such a way that I have.
     sudo chmod a+rwx /usr/local/bin/youtube-dl
+    )
 }
 
 ####
@@ -92,6 +94,7 @@ clean_exit() {
 
     case "$exit_code" in
         0|1) ;;
+        3)   ;;
         130) echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
         143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
