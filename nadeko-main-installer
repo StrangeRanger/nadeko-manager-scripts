@@ -291,7 +291,7 @@ while true; do
             ./nadeko-latest-installer || exit_code_actions "$?"
 
             # TODO: Figure out way to kill previous execution of the installer, possibly
-            #       an array of PIDs and the 'clean_up()' function. This way, cleaning
+            #       an array of PIDs and the 'clean_exit()' function. This way, cleaning
             #       up and exiting text doesn't print duplicates.
             # TODO: Re-due comments...
             # Execute the newly downloaded version of 'installer-prep', so that all

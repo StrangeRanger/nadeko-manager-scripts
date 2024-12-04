@@ -119,7 +119,7 @@ linuxAIO_update() {
             "applied existing changes"
     fi
 
-    clean_up "0" "Exiting" "true"
+    clean_exit "0" "Exiting" "true"
 }
 
 ####
@@ -142,7 +142,7 @@ unsupported() {
             execute_main_installer
             ;;
         *)
-            clean_up "0" "Exiting"
+            clean_exit "0" "Exiting"
             ;;
     esac
 }
@@ -153,15 +153,15 @@ unsupported() {
 # PARAMETERS:
 #   - $1: exit_code (Required)
 #   - $2: output_text (Required)
-#   - $3: use_two_newlines (Optional, Default: false)
+#   - $3: use_newline (Optional, Default: false)
 #       - Whether to output two newlines before the 'Cleaning up...' text.
 #       - Acceptable values:
 #           - true: Use two newline symbols.
 #           - false: Use one newline symbol.
-clean_up() {
+clean_exit() {
     local exit_code="$1"
     local output_text="$2"
-    local use_two_newlines="${3:-false}"
+    local use_newline="${3:-false}"
 
     # Files to be removed.
     local installer_files=("installer-prep" "file-backup" "prereqs-installer"
@@ -179,10 +179,10 @@ clean_up() {
         *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
     esac
 
-    if [[ $use_two_newlines == true ]]; then
-        echo -e "\n\n${E_INFO}Cleaning up..."
-    else
+    if [[ $use_newline == true ]]; then
         echo -e "\n${E_INFO}Cleaning up..."
+    else
+        echo -e "${E_INFO}Cleaning up..."
     fi
 
     cd "$E_WORKING_DIR" || E_STDERR "Failed to move to NadekoBot's root directory" "1"
@@ -201,7 +201,7 @@ clean_up() {
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
     ./"$C_MAIN_INSTALLER"
-    clean_up "$?" "Exiting"
+    clean_exit "$?" "Exiting"
 }
 
 ###
@@ -271,7 +271,7 @@ fi
 cd "${0%/*}" || {
     echo "${E_ERROR}Failed to change working directory" >&2
     echo "${E_NOTE}Change your working directory to that of the executed script"
-    clean_up "1" "Exiting"
+    clean_exit "1" "Exiting"
 }
 
 export E_WORKING_DIR="$PWD"
