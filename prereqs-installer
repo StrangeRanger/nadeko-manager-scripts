@@ -11,16 +11,17 @@
 #
 # PARAMETERS:
 # 	- $1: distro_name (Required)
-#       - Distribution name.
 # 	- $2: distro_ver (Required)
-#       - Distribution version.
 #   - $3: python_pkg (Required)
 #       - Python package to install.
 #       - Acceptable values:
 #           - python
 #           - python-is-python3
 #   - $4: dotnet_pref (Optional, Default: false)
-#       - True if .NET preferences must be set.
+#       - Whether to set the preferred .NET Core installation method.
+#       - Acceptable values:
+#           - true
+#           - false
 install_prereqs() {
     local distro_name="$1"
     local distro_ver="$2"
@@ -55,7 +56,7 @@ install_prereqs() {
         fi
     fi
 
-    echo "${E_INFO}(Re)installing .NET Core..."
+    echo "${E_INFO}Installing .NET Core..."
     sudo apt update && sudo apt install -y dotnet-sdk-6.0
 
     echo "${E_INFO}Installing music prerequisites..."
