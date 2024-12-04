@@ -88,7 +88,7 @@ clean_exit() {
     local exit_code="$1"
 
     # Unset all current traps to make the traps in `installer-prep` work as intended.
-    trap - SIGINT SIGTERM SIGHUP SIGQUIT EXIT
+    trap - SIGINT SIGTERM SIGHUP SIGQUIT
 
     case "$exit_code" in
         0|1) ;;
