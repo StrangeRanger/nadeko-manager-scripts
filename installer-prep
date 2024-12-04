@@ -153,7 +153,7 @@ unsupported() {
 # PARAMETERS:
 #   - $1: exit_code (Required)
 #   - $2: output_text (Required)
-#   - $3: use_newline (Optional, Default: false)
+#   - $3: use_extra_newline (Optional, Default: false)
 #       - Whether to output two newlines before the 'Cleaning up...' text.
 #       - Acceptable values:
 #           - true: Use two newline symbols.
@@ -161,7 +161,7 @@ unsupported() {
 clean_exit() {
     local exit_code="$1"
     local output_text="$2"
-    local use_newline="${3:-false}"
+    local use_extra_newline="${3:-false}"
 
     # Files to be removed.
     local installer_files=("installer-prep" "file-backup" "prereqs-installer"
@@ -169,6 +169,8 @@ clean_exit() {
 
     # Unset the EXIT trap to prevent re-entry.
     trap - EXIT
+
+    [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in
         1)   echo "" ;;
@@ -179,11 +181,7 @@ clean_exit() {
         *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
     esac
 
-    if [[ $use_newline == true ]]; then
-        echo -e "\n${E_INFO}Cleaning up..."
-    else
-        echo -e "${E_INFO}Cleaning up..."
-    fi
+    echo -e "${E_INFO}Cleaning up..."
 
     cd "$E_WORKING_DIR" || E_STDERR "Failed to move to NadekoBot's root directory" "1"
     [[ -d nadekobot_tmp ]] && rm -rf nadekobot_tmp
@@ -192,7 +190,7 @@ clean_exit() {
         [[ -f $file ]] && rm "$file"
     done
 
-    echo "${E_INFO}$output_text..."
+    echo "${E_INFO}$output_text"
     exit "$exit_code"
 }
 
@@ -252,11 +250,11 @@ E_STDERR() {
 ####[ Error Traps ]#####################################################################
 
 
-trap 'clean_exit 130' SIGINT
-trap 'clean_exit 143' SIGTERM
-trap 'clean_exit 129' SIGHUP
-trap 'clean_exit 131' SIGQUIT
-trap 'clean_exit $?'  EXIT
+trap 'clean_exit "130" "Exiting..." "true"' SIGINT
+trap 'clean_exit "143" "Exiting..." "true"' SIGTERM
+trap 'clean_exit "129" "Exiting..." "true"' SIGHUP
+trap 'clean_exit "131" "Exiting..." "true"' SIGQUIT
+trap 'clean_exit "$?" "Exiting..." "true"' EXIT
 
 
 ####[ Prepping ]########################################################################
