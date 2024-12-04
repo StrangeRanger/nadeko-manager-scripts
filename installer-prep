@@ -173,7 +173,7 @@ clean_exit() {
     [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in
-        1)   echo "" ;;
+        0|1) echo "" ;;
         130) echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
         143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
@@ -247,7 +247,7 @@ E_STDERR() {
 }
 
 
-####[ Error Traps ]#####################################################################
+####[ Error Trapping ]##################################################################
 
 
 trap 'clean_exit "130" "Exiting..." "true"' SIGINT
