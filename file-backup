@@ -131,6 +131,8 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
         fi
     done
 
+    sleep 10
+
     echo "${E_INFO}Replacing old backup..."
     # shellcheck disable=SC2015
     #   If either of the following commands fails, the script should exit with an error.
