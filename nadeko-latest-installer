@@ -14,7 +14,7 @@
 
 export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Used when compiling code.
 
-C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot_tmp.XXXXXXXXXX)
+C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot.XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
 
 readonly C_NADEKOBOT_URL="https://gitlab.com/Kwoth/nadekobot"
