@@ -36,7 +36,6 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
     local cleanup=true
-    local items_to_remove=("$C_OLD_BACKUP" "$C_TMP_BACKUP")
 
     # Unset the local traps to restore traps set in 'installer-prep'.
     trap - EXIT SIGINT SIGTERM SIGHUP SIGQUIT
@@ -79,19 +78,23 @@ clean_exit() {
     if [[ $cleanup == true ]]; then
         echo "${E_INFO}Cleaning up..."
 
-        if [[ -d $C_OLD_BACKUP ]]; then
+        # State before step 1 of finalizing the backup.
+        if [[ -d $C_TMP_BACKUP && -d $C_CURRENT_BACKUP && ! -d $C_OLD_BACKUP ]]; then
+            rm -rf "$C_TMP_BACKUP" 2>/dev/null
+        # State before step 2 of finalizing the backup.
+        elif [[ -d $C_TMP_BACKUP && -d $C_OLD_BACKUP && ! -d $C_CURRENT_BACKUP ]]; then
+            rm -rf "$C_TMP_BACKUP" 2>/dev/null
             mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" \
                 || E_STDERR \
-                    "Failed to rename '$C_OLD_BACKUP' to '$C_CURRENT_BACKUP'" \
+                    "Failed to rename '$C_OLD_BACKUP' as '$C_CURRENT_BACKUP'" \
                     "1" \
                     "${E_NOTE}Will exit to prevent data loss"
+        # State before step 3 of finalizing the backup.
+        elif [[ -d $C_OLD_BACKUP && -d $C_CURRENT_BACKUP && ! -d $C_TMP_BACKUP ]]; then
+            rm -rf "$C_OLD_BACKUP" 2>/dev/null
         fi
 
-        for item in "${items_to_remove[@]}"; do
-            if [[ -e $item ]]; then
-                rm -rf "$item" || echo "${E_ERROR}Failed to remove '$item'"
-            fi
-        done
+        # Any state after step 3 doesn't need to be cleaned up.
     fi
 
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
@@ -118,7 +121,7 @@ for file in "${C_FILES_TO_BACK_UP[@]}";
 done
 read -rp "${E_NOTE}Press [Enter] to continue"
 
-echo "${E_INFO}Backing up files..."
+echo "${E_INFO}Backing up files into '$C_TMP_BACKUP'..."
 for file in "${C_FILES_TO_BACK_UP[@]}"; do
     if [[ -f $file ]]; then
         cp -f "$file" "$C_TMP_BACKUP" || E_STDERR "Failed to back up '$file'" "1"
@@ -128,10 +131,7 @@ for file in "${C_FILES_TO_BACK_UP[@]}"; do
 done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
-    mv "$C_CURRENT_BACKUP" "$C_OLD_BACKUP" \
-        || E_STDERR "Failed to rename '$C_CURRENT_BACKUP' to '$C_OLD_BACKUP'" "1"
-
-    echo "${E_INFO}Copying previously backed up files..."
+    echo "${E_INFO}Copying previously backed up files into '$C_TMP_BACKUP'..."
     for file in "$C_OLD_BACKUP"/*; do
         # Extract the base filename without the path.
         basefile="${file##*/}"
@@ -142,15 +142,17 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
         fi
     done
 
-    echo "${E_INFO}Replacing old backup..."
-    # shellcheck disable=SC2015
-    #   If either of the following commands fails, the script should exit with an error.
-    rm -rf "$C_OLD_BACKUP" \
-        && mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
-        || E_STDERR "Failed to replace old backup" "1"
+    echo "${E_INFO}Replacing ${C_CURRENT_BACKUP} with ${C_TMP_BACKUP}..."
+    (
+        set -e
+        mv "$C_CURRENT_BACKUP" "$C_OLD_BACKUP"  # Step 1 of finalizing the backup
+        mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP"  # Step 2 of finalizing the backup
+        rm -rf "$C_OLD_BACKUP"                  # Step 3 of finalizing the backup
+     ) || E_STDERR "Failed to replace old backup" "1"
 else
+    echo "${E_INFO}Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
     mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
-        || E_STDERR "Failed to rename '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'" "1"
+        || E_STDERR "Failed to move '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'" "1"
 fi
 
 echo ""
