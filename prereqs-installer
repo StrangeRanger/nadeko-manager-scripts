@@ -93,7 +93,7 @@ unsupported() {
 ####[ Main ]############################################################################
 
 
-printf "%sWe will now install NadekoBot's prerequisites. " "${E_NOTE}"
+printf "%sWe will now install NadekoBot's prerequisites. " "$E_NOTE"
 read -rp "Press [Enter] to continue."
 
 if [[ $E_DISTRO == "ubuntu" ]]; then
