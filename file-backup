@@ -145,15 +145,17 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
 
     echo "${E_INFO}Replacing '$C_CURRENT_BACKUP' with '$C_TMP_BACKUP'..."
     (
-        set -ex
         echo "${E_INFO}    Renaming '$C_CURRENT_BACKUP' to '$C_OLD_BACKUP'..."
-        mv "$C_CURRENT_BACKUP"/lskdjf "$C_OLD_BACKUP"  # Step 1 of finalizing the backup.
+        # Step 1 of finalizing the backup.
+        mv "$C_CURRENT_BACKUP"/lskdjf "$C_OLD_BACKUP" || exit 1
 
         echo "${E_INFO}    Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
-        mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP"  # Step 2 of finalizing the backup.
+        # Step 2 of finalizing the backup.
+        mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" || exit 1
 
         echo "${E_INFO}    Removing '$C_OLD_BACKUP'..."
-        rm -rf "$C_OLD_BACKUP"  # Step 3 of finalizing the backup.
+        # Step 3 of finalizing the backup.
+        rm -rf "$C_OLD_BACKUP" || exit 1
      ) || E_STDERR "Failed to replace old backup" "1"
 else
     echo "${E_INFO}Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
