@@ -132,7 +132,7 @@ done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
     echo "${E_INFO}Copying previously backed up files into '$C_TMP_BACKUP'..."
-    for file in "$C_OLD_BACKUP"/*; do
+    for file in "$C_CURRENT_BACKUP"/*; do
         # Extract the base filename without the path.
         basefile="${file##*/}"
 
