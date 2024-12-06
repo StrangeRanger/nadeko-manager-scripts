@@ -153,10 +153,11 @@ unsupported() {
 # PARAMETERS:
 #   - $1: exit_code (Required)
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output two newlines before the 'Cleaning up...' text.
+#       - Whether to output an extra blank line, to separate the previous output from
+#         the output of this function.
 #       - Acceptable values:
-#           - true: Use two newline symbols.
-#           - false: Use one newline symbol.
+#           - true
+#           - false
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
