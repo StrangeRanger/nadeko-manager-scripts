@@ -140,9 +140,8 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
         && mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
         || E_STDERR "Failed to replace old backup" "1"
 else
-    echo "${E_INFO}Replacing old backup..."
     mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
-        || E_STDERR "Failed to replace old backup" "1"
+        || E_STDERR "Failed to rename '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'" "1"
 fi
 
 echo ""
