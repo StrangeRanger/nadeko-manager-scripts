@@ -67,6 +67,15 @@ clean_exit() {
 
     if [[ $cleanup == true ]]; then
         echo "${E_INFO}Cleaning up..."
+
+        if [[ -d $C_CURRENT_BACKUP_OLD ]]; then
+            mv "$C_CURRENT_BACKUP_OLD" "$C_CURRENT_BACKUP" \
+                || E_STDERR \
+                    "Failed to rename '$C_CURRENT_BACKUP_OLD' to '$C_CURRENT_BACKUP'" \
+                    "1" \
+                    "Exiting to prevent data loss"
+        fi
+
         for item in "${items_to_remove[@]}"; do
             if [[ -e $item ]]; then
                 rm -rf "$item" || echo "${E_ERROR}Failed to remove '${item}'"
@@ -121,8 +130,6 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
                 || E_STDERR "Failed to copy '${basefile}'" "1"
         fi
     done
-
-    sleep 10
 
     echo "${E_INFO}Replacing old backup..."
     # shellcheck disable=SC2015
