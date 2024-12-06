@@ -120,7 +120,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     mv "$C_CURRENT_BACKUP" "$C_CURRENT_BACKUP_OLD" \
         || E_STDERR "Failed to rename '$C_CURRENT_BACKUP' to '$C_CURRENT_BACKUP_OLD'" "1"
 
-    echo "${E_INFO}Copying previous backup files..."
+    echo "${E_INFO}Copying previously backed up files..."
     for file in "$C_CURRENT_BACKUP_OLD"/*; do
         # Extract the base filename without the path.
         basefile="${file##*/}"
