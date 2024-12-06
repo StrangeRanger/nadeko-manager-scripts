@@ -95,7 +95,7 @@ trap 'clean_exit "130" "true"' SIGINT
 trap 'clean_exit "143" "true"' SIGTERM
 trap 'clean_exit "129" "true"' SIGHUP
 trap 'clean_exit "131" "true"' SIGQUIT
-trap 'clean_exit "$?"'  EXIT
+trap 'clean_exit "$?" "true"'  EXIT
 
 
 ####[ Main ]############################################################################
@@ -144,3 +144,4 @@ fi
 
 echo ""
 echo "${E_SUCCESS}Finished backing up files"
+clean_exit 0
