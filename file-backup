@@ -154,7 +154,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     (
         #echo "${E_INFO}    Renaming '$C_CURRENT_BACKUP' to '$C_OLD_BACKUP'..."
         # Step 1 of finalizing the backup.
-        mv "$C_CURRENT_BACKUP"/lskdjf "$C_OLD_BACKUP" || exit 1
+        mv "$C_CURRENT_BACKUP" "$C_OLD_BACKUP" || exit 1
 
         #echo "${E_INFO}    Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
         # Step 2 of finalizing the backup.
