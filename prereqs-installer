@@ -59,7 +59,7 @@ install_prereqs() {
                 "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref \
                 || E_STDERR "Failed to create '/etc/apt/preferences.d/custom-dotnet.pref'" "1"
         else
-            echo "${E_WARNING}The preferred .NET Core installation method is already set"
+            echo "${E_NOTE}The preferred .NET Core installation method is already set"
             echo "${E_INFO}Skipping modification of the preferences..."
         fi
     fi
