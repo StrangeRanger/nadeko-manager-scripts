@@ -10,10 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Improved script comments.
 - Improved the syntax and colorization of the output text.
+- Improved error handling.
+- Improved handling of temporary files.
 
 ### Fixed
 
 - Fixed where it says Mewdeko instead of NadekoBot.
+- Fixed what appeared to be a "double catching" of signals.
 
 ## [v3.2.5] - 2022-09-06
 
