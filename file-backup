@@ -136,7 +136,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     echo "${E_INFO}Replacing old backup..."
     # shellcheck disable=SC2015
     #   If either of the following commands fails, the script should exit with an error.
-    rm -rf "$C_CURRENT_BACKUP" \
+    rm -rf "$C_CURRENT_BACKUP_OLD" \
         && mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
         || E_STDERR "Failed to replace old backup" "1"
 else
