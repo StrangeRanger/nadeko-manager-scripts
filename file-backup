@@ -73,8 +73,8 @@ clean_exit() {
             ;;
     esac
 
-    ## This block will only run if the script is exiting prematurely (i.e., an error
-    ## occurred).
+    ## This block will only run if the script attempts to exit prematurely (i.e., an
+    ## error occurred).
     if [[ $cleanup == true ]]; then
         echo "${E_INFO}Cleaning up..."
 
@@ -145,8 +145,14 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     echo "${E_INFO}Replacing '$C_CURRENT_BACKUP' with '$C_TMP_BACKUP'..."
     (
         set -e
+        echo "${E_INFO}    Renaming '$C_CURRENT_BACKUP' to '$C_OLD_BACKUP'..."
+        sleep 10
         mv "$C_CURRENT_BACKUP" "$C_OLD_BACKUP"  # Step 1 of finalizing the backup
+        echo "${E_INFO}    Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
+        sleep 10
         mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP"  # Step 2 of finalizing the backup
+        echo "${E_INFO}    Removing '$C_OLD_BACKUP'..."
+        sleep 10
         rm -rf "$C_OLD_BACKUP"                  # Step 3 of finalizing the backup
      ) || E_STDERR "Failed to replace old backup" "1"
 else
