@@ -9,7 +9,7 @@
 readonly C_CURRENT_BACKUP="important_files_backup"
 readonly C_OLD_BACKUP="important_files_backup.old"
 
-C_TMP_BACKUP=$(mktemp -d -p /tmp important_nadeko_files_backup.XXXXXXXXXX)
+C_TMP_BACKUP=$(mktemp -d -p /tmp important_nadeko_files.XXXXXXXXXX)
 readonly C_TMP_BACKUP
 
 # shellcheck disable=SC2206
