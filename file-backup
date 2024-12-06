@@ -89,7 +89,7 @@ clean_exit() {
 
         for item in "${items_to_remove[@]}"; do
             if [[ -e $item ]]; then
-                rm -rf "$item" || echo "${E_ERROR}Failed to remove '${item}'"
+                rm -rf "$item" || echo "${E_ERROR}Failed to remove '$item'"
             fi
         done
     fi
@@ -114,16 +114,16 @@ trap 'clean_exit "$?" "true"'  EXIT
 
 echo "${E_NOTE}We will now back up the following files:"
 for file in "${C_FILES_TO_BACK_UP[@]}";
-    do echo "  ${E_CYAN}| ${E_NC}    $file"
+    do echo "  ${E_CYAN}|${E_NC}    $file"
 done
 read -rp "${E_NOTE}Press [Enter] to continue"
 
 echo "${E_INFO}Backing up files..."
 for file in "${C_FILES_TO_BACK_UP[@]}"; do
     if [[ -f $file ]]; then
-        cp -f "$file" "$C_TMP_BACKUP" || E_STDERR "Failed to back up '${file}'" "1"
+        cp -f "$file" "$C_TMP_BACKUP" || E_STDERR "Failed to back up '$file'" "1"
     else
-        echo "${E_WARNING}'${file}' could not be found"
+        echo "${E_WARNING}'$file' could not be found"
     fi
 done
 
@@ -138,7 +138,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
 
         if [[ ! $basefile =~ ^.*\.old$ ]]; then
             cp "$file" "$C_TMP_BACKUP/$basefile.old" \
-                || E_STDERR "Failed to copy '${basefile}'" "1"
+                || E_STDERR "Failed to copy '$basefile'" "1"
         fi
     done
 
