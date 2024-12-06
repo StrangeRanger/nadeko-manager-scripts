@@ -110,7 +110,7 @@ if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
     # Restore new strings.
     mv -f "$C_NEW_DATA"/strings_new "$C_NEW_DATA"/strings
 
-    rm -rf nadekobot_old && mv -f nadekobot nadekobot_old
+    rm -rf nadekobot.old && mv -f nadekobot nadekobot.old
 fi
 
 mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
