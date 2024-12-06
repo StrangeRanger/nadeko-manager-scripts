@@ -46,8 +46,6 @@ fi
 ### [ Create Backup and Update ]
 ###
 
-## Create a temporary folder to download NadekoBot into.
-mkdir "$C_NADEKOBOT_TMP"
 cd "$C_NADEKOBOT_TMP" || E_STDERR "Failed to change working directory" "1"
 
 echo "${E_INFO}Downloading NadekoBot into '$C_NADEKOBOT_TMP'..."
