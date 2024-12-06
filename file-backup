@@ -30,8 +30,8 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 #       - Whether to output an extra blank line, to separate the previous output from
 #         the output of this function.
 #       - Acceptable values:
-#           - true: Use two newline symbols.
-#           - false: Use one newline symbol.
+#           - true
+#           - false
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -44,13 +44,25 @@ clean_exit() {
     [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in
-        0)   cleanup=false ;;
-        1)   ;;
-        130) echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
-        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
-        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
-        131) echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)" ;;
-        *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
+        0) cleanup=false ;;
+        1) exit_code=3 ;;
+        130)
+            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            exit_code=3
+            ;;
+        143)
+            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            exit_code=3
+            ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_code=3
+            ;;
+        131)
+            echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)"
+            exit_code=3
+            ;;
+        *) echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
     esac
 
     if [[ $cleanup == true ]]; then
