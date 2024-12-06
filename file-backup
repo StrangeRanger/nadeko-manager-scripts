@@ -7,7 +7,7 @@
 
 
 readonly C_CURRENT_BACKUP="important_files_backup"
-readonly C_CURRENT_BACKUP_OLD="important_files_backup.old"
+readonly C_OLD_BACKUP="important_files_backup.old"
 
 C_TMP_BACKUP=$(mktemp -d -p /tmp important_nadeko_files_backup.XXXXXXXXXX)
 readonly C_TMP_BACKUP
@@ -36,16 +36,23 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
     local cleanup=true
-    local items_to_remove=("$C_CURRENT_BACKUP_OLD" "$C_TMP_BACKUP")
+    local items_to_remove=("$C_OLD_BACKUP" "$C_TMP_BACKUP")
 
     # Unset the local traps to restore traps set in 'installer-prep'.
     trap - EXIT SIGINT SIGTERM SIGHUP SIGQUIT
 
     [[ $use_extra_newline == true ]] && echo ""
 
+    ## We modify the exit code to 3, because 'nadeko-main-installer' will not exit if
+    ## if the exit code is 3. This exit code is used to indicate that the script exited
+    ## due an error, but the main installer should continue.
     case "$exit_code" in
-        0) cleanup=false ;;
-        1) exit_code=3 ;;
+        0)
+            cleanup=false
+            ;;
+        1)
+            exit_code=3
+            ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             exit_code=3
@@ -62,16 +69,20 @@ clean_exit() {
             echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)"
             exit_code=3
             ;;
-        *) echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
+        *)
+            echo -e "\n${E_WARNING}Exiting with code: $exit_code"
+            ;;
     esac
 
+    ## This block will only run if the script is exiting prematurely (i.e., an error
+    ## occurred).
     if [[ $cleanup == true ]]; then
         echo "${E_INFO}Cleaning up..."
 
-        if [[ -d $C_CURRENT_BACKUP_OLD ]]; then
-            mv "$C_CURRENT_BACKUP_OLD" "$C_CURRENT_BACKUP" \
+        if [[ -d $C_OLD_BACKUP ]]; then
+            mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" \
                 || E_STDERR \
-                    "Failed to rename '$C_CURRENT_BACKUP_OLD' to '$C_CURRENT_BACKUP'" \
+                    "Failed to rename '$C_OLD_BACKUP' to '$C_CURRENT_BACKUP'" \
                     "1" \
                     "${E_NOTE}Will exit to prevent data loss"
         fi
@@ -117,11 +128,11 @@ for file in "${C_FILES_TO_BACK_UP[@]}"; do
 done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
-    mv "$C_CURRENT_BACKUP" "$C_CURRENT_BACKUP_OLD" \
-        || E_STDERR "Failed to rename '$C_CURRENT_BACKUP' to '$C_CURRENT_BACKUP_OLD'" "1"
+    mv "$C_CURRENT_BACKUP" "$C_OLD_BACKUP" \
+        || E_STDERR "Failed to rename '$C_CURRENT_BACKUP' to '$C_OLD_BACKUP'" "1"
 
     echo "${E_INFO}Copying previously backed up files..."
-    for file in "$C_CURRENT_BACKUP_OLD"/*; do
+    for file in "$C_OLD_BACKUP"/*; do
         # Extract the base filename without the path.
         basefile="${file##*/}"
 
@@ -134,7 +145,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     echo "${E_INFO}Replacing old backup..."
     # shellcheck disable=SC2015
     #   If either of the following commands fails, the script should exit with an error.
-    rm -rf "$C_CURRENT_BACKUP_OLD" \
+    rm -rf "$C_OLD_BACKUP" \
         && mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
         || E_STDERR "Failed to replace old backup" "1"
 else
