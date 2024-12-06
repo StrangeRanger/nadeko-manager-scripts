@@ -26,13 +26,22 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#   - $2: use_extra_newline (Optional, Default: false)
+#       - Whether to output an extra blank line, to separate the previous output from
+#         the output of this function.
+#       - Acceptable values:
+#           - true: Use two newline symbols.
+#           - false: Use one newline symbol.
 clean_exit() {
     local exit_code="$1"
+    local use_extra_newline="${2:-false}"
     local cleanup=true
     local items_to_remove=("$C_CURRENT_BACKUP_OLD" "$C_TMP_BACKUP")
 
     # Unset the local traps to restore traps set in 'installer-prep'.
     trap - EXIT SIGINT SIGTERM SIGHUP SIGQUIT
+
+    [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in
         0)   cleanup=false ;;
@@ -61,11 +70,11 @@ clean_exit() {
 ####[ Trapping Logic ]##################################################################
 
 
-trap 'clean_exit "130"' SIGINT
-trap 'clean_exit "143"' SIGTERM
-trap 'clean_exit "129"' SIGHUP
-trap 'clean_exit "131"' SIGQUIT
-trap 'clean_exit "$?"'  EXIT
+trap 'clean_exit "130" "true"' SIGINT
+trap 'clean_exit "143" "true"' SIGTERM
+trap 'clean_exit "129" "true"' SIGHUP
+trap 'clean_exit "131" "true"' SIGQUIT
+trap 'clean_exit "$?" "true"'  EXIT
 
 
 ####[ Main ]############################################################################
