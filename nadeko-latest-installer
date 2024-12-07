@@ -18,6 +18,7 @@ C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot.XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
 
 readonly C_NADEKOBOT_URL="https://gitlab.com/Kwoth/nadekobot"
+readonly C_EXAMPLE_CREDS="nadekobot/src/NadekoBot/creds_example.yml"
 readonly C_CURRENT_CREDS="nadekobot/output/creds.yml"
 readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/nadekobot/output/creds.yml"
 readonly C_CURRENT_DATABASE="nadekobot/output/data/NadekoBot.db"
@@ -26,6 +27,16 @@ readonly C_CURRENT_DATA="nadekobot/output/data"
 readonly C_NEW_DATA="$C_NADEKOBOT_TMP/nadekobot/output/data"
 
 service_is_active=false
+
+
+####[ Trapping Logic ]##################################################################
+
+
+trap 'clean_exit "130" "true"' SIGINT
+trap 'clean_exit "143" "true"' SIGTERM
+trap 'clean_exit "129" "true"' SIGHUP
+trap 'clean_exit "131" "true"' SIGQUIT
+trap 'clean_exit "$?" "true"'  EXIT
 
 
 ####[ Main ]############################################################################
@@ -60,11 +71,13 @@ if [[ -d /tmp/NuGetScratch ]]; then
 fi
 
 ## A.1.
-if [[ -d  /home/$USER/.nuget ]]; then
-    echo "${E_INFO}Modifying ownership of '/home/$USER/.nuget'..."
-    sudo chown -R "$USER":"$USER" /home/"$USER"/.nuget \
-        || E_STDERR "Failed to to modify the ownership of '/home/$USER/.nuget'..." "1"
-fi
+## Commented out because I don't believe it's necessary. But I'm leaving it here for
+## for now until I'm 100% sure it's not needed.
+#if [[ -d  /home/$USER/.nuget ]]; then
+#    echo "${E_INFO}Modifying ownership of '/home/$USER/.nuget'..."
+#    sudo chown -R "$USER":"$USER" /home/"$USER"/.nuget \
+#        || E_STDERR "Failed to to modify the ownership of '/home/$USER/.nuget'..." "1"
+#fi
 
 echo "${E_INFO}Building NadekoBot..."
 cd nadekobot || E_STDERR "Failed to change directory to 'nadekobot'" "1"
@@ -75,8 +88,16 @@ cd "$E_WORKING_DIR" || E_STDERR "Failed to change directory to '$E_WORKING_DIR'"
 
 ## Move credentials, database, and other data to the new version of NadekoBot.
 if [[ -d $C_NADEKOBOT_TMP/nadekobot && -d nadekobot ]]; then
-    echo "${E_INFO}Copying 'creds.yml' to the new version..."
-    cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS" &>/dev/null
+    echo "${E_INFO}Copying 'creds.yml' to '${C_NEW_CREDS%/*}'..."
+    if [[ ! -f $C_CURRENT_CREDS ]]; then
+        echo "${E_WARNING}'$C_CURRENT_CREDS' could not be found"
+        echo "${E_INFO}Copying 'creds_example.yml' as '${C_CURRENT_CREDS##*/}' to" \
+            "'$C_NEW_CREDS"
+        cp -f "$C_EXAMPLE_CREDS" "$C_CURRENT_CREDS"
+    else
+        cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS"
+    fi
+
     echo "${E_INFO}Copying database to the new version..."
     cp -RT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE" &>/dev/null
 

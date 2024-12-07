@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Improved error handling.
 - Improved handling of temporary files.
 - Old versions of NadekoBot are now named `nadekobot.old` instead of `nadekobot_old`.
+- Other Internal Changes:
+  - Exported variables are now styled as `E_UPPER_CASE`.
+  - Constant variables are now styled as `C_UPPER_CASE`.
 
 ### Fixed
 
