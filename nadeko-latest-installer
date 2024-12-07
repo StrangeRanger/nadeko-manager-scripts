@@ -98,8 +98,12 @@ if [[ -d $C_NADEKOBOT_TMP/nadekobot && -d nadekobot ]]; then
         cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS"
     fi
 
-    echo "${E_INFO}Copying database to the new version..."
-    cp -RT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE" &>/dev/null
+    if [[ ! -f $C_CURRENT_DATABASE ]]; then
+        echo "${E_WARNING}'$C_CURRENT_DATABASE' could not be found"
+    else
+        echo "${E_INFO}Copying '${C_CURRENT_DATABASE} to the '${C_NEW_DATABASE%/*}'..."
+        cp -RT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE"
+    fi
 
     echo "${E_INFO}Copying other data to the new version..."
 
