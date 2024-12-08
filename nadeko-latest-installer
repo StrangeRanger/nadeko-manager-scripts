@@ -86,18 +86,25 @@ dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
     || E_STDERR "Failed to build NadekoBot" "1"
 cd "$E_WORKING_DIR" || E_STDERR "Failed to change directory to '$E_WORKING_DIR'" "1"
 
-## Move credentials, database, and other data to the new version of NadekoBot.
-if [[ -d $C_NADEKOBOT_TMP/nadekobot && -d nadekobot ]]; then
-    if [[ ! -f $C_CURRENT_CREDS ]]; then
-        echo "${E_WARNING}'$C_CURRENT_CREDS' could not be found"
-        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS##*/}' as '${C_NEW_CREDS##*/}'" \
-            "to '${C_NEW_CREDS%/*}'..."
-        cp -f "$C_EXAMPLE_CREDS" "$C_CURRENT_CREDS"
-    else
-        echo "${E_INFO}Copying '${C_NEW_CREDS##*/}' to '${C_NEW_CREDS%/*}'..."
-        cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS"
-    fi
+###
+### [ Move Credentials, Database, and Other Data ]
+###
+### Move credentials, database, and other data to the new version of NadekoBot.
+###
 
+if [[ ! -f $C_CURRENT_CREDS ]]; then
+    echo "${E_WARNING}'$C_CURRENT_CREDS' could not be found"
+    echo "${E_INFO}Copying '${C_EXAMPLE_CREDS##*/}' as '${C_NEW_CREDS##*/}'" \
+        "to '${C_NEW_CREDS%/*}'..."
+    cp -f "$C_EXAMPLE_CREDS" "$C_CURRENT_CREDS"
+else
+    echo "${E_INFO}Copying '${C_NEW_CREDS##*/}' to '${C_NEW_CREDS%/*}'..."
+    cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS"
+fi
+
+
+# If the old and new versions of NadekoBot exist, move the database and other data.
+if [[ -d $C_NADEKOBOT_TMP/nadekobot && -d nadekobot ]]; then
     if [[ ! -f $C_CURRENT_DATABASE ]]; then
         echo "${E_WARNING}'$C_CURRENT_DATABASE' could not be found"
     else
