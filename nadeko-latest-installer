@@ -32,11 +32,11 @@ service_is_active=false
 ####[ Trapping Logic ]##################################################################
 
 
-trap 'clean_exit "130" "true"' SIGINT
-trap 'clean_exit "143" "true"' SIGTERM
-trap 'clean_exit "129" "true"' SIGHUP
-trap 'clean_exit "131" "true"' SIGQUIT
-trap 'clean_exit "$?" "true"'  EXIT
+#trap 'clean_exit "130" "true"' SIGINT
+#trap 'clean_exit "143" "true"' SIGTERM
+#trap 'clean_exit "129" "true"' SIGHUP
+#trap 'clean_exit "131" "true"' SIGQUIT
+#trap 'clean_exit "$?" "true"'  EXIT
 
 
 ####[ Main ]############################################################################
@@ -103,7 +103,7 @@ else
 fi
 
 
-# If the old and new versions of NadekoBot exist, move the database and other data.
+## If the old and new versions of NadekoBot exist, move the database and other data.
 if [[ -d $C_NADEKOBOT_TMP/nadekobot && -d nadekobot ]]; then
     if [[ ! -f $C_CURRENT_DATABASE ]]; then
         echo "${E_WARNING}'$C_CURRENT_DATABASE' could not be found"
