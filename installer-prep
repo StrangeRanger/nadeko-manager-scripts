@@ -104,15 +104,15 @@ linuxAIO_update() {
     else
         local installer_branch
         local installer_branch_found
-        installer_branch=$(grep '^installer_branch=.*' linuxAIO)
+        installer_branch=$(grep '^installer_branch=.*' linuxAIO.old)
         installer_branch_found="$?"
         local bot_install_version
         local bot_install_version_found
-        bot_install_version=$(grep '^export E_BOT_INSTALL_VERSION=.*' linuxAIO)
+        bot_install_version=$(grep '^export E_BOT_INSTALL_VERSION=.*' linuxAIO.old)
         bot_install_version_found="$?"
         local compile_nadekobot
         local compile_nadekobot_found
-        compile_nadekobot=$(grep '^export E_COMPILE_NADEKOBOT=.*' linuxAIO)
+        compile_nadekobot=$(grep '^export E_COMPILE_NADEKOBOT=.*' linuxAIO.old)
         compile_nadekobot_found="$?"
 
         echo "URL: $E_RAW_URL/linuxAIO"
@@ -134,6 +134,9 @@ linuxAIO_update() {
 
         [[ $compile_nadekobot_found == 0 ]] \
             && sed -i "s/^export E_COMPILE_NADEKOBOT=.*/$compile_nadekobot/" linuxAIO
+
+        echo "${E_INFO}Removing 'linuxAIO.old'..."
+        rm -f linuxAIO.old
 
         echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO' and" \
             "applied existing changes"
