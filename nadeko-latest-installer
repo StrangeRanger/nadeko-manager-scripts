@@ -95,39 +95,21 @@ clean_exit() {
     ## This block will only run if the script attempts to exit prematurely (i.e., an
     ## error occurred).
     if [[ $cleanup == true ]]; then
+        echo "${E_INFO}Cleaning up..."
 
-        # $C_NADEKOBOT_TMP exists; nadekobot exists; nadekobot.old might exists;
-        # nadeko.old.old doesn't exist
-        if (( finalization_step == 1 || finalization_step == 0 )); then
-            echo "${E_INFO}Reverting changes and cleaning up..."
-            rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
+        # Remove temporary directory if it exists
+        rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
 
-        # $C_NADEKOBOT_TMP exists; nadekobot exists; nadekobot.old doesn't exist;
-        # nadekobot.old.old might exist
-        elif (( finalization_step == 2 )); then
-            echo "${E_INFO}Reverting changes and cleaning up..."
-            rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
-            [[ -d nadekobot.old.old ]] && mv nadekobot.old.old nadekobot.old
+        # If 'nadekobot' is missing but 'nadekobot.old' exists, restore it
+        if [[ ! -d "nadekobot" && -d "nadekobot.old" ]]; then
+            echo "${E_WARNING}NadekoBot is in an inconsistent state"
+            echo "${E_INFO}Attempting to restore 'nadekobot'..."
+            mv nadekobot.old nadekobot || E_STDERR "Failed to restore 'nadekobot'" "1"
 
-        # $C_NADEKOBOT_TMP exists; nadekobot doesn't exist; nadekobot.old exists;
-        # nadekobot.old.old might exist
-        elif (( finalization_step == 3 )); then
-            echo "${E_INFO}Reverting changes and cleaning up..."
-            rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
-            mv nadekobot.old nadekobot
-            [[ -d nadekobot.old.old ]] && mv nadekobot.old.old nadekobot.old
-
-        # $C_NADEKOBOT_TMP doesn't exist; nadekobot exists; nadekobot.old exists;
-        # nadekobot.old.old might exist
-        elif (( finalization_step == 4 )); then
-            echo "${E_SUCCESS}No changes to revert!"
-            echo "${E_INFO}Cleaning up..."
-            rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
-
-        # $C_NADEKOBOT_TMP doesn't exist; nadekobot exists; nadekobot.old exists;
-        # nadekobot.old.old doesn't exist
-        elif (( finalization_step == 5 )); then
-            echo "${E_SUCCESS}No changes to revert!"
+            # If 'nadekobot.old.old' exists, move it back to 'nadekobot.old'
+            if [[ -d "nadekobot.old.old" ]]; then
+                mv nadekobot.old.old nadekobot.old || E_STDERR "Failed to restore 'nadekobot.old'" "1"
+            fi
         fi
     fi
 
@@ -249,23 +231,22 @@ if [[ -d nadekobot ]]; then
     ## Ensures a smooth transition between versions. In the case of an error, it'll be
     ## easier to revert to the previous version.
     (
-        finalization_step=1  # Start of finalization.
         echo "1/5" && sleep 10
         if [[ -d nadekobot.old ]]; then
             mv nadekobot.old nadekobot.old.old || exit 1
         fi
-        finalization_step=2
+
         echo "2/5" && sleep 10
         mv nadekobot nadekobot.old || exit 1
-        finalization_step=3
+
         echo "3/5" && sleep 10
         mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 1
-        finalization_step=4
+
         echo "4/5" && sleep 10
         if [[ -d nadekobot.old.old ]]; then
             rm -rf nadekobot.old.old || exit 1
         fi
-        finalization_step=5  # End of finalization.
+
         echo "5/5" && sleep 10
     ) || E_STDERR "Failed to replace 'nadekobot' with the new version" "1"
 else
