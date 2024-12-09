@@ -216,7 +216,6 @@ if [[ -d nadekobot ]]; then
 
     ## Prevent overwriting the new strings directory and aliases.yml file, by renaming
     ## them.
-    ls "$C_NEW_DATA"
     mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_new
     mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_new.yml
 
@@ -224,6 +223,8 @@ if [[ -d nadekobot ]]; then
     # directory that exists in the new data directory, with the same name.
     cp -rT "$C_CURRENT_DATA" "$C_NEW_DATA"
 
+    # Remove old strings and aliases.
+    rm -rf "$C_NEW_DATA"/strings_old "$C_NEW_DATA"/aliases_old.yml 2>/dev/null
     ## Back up old strings and aliases.
     mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_old
     mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_old.yml
