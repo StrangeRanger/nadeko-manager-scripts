@@ -85,13 +85,18 @@ linuxAIO_update() {
     if ((_LINUXAIO_REVISION <= 38)); then
         if [[ -f linuxAIO.sh ]]; then
             echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.sh.old'..."
-            mv linuxAIO.sh linuxAIO.sh.old
+            mv linuxAIO.sh linuxAIO.old
         elif [[ -f linuxAIO ]]; then
             echo "${E_INFO}Backing up 'linuxAIO' as 'linuxAIO.old'..."
             mv linuxAIO linuxAIO.old
         fi
 
-        curl -O "$_RAW_URL/linuxAIO" || E_STDERR "Failed to download 'linuxAIO'" "1"
+        curl -O "$_RAW_URL/linuxAIO" || {
+            E_STDERR "Failed to download 'linuxAIO'"
+            echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
+            [[ -f linuxAIO.old ]] && mv linuxAIO.old linuxAIO
+            exit 1
+        }
         sudo chmod +x linuxAIO
         echo "${E_NOTE}NOT applying existing configurations to 'linuxAIO'"
         echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'"
@@ -110,16 +115,13 @@ linuxAIO_update() {
         compile_nadekobot=$(grep '^export E_COMPILE_NADEKOBOT=.*' linuxAIO)
         compile_nadekobot_found="$?"
 
-        # shellcheck disable=SC2015
-        #   If either command fails, the or statement will return a non-zero exit code.
-        curl -O "$E_RAW_URL"/linuxAIO \
-            && sudo chmod +x linuxAIO \
-            || {
-                E_STDERR "Failed to download 'linuxAIO'"
-                echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
-                [[ -f linuxAIO.old ]] && mv linuxAIO.old linuxAIO
-                exit 1
-            }
+        curl -O "$E_RAW_URL"/linuxAIO || {
+            E_STDERR "Failed to download 'linuxAIO'"
+            echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
+            [[ -f linuxAIO.old ]] && mv linuxAIO.old linuxAIO
+            exit 1
+        }
+        sudo chmod +x linuxAIO
 
         echo "${E_INFO}Applying existing configurations to the new 'linuxAIO'..."
 
