@@ -249,24 +249,30 @@ if [[ -d nadekobot ]]; then
     ## Ensures a smooth transition between versions. In the case of an error, it'll be
     ## easier to revert to the previous version.
     (
+        echo "0/5" && sleep 10
         finalization_step=1  # Start of finalization.
         if [[ -d nadekobot.old ]]; then
             mv nadekobot.old nadekobot.old.old || exit 1
         fi
+        echo "1/5" && sleep 10
         finalization_step=2
         mv nadekobot nadekobot.old || exit 1
+        echo "2/5" && sleep 10
         finalization_step=3
         mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 1
+        echo "3/5" && sleep 10
         finalization_step=4
         if [[ -d nadekobot.old.old ]]; then
             rm -rf nadekobot.old.old || exit 1
         fi
+        echo "4/5" && sleep 10
         finalization_step=5  # End of finalization.
+        echo "5/5" && sleep 10
     ) || E_STDERR "Failed to replace 'nadekobot' with the new version" "1"
 else
     echo "${C_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
     mv "$C_NADEKOBOT_TMP"/nadekobot . \
-        || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' 'nadekobot'" "1"
+        || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' to 'nadekobot'" "1"
     rmdir "$C_NADEKOBOT_TMP" &>/dev/null
 fi
 
