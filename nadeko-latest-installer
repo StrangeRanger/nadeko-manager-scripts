@@ -87,8 +87,6 @@ clean_exit() {
                 echo "${E_WARNING}NadekoBot is in an inconsistent state"
                 echo "${E_INFO}Attempting to restore 'nadekobot'..."
                 mv nadekobot.old.old nadekobot.old || exit 1
-
-            ## If 'nadekobot' is missing but 'nadekobot.old' exists, restore it.
             elif [[ ! -d nadekobot && -d nadekobot.old ]]; then
                 echo "${E_WARNING}NadekoBot is in an inconsistent state"
                 echo "${E_INFO}Attempting to restore 'nadekobot'..."
@@ -96,8 +94,14 @@ clean_exit() {
 
                 # If 'nadekobot.old.old' exists, move it back to 'nadekobot.old'
                 if [[ -d "nadekobot.old.old" ]]; then
-                    mv nadekobot.old.old nadekobot.old || exit 1
+                    mv nadekobot.old.old nadekobot.old \
+                        || E_STDERR "Failed to rename 'nadekobot.old.old' as 'nadekobot.old" \
+                            "" "${C_NOTE}Please rename it manually"
                 fi
+            elif [[ -d nadekobot && -d nadekobot.old && -d nadekobot.old.old ]]; then
+                rm -rf nadekobot.old.old \
+                    || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
+                        "${C_NOTE}Please remove 'nadekobot.old.old' manually"
             fi
         ) || E_STDERR "Failed to restore 'nadekobot'" "$?" \
             "${E_NOTE}Will exit to prevent data loss"
@@ -246,7 +250,6 @@ if [[ -d nadekobot ]]; then
             rm -rf nadekobot.old.old \
                 || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
                     "${C_NOTE}Please remove 'nadekobot.old.old' manually"
-
         fi
 
         echo "5/5" && sleep 10
