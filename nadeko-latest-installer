@@ -2,6 +2,13 @@
 #
 # This script downloads and updates NadekoBot to the latest version.
 #
+# NOTE:
+#   Regarding how I manage reverting changes, I've decided to use a step-based approach
+#   compared to the state-based approach used in 'file-backup'. This is because the
+#   potential ambiguity when dealing with multiple files or directories that may or may
+#   not exist, has posed a logical challenge for me. I believe that using a step-based
+#   approach will make it easier to manage the script's logic.
+#
 # Comment Key:
 #   - A.1.: To prevent permission errors that can occur, especially when the installer
 #       is run with root privileges and later as a non-root user, it's necessary to
@@ -27,16 +34,116 @@ readonly C_CURRENT_DATA="nadekobot/output/data"
 readonly C_NEW_DATA="$C_NADEKOBOT_TMP/nadekobot/output/data"
 
 service_is_active=false
+finalization_step=0
+
+
+####[ Functions ]#######################################################################
+
+
+####
+# Clean up and exit the script.
+#
+# PARAMETERS:
+#   - $1: exit_code (Required)
+#   - $2: use_extra_newline (Optional, Default: false)
+#       - Whether to output an extra blank line, to separate the previous output from
+#         the output of this function.
+#       - Acceptable values:
+#           - true
+#           - false
+clean_exit() {
+    local exit_code="$1"
+    local use_extra_newline="${2:-false}"
+    local cleanup=true
+
+    # Unset the local traps to restore traps set in 'installer-prep'.
+    trap - EXIT SIGINT SIGTERM SIGHUP SIGQUIT
+
+    [[ $use_extra_newline == true ]] && echo ""
+
+    ## We modify the exit code to 3, because 'nadeko-main-installer' will not exit if
+    ## if the exit code is 3. This exit code is used to indicate that the script exited
+    ## due an error, but the main installer should continue.
+    case "$exit_code" in
+        0)
+            cleanup=false
+            ;;
+        1)
+            exit_code=3
+            ;;
+        130)
+            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            exit_code=3
+            ;;
+        143)
+            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            exit_code=3
+            ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_code=3
+            ;;
+        131)
+            echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)"
+            exit_code=3
+            ;;
+        *)
+            echo -e "\n${E_WARNING}Exiting with code: $exit_code"
+            ;;
+    esac
+
+    ## This block will only run if the script attempts to exit prematurely (i.e., an
+    ## error occurred).
+    if [[ $cleanup == true ]]; then
+
+        # $C_NADEKOBOT_TMP exists; nadekobot exists; nadekobot.old might exists;
+        # nadeko.old.old doesn't exist
+        if (( finalization_step == 1 || finalization_step == 0 )); then
+            echo "${E_INFO}Reverting changes and cleaning up..."
+            rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
+
+        # $C_NADEKOBOT_TMP exists; nadekobot exists; nadekobot.old doesn't exist;
+        # nadekobot.old.old might exist
+        elif (( finalization_step == 2 )); then
+            echo "${E_INFO}Reverting changes and cleaning up..."
+            rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
+            [[ -d nadekobot.old.old ]] && mv nadekobot.old.old nadekobot.old
+
+        # $C_NADEKOBOT_TMP exists; nadekobot doesn't exist; nadekobot.old exists;
+        # nadekobot.old.old might exist
+        elif (( finalization_step == 3 )); then
+            echo "${E_INFO}Reverting changes and cleaning up..."
+            rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
+            mv nadekobot.old nadekobot
+            [[ -d nadekobot.old.old ]] && mv nadekobot.old.old nadekobot.old
+
+        # $C_NADEKOBOT_TMP doesn't exist; nadekobot exists; nadekobot.old exists;
+        # nadekobot.old.old might exist
+        elif (( finalization_step == 4 )); then
+            echo "${E_SUCCESS}No changes to revert!"
+            echo "${E_INFO}Cleaning up..."
+            rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
+
+        # $C_NADEKOBOT_TMP doesn't exist; nadekobot exists; nadekobot.old exists;
+        # nadekobot.old.old doesn't exist
+        elif (( finalization_step == 5 )); then
+            echo "${E_SUCCESS}No changes to revert!"
+        fi
+    fi
+
+    read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    exit "$exit_code"
+}
 
 
 ####[ Trapping Logic ]##################################################################
 
 
-#trap 'clean_exit "130" "true"' SIGINT
-#trap 'clean_exit "143" "true"' SIGTERM
-#trap 'clean_exit "129" "true"' SIGHUP
-#trap 'clean_exit "131" "true"' SIGQUIT
-#trap 'clean_exit "$?" "true"'  EXIT
+trap 'clean_exit "130" "true"' SIGINT
+trap 'clean_exit "143" "true"' SIGTERM
+trap 'clean_exit "129" "true"' SIGHUP
+trap 'clean_exit "131" "true"' SIGQUIT
+trap 'clean_exit "$?" "true"'  EXIT
 
 
 ####[ Main ]############################################################################
@@ -105,8 +212,7 @@ cd "$E_WORKING_DIR" || E_STDERR "Failed to change directory to '$E_WORKING_DIR'"
 ) || E_STDERR "Failed to copy credentials" "1"
 
 
-## If the old and new versions of NadekoBot exist, move the database and other data.
-if [[ -d $C_NADEKOBOT_TMP/nadekobot && -d nadekobot ]]; then
+if [[ -d nadekobot ]]; then
     if [[ ! -f $C_CURRENT_DATABASE ]]; then
         echo "${E_WARNING}'$C_CURRENT_DATABASE' could not be found"
         echo "${E_NOTE}Skipping copying the database..."
@@ -118,49 +224,62 @@ if [[ -d $C_NADEKOBOT_TMP/nadekobot && -d nadekobot ]]; then
 
     echo "${E_INFO}Copying other data to the new version..."
 
-    ### IMPORTANT:
-    ###     The end-user will have to manually re-add their strings after each update as
-    ###     updates may cause a number of strings to become obsolete, changed, etc.
-    ###     However, old user's strings will be backed up as strings_old.
+    ### The end-user will have to manually re-add their strings after each update as
+    ### updates may cause a number of strings to become obsolete, changed, etc.
+    ### However, old user's strings will be backed up as strings_old.
 
-    ## Back up new strings to reverse rewrite.
-    rm -rf "$C_NEW_DATA"/strings_new &>/dev/null
+    ## Prevent overwriting the new strings directory and aliases.yml file, by renaming
+    ## them.
     mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_new
-
-    ## Delete old string backups.
-    rm -rf "$C_CURRENT_DATA"/strings_old &>/dev/null
-    rm -rf "$C_CURRENT_DATA"/strings_new &>/dev/null
-
-    # Back up new aliases to reverse rewrite.
     mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_new.yml
 
-    # Move old data folder contents (and overwrite).
-    cp -RT "$C_CURRENT_DATA" "$C_NEW_DATA"
+    # Copy current data directory to new data directory. This will overwrite any file or
+    # directory that exists in the new data directory, with the same name.
+    cp -rT "$C_CURRENT_DATA" "$C_NEW_DATA"
 
-    # Back up old aliases.
+    ## Back up old strings and aliases.
+    mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_old
     mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_old.yml
-    # Restore new aliases.
+
+    ## Restore new strings and aliases.
+    mv -fT "$C_NEW_DATA"/strings_new "$C_NEW_DATA"/strings
     mv -f "$C_NEW_DATA"/aliases_new.yml "$C_NEW_DATA"/aliases.yml
 
-    # Back up old strings.
-    mv -f "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_old
-    # Restore new strings.
-    mv -f "$C_NEW_DATA"/strings_new "$C_NEW_DATA"/strings
-
-    rm -rf nadekobot.old && mv -f nadekobot nadekobot.old
+    echo "${E_INFO}Replacing 'nadekobot' with '${C_NADEKOBOT_TMP}/nadekobot'..."
+    ## Ensures a smooth transition between versions. In the case of an error, it'll be
+    ## easier to revert to the previous version.
+    (
+        finalization_step=1  # Start of finalization.
+        if [[ -d nadekobot.old ]]; then
+            mv nadekobot.old nadekobot.old.old || exit 1
+        fi
+        finalization_step=2
+        mv nadekobot nadekobot.old || exit 1
+        finalization_step=3
+        mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 1
+        finalization_step=4
+        if [[ -d nadekobot.old.old ]]; then
+            rm -rf nadekobot.old.old || exit 1
+        fi
+        finalization_step=5  # End of finalization.
+    ) || E_STDERR "Failed to replace 'nadekobot' with the new version" "1"
+else
+    echo "${C_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
+    mv "$C_NADEKOBOT_TMP"/nadekobot . \
+        || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' 'nadekobot'" "1"
+    rmdir "$C_NADEKOBOT_TMP" &>/dev/null
 fi
-
-mv "$C_NADEKOBOT_TMP"/nadekobot . && rmdir "$C_NADEKOBOT_TMP"
 
 ###
 ### [ Clean Up and Present Results ]
 ###
 
-echo -e "\n${E_SUCCESS}Finished downloading/updating NadekoBot${E_NC}"
+echo ""
+echo "${E_SUCCESS}Finished downloading/updating NadekoBot"
 
 if [[ $service_is_active == true ]]; then
     echo "${E_NOTE}'$E_SERVICE_NAME' was stopped to update NadekoBot and needs to be" \
-        "started using one of the run modes in the installer menu${E_NC}"
+        "started using one of the run modes in the installer menu"
 fi
 
-read -rp "${E_NOTE}Press [Enter] to apply any existing changes to the installers"
+clean_exit 0
