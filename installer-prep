@@ -74,7 +74,7 @@ linuxAIO_update() {
     echo "${E_INFO}Downloading latest version of 'linuxAIO'..."
 
     if [[ -f linuxAIO.sh ]]; then
-        echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.sh.old'..."
+        echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.old'..."
         mv linuxAIO.sh linuxAIO.old
     elif [[ -f linuxAIO ]]; then
         echo "${E_INFO}Backing up 'linuxAIO' as 'linuxAIO.old'..."
