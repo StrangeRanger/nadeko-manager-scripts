@@ -204,7 +204,7 @@ if [[ -d nadekobot ]]; then
         echo "${E_NOTE}Skipping copying the database..."
     else
         echo "${E_INFO}Copying '${C_CURRENT_DATABASE} to the '${C_NEW_DATABASE%/*}'..."
-        cp -RT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE" \
+        cp -rT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE" \
             || E_STDERR "Failed to copy database" "1"
     fi
 
@@ -216,6 +216,7 @@ if [[ -d nadekobot ]]; then
 
     ## Prevent overwriting the new strings directory and aliases.yml file, by renaming
     ## them.
+    ls "$C_NEW_DATA"
     mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_new
     mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_new.yml
 
