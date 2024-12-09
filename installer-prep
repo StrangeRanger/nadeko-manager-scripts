@@ -142,7 +142,7 @@ linuxAIO_update() {
             "applied existing changes"
     fi
 
-    clean_exit "0" "true"
+    clean_exit "0"
 }
 
 ####
