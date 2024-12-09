@@ -1,0 +1,102 @@
+Scenario 1:
+    Step 1:  # Before the first action of finalization.
+        $C_NADEKOBOT_TMP:   exists
+        nadekobot:          exists
+        nadekobot.old:      exists
+        nadekobot.old.old:  doesn't exist
+    Step 2:
+        $C_NADEKOBOT_TMP:   exists
+        nadekobot:          exists
+        nadekobot.old:      doesn't exist
+        nadekobot.old.old:  exists
+    Step 3:
+        $C_NADEKOBOT_TMP:   exists
+        nadekobot:          doesn't exist
+        nadekobot.old:      exists
+        nadekobot.old.old:  exists
+    Step 4:
+        $C_NADEKOBOT_TMP:   doesn't exist
+        nadekobot:          exists
+        nadekobot.old:      exists
+        nadekobot.old.old:  exists
+    Step 5:
+        $C_NADEKOBOT_TMP:   doesn't exist
+        nadekobot:          exists
+        nadekobot.old:      exists
+        nadekobot.old.old:  doesn't exist
+Scenario 2:
+    Step 1:  # Before the first action of finalization.
+        $C_NADEKOBOT_TMP:   exists
+        nadekobot:          exists
+        nadekobot.old:      doesn't exist
+        nadekobot.old.old:  doesn't exist
+    Step 2:
+        $C_NADEKOBOT_TMP:   exists
+        nadekobot:          exists
+        nadekobot.old:      doesn't exist
+        nadekobot.old.old:  doesn't exist
+    Step 3:
+        $C_NADEKOBOT_TMP:   exists
+        nadekobot:          doesn't exist
+        nadekobot.old:      exists
+        nadekobot.old.old:  doesn't exist
+    Step 4:
+        $C_NADEKOBOT_TMP:   doesn't exist
+        nadekobot:          exists
+        nadekobot.old:      exists
+        nadekobot.old.old:  doesn't exist
+    Step 5:
+        $C_NADEKOBOT_TMP:   doesn't exist
+        nadekobot:          exists
+        nadekobot.old:      exists
+        nadekobot.old.old:  doesn't exist
+Scenario 3:
+    Step 1:  # Before the first action of finalization.
+        $C_NADEKOBOT_TMP:   exists
+        nadekobot:          doesn't exist
+        nadekobot.old:      doesn't exist
+        nadekobot.old.old:  doesn't exist
+    Step 2:
+        $C_NADEKOBOT_TMP:   exists
+        nadekobot:          doesn't exist
+        nadekobot.old:      doesn't exist
+        nadekobot.old.old:  doesn't exist
+    Step 3:
+        $C_NADEKOBOT_TMP:   exists
+        nadekobot:          doesn't exist
+        nadekobot.old:      doesn't exist
+        nadekobot.old.old:  doesn't exist
+    Step 4:
+        $C_NADEKOBOT_TMP:   doesn't exist
+        nadekobot:          exists
+        nadekobot.old:      doesn't exist
+        nadekobot.old.old:  doesn't exist
+    Step 5:
+        $C_NADEKOBOT_TMP:   doesn't exist
+        nadekobot:          exists
+        nadekobot.old:      doesn't exist
+        nadekobot.old.old:  doesn't exist
+
+---
+
+```bash
+    (
+        echo "1/5" && sleep 10
+        if [[ -d nadekobot.old ]]; then
+            mv nadekobot.old nadekobot.old.old || exit 1
+        fi
+
+        echo "2/5" && sleep 10
+        mv nadekobot nadekobot.old || exit 1
+
+        echo "3/5" && sleep 10
+        mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 1
+
+        echo "4/5" && sleep 10
+        if [[ -d nadekobot.old.old ]]; then
+            rm -rf nadekobot.old.old || exit 1
+        fi
+
+        echo "5/5" && sleep 10
+    ) || E_STDERR "Failed to replace 'nadekobot' with the new version" "1"
+```
