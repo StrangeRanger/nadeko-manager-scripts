@@ -18,7 +18,7 @@ C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot.XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
 
 readonly C_NADEKOBOT_URL="https://gitlab.com/Kwoth/nadekobot"
-readonly C_EXAMPLE_CREDS="nadekobot/src/NadekoBot/creds_example.yml"
+readonly C_EXAMPLE_CREDS="$C_EXAMPLE_CREDS/nadekobot/src/NadekoBot/creds_example.yml"
 readonly C_CURRENT_CREDS="nadekobot/output/creds.yml"
 readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/nadekobot/output/creds.yml"
 readonly C_CURRENT_DATABASE="nadekobot/output/data/NadekoBot.db"
