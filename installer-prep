@@ -9,7 +9,7 @@
 
 
 # Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
-readonly C_CURRENT_LINUXAIO_REVISION=39
+readonly C_CURRENT_LINUXAIO_REVISION=40
 readonly C_MAIN_INSTALLER="nadeko-main-installer"
 
 ## Modify output text color.
@@ -105,6 +105,10 @@ linuxAIO_update() {
         local bot_install_version_found
         bot_install_version=$(grep '^export E_BOT_INSTALL_VERSION=.*' linuxAIO)
         bot_install_version_found="$?"
+        local compile_nadekobot
+        local compile_nadekobot_found
+        compile_nadekobot=$(grep '^export E_COMPILE_NADEKOBOT=.*' linuxAIO)
+        compile_nadekobot_found="$?"
 
         curl -O "$E_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
         echo "${E_INFO}Applying existing configurations to the new 'linuxAIO'..."
@@ -114,6 +118,9 @@ linuxAIO_update() {
 
         [[ $bot_install_version_found == 0 ]] \
             && sed -i "s/^export E_BOT_INSTALL_VERSION=.*/$bot_install_version/" linuxAIO
+
+        [[ $compile_nadekobot_found == 0 ]] \
+            && sed -i "s/^export E_COMPILE_NADEKOBOT=.*/$compile_nadekobot/" linuxAIO
 
         echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO' and" \
             "applied existing changes"
