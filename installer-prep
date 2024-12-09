@@ -79,10 +79,8 @@ linuxAIO_update() {
     ## have to reconfigure 'linuxAIO' manually.
     ##
     # shellcheck disable=SC2153
-    #   $_LINUXAIO_REVISION and $_RAW_URL are from revision 38 and earlier. This means
-    #   that the if statement doesn't need to test for $E_LINUXAIO_REVISION to check if
-    #   the current version of 'linuxAIO' is revision 38 or earlier.
-    if ((_LINUXAIO_REVISION <= 38)); then
+    #   $_LINUXAIO_REVISION and $_RAW_URL are from revision 38 and earlier.
+    if [[ $_LINUXAIO_REVISION ]] && ((_LINUXAIO_REVISION <= 38)); then
         if [[ -f linuxAIO.sh ]]; then
             echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.sh.old'..."
             mv linuxAIO.sh linuxAIO.old
