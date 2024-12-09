@@ -92,10 +92,6 @@ cd "$E_WORKING_DIR" || E_STDERR "Failed to change directory to '$E_WORKING_DIR'"
 ### Move credentials, database, and other data to the new version of NadekoBot.
 ###
 
-echo "Working directory: $E_WORKING_DIR"
-echo "Current directory: $(pwd)"
-echo "Example creds: $C_EXAMPLE_CREDS"
-
 if [[ ! -f $C_CURRENT_CREDS ]]; then
     echo "${E_WARNING}'$C_CURRENT_CREDS' could not be found"
     echo "${E_INFO}Copying '${C_EXAMPLE_CREDS##*/}' as '${C_NEW_CREDS##*/}'" \
@@ -111,6 +107,7 @@ fi
 if [[ -d $C_NADEKOBOT_TMP/nadekobot && -d nadekobot ]]; then
     if [[ ! -f $C_CURRENT_DATABASE ]]; then
         echo "${E_WARNING}'$C_CURRENT_DATABASE' could not be found"
+        echo "${E_INFO}Skipping copying the database..."
     else
         echo "${E_INFO}Copying '${C_CURRENT_DATABASE} to the '${C_NEW_DATABASE%/*}'..."
         cp -RT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE"
