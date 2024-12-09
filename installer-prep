@@ -115,6 +115,7 @@ linuxAIO_update() {
         compile_nadekobot=$(grep '^export E_COMPILE_NADEKOBOT=.*' linuxAIO)
         compile_nadekobot_found="$?"
 
+        echo "URL: $E_RAW_URL/linuxAIO"
         curl -O "$E_RAW_URL"/linuxAIO || {
             E_STDERR "Failed to download 'linuxAIO'"
             echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
