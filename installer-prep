@@ -243,7 +243,8 @@ E_DOWNLOAD_SCRIPT() {
     local script_name="$1"
     local script_output="${2:-false}"
 
-    [[ $script_output == true ]] && printf "Downloading '%s'..." "$script_name"
+    [[ $script_output == true ]] \
+        && printf "%sDownloading '%s'..." "${E_INFO}" "$script_name"
 
     curl -O -s "$E_RAW_URL"/"$script_name"
     sudo chmod +x "$script_name"
