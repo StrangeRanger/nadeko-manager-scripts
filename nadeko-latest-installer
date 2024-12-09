@@ -63,49 +63,44 @@ clean_exit() {
     ## We modify the exit code to 50 to tell the 'nadeko-latest-installer', "We've had
     ## an error, but it's safe to continue."
     case "$exit_code" in
-        0)
-            cleanup=false
-            ;;
-        1)
-            exit_code=50
-            ;;
+        0) cleanup=false ;;
+        1) exit_code=50 ;;
+        5) ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
-        143)
-            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
-            ;;
-        129)
-            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
-            ;;
-        131)
-            echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)"
-            ;;
-        *)
-            echo -e "\n${E_WARNING}Exiting with code: $exit_code"
-            ;;
+        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
+        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
+        131) echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)" ;;
+        *)   echo -e "\n${E_WARNING}Exiting with exit code: $exit_code" ;;
     esac
 
     ## This block will only run if the script attempts to exit prematurely (i.e., an
     ## error occurred).
     if [[ $cleanup == true ]]; then
         echo "${E_INFO}Cleaning up..."
+        [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
 
-        # Remove temporary directory if it exists
-        rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
+        (
+            if [[ -d nadekobot && ! -d nadekobot.old && -d nadekobot.old.old ]]; then
+                echo "${E_WARNING}NadekoBot is in an inconsistent state"
+                echo "${E_INFO}Attempting to restore 'nadekobot'..."
+                mv nadekobot.old.old nadekobot.old || exit 1
 
-        # If 'nadekobot' is missing but 'nadekobot.old' exists, restore it
-        if [[ ! -d "nadekobot" && -d "nadekobot.old" ]]; then
-            echo "${E_WARNING}NadekoBot is in an inconsistent state"
-            echo "${E_INFO}Attempting to restore 'nadekobot'..."
-            mv nadekobot.old nadekobot || E_STDERR "Failed to restore 'nadekobot'" "1"
+            ## If 'nadekobot' is missing but 'nadekobot.old' exists, restore it.
+            elif [[ ! -d nadekobot && -d nadekobot.old ]]; then
+                echo "${E_WARNING}NadekoBot is in an inconsistent state"
+                echo "${E_INFO}Attempting to restore 'nadekobot'..."
+                mv nadekobot.old nadekobot || exit 1
 
-            # If 'nadekobot.old.old' exists, move it back to 'nadekobot.old'
-            if [[ -d "nadekobot.old.old" ]]; then
-                mv nadekobot.old.old nadekobot.old || E_STDERR "Failed to restore 'nadekobot.old'" "1"
+                # If 'nadekobot.old.old' exists, move it back to 'nadekobot.old'
+                if [[ -d "nadekobot.old.old" ]]; then
+                    mv nadekobot.old.old nadekobot.old || exit 1
+                fi
             fi
-        fi
+        ) || E_STDERR "Failed to restore 'nadekobot'" "$?" \
+            "${E_NOTE}Will exit to prevent data loss"
     fi
 
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
@@ -210,24 +205,26 @@ if [[ -d nadekobot ]]; then
     ### updates may cause a number of strings to become obsolete, changed, etc.
     ### However, old user's strings will be backed up as strings_old.
 
-    ## Prevent overwriting the new strings directory and aliases.yml file, by renaming
-    ## them.
-    mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_new
-    mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_new.yml
+    (
+        ## Prevent overwriting the new strings directory and aliases.yml file, by renaming
+        ## them.
+        mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_new || exit 1
+        mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_new.yml || exit 1
 
-    # Copy current data directory to new data directory. This will overwrite any file or
-    # directory that exists in the new data directory, with the same name.
-    cp -rT "$C_CURRENT_DATA" "$C_NEW_DATA"
+        # Copy current data directory to new data directory. This will overwrite any
+        # file or directory that exists in the new data directory, with the same name.
+        cp -rT "$C_CURRENT_DATA" "$C_NEW_DATA" || exit 1
 
-    # Remove old strings and aliases.
-    rm -rf "$C_NEW_DATA"/strings_old "$C_NEW_DATA"/aliases_old.yml 2>/dev/null
-    ## Back up old strings and aliases.
-    mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_old
-    mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_old.yml
+        # Remove old strings and aliases.
+        rm -rf "$C_NEW_DATA"/strings_old "$C_NEW_DATA"/aliases_old.yml 2>/dev/null
+        ## Back up old strings and aliases.
+        mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_old || exit 1
+        mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_old.yml || exit 1
 
-    ## Restore new strings and aliases.
-    mv -fT "$C_NEW_DATA"/strings_new "$C_NEW_DATA"/strings
-    mv -f "$C_NEW_DATA"/aliases_new.yml "$C_NEW_DATA"/aliases.yml
+        ## Restore new strings and aliases.
+        mv -fT "$C_NEW_DATA"/strings_new "$C_NEW_DATA"/strings || exit 1
+        mv -f "$C_NEW_DATA"/aliases_new.yml "$C_NEW_DATA"/aliases.yml || exit 1
+    ) || E_STDERR "An error occurred while copying other data" "$?"
 
     echo "${E_INFO}Replacing 'nadekobot' with '${C_NADEKOBOT_TMP}/nadekobot'..."
     ## Ensures a smooth transition between versions. In the case of an error, it'll be
@@ -235,22 +232,25 @@ if [[ -d nadekobot ]]; then
     (
         echo "1/5" && sleep 10
         if [[ -d nadekobot.old ]]; then
-            mv nadekobot.old nadekobot.old.old || exit 1
+            mv nadekobot.old nadekobot.old.old || exit 6
         fi
 
         echo "2/5" && sleep 10
-        mv nadekobot nadekobot.old || exit 1
+        mv nadekobot nadekobot.old || exit 6
 
         echo "3/5" && sleep 10
-        mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 1
+        mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 6
 
         echo "4/5" && sleep 10
         if [[ -d nadekobot.old.old ]]; then
-            rm -rf nadekobot.old.old || exit 1
+            rm -rf nadekobot.old.old \
+                || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
+                    "${C_NOTE}Please remove 'nadekobot.old.old' manually"
+
         fi
 
         echo "5/5" && sleep 10
-    ) || E_STDERR "Failed to replace 'nadekobot' with the new version" "6"
+    ) || E_STDERR "Failed to replace 'nadekobot' with the new version" "$?"
 else
     echo "${C_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
     mv "$C_NADEKOBOT_TMP"/nadekobot . \
