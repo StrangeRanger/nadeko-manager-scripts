@@ -120,6 +120,7 @@ linuxAIO_update() {
                 [[ -f linuxAIO.old ]] && mv linuxAIO.old linuxAIO
                 exit 1
             }
+
         echo "${E_INFO}Applying existing configurations to the new 'linuxAIO'..."
 
         [[ $installer_branch_found == 0 ]] \
