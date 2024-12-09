@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Fixed where it says Mewdeko instead of NadekoBot.
 - Fixed what appeared to be a "double catching" of signals.
+- `linuxAIO.old` gets restored if the current version can't be downloaded.
 
 ## [v3.2.5] - 2022-09-06
 
