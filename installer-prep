@@ -110,7 +110,16 @@ linuxAIO_update() {
         compile_nadekobot=$(grep '^export E_COMPILE_NADEKOBOT=.*' linuxAIO)
         compile_nadekobot_found="$?"
 
-        curl -O "$E_RAW_URL"/linuxAIO && sudo chmod +x linuxAIO
+        # shellcheck disable=SC2015
+        #   If either command fails, the or statement will return a non-zero exit code.
+        curl -O "$E_RAW_URL"/linuxAIO \
+            && sudo chmod +x linuxAIO \
+            || {
+                E_STDERR "Failed to download 'linuxAIO'"
+                echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
+                [[ -f linuxAIO.old ]] && mv linuxAIO.old linuxAIO
+                exit 1
+            }
         echo "${E_INFO}Applying existing configurations to the new 'linuxAIO'..."
 
         [[ $installer_branch_found == 0 ]] \
