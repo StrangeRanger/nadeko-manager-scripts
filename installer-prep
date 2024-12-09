@@ -73,22 +73,24 @@ linuxAIO_update() {
     read -rp "${E_NOTE}Press [Enter] to download the latest version"
     echo "${E_INFO}Downloading latest version of 'linuxAIO'..."
 
+    if [[ -f linuxAIO.sh ]]; then
+        echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.sh.old'..."
+        mv linuxAIO.sh linuxAIO.old
+    elif [[ -f linuxAIO ]]; then
+        echo "${E_INFO}Backing up 'linuxAIO' as 'linuxAIO.old'..."
+        mv linuxAIO linuxAIO.old
+    fi
+
     ## Due to changes in 'linuxAIO', the existing configurations cannot be directly
     ## applied to the newest version of 'linuxAIO'. As a result, the existing
     ## configurations will instead be backed up as 'linuxAIO.old', and the end-user will
     ## have to reconfigure 'linuxAIO' manually.
     ##
     # shellcheck disable=SC2153
-    #   $_LINUXAIO_REVISION and $_RAW_URL are from revision 38 and earlier.
+    #   $_LINUXAIO_REVISION and $_RAW_URL are from revision 38 and earlier. This means
+    #   that the if statement doesn't need to test for $E_LINUXAIO_REVISION to check if
+    #   the current version of 'linuxAIO' is revision 38 or earlier.
     if [[ $_LINUXAIO_REVISION ]] && ((_LINUXAIO_REVISION <= 38)); then
-        if [[ -f linuxAIO.sh ]]; then
-            echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.sh.old'..."
-            mv linuxAIO.sh linuxAIO.old
-        elif [[ -f linuxAIO ]]; then
-            echo "${E_INFO}Backing up 'linuxAIO' as 'linuxAIO.old'..."
-            mv linuxAIO linuxAIO.old
-        fi
-
         curl -O "$_RAW_URL/linuxAIO" || {
             E_STDERR "Failed to download 'linuxAIO'"
             echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
