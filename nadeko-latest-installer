@@ -34,7 +34,6 @@ readonly C_CURRENT_DATA="nadekobot/output/data"
 readonly C_NEW_DATA="$C_NADEKOBOT_TMP/nadekobot/output/data"
 
 service_is_active=false
-finalization_step=0
 
 
 ####[ Functions ]#######################################################################
