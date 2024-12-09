@@ -60,31 +60,27 @@ clean_exit() {
 
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## We modify the exit code to 3, because 'nadeko-main-installer' will not exit if
-    ## if the exit code is 3. This exit code is used to indicate that the script exited
-    ## due an error, but the main installer should continue.
+    ## We modify the exit code to 50 to tell the 'nadeko-latest-installer', "We've had
+    ## an error, but it's safe to continue."
     case "$exit_code" in
         0)
             cleanup=false
             ;;
         1)
-            exit_code=3
+            exit_code=50
             ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
-            exit_code=3
+            exit_code=50
             ;;
         143)
             echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
-            exit_code=3
             ;;
         129)
             echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
-            exit_code=3
             ;;
         131)
             echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)"
-            exit_code=3
             ;;
         *)
             echo -e "\n${E_WARNING}Exiting with code: $exit_code"
@@ -254,7 +250,7 @@ if [[ -d nadekobot ]]; then
         fi
 
         echo "5/5" && sleep 10
-    ) || E_STDERR "Failed to replace 'nadekobot' with the new version" "1"
+    ) || E_STDERR "Failed to replace 'nadekobot' with the new version" "6"
 else
     echo "${C_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
     mv "$C_NADEKOBOT_TMP"/nadekobot . \

@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Constant variables are now styled as `C_UPPER_CASE`
 - Ownership of '$HOME/.nuget' is no longer modified.
 - If `creds.yml` does not exist, the installer will create it.
+- Improved error code handling and definitions.
 
 ### Fixed
 

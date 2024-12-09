@@ -27,6 +27,14 @@ readonly C_REQ_DOTNET_VERSION=6
 # Depending on the return/exit code from any of the executed scripts, perform the
 # corresponding/appropriate actions.
 #
+# Custom Exit Codes:
+#   - 1:  General error.
+#   - 3:  Related to NadekoBot daemon service.
+#   - 4:  Unsupported OS/Distro.
+#   - 5:  A problem occurred while copying data.
+#   - 6:  A problem occurred finalizing an installation or the backup of files.
+#   - 50: Arbitrary exit code telling the main installer to continue.
+#
 # Arguments:
 #   - $1: exit_code (Required)
 #       - Return/exit code.
@@ -34,7 +42,7 @@ exit_code_actions() {
     local exit_code="$1"
 
     case "$exit_code" in
-        3) return 0 ;;
+        3|5|6|50) return 0 ;;
         *) exit "$exit_code" ;;
     esac
 }
