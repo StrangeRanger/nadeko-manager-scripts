@@ -15,11 +15,6 @@ This release introduces A LOT of changes to the installer, including some breaki
 
 Additionally, the next release will introduce support for NadekoBot v5 and MOST LIKELY drop support for NadekoBot v4. I'm not introducing this change yet, as I'm not sure how easy it will be to support both versions of NadekoBot. This release is primarily focused on improving the installer's codebase and making it more user-friendly.
 
-### Added
-
-- Users can configure if NadekoBot should be automatically compiled after being downloaded.
-  - This can be configured in `linuxAIO`.
-
 ### Changed
 
 #### Braking Changes
