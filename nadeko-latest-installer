@@ -236,14 +236,14 @@ if [[ -d nadekobot ]]; then
     (
         echo "1/5" && sleep 10
         if [[ -d nadekobot.old ]]; then
-            mv nadekobot.old nadekobot.old.old || exit 6
+            mv nadekobot.old nadekobot.old.old || exit 5
         fi
 
         echo "2/5" && sleep 10
-        mv nadekobot nadekobot.old || exit 6
+        mv nadekobot nadekobot.old || exit 5
 
         echo "3/5" && sleep 10
-        mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 6
+        mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 5
 
         echo "4/5" && sleep 10
         if [[ -d nadekobot.old.old ]]; then
@@ -253,7 +253,7 @@ if [[ -d nadekobot ]]; then
         fi
 
         echo "5/5" && sleep 10
-    ) || E_STDERR "Failed to replace 'nadekobot' with the new version" "$?"
+    ) || E_STDERR "An error occurred while replacing 'nadekobot'" "$?"
 else
     echo "${C_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
     mv "$C_NADEKOBOT_TMP"/nadekobot . \
