@@ -35,71 +35,41 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-    local cleanup=true
 
     # Unset the local traps to restore traps set in 'installer-prep'.
     trap - EXIT SIGINT SIGTERM SIGHUP SIGQUIT
 
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## We modify the exit code to 3, because 'nadeko-main-installer' will not exit if
-    ## if the exit code is 3. This exit code is used to indicate that the script exited
-    ## due an error, but the main installer should continue.
+    ## We modify the exit code to 50 to tell the 'nadeko-latest-installer', "We've had
+    ## an error, but it's safe to continue."
     case "$exit_code" in
-        0)
-            cleanup=false
-            ;;
-        1)
-            exit_code=3
-            ;;
+        1)   exit_code=50 ;;
+        0|5) ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
-            exit_code=3
+            exit_code=50
             ;;
-        143)
-            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
-            exit_code=3
-            ;;
-        129)
-            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
-            exit_code=3
-            ;;
-        131)
-            echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)"
-            exit_code=3
-            ;;
-        *)
-            echo -e "\n${E_WARNING}Exiting with code: $exit_code"
-            ;;
+        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
+        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
+        131) echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)" ;;
+        *)   echo -e "\n${E_WARNING}Exiting with exit code: $exit_code" ;;
     esac
 
-    ## This block will only run if the script attempts to exit prematurely (i.e., an
-    ## error occurred).
-    if [[ $cleanup == true ]]; then
-        # State BEFORE step 1 of finalizing the backup.
-        if [[ -d $C_TMP_BACKUP && -d $C_CURRENT_BACKUP && ! -d $C_OLD_BACKUP ]]; then
-            echo "${E_INFO}Reverting changes and cleaning up..."
-            rm -rf "$C_TMP_BACKUP" 2>/dev/null
+    echo "${E_INFO}Cleaning up..."
+    [[ -d "$C_TMP_BACKUP" ]] && rm -rf "$C_TMP_BACKUP" 2>/dev/null
 
-        # State BEFORE step 2 of finalizing the backup.
-        elif [[ -d $C_TMP_BACKUP && -d $C_OLD_BACKUP && ! -d $C_CURRENT_BACKUP ]]; then
-            echo "${E_INFO}Reverting changes and cleaning up..."
-            rm -rf "$C_TMP_BACKUP" 2>/dev/null
-            mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" \
-                || E_STDERR "Failed to rename '$C_OLD_BACKUP' as '$C_CURRENT_BACKUP'" \
-                    "1" "${E_NOTE}Will exit to prevent data loss"
-
-        # State BEFORE step 3 of finalizing the backup.
-        elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP && ! -d $C_TMP_BACKUP ]]; then
-            echo "${E_SUCCESS}No changes to revert!"
-            echo "${E_INFO}Cleaning up..."
-            rm -rf "$C_OLD_BACKUP" 2>/dev/null
-
-        # State AFTER step 3 of finalizing the backup.
-        elif [[ -d $C_CURRENT_BACKUP && ! -d $C_OLD_BACKUP && ! -d $C_TMP_BACKUP ]]; then
-            echo "${E_SUCCESS}No changes to revert!"
+    (
+        if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
+            echo "${E_INFO}Restoring original backups..."
+            mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
+        elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
+            rm -rf "$C_OLD_BACKUP" \
+                || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
+                    "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
         fi
-    fi
+    ) || E_STDERR "Failed to restore original backup" "$?" \
+        "${E_NOTE}Will exit to prevent data loss"
 
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
     exit "$exit_code"
@@ -150,17 +120,16 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     ## Ensures a smooth transition between versions. In the case of an error, it'll be
     ## easier to revert to the previous version.
     (
-        # Step 1 of finalization the backup.
-        echo "1/4" && sleep 10
         mv "$C_CURRENT_BACKUP" "$C_OLD_BACKUP" || exit 1
         # Step 2 of finalization the backup.
-        echo "2/4" && sleep 10
+        echo "1/4" && sleep 10
         mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" || exit 1
         # Step 3 of finalization the backup.
-        echo "3/4" && sleep 10
-        rm -rf "$C_OLD_BACKUP" || exit 1
-        echo "4/4" && sleep 10
-     ) || E_STDERR "Failed to replace old backup" "1"
+        echo "2/4" && sleep 10
+        rm -rf "$C_OLD_BACKUP" \
+            || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
+                "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
+     ) || E_STDERR "An error occurred while replacing old backup" "1"
 else
     echo "${E_INFO}Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
     mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
