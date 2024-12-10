@@ -18,29 +18,41 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 ### Added
 
 - Users can configure if NadekoBot should be automatically compiled after being downloaded.
+  - This can be configured in `linuxAIO`.
 
 ### Changed
+
+#### Braking Changes
 
 - ⚠️ Old nadekobot versions are now stored in `nadekobot.old` instead of `nadekobot_old`.
 - ⚠️ Old strings are now stored in `strings.old` instead of `strings_old`.
 - ⚠️ Old aliases are now stored in `aliases.old` instead of `aliases_old`.
-- Improved script comments.
-- Improved the syntax and colorization of the output text.
-- Improved error handling.
-- Improved error code handling and definitions.
-- Improved handling of temporary files.
-- Old versions of NadekoBot are now named `nadekobot.old` instead of `nadekobot_old`.
-- Other Internal Changes:
-  - Exported variables are now styled as `E_UPPER_CASE`.
-  - Constant variables are now styled as `C_UPPER_CASE`
-- Ownership of '$HOME/.nuget' is no longer modified.
+- ⚠️ Backed up files are now stored in `important-files-backup` instead of `important_file_backup`.
+
+#### Improvements
+
+- Comments have been removed where they were unnecessary, added where they were needed, and improved where they were lacking.
+- Colorization of output text has been modified to improve readability and indicate the type of information being displayed.
+- Stronger and more robust error handling has been implemented.
+- Error codes are better defined and do not interfere with standard/built-in exit codes.
+- Temporary files are handled more efficiently and are removed when no longer needed.
+- Previous version of NadekoBot is restored if an error occurs during the download or compilation of NadekoBot.
+- Previous backups are restored if an error occurs during the backup process.
+
+#### Programmatic-ish Changes
+
+- Exported variables are now styled as `E_UPPER_CASE`.
+- Constant variables are now styled as `C_UPPER_CASE`.
+
+#### Other Changes
+
+- Ownership of `$HOME/.nuget` is no longer modified.
 - If `creds.yml` does not exist, the installer will create it.
 
 ### Fixed
 
-- Fixed where it says Mewdeko instead of NadekoBot.
-- Fixed what appeared to be a "double catching" of signals.
-- `linuxAIO.old` gets restored if the current version can't be downloaded.
+- Fixed text displaying `Mewdeko` instead of `NadekoBot`.
+- Fixed, what appeared to be, the installer catching signals multiple times.
 
 ## [v3.2.5] - 2022-09-06
 
