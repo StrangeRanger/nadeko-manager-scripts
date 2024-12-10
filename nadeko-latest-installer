@@ -126,7 +126,7 @@ trap 'clean_exit "$?" "true"'  EXIT
 
 
 read -rp "${E_NOTE}We will now $C_ACTION_ONE NadekoBot. Press [Enter] to begin."
-cd "$E_WORKING_DIR" || E_STDERR "Failed to change working directory" "1"
+cd "$C_NADEKOBOT_TMP" || E_STDERR "Failed to change working directory" "1"
 
 ###
 ### [ Stop Service ]
