@@ -92,10 +92,10 @@ clean_exit() {
                 echo "${E_INFO}Attempting to restore 'nadekobot'..."
                 mv nadekobot.old nadekobot || exit 1
 
-                # If 'nadekobot.old.old' exists, move it back to 'nadekobot.old'
                 if [[ -d "nadekobot.old.old" ]]; then
                     mv nadekobot.old.old nadekobot.old \
-                        || E_STDERR "Failed to rename 'nadekobot.old.old' as 'nadekobot.old" \
+                        || E_STDERR \
+                            "Failed to rename 'nadekobot.old.old' as 'nadekobot.old'" \
                             "" "${C_NOTE}Please rename it manually"
                 fi
             elif [[ -d nadekobot && -d nadekobot.old && -d nadekobot.old.old ]]; then
@@ -234,25 +234,18 @@ if [[ -d nadekobot ]]; then
     ## Ensures a smooth transition between versions. In the case of an error, it'll be
     ## easier to revert to the previous version.
     (
-        echo "1/5" && sleep 10
         if [[ -d nadekobot.old ]]; then
             mv nadekobot.old nadekobot.old.old || exit 5
         fi
 
-        echo "2/5" && sleep 10
         mv nadekobot nadekobot.old || exit 5
-
-        echo "3/5" && sleep 10
         mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 5
 
-        echo "4/5" && sleep 10
         if [[ -d nadekobot.old.old ]]; then
             rm -rf nadekobot.old.old \
                 || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
                     "${C_NOTE}Please remove 'nadekobot.old.old' manually"
         fi
-
-        echo "5/5" && sleep 10
     ) || E_STDERR "An error occurred while replacing 'nadekobot'" "$?"
 else
     echo "${C_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
