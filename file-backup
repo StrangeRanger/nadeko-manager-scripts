@@ -6,10 +6,10 @@
 ####[ Global Variables ]################################################################
 
 
-readonly C_CURRENT_BACKUP="important_files_backup"
-readonly C_OLD_BACKUP="important_files_backup.old"
+readonly C_CURRENT_BACKUP="important-files-backup"
+readonly C_OLD_BACKUP="important-files-backup.old"
 
-C_TMP_BACKUP=$(mktemp -d -p /tmp important_nadeko_files.XXXXXXXXXX)
+C_TMP_BACKUP=$(mktemp -d -p /tmp important-nadeko-files-XXXXXXXXXX)
 readonly C_TMP_BACKUP
 
 # shellcheck disable=SC2206
@@ -36,13 +36,12 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
 
-    # Unset the local traps to restore traps set in 'installer-prep'.
     trap - EXIT SIGINT SIGTERM SIGHUP SIGQUIT
-
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## We modify the exit code to 50 to tell the 'nadeko-latest-installer', "We've had
-    ## an error, but it's safe to continue."
+    ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
+    ## continue running, even if an error occurred. Please refer to the
+    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
     case "$exit_code" in
         1)   exit_code=50 ;;
         0|5) ;;
@@ -57,12 +56,12 @@ clean_exit() {
     esac
 
     echo "${E_INFO}Cleaning up..."
-    [[ -d "$C_TMP_BACKUP" ]] && rm -rf "$C_TMP_BACKUP" 2>/dev/null
+    [[ -d "$C_TMP_BACKUP" ]] && rm -rf "$C_TMP_BACKUP" &>/dev/null
 
     (
         if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
             echo "${E_WARNING}Unable to complete backup"
-            echo "${E_INFO}Restoring original backups..."
+            echo "${E_INFO}Attempting to restore original backups..."
             mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
         elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
             rm -rf "$C_OLD_BACKUP" \
@@ -70,7 +69,7 @@ clean_exit() {
                     "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
         fi
     ) || E_STDERR "Failed to restore original backup" "$?" \
-        "${E_NOTE}Will exit to prevent data loss"
+        "${E_NOTE}We will exit completely to prevent data loss"
 
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
     exit "$exit_code"
@@ -95,6 +94,7 @@ for file in "${C_FILES_TO_BACK_UP[@]}";
     do echo "  ${E_CYAN}|${E_NC}    $file"
 done
 read -rp "${E_NOTE}Press [Enter] to continue"
+cd "$E_WORKING_DIR" || E_STDERR "Failed to change working directory" "1"
 
 echo "${E_INFO}Backing up files into '$C_TMP_BACKUP'..."
 for file in "${C_FILES_TO_BACK_UP[@]}"; do
@@ -106,9 +106,10 @@ for file in "${C_FILES_TO_BACK_UP[@]}"; do
 done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
+    # These files were the current backups, and will replace the previous the old
+    # [filename].old backup files.
     echo "${E_INFO}Copying previously backed up files into '$C_TMP_BACKUP'..."
     for file in "$C_CURRENT_BACKUP"/*; do
-        # Extract the base filename without the path.
         basefile="${file##*/}"
 
         if [[ ! $basefile =~ ^.*\.old$ ]]; then
@@ -126,7 +127,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
         rm -rf "$C_OLD_BACKUP" \
             || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
                 "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
-     ) || E_STDERR "An error occurred while replacing old backup" "1"
+     ) || E_STDERR "An error occurred while replacing old backups" "1"
 else
     echo "${E_INFO}Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
     mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
@@ -135,4 +136,3 @@ fi
 
 echo ""
 echo "${E_SUCCESS}Finished backing up files"
-clean_exit 0
