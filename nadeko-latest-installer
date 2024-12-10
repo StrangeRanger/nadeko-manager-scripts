@@ -251,3 +251,5 @@ if [[ $service_is_active == true ]]; then
     echo "${E_NOTE}'$E_SERVICE_NAME' was stopped to update NadekoBot and needs to be" \
         "started using one of the run modes in the installer menu"
 fi
+
+clean_exit 0

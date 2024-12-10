@@ -137,3 +137,4 @@ fi
 
 echo ""
 echo "${E_SUCCESS}Finished backing up files"
+clean_exit 0
