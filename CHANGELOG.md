@@ -6,12 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## v4.0.0 - 2024-12-xx
+
+> [!NOTE]
+> This version hasn't been released yet. It's currently in development. That said, some of these changes are currently available in the `main` branch.
+
+This release introduces A LOT of changes to the installer, including some breaking changes. These are listed in the below changelog, but some of the main changes include the naming of specific files produced by the installer. This means that you will manually need to change the names of several files, if you wish to keep them. These files will be listed before the rest of the changes will be merged into the `main` branch.
+
+Additionally, the next release will introduce support for NadekoBot v5 and MOST LIKELY drop support for NadekoBot v4. I'm not introducing this change yet, as I'm not sure how easy it will be to support both versions of NadekoBot. This release is primarily focused on improving the installer's codebase and making it more user-friendly.
+
 ### Added
 
 - Users can configure if NadekoBot should be automatically compiled after being downloaded.
 
 ### Changed
 
+- ⚠️ Old nadekobot versions are now stored in `nadekobot.old` instead of `nadekobot_old`.
+- ⚠️ Old strings are now stored in `strings.old` instead of `strings_old`.
+- ⚠️ Old aliases are now stored in `aliases.old` instead of `aliases_old`.
 - Improved script comments.
 - Improved the syntax and colorization of the output text.
 - Improved error handling.
