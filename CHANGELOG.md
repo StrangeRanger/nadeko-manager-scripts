@@ -27,6 +27,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 - Improved script comments.
 - Improved the syntax and colorization of the output text.
 - Improved error handling.
+- Improved error code handling and definitions.
 - Improved handling of temporary files.
 - Old versions of NadekoBot are now named `nadekobot.old` instead of `nadekobot_old`.
 - Other Internal Changes:
@@ -34,7 +35,6 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
   - Constant variables are now styled as `C_UPPER_CASE`
 - Ownership of '$HOME/.nuget' is no longer modified.
 - If `creds.yml` does not exist, the installer will create it.
-- Improved error code handling and definitions.
 
 ### Fixed
 
