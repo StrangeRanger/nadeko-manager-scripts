@@ -242,7 +242,8 @@ if [[ -d nadekobot ]]; then
         mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 5
 
         if [[ -d nadekobot.old.old ]]; then
-            rm -rf nadekobot.odld.old \
+            chmod -w nadekobot.old.old
+            rm -rf nadekobot.old.old \
                 || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
                     "${C_NOTE}Please remove 'nadekobot.old.old' manually"
         fi
