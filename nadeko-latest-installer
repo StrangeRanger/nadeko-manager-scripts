@@ -53,7 +53,6 @@ service_is_active=false
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-    local cleanup=true
 
     # Unset the local traps to restore traps set in 'installer-prep'.
     trap - EXIT SIGINT SIGTERM SIGHUP SIGQUIT
@@ -63,9 +62,8 @@ clean_exit() {
     ## We modify the exit code to 50 to tell the 'nadeko-latest-installer', "We've had
     ## an error, but it's safe to continue."
     case "$exit_code" in
-        0) cleanup=false ;;
-        1) exit_code=50 ;;
-        5) ;;
+        1)   exit_code=50 ;;
+        0|5) ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             exit_code=50
@@ -76,36 +74,32 @@ clean_exit() {
         *)   echo -e "\n${E_WARNING}Exiting with exit code: $exit_code" ;;
     esac
 
-    ## This block will only run if the script attempts to exit prematurely (i.e., an
-    ## error occurred).
-    if [[ $cleanup == true ]]; then
-        echo "${E_INFO}Cleaning up..."
-        [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
+    echo "${E_INFO}Cleaning up..."
+    [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" 2>/dev/null
 
-        (
-            if [[ -d nadekobot && ! -d nadekobot.old && -d nadekobot.old.old ]]; then
-                echo "${E_WARNING}NadekoBot is in an inconsistent state"
-                echo "${E_INFO}Attempting to restore 'nadekobot'..."
-                mv nadekobot.old.old nadekobot.old || exit 1
-            elif [[ ! -d nadekobot && -d nadekobot.old ]]; then
-                echo "${E_WARNING}NadekoBot is in an inconsistent state"
-                echo "${E_INFO}Attempting to restore 'nadekobot'..."
-                mv nadekobot.old nadekobot || exit 1
+    (
+        if [[ -d nadekobot && ! -d nadekobot.old && -d nadekobot.old.old ]]; then
+            echo "${E_WARNING}NadekoBot is in an inconsistent state"
+            echo "${E_INFO}Attempting to restore 'nadekobot'..."
+            mv nadekobot.old.old nadekobot.old || exit 1
+        elif [[ ! -d nadekobot && -d nadekobot.old ]]; then
+            echo "${E_WARNING}NadekoBot is in an inconsistent state"
+            echo "${E_INFO}Attempting to restore 'nadekobot'..."
+            mv nadekobot.old nadekobot || exit 1
 
-                if [[ -d "nadekobot.old.old" ]]; then
-                    mv nadekobot.old.old nadekobot.old \
-                        || E_STDERR \
-                            "Failed to rename 'nadekobot.old.old' as 'nadekobot.old'" \
-                            "" "${E_NOTE}Please rename it manually"
-                fi
-            elif [[ -d nadekobot && -d nadekobot.old && -d nadekobot.old.old ]]; then
-                rm -rf nadekobot.old.old \
-                    || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
-                        "${E_NOTE}Please remove 'nadekobot.old.old' manually"
+            if [[ -d "nadekobot.old.old" ]]; then
+                mv nadekobot.old.old nadekobot.old \
+                    || E_STDERR \
+                        "Failed to rename 'nadekobot.old.old' as 'nadekobot.old'" \
+                        "" "${E_NOTE}Please rename it manually"
             fi
-        ) || E_STDERR "Failed to restore 'nadekobot'" "$?" \
-            "${E_NOTE}Will exit to prevent data loss"
-    fi
+        elif [[ -d nadekobot && -d nadekobot.old && -d nadekobot.old.old ]]; then
+            rm -rf nadekobot.old.old \
+                || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
+                    "${E_NOTE}Please remove 'nadekobot.old.old' manually"
+        fi
+    ) || E_STDERR "Failed to restore 'nadekobot'" "$?" \
+        "${E_NOTE}Will exit to prevent data loss"
 
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
     exit "$exit_code"
