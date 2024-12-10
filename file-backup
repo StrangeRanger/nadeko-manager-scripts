@@ -61,6 +61,7 @@ clean_exit() {
 
     (
         if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
+            echo "${E_WARNING}Unable to complete backup"
             echo "${E_INFO}Restoring original backups..."
             mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
         elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
