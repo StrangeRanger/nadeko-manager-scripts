@@ -96,12 +96,12 @@ clean_exit() {
                     mv nadekobot.old.old nadekobot.old \
                         || E_STDERR \
                             "Failed to rename 'nadekobot.old.old' as 'nadekobot.old'" \
-                            "" "${C_NOTE}Please rename it manually"
+                            "" "${E_NOTE}Please rename it manually"
                 fi
             elif [[ -d nadekobot && -d nadekobot.old && -d nadekobot.old.old ]]; then
                 rm -rf nadekobot.old.old \
                     || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
-                        "${C_NOTE}Please remove 'nadekobot.old.old' manually"
+                        "${E_NOTE}Please remove 'nadekobot.old.old' manually"
             fi
         ) || E_STDERR "Failed to restore 'nadekobot'" "$?" \
             "${E_NOTE}Will exit to prevent data loss"
@@ -244,7 +244,7 @@ if [[ -d nadekobot ]]; then
         if [[ -d nadekobot.old.old ]]; then
             rm -rf nadekobot.old.old \
                 || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
-                    "${C_NOTE}Please remove 'nadekobot.old.old' manually"
+                    "${E_NOTE}Please remove 'nadekobot.old.old' manually"
         fi
     ) || E_STDERR "An error occurred while replacing 'nadekobot'" "$?"
 else
