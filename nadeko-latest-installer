@@ -248,7 +248,7 @@ if [[ -d nadekobot ]]; then
         fi
     ) || E_STDERR "An error occurred while replacing 'nadekobot'" "$?"
 else
-    echo "${C_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
+    echo "${E_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
     mv "$C_NADEKOBOT_TMP"/nadekobot . \
         || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' to 'nadekobot'" "1"
     rmdir "$C_NADEKOBOT_TMP" &>/dev/null
