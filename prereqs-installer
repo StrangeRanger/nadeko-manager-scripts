@@ -2,14 +2,6 @@
 #
 # Install the prerequisites required by NadekoBot on Linux distributions.
 #
-# NOTE:
-#   I've run into a few issues with trying to implement trapping that works due to how
-#   'apt' and 'dpkg' handle signals. As a result, traps set in 'installer-prep' won't
-#   work as expected. When using 'Ctrl+C' to cancel the installation, all it'll do is
-#   kill the apt process, and move on to the next step, which is most likely executing
-#   the next apt command. This is not ideal, but there isn't much I can do about it
-#   right now.
-#
 ########################################################################################
 ####[ Global Variables ]################################################################
 
