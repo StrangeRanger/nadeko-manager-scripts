@@ -24,6 +24,7 @@ readonly C_PREF_DOTNET_INSTALL="Explanation: https://github.com/dotnet/core/issu
 Package: *
 Pin: origin \"packages.microsoft.com\"
 Pin-Priority: 1001"
+readonly C_PREF_FILE="/etc/apt/preferences.d/custom-dotnet.pref"
 
 
 ####[ Functions ]#######################################################################
@@ -99,10 +100,8 @@ install_prereqs() {
 
         if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
             echo "${E_INFO}Updating preferred .NET Core install method..."
-            echo "$C_PREF_DOTNET_INSTALL" \
-                | sudo tee /etc/apt/preferences.d/custom-dotnet.pref \
-                || E_STDERR \
-                    "Failed to create '/etc/apt/preferences.d/custom-dotnet.pref'" "1"
+            echo "$C_PREF_DOTNET_INSTALL" | sudo tee "$C_PREF_FILE" \
+                || E_STDERR "Failed to create '$C_PREF_FILE'" "1"
         else
             echo "${E_NOTE}The preferred .NET Core installation method is already set"
             echo "${E_INFO}Skipping modification of the preferences..."
