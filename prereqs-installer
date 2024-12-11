@@ -95,7 +95,8 @@ install_prereqs() {
             echo "${E_INFO}Uninstalling existing .NET Core installation..."
             ( sudo apt remove -y "$C_REQ_DOTNET_PKG" && sudo apt autoremove -y ) &
             apt_pid=$!
-            wait $apt_pid
+            wait $apt_pid \
+                || E_STDERR "Failed to uninstall existing .NET Core installation" "$?"
             unset apt_pid
         fi
 
