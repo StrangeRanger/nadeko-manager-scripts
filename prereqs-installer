@@ -75,7 +75,6 @@ install_prereqs() {
     # 'youtube-dl' by a non-root user will always fail.
     # TODO: Find a better solution than modifying the perms.
     sudo chmod a+rwx /usr/local/bin/youtube-dl
-
 }
 
 ####
