@@ -10,9 +10,8 @@
 #
 # Comment Key:
 #   - A.1.: To prevent permission errors that can occur, especially when the installer
-#       is run with root privileges and later as a non-root user, it's necessary to
-#       ensure that '/tmp/NuGetScratch' are owned by the user currently running the
-#       installer.
+#     is run with root privileges and later as a non-root user, it's necessary to ensure
+#     that '/tmp/NuGetScratch' are owned by the user currently running the installer.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
