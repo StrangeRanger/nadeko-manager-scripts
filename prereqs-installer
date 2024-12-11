@@ -49,13 +49,17 @@ clean_exit() {
         *)   echo -e "\n${E_WARNING}Exiting with exit code: $exit_code" ;;
     esac
 
-    [[ $APT_PID ]] && sudo kill "$APT_PID"
+    [[ $apt_pid ]] && sudo kill "$apt_pid"
 
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit "$exit_code"
 }
 
 ####
+# NEW GLOBALS:
+#   - apt_pid: The process ID of the 'apt' process, used to kill the process when the
+#     script exits.
+#
 # PARAMETERS:
 # 	- $1: distro_name (Required)
 # 	- $2: distro_ver (Required)
@@ -87,8 +91,8 @@ install_prereqs() {
             echo "${E_WARNING}While the .NET runtime is installed, the .NET SDK is not"
             echo "${E_INFO}Uninstalling existing .NET Core installation..."
             ( sudo apt remove -y "$C_REQ_DOTNET_PKG" && sudo apt autoremove -y ) &
-            APT_PID=$!
-            wait $APT_PID
+            apt_pid=$!
+            wait $apt_pid
         fi
 
         if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
@@ -120,8 +124,8 @@ install_prereqs() {
             || E_STDERR "Failed to modify permissions as 'a+rwx' for '$C_YT_DL_PATH'" \
                 "1" "${E_NOTE}Permission errors may occur when updating 'youtube-dl'"
     ) &
-    APT_PID=$!
-    wait $APT_PID
+    apt_pid=$!
+    wait $apt_pid
 
     echo -e "\n${E_SUCCESS}Finished installing prerequisites"
     exit 0
