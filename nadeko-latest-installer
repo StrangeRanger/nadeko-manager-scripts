@@ -158,8 +158,7 @@ cd nadekobot || E_STDERR "Failed to change working directory to 'nadekobot'" "1"
 dotnet restore -f --no-cache || E_STDERR "Failed to restore .NET packages" "1"
 dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
     || E_STDERR "Failed to build NadekoBot" "1"
-cd "$E_WORKING_DIR" \
-    || E_STDERR "Failed to change working directory to '$E_WORKING_DIR'" "1"
+cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 
 ###
 ### [ Move Credentials, Database, and Other Data ]
@@ -230,7 +229,7 @@ if [[ -d nadekobot ]]; then
     ) || E_STDERR "An error occurred while replacing 'nadekobot'" "$?"
 else
     echo "${E_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
-    mv "$C_NADEKOBOT_TMP"/nadekobot "$E_WORKING_DIR" \
+    mv "$C_NADEKOBOT_TMP"/nadekobot "$E_ROOT_DIR" \
         || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' to 'nadekobot'" "1"
     rmdir "$C_NADEKOBOT_TMP" &>/dev/null
 fi

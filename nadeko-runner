@@ -35,7 +35,7 @@ StartLimitBurst=2
 [Service]
 Type=simple
 User=$USER
-WorkingDirectory=$E_WORKING_DIR
+WorkingDirectory=$E_ROOT_DIR
 ExecStart=/bin/bash NadekoRun
 Restart=on-failure
 RestartSec=5
@@ -55,7 +55,7 @@ StartLimitBurst=2
 [Service]
 Type=simple
 User=$USER
-WorkingDirectory=$E_WORKING_DIR
+WorkingDirectory=$E_ROOT_DIR
 ExecStart=/bin/bash NadekoRun
 Restart=on-failure
 RestartSec=5
@@ -119,14 +119,14 @@ if [[ $E_CODENAME == "NadekoRun" ]]; then
         "youtube-dl -U" \
         "" \
         "echo \"Starting NadekoBot...\"" \
-        "cd $E_WORKING_DIR/nadekobot/output" \
+        "cd $E_ROOT_DIR/nadekobot/output" \
         "dotnet NadekoBot.dll || {" \
         "    echo \"An error occurred when trying to start NadekoBot\"" \
         "    echo \"Exiting...\"" \
         "    exit 1" \
         "}" \
         "echo \"Stopping NadekoBot...\"" \
-        "cd $E_WORKING_DIR" > NadekoRun
+        "cd $E_ROOT_DIR" > NadekoRun
 ## Add code required to run NadekoBot in the background with auto restart, to
 ## 'NadekoRun'.
 else
@@ -141,15 +141,15 @@ else
         "echo \"Starting NadekoBot...\"" \
         "" \
         "while true; do" \
-        "    if [[ -d $E_WORKING_DIR/nadekobot/output ]]; then" \
-        "        cd $E_WORKING_DIR/nadekobot/output || {" \
-        "            echo \"Failed to change working directory to '$E_WORKING_DIR/nadekobot/output'\" >&2" \
+        "    if [[ -d $E_ROOT_DIR/nadekobot/output ]]; then" \
+        "        cd $E_ROOT_DIR/nadekobot/output || {" \
+        "            echo \"Failed to change working directory to '$E_ROOT_DIR/nadekobot/output'\" >&2" \
         "            echo \"Ensure that the working directory inside of '/etc/systemd/system/nadeko.service' is correct\"" \
         "            echo \"Exiting...\"" \
         "            exit 1" \
         "        }" \
         "    else" \
-        "        echo \"'$E_WORKING_DIR/nadekobot/output' doesn't exist\"" \
+        "        echo \"'$E_ROOT_DIR/nadekobot/output' doesn't exist\"" \
         "        exit 1" \
         "    fi" \
         "" \

@@ -94,8 +94,7 @@ for file in "${C_FILES_TO_BACK_UP[@]}";
     do echo "  ${E_CYAN}|${E_NC}    $file"
 done
 read -rp "${E_NOTE}Press [Enter] to continue"
-cd "$E_WORKING_DIR" \
-    || E_STDERR "Failed to change working directory to '$E_WORKING_DIR'" "1"
+cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 
 echo "${E_INFO}Backing up files into '$C_TMP_BACKUP'..."
 for file in "${C_FILES_TO_BACK_UP[@]}"; do

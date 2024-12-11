@@ -196,8 +196,7 @@ clean_exit() {
 
     echo -e "${E_INFO}Cleaning up..."
 
-    cd "$E_WORKING_DIR" \
-        || E_STDERR "Failed to move working directory to '$E_WORKING_DIR'" "1"
+    cd "$E_ROOT_DIR" || E_STDERR "Failed to move working directory to '$E_ROOT_DIR'" "1"
 
     for file in "${installer_files[@]}"; do
         [[ -f $file ]] && rm "$file"
@@ -287,8 +286,8 @@ cd "${0%/*}" || {
     clean_exit "1"
 }
 
-export E_WORKING_DIR="$PWD"
-export E_INSTALLER_PREP="$E_WORKING_DIR/installer-prep"
+export E_ROOT_DIR="$PWD"
+export E_INSTALLER_PREP="$E_ROOT_DIR/installer-prep"
 
 
 ####[ Main ]############################################################################
