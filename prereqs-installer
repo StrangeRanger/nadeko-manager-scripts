@@ -113,7 +113,7 @@ install_prereqs() {
         sudo apt install -y "${C_MUSIC_PREREQS[@]}" || exit 1
 
         echo "${E_INFO}Installing other prerequisites..."
-        sudo apt install -y "${C_OTHER_PREREQS[@]}" "$python_pkg" || exit 1
+        sudo apt install -y "${C_OTHER_PREREQS[@]}" sjlkjslkdjf "$python_pkg" || exit 1
 
         sudo curl -s -L "$C_YT_DL_URL" -o "$C_YT_DL_PATH" || exit 1
         echo "${E_INFO}Modifying permissions for 'youtube-dl'..."
@@ -125,7 +125,7 @@ install_prereqs() {
                 "1" "${E_NOTE}Permission errors may occur when updating 'youtube-dl'"
     ) &
     apt_pid=$!
-    wait $apt_pid
+    wait $apt_pid || E_STDERR "Failed to install all prerequisites" "1"
 
     echo -e "\n${E_SUCCESS}Finished installing prerequisites"
     exit 0
