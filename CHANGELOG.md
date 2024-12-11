@@ -15,6 +15,13 @@ This release introduces A LOT of changes to the installer, including some breaki
 
 Additionally, the next release will introduce support for NadekoBot v5 and MOST LIKELY drop support for NadekoBot v4. I'm not introducing this change yet, as I'm not sure how easy it will be to support both versions of NadekoBot. This release is primarily focused on improving the installer's codebase and making it more user-friendly.
 
+### Added
+
+- Users can now use `Ctrl` + `C` to safely cancel the installation of NadekoBot prerequisites.
+  - I believe this is already available to the other options, but if not, this can also be done when:
+    - backing up important files.
+    - setting up or updating NadekoBot.
+
 ### Changed
 
 #### Braking Changes
