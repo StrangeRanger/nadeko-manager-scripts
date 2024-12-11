@@ -111,7 +111,6 @@ linuxAIO_update() {
         bot_install_version=$(grep '^export E_BOT_INSTALL_VERSION=.*' linuxAIO.old)
         bot_install_version_found="$?"
 
-        echo "URL: $E_RAW_URL/linuxAIO"
         curl -O "$E_RAW_URL"/linuxAIO || {
             E_STDERR "Failed to download 'linuxAIO'"
             echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
@@ -131,11 +130,11 @@ linuxAIO_update() {
         echo "${E_INFO}Removing 'linuxAIO.old'..."
         rm -f linuxAIO.old
 
-        echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO' and" \
-            "applied existing changes"
+        echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'" \
+            "and applied existing changes"
     fi
 
-    clean_exit "0"
+    clean_exit 0
 }
 
 ####
@@ -182,7 +181,6 @@ clean_exit() {
     local installer_files=("installer-prep" "file-backup" "prereqs-installer"
         "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer")
 
-    # Unset the EXIT trap to prevent re-entry.
     trap - EXIT
 
     [[ $use_extra_newline == true ]] && echo ""
@@ -198,8 +196,8 @@ clean_exit() {
 
     echo -e "${E_INFO}Cleaning up..."
 
-    cd "$E_WORKING_DIR" || E_STDERR "Failed to move to NadekoBot's root directory" "1"
-    [[ -d nadekobot_tmp ]] && rm -rf nadekobot_tmp
+    cd "$E_WORKING_DIR" \
+        || E_STDERR "Failed to move working directory to '$E_WORKING_DIR'" "1"
 
     for file in "${installer_files[@]}"; do
         [[ -f $file ]] && rm "$file"
@@ -209,8 +207,6 @@ clean_exit() {
     exit "$exit_code"
 }
 
-####
-# Download and execute $C_MAIN_INSTALLER.
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
     ./"$C_MAIN_INSTALLER"
@@ -304,7 +300,6 @@ detect_sys_info
 export E_DISTRO E_SVER E_VER E_ARCH
 export -f E_DOWNLOAD_SCRIPT E_STDERR
 
-# Use $E_DISTRO if $pname is unset or null...
 echo "SYSTEM INFO
 Bit Type: $bits
 Architecture: $E_ARCH
@@ -312,7 +307,6 @@ Distro: ${pname:=$E_DISTRO}
 Distro Version: $E_VER
 "
 
-### Check if the operating system is supported by NadekoBot and the installer.
 if [[ $bits == 64 ]]; then
     if [[ $E_DISTRO == "ubuntu" ]]; then
         case "$E_VER" in
