@@ -134,7 +134,7 @@ install_prereqs() {
     unset apt_pid
 
     echo -e "\n${E_SUCCESS}Finished installing prerequisites"
-    exit 0
+    clean_exit 0
 }
 
 ####
