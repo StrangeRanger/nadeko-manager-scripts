@@ -11,8 +11,56 @@
 #   right now.
 #
 ########################################################################################
+####[ Global Variables ]################################################################
+
+
+readonly C_REQ_DOTNET_PKG="dotnet-sdk-6.0"
+readonly C_MUSIC_PREREQS="libopus0 opus-tools libopus-dev libsodium-dev"
+readonly C_OTHER_PREREQS="redis-server git ccze apt-transport-https ffmpeg python3"
+readonly C_YT_DL_URL="https://yt-dl.org/downloads/latest/youtube-dl"
+readonly C_YT_DL_PATH="/usr/local/bin/youtube-dl"
+
+readonly C_PREF_DOTNET_INSTALL="Explanation: https://github.com/dotnet/core/issues/7699
+Package: *
+Pin: origin \"packages.microsoft.com\"
+Pin-Priority: 1001"
+
+
 ####[ Functions ]#######################################################################
 
+
+####
+# Cleanly exit the script by killing the 'apt' process, if it's running, and displaying
+# a message indicating the reason for the exit.
+#
+# PARAMETERS:
+#   - $1: exit_code (Required)
+clean_exit() {
+    local exit_code="$1"
+
+    trap - EXIT SIGINT SIGTERM SIGHUP
+    echo ""
+
+    ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
+    ## continue running, even if an error occurred. Please refer to the
+    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
+    case "$exit_code" in
+        1)   exit_code=50 ;;
+        0|5) ;;
+        130)
+            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            exit_code=50
+            ;;
+        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
+        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
+        *)   echo -e "\n${E_WARNING}Exiting with exit code: $exit_code" ;;
+    esac
+
+    [[ $APT_PID ]] && sudo kill "$APT_PID"
+
+    read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    exit "$exit_code"
+}
 
 ####
 # PARAMETERS:
@@ -45,36 +93,44 @@ install_prereqs() {
         if (hash dotnet &>/dev/null && [[ ! $(dotnet --version) ]]) &>/dev/null; then
             echo "${E_WARNING}While the .NET runtime is installed, the .NET SDK is not"
             echo "${E_INFO}Uninstalling existing .NET Core installation..."
-            sudo apt remove -y dotnet-sdk-6.0
+            sudo apt remove -y "$C_REQ_DOTNET_PKG"
             sudo apt autoremove -y
         fi
 
         if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
             echo "${E_INFO}Updating preferred .NET Core install method..."
-            echo -e "Explanation: https://github.com/dotnet/core/issues/7699" \
-                "\nPackage: *" \
-                "\nPin: origin \"packages.microsoft.com\"" \
-                "\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/custom-dotnet.pref \
-                || E_STDERR "Failed to create '/etc/apt/preferences.d/custom-dotnet.pref'" "1"
+            echo "$C_PREF_DOTNET_INSTALL" \
+                | sudo tee /etc/apt/preferences.d/custom-dotnet.pref \
+                || E_STDERR \
+                    "Failed to create '/etc/apt/preferences.d/custom-dotnet.pref'" "1"
         else
             echo "${E_NOTE}The preferred .NET Core installation method is already set"
             echo "${E_INFO}Skipping modification of the preferences..."
         fi
     fi
 
+    #(
     echo "${E_INFO}Installing .NET Core..."
-    sudo apt update && sudo apt install -y dotnet-sdk-6.0
+    sudo apt update && sudo apt install -y "$C_REQ_DOTNET_PKG" #|| exit 1
 
     echo "${E_INFO}Installing music prerequisites..."
-    sudo apt install -y libopus0 opus-tools libopus-dev libsodium-dev
+    sudo apt install -y "$C_MUSIC_PREREQS" #|| exit 1
 
     echo "${E_INFO}Installing other prerequisites..."
-    sudo apt install -y redis-server git ccze apt-transport-https ffmpeg python3 "$python_pkg"
-    sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
-    # If the write perms are not applied to all users for this tool, attempts to update
-    # 'youtube-dl' by a non-root user will always fail.
+    sudo apt install -y "$C_OTHER_PREREQS" "$python_pkg" #|| exit 1
+
+    sudo curl -s -L "$C_YT_DL_URL" -o "$C_YT_DL_PATH" #|| exit 1
+    # If the write perms are not applied to all users for this tool, attempts to
+    # update 'youtube-dl' by a non-root user will always fail.
     # TODO: Find a better solution than modifying the perms.
-    sudo chmod a+rwx /usr/local/bin/youtube-dl
+    sudo chmod a+rwx "$C_YT_DL_PATH" #|| exit 1
+    #) &
+    #APT_PID=$!
+    #wait $APT_PID
+
+    echo -e "\n${E_SUCCESS}Finished installing prerequisites"
+    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
+    exit 0
 }
 
 ####
@@ -85,6 +141,15 @@ unsupported() {
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit 4
 }
+
+
+####[ Trapping Logic ]##################################################################
+
+
+trap 'clean_exit "130"' SIGINT
+trap 'clean_exit "143"' SIGTERM
+trap 'clean_exit "129"' SIGHUP
+trap 'clean_exit "$?"'  EXIT
 
 
 ####[ Main ]############################################################################
@@ -113,6 +178,3 @@ elif [[ $E_DISTRO == "linuxmint" ]]; then
         *)  unsupported ;;
     esac
 fi
-
-echo -e "\n${E_SUCCESS}Finished installing prerequisites"
-read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
