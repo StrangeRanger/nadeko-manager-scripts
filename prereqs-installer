@@ -38,8 +38,8 @@ clean_exit() {
     ## continue running, even if an error occurred. Please refer to the
     ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
     case "$exit_code" in
-        1)   exit_code=50 ;;
-        0|5) ;;
+        1|100) exit_code=50 ;;  # 100 is an error code produced by 'apt'...
+        0|5)   ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             exit_code=50
@@ -112,13 +112,13 @@ install_prereqs() {
 
     (
         echo "${E_INFO}Installing .NET Core..."
-        sudo apt update && sudo apt install -y "$C_REQ_DOTNET_PKG" || exit 1
+        sudo apt update && sudo apt install -y "$C_REQ_DOTNET_PKG" || exit $?
 
         echo "${E_INFO}Installing music prerequisites..."
-        sudo apt install -y "${C_MUSIC_PREREQS[@]}" || exit 1
+        sudo apt install -y "${C_MUSIC_PREREQS[@]}" || exit $?
 
         echo "${E_INFO}Installing other prerequisites..."
-        sudo apt install -y "${C_OTHER_PREREQS[@]}" sjlkjslkdjf "$python_pkg" || exit 1
+        sudo apt install -y "${C_OTHER_PREREQS[@]}" sjlkjslkdjf "$python_pkg" || exit $?
 
         sudo curl -s -L "$C_YT_DL_URL" -o "$C_YT_DL_PATH" || exit 1
         echo "${E_INFO}Modifying permissions for 'youtube-dl'..."
