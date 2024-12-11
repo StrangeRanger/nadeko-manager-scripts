@@ -118,7 +118,7 @@ install_prereqs() {
         sudo apt install -y "${C_MUSIC_PREREQS[@]}" || exit $?
 
         echo "${E_INFO}Installing other prerequisites..."
-        sudo apt install -y "${C_OTHER_PREREQS[@]}" sjlkjslkdjf "$python_pkg" || exit $?
+        sudo apt install -y "${C_OTHER_PREREQS[@]}" "$python_pkg" || exit $?
 
         sudo curl -s -L "$C_YT_DL_URL" -o "$C_YT_DL_PATH" || exit 1
         echo "${E_INFO}Modifying permissions for 'youtube-dl'..."
