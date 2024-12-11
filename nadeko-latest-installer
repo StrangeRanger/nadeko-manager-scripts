@@ -61,7 +61,7 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
 
-    trap - EXIT SIGINT SIGTERM SIGHUP SIGQUIT
+    trap - EXIT SIGINT SIGTERM SIGHUP
     [[ $use_extra_newline == true ]] && echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
@@ -76,7 +76,6 @@ clean_exit() {
             ;;
         143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
-        131) echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)" ;;
         *)   echo -e "\n${E_WARNING}Exiting with exit code: $exit_code" ;;
     esac
 
@@ -118,7 +117,6 @@ clean_exit() {
 trap 'clean_exit "130" "true"' SIGINT
 trap 'clean_exit "143" "true"' SIGTERM
 trap 'clean_exit "129" "true"' SIGHUP
-trap 'clean_exit "131" "true"' SIGQUIT
 trap 'clean_exit "$?" "true"'  EXIT
 
 
