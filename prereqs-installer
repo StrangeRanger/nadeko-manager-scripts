@@ -96,6 +96,7 @@ install_prereqs() {
             ( sudo apt remove -y "$C_REQ_DOTNET_PKG" && sudo apt autoremove -y ) &
             apt_pid=$!
             wait $apt_pid
+            unset apt_pid
         fi
 
         if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
@@ -129,6 +130,7 @@ install_prereqs() {
     ) &
     apt_pid=$!
     wait $apt_pid || E_STDERR "Failed to install all prerequisites" "$?"
+    unset apt_pid
 
     echo -e "\n${E_SUCCESS}Finished installing prerequisites"
     exit 0
