@@ -51,7 +51,7 @@ clean_exit() {
 
     [[ $APT_PID ]] && sudo kill "$APT_PID"
 
-    read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit "$exit_code"
 }
 
@@ -120,7 +120,6 @@ install_prereqs() {
     #wait $APT_PID
 
     echo -e "\n${E_SUCCESS}Finished installing prerequisites"
-    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit 0
 }
 
