@@ -15,8 +15,8 @@
 
 
 readonly C_REQ_DOTNET_PKG="dotnet-sdk-6.0"
-readonly C_MUSIC_PREREQS="libopus0 opus-tools libopus-dev libsodium-dev"
-readonly C_OTHER_PREREQS="redis-server git ccze apt-transport-https ffmpeg python3"
+readonly C_MUSIC_PREREQS=("libopus0" "opus-tools" "libopus-dev" "libsodium-dev")
+readonly C_OTHER_PREREQS=("redis-server" "git" "ccze" "apt-transport-https" "ffmpeg" "python3")
 readonly C_YT_DL_URL="https://yt-dl.org/downloads/latest/youtube-dl"
 readonly C_YT_DL_PATH="/usr/local/bin/youtube-dl"
 
@@ -114,10 +114,10 @@ install_prereqs() {
     sudo apt update && sudo apt install -y "$C_REQ_DOTNET_PKG" #|| exit 1
 
     echo "${E_INFO}Installing music prerequisites..."
-    sudo apt install -y "$C_MUSIC_PREREQS" #|| exit 1
+    sudo apt install -y "${C_MUSIC_PREREQS[@]}" #|| exit 1
 
     echo "${E_INFO}Installing other prerequisites..."
-    sudo apt install -y "$C_OTHER_PREREQS" "$python_pkg" #|| exit 1
+    sudo apt install -y "${C_OTHER_PREREQS[@]}" "$python_pkg" #|| exit 1
 
     sudo curl -s -L "$C_YT_DL_URL" -o "$C_YT_DL_PATH" #|| exit 1
     # If the write perms are not applied to all users for this tool, attempts to
