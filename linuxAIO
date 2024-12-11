@@ -99,15 +99,6 @@ nadekobot/output/data/images.yml
 nadekobot/output/data/xp.yml
 nadekobot/output/data/xp_template.json"
 
-# Determines if NadekoBot should be compiled after being downloaded.
-#
-# Options:
-#   true  = Compile NadekoBot
-#   false = Do not compile NadekoBot
-#
-# Default: true
-export E_COMPILE_NADEKOBOT=true
-
 ###
 ### [ General Variables ]
 ###

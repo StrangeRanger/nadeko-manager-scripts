@@ -110,10 +110,6 @@ linuxAIO_update() {
         local bot_install_version_found
         bot_install_version=$(grep '^export E_BOT_INSTALL_VERSION=.*' linuxAIO.old)
         bot_install_version_found="$?"
-        local compile_nadekobot
-        local compile_nadekobot_found
-        compile_nadekobot=$(grep '^export E_COMPILE_NADEKOBOT=.*' linuxAIO.old)
-        compile_nadekobot_found="$?"
 
         echo "URL: $E_RAW_URL/linuxAIO"
         curl -O "$E_RAW_URL"/linuxAIO || {
@@ -131,9 +127,6 @@ linuxAIO_update() {
 
         [[ $bot_install_version_found == 0 ]] \
             && sed -i "s/^export E_BOT_INSTALL_VERSION=.*/$bot_install_version/" linuxAIO
-
-        [[ $compile_nadekobot_found == 0 ]] \
-            && sed -i "s/^export E_COMPILE_NADEKOBOT=.*/$compile_nadekobot/" linuxAIO
 
         echo "${E_INFO}Removing 'linuxAIO.old'..."
         rm -f linuxAIO.old

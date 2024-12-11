@@ -153,18 +153,13 @@ if [[ -d /tmp/NuGetScratch ]]; then
         || E_STDERR "Failed to modify the ownership of '/tmp/NuGetScratch'" "1"
 fi
 
-if [[ $E_COMPILE_NADEKOBOT == true ]]; then
-    echo "${E_INFO}Building NadekoBot..."
-    cd nadekobot || E_STDERR "Failed to change working directory to 'nadekobot'" "1"
-    dotnet restore -f --no-cache || E_STDERR "Failed to restore .NET packages" "1"
-    dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
-        || E_STDERR "Failed to build NadekoBot" "1"
-    cd "$E_WORKING_DIR" \
-        || E_STDERR "Failed to change working directory to '$E_WORKING_DIR'" "1"
-else
-    echo "${E_NOTE}'$E_COMPILE_NADEKOBOT' is set to false"
-    echo "${E_NOTE}Skipping the compilation of NadekoBot..."
-fi
+echo "${E_INFO}Building NadekoBot..."
+cd nadekobot || E_STDERR "Failed to change working directory to 'nadekobot'" "1"
+dotnet restore -f --no-cache || E_STDERR "Failed to restore .NET packages" "1"
+dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
+    || E_STDERR "Failed to build NadekoBot" "1"
+cd "$E_WORKING_DIR" \
+    || E_STDERR "Failed to change working directory to '$E_WORKING_DIR'" "1"
 
 ###
 ### [ Move Credentials, Database, and Other Data ]
