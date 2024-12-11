@@ -15,13 +15,11 @@
 
 
 ####
-# Install all prerequisites.
-#
 # PARAMETERS:
 # 	- $1: distro_name (Required)
 # 	- $2: distro_ver (Required)
 #   - $3: python_pkg (Required)
-#       - Python package to install.
+#       - Python package to install, for 'youtube-dl'.
 #       - Acceptable values:
 #           - python
 #           - python-is-python3
@@ -75,7 +73,7 @@ install_prereqs() {
     sudo curl -s -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
     # If the write perms are not applied to all users for this tool, attempts to update
     # 'youtube-dl' by a non-root user will always fail.
-    # TODO: Find a better solution than modifying the perms in such a way that I have.
+    # TODO: Find a better solution than modifying the perms.
     sudo chmod a+rwx /usr/local/bin/youtube-dl
 
 }
