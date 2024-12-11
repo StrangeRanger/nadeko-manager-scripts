@@ -49,7 +49,8 @@ clean_exit() {
         *)   echo -e "\n${E_WARNING}Exiting with exit code: $exit_code" ;;
     esac
 
-    [[ $apt_pid ]] && sudo kill "$apt_pid"
+    echo "${E_INFO}Cleaning up..."
+    [[ $apt_pid ]] && sudo kill "$apt_pid" &>/dev/null
 
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit "$exit_code"
