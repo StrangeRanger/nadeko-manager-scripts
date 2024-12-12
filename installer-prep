@@ -190,7 +190,6 @@ clean_exit() {
         130) echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
         143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
-        131) echo -e "\n${E_WARNING}Quit signal detected (SIGQUIT)" ;;
         *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
     esac
 
@@ -264,7 +263,6 @@ E_STDERR() {
 trap 'clean_exit "130" "true"' SIGINT
 trap 'clean_exit "143" "true"' SIGTERM
 trap 'clean_exit "129" "true"' SIGHUP
-trap 'clean_exit "131" "true"' SIGQUIT
 trap 'clean_exit "$?" "true"' EXIT
 
 
