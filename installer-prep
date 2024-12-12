@@ -101,7 +101,9 @@ linuxAIO_update() {
         curl -O "$_RAW_URL/linuxAIO" || {
             E_STDERR "Failed to download 'linuxAIO'"
             echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
-            [[ -f linuxAIO.old ]] && mv linuxAIO.old linuxAIO
+            [[ -f linuxAIO.old ]] \
+                && mv linuxAIO.old linuxAIO \
+                && chmod +x linuxAIO
             exit 1
         }
         sudo chmod +x linuxAIO
@@ -121,7 +123,9 @@ linuxAIO_update() {
         curl -O "$E_RAW_URL"/linuxAIO || {
             E_STDERR "Failed to download 'linuxAIO'"
             echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
-            [[ -f linuxAIO.old ]] && mv linuxAIO.old linuxAIO
+            [[ -f linuxAIO.old ]] \
+                && mv linuxAIO.old linuxAIO \
+                && chmod +x linuxAIO
             exit 1
         }
         sudo chmod +x linuxAIO
