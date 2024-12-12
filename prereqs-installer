@@ -122,11 +122,8 @@ install_prereqs() {
 
         sudo curl -s -L "$C_YT_DL_URL" -o "$C_YT_DL_PATH" || exit 1
         echo "${E_INFO}Modifying permissions for 'youtube-dl'..."
-        # If the write perms are not applied to all users for this tool, attempts to
-        # update 'youtube-dl' by a non-root user will always fail.
-        # TODO: Find a better solution than modifying the perms.
-        sudo chmod a+rwx "$C_YT_DL_PATH" \
-            || E_STDERR "Failed to modify permissions as 'a+rwx' for '$C_YT_DL_PATH'" \
+        sudo chmod 755 "$C_YT_DL_PATH" \
+            || E_STDERR "Failed to modify permissions as '755' for '$C_YT_DL_PATH'" \
                 "" "${E_NOTE}Permission errors may occur when updating 'youtube-dl'"
     ) &
     apt_pid=$!
