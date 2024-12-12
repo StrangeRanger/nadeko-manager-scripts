@@ -55,6 +55,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 
 - Fixed text displaying `Mewdeko` instead of `NadekoBot`.
 - Fixed, what appeared to be, the installer catching signals multiple times.
+- Removed unnecessary `exec` that resulted in duplicate output.
 
 ## [v3.2.5] - 2022-09-06
 

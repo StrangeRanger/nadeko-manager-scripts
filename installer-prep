@@ -9,7 +9,7 @@
 
 
 # Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
-readonly C_CURRENT_LINUXAIO_REVISION=40
+readonly C_CURRENT_LINUXAIO_REVISION=41
 readonly C_MAIN_INSTALLER="nadeko-main-installer"
 
 ## Modify output text color.
@@ -73,6 +73,11 @@ linuxAIO_update() {
     read -rp "${E_NOTE}Press [Enter] to download the latest version"
     echo "${E_INFO}Downloading latest version of 'linuxAIO'..."
 
+    if [[ -f linuxAIO.old ]]; then
+        echo "${E_INFO}Removing existing 'linuxAIO.old'..."
+        rm linuxAIO.old
+    fi
+
     if [[ -f linuxAIO.sh ]]; then
         echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.old'..."
         mv linuxAIO.sh linuxAIO.old
@@ -80,6 +85,8 @@ linuxAIO_update() {
         echo "${E_INFO}Backing up 'linuxAIO' as 'linuxAIO.old'..."
         mv linuxAIO linuxAIO.old
     fi
+
+    chmod -x linuxAIO.old
 
     ## Due to changes in 'linuxAIO', the existing configurations cannot be directly
     ## applied to the newest version of 'linuxAIO'. As a result, the existing
@@ -94,7 +101,9 @@ linuxAIO_update() {
         curl -O "$_RAW_URL/linuxAIO" || {
             E_STDERR "Failed to download 'linuxAIO'"
             echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
-            [[ -f linuxAIO.old ]] && mv linuxAIO.old linuxAIO
+            [[ -f linuxAIO.old ]] \
+                && mv linuxAIO.old linuxAIO \
+                && chmod +x linuxAIO
             exit 1
         }
         sudo chmod +x linuxAIO
@@ -114,7 +123,9 @@ linuxAIO_update() {
         curl -O "$E_RAW_URL"/linuxAIO || {
             E_STDERR "Failed to download 'linuxAIO'"
             echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
-            [[ -f linuxAIO.old ]] && mv linuxAIO.old linuxAIO
+            [[ -f linuxAIO.old ]] \
+                && mv linuxAIO.old linuxAIO \
+                && chmod +x linuxAIO
             exit 1
         }
         sudo chmod +x linuxAIO
@@ -127,11 +138,10 @@ linuxAIO_update() {
         [[ $bot_install_version_found == 0 ]] \
             && sed -i "s/^export E_BOT_INSTALL_VERSION=.*/$bot_install_version/" linuxAIO
 
-        echo "${E_INFO}Removing 'linuxAIO.old'..."
-        rm -f linuxAIO.old
-
         echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'" \
             "and applied existing changes"
+        echo "${E_NOTE}Make sure to update the variables in 'linuxAIO' that were not" \
+            "automatically updated, using 'linuxAIO.old'"
     fi
 
     clean_exit 0
