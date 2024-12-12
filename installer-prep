@@ -129,6 +129,8 @@ linuxAIO_update() {
 
         echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'" \
             "and applied existing changes"
+        echo "${E_NOTE}Make sure to update the variables in 'linuxAIO' that were not" \
+            "automatically updated, using 'linuxAIO.old'"
     fi
 
     clean_exit 0
