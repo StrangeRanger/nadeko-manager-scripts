@@ -73,6 +73,11 @@ linuxAIO_update() {
     read -rp "${E_NOTE}Press [Enter] to download the latest version"
     echo "${E_INFO}Downloading latest version of 'linuxAIO'..."
 
+    if [[ -f linuxAIO.old ]]; then
+        echo "${E_INFO}Removing existing 'linuxAIO.old'..."
+        rm linuxAIO.old
+    fi
+
     if [[ -f linuxAIO.sh ]]; then
         echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.old'..."
         mv linuxAIO.sh linuxAIO.old
