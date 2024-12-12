@@ -191,7 +191,7 @@ clean_exit() {
     local installer_files=("installer-prep" "file-backup" "prereqs-installer"
         "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer")
 
-    trap - EXIT
+    trap - EXIT SIGINT SIGTERM SIGHUP
 
     [[ $use_extra_newline == true ]] && echo ""
 
