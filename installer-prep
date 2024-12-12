@@ -86,6 +86,8 @@ linuxAIO_update() {
         mv linuxAIO linuxAIO.old
     fi
 
+    chmod -x linuxAIO.old
+
     ## Due to changes in 'linuxAIO', the existing configurations cannot be directly
     ## applied to the newest version of 'linuxAIO'. As a result, the existing
     ## configurations will instead be backed up as 'linuxAIO.old', and the end-user will
