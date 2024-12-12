@@ -293,6 +293,7 @@ while true; do
             E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
             clear -x
             ./nadeko-latest-installer || exit_code_actions "$?"
+            clear -x
             ;;
         2|3)
             ## B.1.
