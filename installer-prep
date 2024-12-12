@@ -127,9 +127,6 @@ linuxAIO_update() {
         [[ $bot_install_version_found == 0 ]] \
             && sed -i "s/^export E_BOT_INSTALL_VERSION=.*/$bot_install_version/" linuxAIO
 
-        echo "${E_INFO}Removing 'linuxAIO.old'..."
-        rm -f linuxAIO.old
-
         echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'" \
             "and applied existing changes"
     fi
