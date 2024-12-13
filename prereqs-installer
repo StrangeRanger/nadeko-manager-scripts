@@ -31,7 +31,7 @@ readonly C_PREF_FILE="/etc/apt/preferences.d/custom-dotnet.pref"
 clean_exit() {
     local exit_code="$1"
 
-    trap - EXIT SIGINT SIGTERM SIGHUP
+    trap - EXIT
     echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should

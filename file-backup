@@ -37,7 +37,7 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     exit_now=false
 
-    trap - EXIT SIGINT SIGTERM SIGHUP
+    trap - EXIT
     [[ $use_extra_newline == true ]] && echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
