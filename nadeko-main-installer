@@ -32,27 +32,19 @@ readonly C_REQ_DOTNET_VERSION=6
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output an extra blank line, to separate the previous output from
-#         the output of this function.
-#       - Acceptable values:
-#           - true
-#           - false
 exit_code_actions() {
     local exit_code="$1"
-    local use_extra_newline="${2:-false}"
 
     trap - EXIT
-    [[ $use_extra_newline == true ]] && echo ""
 
-    ## We don't add anything for SIGINT
+    ## We don't specify any output for SIGINT because it's handled by 'installer-prep'.
+    ## As a note, SIGHUP and SIGTERM don't propagate to parent processes, so we also
+    ## specify the output for those signals in 'installer-prep'.
     case "$exit_code" in
-        0|1)      echo "" ;;
         3|4|5|50) return 0 ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
         130) ;;
         143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
-        *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
     esac
 
     exit "$exit_code"
@@ -174,7 +166,6 @@ E_WATCH_SERVICE_LOGS() {
 
 trap 'exit_code_actions "129"' SIGHUP
 trap 'exit_code_actions "143"' SIGTERM
-trap 'exit_code_actions "$?"' EXIT
 
 
 ####[ Main ]############################################################################
@@ -311,7 +302,7 @@ while true; do
 
             E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
             clear -x
-            ./nadeko-latest-installer || exit_code_actions "$?" "true"
+            ./nadeko-latest-installer || exit_code_actions "$?"
             clear -x
             ;;
         2|3)
@@ -343,7 +334,7 @@ while true; do
             fi
 
             read -rp "Press [Enter] to begin."
-            ./nadeko-runner || exit_code_actions "$?" "true"
+            ./nadeko-runner || exit_code_actions "$?"
             clear -x
             ;;
         4)
@@ -368,7 +359,7 @@ while true; do
         6)
             E_DOWNLOAD_SCRIPT "prereqs-installer"
             clear -x
-            ./prereqs-installer || exit_code_actions "$?" "true"
+            ./prereqs-installer || exit_code_actions "$?"
             clear -x
             ;;
         7)
