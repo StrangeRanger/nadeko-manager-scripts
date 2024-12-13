@@ -31,9 +31,6 @@ E_INFO="${E_BLUE}==>${E_NC} "
 E_NOTE="${E_CYAN}==>${E_NC} "
 export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
 
-# Keep track of whether a child script is running.
-child_running=false
-
 
 ####[ Functions ]#######################################################################
 

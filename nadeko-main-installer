@@ -35,8 +35,6 @@ readonly C_REQ_DOTNET_VERSION=6
 exit_code_actions() {
     local exit_code="$1"
 
-    trap - EXIT
-
     ## We don't specify any output for SIGINT because it's handled by 'installer-prep'.
     ## As a note, SIGHUP and SIGTERM don't propagate to parent processes, so we also
     ## specify the output for those signals in 'installer-prep'.
