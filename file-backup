@@ -37,7 +37,7 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     exit_now=false
 
-    trap - EXIT
+    trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
@@ -82,6 +82,11 @@ clean_exit() {
 
     if [[ $exit_now == false ]]; then
         read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    fi
+
+    ## Ensures that the current SIGINT signal doesn't propagate to the parent process.
+    if [[ $exit_code == 130 ]]; then
+        kill -s SIGINT "$$"
     fi
 
     exit "$exit_code"
