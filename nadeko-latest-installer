@@ -126,9 +126,9 @@ clean_exit() {
 ####[ Trapping Logic ]##################################################################
 
 
+trap 'clean_exit "129" "true"' SIGHUP
 trap 'clean_exit "130" "true"' SIGINT
 trap 'clean_exit "143" "true"' SIGTERM
-trap 'clean_exit "129" "true"' SIGHUP
 trap 'clean_exit "$?" "true"'  EXIT
 
 

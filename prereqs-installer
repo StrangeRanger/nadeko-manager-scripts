@@ -159,9 +159,9 @@ unsupported() {
 ####[ Trapping Logic ]##################################################################
 
 
+trap 'clean_exit "129"' SIGHUP
 trap 'clean_exit "130"' SIGINT
 trap 'clean_exit "143"' SIGTERM
-trap 'clean_exit "129"' SIGHUP
 trap 'clean_exit "$?"'  EXIT
 
 
