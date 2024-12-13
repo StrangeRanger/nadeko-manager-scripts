@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-# Start NadekoBot in a specified run mode.
+# Start NadekoBot in one of two ways:
+#   - NadekoRun: Run NadekoBot in the background.
+#   - NadekoRunAR: Run NadekoBot in the background with auto restart.
 #
 # Comment key:
 #   - A.1.: Used in conjunction with 'systemctl'.
@@ -10,7 +12,7 @@
 ####[ Global Variables ]################################################################
 
 
-### Indicate which actions to be performed on NadekoBot's service.
+## Indicate which actions to be performed on NadekoBot's service.
 if [[ $E_CODENAME == "NadekoRun" ]]; then
     readonly C_LOWER="disable"    # A.1.
     readonly C_UPPER="Disabling"  # B.1.
@@ -19,12 +21,10 @@ else
     readonly C_UPPER="Enabling"  # B.1.
 fi
 
-systemd_version=$(systemd --version | awk 'NR==1 {print $2}')
-
 ## NOTE:
 ##  'StandardOutput' and 'StandardError' no longer supports 'syslog' starting in
 ##  version 246 of systemd.
-if ((systemd_version >= 246)); then
+if [[ $(systemctl --version | awk 'NR==1 {print $2}') -ge 246 ]]; then
     readonly C_SERVICE_CONTENT="[Unit]
 Description=NadekoBot service
 After=network.target
@@ -66,22 +66,68 @@ SyslogIdentifier=NadekoBot
 WantedBy=multi-user.target"
 fi
 
-unset systemd_version
-
 
 ####[ Functions ]#######################################################################
 
 
-#clean_exit() { }
+####
+# Clean up and exit the script.
+#
+# PARAMETERS:
+#   - $1: exit_code (Required)
+#   - $2: use_extra_newline (Optional, Default: false)
+#       - Whether to output an extra blank line, to separate the previous output from
+#         the output of this function.
+#       - Acceptable values:
+#           - true
+#           - false
+clean_exit() {
+    local exit_code="$1"
+    local use_extra_newline="${2:-false}"
+    local exit_now=false
+
+    trap - EXIT SIGINT SIGTERM SIGHUP
+    [[ $use_extra_newline == true ]] && echo ""
+
+    ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
+    ## continue running, even if an error occurred. Please refer to the
+    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
+    case "$exit_code" in
+        1)   exit_code=50 ;;
+        0|3) ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_now=true
+            ;;
+        130)
+            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            exit_code=50
+            ;;
+        143)
+            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            exit_now=true
+            ;;
+        *)
+            echo -e "\n${E_WARNING}Exiting with exit code: $exit_code"
+            exit_now=true
+            ;;
+    esac
+
+    if [[ $exit_now == false ]]; then
+        read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    fi
+
+    exit "$exit_code"
+}
 
 
 ####[ Trapping Logic ]##################################################################
 
 
-#trap 'clean_exit "129" "true"' SIGHUP
-#trap 'clean_exit "130" "true"' SIGINT
-#trap 'clean_exit "143" "true"' SIGTERM
-#trap 'clean_exit "$?" "true"'  EXIT
+trap 'clean_exit "129" "true"' SIGHUP
+trap 'clean_exit "130" "true"' SIGINT
+trap 'clean_exit "143" "true"' SIGTERM
+trap 'clean_exit "$?" "true"'  EXIT
 
 
 
