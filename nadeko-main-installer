@@ -25,9 +25,9 @@ readonly C_REQ_DOTNET_VERSION=6
 # corresponding/appropriate actions.
 #
 # Custom Exit Codes:
-#   - 3:  Related to NadekoBot daemon service.
-#   - 4:  Unsupported OS/Distro.
-#   - 5:  A problem occurred finalizing an installation or the backup of files.
+#   - 3: Related to NadekoBot daemon service.
+#   - 4: Unsupported OS/Distro.
+#   - 5: A problem occurred finalizing an installation or the backup of files.
 #   - 50: Arbitrary exit code telling the main installer to continue running.
 #
 # PARAMETERS:
@@ -54,10 +54,11 @@ disabled_reasons() {
     echo "${E_CYAN}Reasons for the disabled option:"
 
     if (! hash dotnet \
-            || ! hash redis-server \
-            || (! hash python && (! hash python3 && ! hash python-is-python3)) \
-            || ! "$ccze_installed" \
-            || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null; then
+        || ! hash redis-server \
+        || (! hash python && (! hash python3 && ! hash python-is-python3)) \
+        || ! "$ccze_installed" \
+        || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null
+    then
         echo "  One or more prerequisites are not installed"
         echo "    Use option 6 to install them all"
     fi
