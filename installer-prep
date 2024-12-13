@@ -188,9 +188,12 @@ clean_exit() {
 
     trap - EXIT
 
-    if [[ $exit_code == 130 && $child_running == false ]]; then
-        echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
-    fi
+    case "$exit_code" in
+        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
+        130) [[ $child_running == false ]] \
+                && echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
+        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
+    esac
 
     echo "${E_INFO}Cleaning up..."
     cd "$E_ROOT_DIR" || E_STDERR "Failed to move working directory to '$E_ROOT_DIR'" "1"
@@ -205,10 +208,13 @@ clean_exit() {
 
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
+
     child_running=true
     ./"$C_MAIN_INSTALLER"
+    local exit_code="$?"
     child_running=false
-    clean_exit "$?"
+
+    clean_exit "$exit_code"
 }
 
 ###
