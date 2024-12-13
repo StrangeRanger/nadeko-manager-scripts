@@ -35,6 +35,7 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
+    exit_now=false
 
     trap - EXIT SIGINT SIGTERM SIGHUP
     [[ $use_extra_newline == true ]] && echo ""
@@ -49,9 +50,18 @@ clean_exit() {
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
-        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
-        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
-        *)   echo -e "\n${E_WARNING}Exiting with exit code: $exit_code" ;;
+        143)
+            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            exit_now=true
+            ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_now=true
+            ;;
+        *)
+            echo -e "\n${E_WARNING}Exiting with exit code: $exit_code"
+            exit_now=true
+            ;;
     esac
 
     echo "${E_INFO}Cleaning up..."
@@ -70,7 +80,10 @@ clean_exit() {
     ) || E_STDERR "Failed to restore original backup" "$?" \
         "${E_NOTE}We will exit completely to prevent data loss"
 
-    read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    if [[ $exit_now == false ]]; then
+        read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    fi
+
     exit "$exit_code"
 }
 
@@ -78,9 +91,9 @@ clean_exit() {
 ####[ Trapping Logic ]##################################################################
 
 
+trap 'clean_exit "129" "true"' SIGHUP
 trap 'clean_exit "130" "true"' SIGINT
 trap 'clean_exit "143" "true"' SIGTERM
-trap 'clean_exit "129" "true"' SIGHUP
 trap 'clean_exit "$?" "true"'  EXIT
 
 

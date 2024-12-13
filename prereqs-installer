@@ -38,15 +38,24 @@ clean_exit() {
     ## continue running, even if an error occurred. Please refer to the
     ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
     case "$exit_code" in
-        1|100) exit_code=50 ;;  # 100 is an error code produced by 'apt'...
-        0|5)   ;;
+        1)   exit_code=50 ;;
+        0|5) ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
-        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
-        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
-        *)   echo -e "\n${E_WARNING}Exiting with exit code: $exit_code" ;;
+        143)
+            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            exit_now=true
+            ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_now=true
+            ;;
+        *)
+            echo -e "\n${E_WARNING}Exiting with exit code: $exit_code"
+            exit_now=true
+            ;;
     esac
 
     if [[ $apt_pid ]]; then
@@ -54,7 +63,10 @@ clean_exit() {
         sudo kill "$apt_pid" &>/dev/null
     fi
 
-    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
+    if [[ $exit_now == false ]]; then
+        read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    fi
+
     exit "$exit_code"
 }
 
@@ -147,9 +159,9 @@ unsupported() {
 ####[ Trapping Logic ]##################################################################
 
 
+trap 'clean_exit "129"' SIGHUP
 trap 'clean_exit "130"' SIGINT
 trap 'clean_exit "143"' SIGTERM
-trap 'clean_exit "129"' SIGHUP
 trap 'clean_exit "$?"'  EXIT
 
 
