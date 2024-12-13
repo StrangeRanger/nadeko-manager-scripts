@@ -31,9 +31,6 @@ E_INFO="${E_BLUE}==>${E_NC} "
 E_NOTE="${E_CYAN}==>${E_NC} "
 export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
 
-# Keep track of whether a child script is running.
-child_running=false
-
 
 ####[ Functions ]#######################################################################
 
@@ -176,41 +173,18 @@ unsupported() {
 }
 
 ####
-# Remove unnecessary files and cleanly exit the script.
+# Remove unnecessary files to cleanly exit the script.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output an extra blank line, to separate the previous output from
-#         the output of this function.
-#       - Acceptable values:
-#           - true
-#           - false
 clean_exit() {
     local exit_code="$1"
-    local use_extra_newline="${2:-false}"
-
     # Files to be removed.
     local installer_files=("installer-prep" "file-backup" "prereqs-installer"
         "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer")
 
     trap - EXIT
-
-    [[ $use_extra_newline == true ]] && echo ""
-
-    case "$exit_code" in
-        0|1) echo "" ;;
-        130)
-            [[  $child_running != true ]] \
-                && echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
-            ;;
-        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
-        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
-        *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
-    esac
-
     echo -e "${E_INFO}Cleaning up..."
-
     cd "$E_ROOT_DIR" || E_STDERR "Failed to move working directory to '$E_ROOT_DIR'" "1"
 
     for file in "${installer_files[@]}"; do
@@ -223,9 +197,7 @@ clean_exit() {
 
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
-    child_running=true
     ./"$C_MAIN_INSTALLER"
-    child_running=false
     clean_exit "$?"
 }
 
@@ -278,10 +250,10 @@ E_STDERR() {
 ####[ Trapping Logic ]##################################################################
 
 
-trap 'clean_exit "130" "true"' SIGINT
-trap 'clean_exit "143" "true"' SIGTERM
-trap 'clean_exit "129" "true"' SIGHUP
-trap 'clean_exit "$?" "true"' EXIT
+trap 'clean_exit "130"' SIGINT
+trap 'clean_exit "143"' SIGTERM
+trap 'clean_exit "129"' SIGHUP
+trap 'clean_exit "$?"' EXIT
 
 
 ####[ Prepping ]########################################################################
