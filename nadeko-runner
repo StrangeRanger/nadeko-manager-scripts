@@ -151,7 +151,7 @@ fi
 }
 
 ## Disable/enable the service.
-echo "$C_UPPER '$E_SERVICE_NAME'..."
+echo "${E_INFO}$C_UPPER '$E_SERVICE_NAME'..."
 sudo systemctl "$C_LOWER" "$E_SERVICE_NAME" || {
     echo "${E_ERROR}Failed to $C_LOWER '$E_SERVICE_NAME'" >&2
     echo "${E_NOTE}This service must be ${C_LOWER}d in order to use this run mode"
