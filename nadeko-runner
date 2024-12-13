@@ -146,7 +146,7 @@ fi
 } || {
     echo "${E_ERROR}Failed to create '$E_SERVICE_NAME'" >&2
     echo "${E_NOTE}This service must exist for NadekoBot to work$"
-    read -rp "Press [Enter] to return to the installer menu"
+    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit 3
 }
 
@@ -155,7 +155,7 @@ echo "$C_UPPER '$E_SERVICE_NAME'..."
 sudo systemctl "$C_LOWER" "$E_SERVICE_NAME" || {
     echo "${E_ERROR}Failed to $C_LOWER '$E_SERVICE_NAME'" >&2
     echo "${E_NOTE}This service must be ${C_LOWER}d in order to use this run mode"
-    read -rp "Press [Enter] to return to the installer menu"
+    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit 3
 }
 
@@ -227,17 +227,17 @@ echo \"Stopping NadekoBot...\"" > NadekoRun
 fi
 
 if [[ $E_SERVICE_STATUS == "active" ]]; then
-    echo "Restarting '$E_SERVICE_NAME'..."
+    echo "${E_INFO}Restarting '$E_SERVICE_NAME'..."
     sudo systemctl restart "$E_SERVICE_NAME" || {
         echo "${E_ERROR}Failed to restart '$E_SERVICE_NAME'${E_NC}" >&2
-        read -rp "Press [Enter] to return to the installer menu"
+        read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
         exit 3
     }
 else
     echo "Starting '$E_SERVICE_NAME'..."
     sudo systemctl start "$E_SERVICE_NAME" || {
         echo "${E_ERROR}Failed to start '$E_SERVICE_NAME'${E_NC}" >&2
-        read -rp "Press [Enter] to return to the installer menu"
+        read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
         exit 3
     }
 fi
