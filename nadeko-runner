@@ -242,4 +242,6 @@ else
     }
 fi
 
+trap - SIGINT
+
 E_WATCH_SERVICE_LOGS "runner"
