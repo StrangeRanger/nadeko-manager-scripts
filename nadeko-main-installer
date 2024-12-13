@@ -173,7 +173,6 @@ E_WATCH_SERVICE_LOGS() {
 
 
 trap 'exit_code_actions "129"' SIGHUP
-trap 'exit_code_actions "130"' SIGINT
 trap 'exit_code_actions "143"' SIGTERM
 trap 'exit_code_actions "$?"' EXIT
 
