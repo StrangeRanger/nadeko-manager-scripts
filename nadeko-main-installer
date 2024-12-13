@@ -25,22 +25,21 @@ readonly C_REQ_DOTNET_VERSION=6
 # corresponding/appropriate actions.
 #
 # Custom Exit Codes:
-#   - 1:  General error.
 #   - 3:  Related to NadekoBot daemon service.
 #   - 4:  Unsupported OS/Distro.
 #   - 5:  A problem occurred finalizing an installation or the backup of files.
-#   - 50: Arbitrary exit code telling the main installer to continue.
+#   - 50: Arbitrary exit code telling the main installer to continue running.
 #
-# Arguments:
+# PARAMETERS:
 #   - $1: exit_code (Required)
-#       - Return/exit code.
 exit_code_actions() {
     local exit_code="$1"
 
     case "$exit_code" in
-        3|5|50) return 0 ;;
-        *) exit "$exit_code" ;;
+        3|4|5|50) return 0 ;;
     esac
+
+    exit "$exit_code"
 }
 
 ####
@@ -162,6 +161,14 @@ E_WATCH_SERVICE_LOGS() {
 
     read -rp "Press [Enter] to return to the installer menu"
 }
+
+
+####[ Trapping Logic ]##################################################################
+
+
+trap 'clean_exit "129"' SIGHUP
+trap 'clean_exit "130"' SIGINT
+trap 'clean_exit "143"' SIGTERM
 
 
 ####[ Main ]############################################################################
