@@ -50,29 +50,37 @@ exit_code_actions() {
 
 ####
 # Provide the reason(s) for why one or more options are disabled.
+#
+# PARAMETERS:
+#   - $1: option_number (Required)
 disabled_reasons() {
-    echo "${E_NOTE}Reasons for the disabled option:"
+    local option_number="$1"
 
-    if (! hash dotnet \
-        || ! hash redis-server \
-        || (! hash python && (! hash python3 && ! hash python-is-python3)) \
-        || ! "$ccze_installed" \
-        || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null
-    then
-        echo "${E_NOTE}    One or more prerequisites are not installed"
-        echo "${E_NOTE}        Use option 6 to install them all"
-    fi
+    echo "${E_NOTE}Reason option '$option_number' is disabled:"
 
-    if [[ -d nadekobot ]]; then
-        if [[ ! -f nadekobot/output/creds.yml ]]; then
-            echo "${E_NOTE}    The 'creds.yml' could not be found"
-            echo "${E_NOTE}        Refer to the following guide for help:" \
-                "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
-        fi
-    else
-        echo "${E_NOTE}    NadekoBot could not be found"
-        echo "${E_NOTE}        Use option 1 to download NadekoBot"
-    fi
+    case "$option_number" in
+        1)
+            echo "${E_NOTE}    One or more prerequisites are not installed"
+            echo "${E_NOTE}        Use option 6 to install them all"
+            ;;
+        2|3)
+            if [[ ! -d nadekobot ]]; then
+                echo "${E_NOTE}    NadekoBot could not be found"
+                echo "${E_NOTE}        Use option 1 to download NadekoBot"
+            elif [[ ! -f nadekobot/output/creds.yml ]]; then
+                echo "${E_NOTE}    The 'creds.yml' could not be found"
+                echo "${E_NOTE}        Refer to the following guide for help:" \
+                    "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
+            # TODO: elif token is not filled out in 'creds.yml'...
+            else
+                echo "${E_NOTE}    Unknown reason"
+            fi
+            ;;
+        7)
+            echo "${E_NOTE}    NadekoBot could not be found"
+            echo "${E_NOTE}        Use option 1 to download NadekoBot"
+            ;;
+    esac
 }
 
 ###
@@ -227,7 +235,7 @@ while true; do
     ## Disable option 1 if any of the following tools are not installed.
     if (! hash dotnet \
         || ! hash redis-server \
-        || ! hash python3 \
+        || (! hash python && (! hash python3 && ! hash python-is-python3)) \
         || ! "$ccze_installed" \
         || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null
     then
@@ -237,7 +245,7 @@ while true; do
 
     ## Disable options 2, 3, and 5 if any of the tools in the previous if statement are
     ## not installed, or none of the specified directories/files could be found.
-    if "$opt_one_dis" || [[ ! -f nadekobot/output/creds.yml ]]; then
+    if [[ $opt_one_dis == true || ! -f nadekobot/output/creds.yml ]]; then
         opt_two_and_three_dis=true
         opt_two_text="${E_GREY}${opt_two_text}${dis_option}${E_NC}"
         opt_three_text="${E_GREY}${opt_three_text}${dis_option}${E_NC}"
@@ -293,7 +301,7 @@ while true; do
             if "$opt_one_dis"; then
                 clear -x
                 echo "${E_ERROR}Option 1 is currently disabled"
-                disabled_reasons
+                disabled_reasons 1
                 continue
             fi
 
@@ -312,7 +320,7 @@ while true; do
             if "$opt_two_and_three_dis"; then
                 clear -x
                 echo "${E_ERROR}Option $choice is currently disabled"
-                disabled_reasons
+                disabled_reasons "$choice"
                 continue
             fi
 
@@ -370,7 +378,7 @@ while true; do
             if "$opt_seven_dis"; then
                 clear -x
                 echo "${E_ERROR}Option 7 is currently disabled"
-                disabled_reasons
+                disabled_reasons 7
                 continue
             fi
 
@@ -380,7 +388,7 @@ while true; do
             clear -x
             ;;
         8)
-            exit_code_actions "0"
+            exit_code_actions 0
             ;;
         *)
             clear -x
