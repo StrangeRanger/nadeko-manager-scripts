@@ -34,11 +34,11 @@ readonly C_NEW_DATA="$C_NADEKOBOT_TMP/nadekobot/output/data"
 service_is_active=false
 
 if [[ -d nadekobot ]]; then
-    C_ACTION_ONE="update"
-    C_ACTION_TWO="updating"
+    readonly C_ACTION_ONE="update"
+    readonly C_ACTION_TWO="updating"
 else
-    C_ACTION_ONE="download and set up"
-    C_ACTION_TWO="setting up"
+    readonly C_ACTION_ONE="download and set up"
+    readonly C_ACTION_TWO="setting up"
 fi
 
 

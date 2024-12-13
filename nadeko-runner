@@ -3,8 +3,8 @@
 # Start NadekoBot in a specified run mode.
 #
 # Comment key:
-#   A.1.: Used in conjunction with 'systemctl'.
-#   B.1.: Used in the text output.
+#   - A.1.: Used in conjunction with 'systemctl'.
+#   - B.1.: Used in the text output.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
