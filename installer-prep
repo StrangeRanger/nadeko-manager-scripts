@@ -31,6 +31,9 @@ E_INFO="${E_BLUE}==>${E_NC} "
 E_NOTE="${E_CYAN}==>${E_NC} "
 export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
 
+# Keep track of whether a child script is running.
+child_running=false
+
 
 ####[ Functions ]#######################################################################
 
@@ -184,7 +187,12 @@ clean_exit() {
         "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer")
 
     trap - EXIT
-    echo -e "${E_INFO}Cleaning up..."
+
+    if [[ $exit_code == 130 && $child_running == false ]]; then
+        echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+    fi
+
+    echo "${E_INFO}Cleaning up..."
     cd "$E_ROOT_DIR" || E_STDERR "Failed to move working directory to '$E_ROOT_DIR'" "1"
 
     for file in "${installer_files[@]}"; do
@@ -197,7 +205,9 @@ clean_exit() {
 
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
+    child_running=true
     ./"$C_MAIN_INSTALLER"
+    child_running=false
     clean_exit "$?"
 }
 

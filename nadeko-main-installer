@@ -16,9 +16,6 @@ E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
 
 readonly C_REQ_DOTNET_VERSION=6
 
-# Keep track of whether a child script is running.
-child_running=false
-
 
 ####[ Functions ]#######################################################################
 
@@ -53,8 +50,7 @@ exit_code_actions() {
         0|1)      echo "" ;;
         3|4|5|50) return 0 ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
-        130) [[  $child_running == false ]] \
-                && echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
+        130) ;;
         143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
         *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
     esac
@@ -316,9 +312,7 @@ while true; do
 
             E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
             clear -x
-            child_running=true
             ./nadeko-latest-installer || exit_code_actions "$?" "true"
-            child_running=false
             clear -x
             ;;
         2|3)
@@ -350,9 +344,7 @@ while true; do
             fi
 
             read -rp "Press [Enter] to begin."
-            child_running=true
             ./nadeko-runner || exit_code_actions "$?" "true"
-            child_running=false
             clear -x
             ;;
         4)
@@ -377,9 +369,7 @@ while true; do
         6)
             E_DOWNLOAD_SCRIPT "prereqs-installer"
             clear -x
-            child_running=true
             ./prereqs-installer || exit_code_actions "$?" "true"
-            child_running=false
             clear -x
             ;;
         7)
@@ -393,9 +383,7 @@ while true; do
 
             E_DOWNLOAD_SCRIPT "file-backup"
             clear -x
-            child_running=true
             ./file-backup || exit_code_actions "$?"
-            child_running=false
             clear -x
             ;;
         8)
