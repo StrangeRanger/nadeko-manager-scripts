@@ -51,7 +51,7 @@ exit_code_actions() {
 ####
 # Provide the reason(s) for why one or more options are disabled.
 disabled_reasons() {
-    echo "${E_CYAN}Reasons for the disabled option:"
+    echo "${E_NOTE}Reasons for the disabled option:"
 
     if (! hash dotnet \
         || ! hash redis-server \
@@ -59,21 +59,20 @@ disabled_reasons() {
         || ! "$ccze_installed" \
         || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null
     then
-        echo "  One or more prerequisites are not installed"
-        echo "    Use option 6 to install them all"
+        echo "${E_NOTE}    One or more prerequisites are not installed"
+        echo "${E_NOTE}        Use option 6 to install them all"
     fi
 
     if [[ -d nadekobot ]]; then
         if [[ ! -f nadekobot/output/creds.yml ]]; then
-            echo "  The 'creds.yml' could not be found"
-            echo "    Refer to the following link for help: https://nadekobot.readthedocs.io/en/latest/creds-guide/"
+            echo "${E_NOTE}    The 'creds.yml' could not be found"
+            echo "${E_NOTE}        Refer to the following guide for help:" \
+                "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
         fi
     else
-        echo "  NadekoBot could not be found"
-        echo "    Use option 1 to download NadekoBot"
+        echo "${E_NOTE}    NadekoBot could not be found"
+        echo "${E_NOTE}        Use option 1 to download NadekoBot"
     fi
-
-    echo "$E_NC"
 }
 
 ###
@@ -81,7 +80,10 @@ disabled_reasons() {
 ###
 
 ####
-# Store the status of NadekoBot's service, inside of $E_SERVICE_STATUS.
+# Retrieve that status of NadekoBot's service.
+#
+# NEW GLOBALS:
+#   - E_SERVICE_STATUS: The status of NadekoBot's service.
 E_GET_SERVICE_STATUS() {
     E_SERVICE_STATUS=$(systemctl is-active "$E_SERVICE_NAME")
 }
@@ -93,6 +95,9 @@ E_GET_SERVICE_STATUS() {
 #   - $1: output_text (Optional, Default: false)
 #       - True when the function should output text indicating if the service has been
 #         stopped or is currently not running.
+#       - Acceptable values:
+#           - true
+#           - false
 #
 # RETURNS:
 #   - 1: If $E_SERVICE_NAME is not currently running.
@@ -100,23 +105,20 @@ E_STOP_SERVICE() {
     local output_text="${1:-false}"
 
     if [[ $E_SERVICE_STATUS == "active" ]]; then
-        echo "Stopping '$E_SERVICE_NAME'..."
-        sudo systemctl stop "$E_SERVICE_NAME" || {
-            echo "${E_ERROR}Failed to stop '$E_SERVICE_NAME'" >&2
-            echo "${E_CYAN}You will need to restart '$E_SERVICE_NAME' to apply any" \
-                "updates to NadekoBot${E_NC}"
-            return 1
-        }
+        echo "${E_INFO}Stopping '$E_SERVICE_NAME'..."
+        sudo systemctl stop "$E_SERVICE_NAME" \
+            || E_STDERR "Failed to stop '$E_SERVICE_NAME'" "" \
+                "${E_NOTE}You will need to restart '$E_SERVICE_NAME' to apply any updates to NadekoBot"
         [[ $output_text == true ]] \
-            && echo -e "\n${E_GREEN}NadekoBot has been stopped${E_NC}"
+            && echo -e "\n${E_SUCCESS}NadekoBot has been stopped"
     else
         [[ $output_text == true ]] \
-            && echo -e "\n${E_CYAN}NadekoBot is not currently running${E_NC}"
+            && echo -e "\n${E_NOTE}NadekoBot is not currently running"
     fi
 }
 
 ########
-# Display the logs from 'nadeko.server' as they are created.
+# Display the logs from 'nadeko.service' as they are created.
 E_FOLLOW_SERVICE_LOGS() {
     (
         trap 'exit 130' SIGINT
@@ -139,24 +141,25 @@ E_WATCH_SERVICE_LOGS() {
     local log_type="$1"
 
     if [[ $log_type == "runner" ]]; then
-        echo "Displaying '$E_SERVICE_NAME' startup logs, live..."
+        echo "${E_INFO}Displaying '$E_SERVICE_NAME' startup logs, live..."
     elif [[ $log_type == "opt_five" ]]; then
-        echo "Watching '$E_SERVICE_NAME' logs, live..."
+        echo "${E_INFO}Watching '$E_SERVICE_NAME' logs, live..."
     else
-        E_STDERR "INTERNAL ERROR: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" "4"
+        E_STDERR "${E_ERROR}INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
+            "4"
     fi
 
-    echo "${E_CYAN}To stop displaying the startup logs:"
-    echo "1) Press 'Ctrl' + 'C'${E_NC}"
+    echo "${E_NOTE}To stop displaying the startup logs:"
+    echo "${E_NOTE}  1) Press 'Ctrl' + 'C'"
     echo ""
 
     E_FOLLOW_SERVICE_LOGS
 
-    [[ $1 == "runner" ]] && echo -e "\nPlease check the logs above to make sure that" \
-        "there aren't any errors, and if there are, to resolve whatever issue is" \
-        "causing them"
+    [[ $1 == "runner" ]] \
+        && echo -e "\n${E_NOTE}Please check the logs above to make sure that there" \
+            "aren't any errors. If there are, resolve whatever issue is causing them."
 
-    read -rp "Press [Enter] to return to the installer menu"
+    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
 }
 
 
@@ -176,7 +179,7 @@ while true; do
     ###
     ### [ Temporary Variables ]
     ###
-    ### The variables below constantly get modified later in the while loop, and are
+    ### The variables below constantly get modified within the while loop, and are
     ### required to be reset everytime the loop starts back at the top.
     ###
 
@@ -289,7 +292,7 @@ while true; do
             ## B.1.
             if "$opt_one_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 1 is currently disabled${E_NC}"
+                echo "${E_ERROR}Option 1 is currently disabled"
                 disabled_reasons
                 continue
             fi
@@ -308,7 +311,7 @@ while true; do
             ## B.1.
             if "$opt_two_and_three_dis"; then
                 clear -x
-                echo "${E_ERROR}Option $choice is currently disabled${E_NC}"
+                echo "${E_ERROR}Option $choice is currently disabled"
                 disabled_reasons
                 continue
             fi
@@ -325,11 +328,12 @@ while true; do
             # If option 2 was executed...
             if [[ $choice == 2 ]]; then
                 export E_CODENAME="NadekoRun"
-                printf "We will now run NadekoBot in the background. "
+                printf "%sWe will now run NadekoBot in the background. " "$E_NOTE"
             # If option 3 was executed...
             else
                 export E_CODENAME="NadekoRunAR"
-                printf "We will now run NadekoBot in the background with auto restart. "
+                printf "%sWe will now run NadekoBot in the background with auto restart. " \
+                    "$E_NOTE"
             fi
 
             read -rp "Press [Enter] to begin."
@@ -338,16 +342,16 @@ while true; do
             ;;
         4)
             clear -x
-            read -rp "We will now stop NadekoBot. Press [Enter] to begin."
+            read -rp "${E_NOTE}We will now stop NadekoBot. Press [Enter] to begin."
             E_STOP_SERVICE "true"
-            read -rp "Press [Enter] to return to the installer menu"
+            read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
             clear -x
             ;;
         5)
             clear -x
             ## B.1.
             if "$opt_five_dis"; then
-                echo "${E_ERROR}Option 5 is currently disabled${E_NC}"
+                echo "${E_ERROR}Option 5 is currently disabled"
                 echo ""
                 continue
             fi
@@ -365,7 +369,7 @@ while true; do
             ## B.1.
             if "$opt_seven_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 7 is currently disabled${E_NC}"
+                echo "${E_ERROR}Option 7 is currently disabled"
                 disabled_reasons
                 continue
             fi
@@ -380,7 +384,7 @@ while true; do
             ;;
         *)
             clear -x
-            echo "${E_ERROR}Invalid input: '$choice' is not a valid option${E_NC}" >&2
+            echo "${E_ERROR}Invalid input: '$choice' is not a valid option" >&2
             echo ""
             ;;
     esac
