@@ -317,7 +317,7 @@ while true; do
             E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
             clear -x
             child_running=true
-            ./nadeko-latest-installer || exit_code_actions "$?"
+            ./nadeko-latest-installer || exit_code_actions "$?" "true"
             child_running=false
             clear -x
             ;;
@@ -351,7 +351,7 @@ while true; do
 
             read -rp "Press [Enter] to begin."
             child_running=true
-            ./nadeko-runner || exit_code_actions "$?"
+            ./nadeko-runner || exit_code_actions "$?" "true"
             child_running=false
             clear -x
             ;;
@@ -378,7 +378,7 @@ while true; do
             E_DOWNLOAD_SCRIPT "prereqs-installer"
             clear -x
             child_running=true
-            ./prereqs-installer || exit_code_actions "$?"
+            ./prereqs-installer || exit_code_actions "$?" "true"
             child_running=false
             clear -x
             ;;
@@ -399,7 +399,7 @@ while true; do
             clear -x
             ;;
         8)
-            exit 0
+            exit_code_actions "0"
             ;;
         *)
             clear -x
