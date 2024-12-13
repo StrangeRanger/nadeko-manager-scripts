@@ -201,8 +201,7 @@ clean_exit() {
     case "$exit_code" in
         0|1) echo "" ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
-        130) [[ $child_running == false ]] \
-                && echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
+        130) echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
         143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
         *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
     esac
@@ -220,13 +219,8 @@ clean_exit() {
 
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
-
-    child_running=true
     ./"$C_MAIN_INSTALLER"
-    local exit_code="$?"
-    child_running=false
-
-    clean_exit "$exit_code"
+    clean_exit "$?"
 }
 
 ###
