@@ -46,16 +46,16 @@ clean_exit() {
     case "$exit_code" in
         1)   exit_code=50 ;;
         0|5) ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_now=true
+            ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
         143)
             echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
-            exit_now=true
-            ;;
-        129)
-            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
             exit_now=true
             ;;
         *)
