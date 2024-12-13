@@ -7,7 +7,7 @@
 #   - B.1.: Used in the text output.
 #
 ########################################################################################
-####[ Variables ]#######################################################################
+####[ Global Variables ]################################################################
 
 
 ### Indicate which actions to be performed on NadekoBot's service.
@@ -21,7 +21,6 @@ fi
 
 systemd_version=$(systemd --version | awk 'NR==1 {print $2}')
 
-## The contents of NadekoBot's service.
 ## NOTE:
 ##  'StandardOutput' and 'StandardError' no longer supports 'syslog' starting in
 ##  version 246 of systemd.
@@ -70,23 +69,37 @@ fi
 unset systemd_version
 
 
+####[ Functions ]#######################################################################
+
+
+#clean_exit() { }
+
+
+####[ Trapping Logic ]##################################################################
+
+
+#trap 'clean_exit "129" "true"' SIGHUP
+#trap 'clean_exit "130" "true"' SIGINT
+#trap 'clean_exit "143" "true"' SIGTERM
+#trap 'clean_exit "$?" "true"'  EXIT
+
+
+
 ####[ Main ]############################################################################
 
 
-# Check if the service exists.
 if [[ -f $E_SERVICE ]]; then
-    echo "Updating '$E_SERVICE_NAME'..."
+    echo "${E_INFO}Updating '$E_SERVICE_NAME'..."
 else
-    echo "Creating '$E_SERVICE_NAME'..."
+    echo "${E_INFO}Creating '$E_SERVICE_NAME'..."
 fi
 
 {
-    # Create/update the service.
     echo "$C_SERVICE_CONTENT" | sudo tee "$E_SERVICE" &>/dev/null \
         && sudo systemctl daemon-reload
 } || {
     echo "${E_ERROR}Failed to create '$E_SERVICE_NAME'" >&2
-    echo "${E_CYAN}This service must exist for NadekoBot to work${E_NC}"
+    echo "${E_NOTE}This service must exist for NadekoBot to work$"
     read -rp "Press [Enter] to return to the installer menu"
     exit 3
 }
@@ -95,80 +108,78 @@ fi
 echo "$C_UPPER '$E_SERVICE_NAME'..."
 sudo systemctl "$C_LOWER" "$E_SERVICE_NAME" || {
     echo "${E_ERROR}Failed to $C_LOWER '$E_SERVICE_NAME'" >&2
-    echo "${E_CYAN}This service must be ${C_LOWER}d in order to use this run mode${E_NC}"
+    echo "${E_NOTE}This service must be ${C_LOWER}d in order to use this run mode"
     read -rp "Press [Enter] to return to the installer menu"
     exit 3
 }
 
 if [[ -f NadekoRun ]]; then
-    echo "Updating 'NadekoRun'..."
+    echo "${E_INFO}Updating 'NadekoRun'..."
 else
-    echo "Creating 'NadekoRun'..."
+    echo "${E_INFO}Creating 'NadekoRun'..."
     touch NadekoRun
     sudo chmod +x NadekoRun
 fi
 
 ## Add the code required to run NadekoBot in the background, to 'NadekoRun'.
 if [[ $E_CODENAME == "NadekoRun" ]]; then
-    printf '%s\n' \
-        "#!/bin/bash" \
-        "" \
-        "_code_name_=\"NadekoRun\"" \
-        "" \
-        "echo \"Running NadekoBot in the background\"" \
-        "youtube-dl -U" \
-        "" \
-        "echo \"Starting NadekoBot...\"" \
-        "cd $E_ROOT_DIR/nadekobot/output" \
-        "dotnet NadekoBot.dll || {" \
-        "    echo \"An error occurred when trying to start NadekoBot\"" \
-        "    echo \"Exiting...\"" \
-        "    exit 1" \
-        "}" \
-        "echo \"Stopping NadekoBot...\"" \
-        "cd $E_ROOT_DIR" > NadekoRun
+    echo "#!/bin/bash
+
+_code_name_=\"NadekoRun\"
+
+echo \"Running NadekoBot in the background\"
+youtube-dl -U
+
+echo \"Starting NadekoBot...\"
+cd $E_ROOT_DIR/nadekobot/output
+dotnet NadekoBot.dll || {
+    echo \"An error occurred when trying to start NadekoBot\"
+    echo \"Exiting...\"
+    exit 1
+}
+
+echo \"Stopping NadekoBot...\"
+cd $E_ROOT_DIR" > NadekoRun
 ## Add code required to run NadekoBot in the background with auto restart, to
 ## 'NadekoRun'.
 else
-    printf '%s\n' \
-        "#!/bin/bash" \
-        "" \
-        "_code_name_=\"NadekoRunAR\"" \
-        "" \
-        "echo \"Running NadekoBot in the background with auto restart\"" \
-        "youtube-dl -U" \
-        "" \
-        "echo \"Starting NadekoBot...\"" \
-        "" \
-        "while true; do" \
-        "    if [[ -d $E_ROOT_DIR/nadekobot/output ]]; then" \
-        "        cd $E_ROOT_DIR/nadekobot/output || {" \
-        "            echo \"Failed to change working directory to '$E_ROOT_DIR/nadekobot/output'\" >&2" \
-        "            echo \"Ensure that the working directory inside of '/etc/systemd/system/nadeko.service' is correct\"" \
-        "            echo \"Exiting...\"" \
-        "            exit 1" \
-        "        }" \
-        "    else" \
-        "        echo \"'$E_ROOT_DIR/nadekobot/output' doesn't exist\"" \
-        "        exit 1" \
-        "    fi" \
-        "" \
-        "    dotnet NadekoBot.dll || {" \
-        "        echo \"An error occurred when trying to start NadekoBot\"" \
-        "        echo \"Exiting...\"" \
-        "        exit 1" \
-        "    }" \
-        "" \
-        "    echo \"Waiting for 5 seconds...\"" \
-        "    sleep 5" \
-        "    youtube-dl -U" \
-        "    echo \"Restarting NadekoBot...\"" \
-        "done" \
-        "" \
-        "echo \"Stopping NadekoBot...\"" > NadekoRun
+    echo "#!/bin/bash
+
+_code_name_=\"NadekoRunAR\"
+
+echo \"Running NadekoBot in the background with auto restart\"
+youtube-dl -U
+
+echo \"Starting NadekoBot...\"
+
+while true; do
+    if [[ -d $E_ROOT_DIR/nadekobot/output ]]; then
+        cd $E_ROOT_DIR/nadekobot/output || {
+            echo \"Failed to change working directory to '$E_ROOT_DIR/nadekobot/output'\" >&2
+            echo \"Ensure that the working directory inside of '/etc/systemd/system/nadeko.service' is correct\"
+            echo \"Exiting...\"
+            exit 1
+        }
+    else
+        echo \"'$E_ROOT_DIR/nadekobot/output' doesn't exist\"
+        exit 1
+    fi
+
+    dotnet NadekoBot.dll || {
+        echo \"An error occurred when trying to start NadekoBot\"
+        echo \"Exiting...\"
+        exit 1
+    }
+
+    echo \"Waiting for 5 seconds...\"
+    sleep 5
+    youtube-dl -U
+    echo \"Restarting NadekoBot...\"
+done
+
+echo \"Stopping NadekoBot...\"" > NadekoRun
 fi
 
-## Restart the service if it is currently running.
 if [[ $E_SERVICE_STATUS == "active" ]]; then
     echo "Restarting '$E_SERVICE_NAME'..."
     sudo systemctl restart "$E_SERVICE_NAME" || {
@@ -176,7 +187,6 @@ if [[ $E_SERVICE_STATUS == "active" ]]; then
         read -rp "Press [Enter] to return to the installer menu"
         exit 3
     }
-## Start the service if it is NOT currently running.
 else
     echo "Starting '$E_SERVICE_NAME'..."
     sudo systemctl start "$E_SERVICE_NAME" || {
