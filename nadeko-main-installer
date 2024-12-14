@@ -280,7 +280,7 @@ while true; do
     ## Disable option 1 if any of the following tools are not installed.
     if (! hash dotnet \
         || ! hash redis-server \
-        || (! hash python && (! hash python3 && ! hash python-is-python3)) \
+        || ! hash python3 \
         || ! "$ccze_installed" \
         || ! "$yt_dlp_installed" \
         || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null
