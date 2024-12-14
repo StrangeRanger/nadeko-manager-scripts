@@ -260,9 +260,7 @@ while true; do
 
     ## Disable options 2, 3, and 5 if any of the tools in the previous if statement are
     ## not installed, or none of the specified directories/files could be found.
-    if [[ $opt_one_dis == true || ! -f nadekobot/output/creds.yml ]] \
-        || ! is_token_set
-    then
+    if [[ $opt_one_dis == true || ! -f $E_CURRENT_CREDS ]] || ! is_token_set; then
         opt_two_and_three_dis=true
         opt_two_text="${E_GREY}${opt_two_text}${dis_option}${E_NC}"
         opt_three_text="${E_GREY}${opt_three_text}${dis_option}${E_NC}"
