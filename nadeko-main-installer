@@ -10,9 +10,8 @@
 ####[ Variables ]#######################################################################
 
 
-## To be exported.
-E_SERVICE_NAME="nadeko.service"
-E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
+export E_SERVICE_NAME="nadeko.service"
+export E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
 export E_CURRENT_CREDS="nadekobot/output/creds.yml"
 export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 
@@ -359,9 +358,7 @@ while true; do
                 continue
             fi
 
-            export E_SERVICE
             export -f E_STOP_SERVICE
-            export E_SERVICE_NAME
             export E_SERVICE_STATUS
 
             E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
@@ -378,8 +375,6 @@ while true; do
                 continue
             fi
 
-            export E_SERVICE
-            export E_SERVICE_NAME
             export E_SERVICE_STATUS
             export -f E_WATCH_SERVICE_LOGS
             export -f E_FOLLOW_SERVICE_LOGS
