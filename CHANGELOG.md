@@ -17,6 +17,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 
 ### Added
 
+- Add support for NadekoBot v5.
 - Added support for the following distributions and their versions:
   - Ubuntu 24.04
   - Linux Mint 22
@@ -59,6 +60,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 
 ### Removed
 
+- ⚠️ Removed support for NadekoBot v4.
 - ⚠️ Removed support for distributions:
   - ⚠️ Ubuntu 20.04, due to end of life in about 3 months.
   - ⚠️ Ubuntu 18.04, due to end of life.
