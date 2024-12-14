@@ -223,7 +223,7 @@ if [[ $E_SERVICE_STATUS == "active" ]]; then
     sudo systemctl restart "$E_SERVICE_NAME" \
         || E_STDERR "Failed to restart '$E_SERVICE_NAME'" "3"
 else
-    echo "Starting '$E_SERVICE_NAME'..."
+    echo "${E_INFO}Starting '$E_SERVICE_NAME'..."
     sudo systemctl start "$E_SERVICE_NAME" \
         || E_STDERR "Failed to start '$E_SERVICE_NAME'" "3"
 fi
