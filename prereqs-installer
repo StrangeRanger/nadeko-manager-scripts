@@ -75,6 +75,8 @@ clean_exit() {
 install_yt_dlp() {
     local yt_dlp_url="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
 
+    [[ -d $E_YT_DLP_DIR ]] || mkdir -p "${E_YT_DLP_DIR%/*}"
+
     echo "${E_INFO}Installing 'yt-dlp'..."
     curl -L "$yt_dlp_url" -o "$E_YT_DLP_PATH" \
         || E_STDERR "Failed to download 'yt-dlp'" "1"
