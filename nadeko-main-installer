@@ -79,26 +79,32 @@ disabled_reasons() {
         1)
             echo "${E_NOTE}    One or more prerequisites are not installed"
             echo "${E_NOTE}        Use option 6 to install them all"
+            echo ""
             ;;
         2|3)
             if [[ ! -d nadekobot ]]; then
                 echo "${E_NOTE}    NadekoBot could not be found"
                 echo "${E_NOTE}        Use option 1 to download NadekoBot"
+                echo ""
             elif [[ ! -f nadekobot/output/creds.yml ]]; then
                 echo "${E_NOTE}    The 'creds.yml' could not be found"
                 echo "${E_NOTE}        Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
+                echo ""
             elif ! is_token_set; then
                 echo "${E_NOTE}    The 'token' in 'creds.yml' is not set"
                 echo "${E_NOTE}        Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
+                echo ""
             else
                 echo "${E_NOTE}    Unknown reason"
+                echo ""
             fi
             ;;
         7)
             echo "${E_NOTE}    NadekoBot could not be found"
             echo "${E_NOTE}        Use option 1 to download NadekoBot"
+            echo ""
             ;;
     esac
 }
