@@ -82,7 +82,7 @@ disabled_reasons() {
                 echo "${E_NOTE}    The 'creds.yml' could not be found"
                 echo "${E_NOTE}        Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
-            elif is_token_set; then
+            elif ! is_token_set; then
                 echo "${E_NOTE}    The 'token' in 'creds.yml' is not set"
                 echo "${E_NOTE}        Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
