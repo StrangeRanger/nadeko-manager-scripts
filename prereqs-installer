@@ -31,7 +31,7 @@ readonly C_PREF_FILE="/etc/apt/preferences.d/custom-dotnet.pref"
 clean_exit() {
     local exit_code="$1"
 
-    trap - EXIT SIGINT SIGTERM SIGHUP
+    trap - EXIT SIGINT
     echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
@@ -40,16 +40,16 @@ clean_exit() {
     case "$exit_code" in
         1)   exit_code=50 ;;
         0|5) ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_now=true
+            ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
         143)
             echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
-            exit_now=true
-            ;;
-        129)
-            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
             exit_now=true
             ;;
         *)
@@ -173,21 +173,20 @@ read -rp "Press [Enter] to continue."
 
 if [[ $E_DISTRO == "ubuntu" ]]; then
     case "$E_VER" in
-        22.04) install_prereqs "ubuntu" "$E_VER" "python-is-python3" "true" ;;
-        20.04) install_prereqs "ubuntu" "$E_VER" "python-is-python3" ;;
-        18.04) install_prereqs "ubuntu" "$E_VER" "python" ;;
-        *)     unsupported ;;
+        24.04) install_prereqs "ubuntu" "$E_VER" "python-is-python3" ;;
+        22.04) install_prereqs "ubuntu" "$E_VER" "python-is-python3" ;;
+        *) unsupported ;;
     esac
 elif [[ $E_DISTRO == "debian" ]]; then
     case "$E_SVER" in
-        11) install_prereqs "debian" "$E_SVER" "python-is-python3" ;;
-        10) install_prereqs "debian" "$E_SVER" "python" ;;
-        *)  unsupported ;;
+        12) install_prereqs "debian" "$E_SVER" "python-is-python3" "true" ;;
+        11) install_prereqs "debian" "$E_SVER" "python-is-python3" "true" ;;
+        *) unsupported ;;
     esac
 elif [[ $E_DISTRO == "linuxmint" ]]; then
     case "$E_SVER" in
-        21) install_prereqs "ubuntu" "22.04" "python-is-python3" "true" ;;
-        20) install_prereqs "ubuntu" "20.04" "python-is-python3" ;;
-        *)  unsupported ;;
+        22) install_prereqs "ubuntu" "22.04" "python-is-python3" ;;
+        21) install_prereqs "ubuntu" "22.04" "python-is-python3" ;;
+        *) unsupported ;;
     esac
 fi

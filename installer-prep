@@ -31,9 +31,6 @@ E_INFO="${E_BLUE}==>${E_NC} "
 E_NOTE="${E_CYAN}==>${E_NC} "
 export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
 
-# Keep track of whether a child script is running.
-child_running=false
-
 
 ####[ Functions ]#######################################################################
 
@@ -170,13 +167,13 @@ unsupported() {
             execute_main_installer
             ;;
         *)
-            clean_exit "0"
+            clean_exit 0
             ;;
     esac
 }
 
 ####
-# Remove unnecessary files and cleanly exit the script.
+# Remove unnecessary files to cleanly exit the script.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -189,28 +186,24 @@ unsupported() {
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-
     # Files to be removed.
     local installer_files=("installer-prep" "file-backup" "prereqs-installer"
         "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer")
 
     trap - EXIT
-
     [[ $use_extra_newline == true ]] && echo ""
 
+    ## While we specify output for SIGHUP and SIGTERM in 'nadeko-main-installer', we do
+    ## the same here because the those signals don't propagate to parent scripts.
     case "$exit_code" in
         0|1) echo "" ;;
-        130)
-            [[  $child_running != true ]] \
-                && echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
-            ;;
-        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
+        130) echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
+        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
         *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
     esac
 
-    echo -e "${E_INFO}Cleaning up..."
-
+    echo "${E_INFO}Cleaning up..."
     cd "$E_ROOT_DIR" || E_STDERR "Failed to move working directory to '$E_ROOT_DIR'" "1"
 
     for file in "${installer_files[@]}"; do
@@ -223,9 +216,7 @@ clean_exit() {
 
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
-    child_running=true
     ./"$C_MAIN_INSTALLER"
-    child_running=false
     clean_exit "$?"
 }
 
@@ -325,18 +316,18 @@ Distro Version: $E_VER
 if [[ $bits == 64 ]]; then
     if [[ $E_DISTRO == "ubuntu" ]]; then
         case "$E_VER" in
-            22.04|20.04|18.04) execute_main_installer ;;
-            *)                 unsupported ;;
+            24.04|22.04) execute_main_installer ;;
+            *) unsupported ;;
         esac
     elif [[ $E_DISTRO == "debian" ]]; then
         case "$E_SVER" in
-            11|10) execute_main_installer ;;
-            *)     unsupported ;;
+            12|11) execute_main_installer ;;
+            *) unsupported ;;
         esac
     elif [[ $E_DISTRO == "linuxmint" ]]; then
         case "$E_SVER" in
-            21|20) execute_main_installer ;;
-            *)     unsupported ;;
+            22|21) execute_main_installer ;;
+            *) unsupported ;;
         esac
     else
         unsupported

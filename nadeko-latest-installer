@@ -34,11 +34,11 @@ readonly C_NEW_DATA="$C_NADEKOBOT_TMP/nadekobot/output/data"
 service_is_active=false
 
 if [[ -d nadekobot ]]; then
-    C_ACTION_ONE="update"
-    C_ACTION_TWO="updating"
+    readonly C_ACTION_ONE="update"
+    readonly C_ACTION_TWO="updating"
 else
-    C_ACTION_ONE="download and set up"
-    C_ACTION_TWO="setting up"
+    readonly C_ACTION_ONE="download and set up"
+    readonly C_ACTION_TWO="setting up"
 fi
 
 
@@ -61,7 +61,7 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     local exit_now=false
 
-    trap - EXIT SIGINT SIGTERM SIGHUP
+    trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
@@ -70,16 +70,16 @@ clean_exit() {
     case "$exit_code" in
         1)   exit_code=50 ;;
         0|5) ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_now=true
+            ;;
         130)
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
         143)
             echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
-            exit_now=true
-            ;;
-        129)
-            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
             exit_now=true
             ;;
         *)
