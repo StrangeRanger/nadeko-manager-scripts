@@ -6,12 +6,100 @@
 ####[ Global Variables ]################################################################
 
 
-readonly C_CURRENT_BACKUP="backed_up_files"
-readonly C_TMP_BACKUP="backed_up_files_tmp"
+readonly C_CURRENT_BACKUP="important-files-backup"
+readonly C_OLD_BACKUP="important-files-backup.old"
+
+C_TMP_BACKUP=$(mktemp -d -p /tmp important-nadeko-files-XXXXXXXXXX)
+readonly C_TMP_BACKUP
 
 # shellcheck disable=SC2206
-#   The array is purposefully unquoted to allow for for easy array iteration.
+#   $E_FILES_TO_BACK_UP is purposely unquoted to allow word splitting. This will make
+#   the contents of $C_FILES_TO_BACK_UP iterable.
 readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
+
+
+####[ Functions ]#######################################################################
+
+
+####
+# Clean up and exit the script.
+#
+# PARAMETERS:
+#   - $1: exit_code (Required)
+#   - $2: use_extra_newline (Optional, Default: false)
+#       - Whether to output an extra blank line, to separate the previous output from
+#         the output of this function.
+#       - Acceptable values:
+#           - true
+#           - false
+clean_exit() {
+    local exit_code="$1"
+    local use_extra_newline="${2:-false}"
+    exit_now=false
+
+    trap - EXIT SIGINT
+    [[ $use_extra_newline == true ]] && echo ""
+
+    ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
+    ## continue running, even if an error occurred. Please refer to the
+    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
+    case "$exit_code" in
+        1)   exit_code=50 ;;
+        0|5) ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_now=true
+            ;;
+        130)
+            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            exit_code=50
+            ;;
+        143)
+            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            exit_now=true
+            ;;
+        *)
+            echo -e "\n${E_WARNING}Exiting with exit code: $exit_code"
+            exit_now=true
+            ;;
+    esac
+
+    echo "${E_INFO}Cleaning up..."
+    [[ -d "$C_TMP_BACKUP" ]] && rm -rf "$C_TMP_BACKUP" &>/dev/null
+
+    (
+        if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
+            echo "${E_WARNING}Unable to complete backup"
+            echo "${E_INFO}Attempting to restore original backups..."
+            mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
+        elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
+            rm -rf "$C_OLD_BACKUP" \
+                || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
+                    "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
+        fi
+    ) || E_STDERR "Failed to restore original backup" "$?" \
+        "${E_NOTE}We will exit completely to prevent data loss"
+
+    if [[ $exit_now == false ]]; then
+        read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    fi
+
+    ## Ensures that the current SIGINT signal doesn't propagate to the parent process.
+    if [[ $exit_code == 130 ]]; then
+        kill -s SIGINT "$$"
+    fi
+
+    exit "$exit_code"
+}
+
+
+####[ Trapping Logic ]##################################################################
+
+
+trap 'clean_exit "129" "true"' SIGHUP
+trap 'clean_exit "130" "true"' SIGINT
+trap 'clean_exit "143" "true"' SIGTERM
+trap 'clean_exit "$?" "true"'  EXIT
 
 
 ####[ Main ]############################################################################
@@ -19,45 +107,49 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 echo "${E_NOTE}We will now back up the following files:"
 for file in "${C_FILES_TO_BACK_UP[@]}";
-    do echo "  ${E_CYAN}| ${E_NC}    $file"
+    do echo "  ${E_CYAN}|${E_NC}    $file"
 done
-read -rp "${E_NOTE}Press [Enter] to continue."
+read -rp "${E_NOTE}Press [Enter] to continue"
+cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 
-[[ ! -d $C_TMP_BACKUP ]] && mkdir "$C_TMP_BACKUP"
-
-echo "${E_INFO}Backing up important files into '$C_TMP_BACKUP'..."
+echo "${E_INFO}Backing up files into '$C_TMP_BACKUP'..."
 for file in "${C_FILES_TO_BACK_UP[@]}"; do
     if [[ -f $file ]]; then
-        cp -f "$file" "$C_TMP_BACKUP" || {
-            echo "${E_ERROR}Failed to back up '${file}'" >&2
-            exit 1
-        }
+        cp -f "$file" "$C_TMP_BACKUP" || E_STDERR "Failed to back up '$file'" "1"
     else
-        echo "${E_WARNING}'${file}' could not be found${E_NC}"
+        echo "${E_WARNING}'$file' could not be found"
     fi
 done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
-    echo "${E_INFO}Renaming and moving old backups to '$C_TMP_BACKUP'..."
-    while read -r file; do
-        if [[ ! $file =~ ^.*.old$ ]]; then
-            cp "$C_CURRENT_BACKUP"/"$file" "$C_TMP_BACKUP"/"$file".old || {
-                echo "${E_ERROR}Failed to rename and move '${file}'${E_NC}" >&2
-                exit 1
-            }
+    # These files were the current backups, and will replace the previous the old
+    # [filename].old backup files.
+    echo "${E_INFO}Copying previously backed up files into '$C_TMP_BACKUP'..."
+    for file in "$C_CURRENT_BACKUP"/*; do
+        basefile="${file##*/}"
+
+        if [[ ! $basefile =~ ^.*\.old$ ]]; then
+            cp "$file" "$C_TMP_BACKUP/$basefile.old" \
+                || E_STDERR "Failed to copy '$basefile'" "1"
         fi
-    done < <(ls "$C_CURRENT_BACKUP")
-fi
+    done
 
-
-if [[ -d $C_CURRENT_BACKUP ]]; then
-    echo "${E_INFO}Removing '$C_CURRENT_BACKUP' and renaming '$C_TMP_BACKUP' as" \
-        "'$C_CURRENT_BACKUP'..."
-    rm -rf "$C_CURRENT_BACKUP" && mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP"
+    echo "${E_INFO}Replacing '$C_CURRENT_BACKUP' with '$C_TMP_BACKUP'..."
+    ## Ensures a smooth transition between versions. In the case of an error, it'll be
+    ## easier to revert to the previous version.
+    (
+        mv "$C_CURRENT_BACKUP" "$C_OLD_BACKUP" || exit 1
+        mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" || exit 1
+        rm -rf "$C_OLD_BACKUP" \
+            || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
+                "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
+     ) || E_STDERR "An error occurred while replacing old backups" "1"
 else
-    echo "${E_INFO}Renaming '$C_TMP_BACKUP' as '$C_CURRENT_BACKUP'..."
-    mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP"
+    echo "${E_INFO}Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
+    mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
+        || E_STDERR "Failed to move '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'" "1"
 fi
 
 echo ""
-read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+echo "${E_SUCCESS}Finished backing up files"
+clean_exit 0

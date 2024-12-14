@@ -1,55 +1,158 @@
 #!/bin/bash
 #
-# This script downloads and updates NadekoBot.
+# This script downloads and updates NadekoBot to the latest version.
+#
+# NOTE:
+#   The end-user will have to manually re-add their strings and aliases after each
+#   update, as updates may cause a number of to become obsolete or be changed, etc.
+#   However, the old strings and aliases will be backed up as 'strings.old' and
+#   'aliases.old.yml' respectively.
 #
 # Comment Key:
 #   - A.1.: To prevent permission errors that can occur, especially when the installer
-#       is run with root privileges and later as a non-root user, it's necessary to
-#       ensure that '/tmp/NuGetScratch' and '/home/$USER/.nuget' are owned by the user
-#       currently running the installer.
+#     is run with root privileges and later as a non-root user, it's necessary to ensure
+#     that '/tmp/NuGetScratch' are owned by the user currently running the installer.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
 
 
-export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Used when compiling code.
+export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Disable .NET CLI telemetry.
+
+C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
+readonly C_NADEKOBOT_TMP
 
 readonly C_NADEKOBOT_URL="https://gitlab.com/Kwoth/nadekobot"
+readonly C_EXAMPLE_CREDS="$C_NADEKOBOT_TMP/nadekobot/src/NadekoBot/creds_example.yml"
 readonly C_CURRENT_CREDS="nadekobot/output/creds.yml"
-readonly C_NEW_CREDS="nadekobot_tmp/nadekobot/output/creds.yml"
+readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/nadekobot/output/creds.yml"
 readonly C_CURRENT_DATABASE="nadekobot/output/data/NadekoBot.db"
-readonly C_NEW_DATABASE="nadekobot_tmp/nadekobot/output/data/NadekoBot.db"
+readonly C_NEW_DATABASE="$C_NADEKOBOT_TMP/nadekobot/output/data/NadekoBot.db"
 readonly C_CURRENT_DATA="nadekobot/output/data"
-readonly C_NEW_DATA="nadekobot_tmp/nadekobot/output/data"
+readonly C_NEW_DATA="$C_NADEKOBOT_TMP/nadekobot/output/data"
 
 service_is_active=false
+
+if [[ -d nadekobot ]]; then
+    readonly C_ACTION_ONE="update"
+    readonly C_ACTION_TWO="updating"
+else
+    readonly C_ACTION_ONE="download and set up"
+    readonly C_ACTION_TWO="setting up"
+fi
+
+
+####[ Functions ]#######################################################################
+
+
+####
+# Clean up and exit the script.
+#
+# PARAMETERS:
+#   - $1: exit_code (Required)
+#   - $2: use_extra_newline (Optional, Default: false)
+#       - Whether to output an extra blank line, to separate the previous output from
+#         the output of this function.
+#       - Acceptable values:
+#           - true
+#           - false
+clean_exit() {
+    local exit_code="$1"
+    local use_extra_newline="${2:-false}"
+    local exit_now=false
+
+    trap - EXIT SIGINT
+    [[ $use_extra_newline == true ]] && echo ""
+
+    ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
+    ## continue running, even if an error occurred. Please refer to the
+    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
+    case "$exit_code" in
+        1)   exit_code=50 ;;
+        0|5) ;;
+        129)
+            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            exit_now=true
+            ;;
+        130)
+            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            exit_code=50
+            ;;
+        143)
+            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            exit_now=true
+            ;;
+        *)
+            echo -e "\n${E_WARNING}Exiting with exit code: $exit_code"
+            exit_now=true
+            ;;
+    esac
+
+    echo "${E_INFO}Cleaning up..."
+    [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" &>/dev/null
+
+    (
+        if [[ -d nadekobot && ! -d nadekobot.old && -d nadekobot.old.old ]]; then
+            echo "${E_WARNING}Unable to complete installation"
+            echo "${E_INFO}Attempting to restore original version of 'nadekobot'..."
+            mv nadekobot.old.old nadekobot.old || exit 1
+        elif [[ ! -d nadekobot && -d nadekobot.old ]]; then
+            echo "${E_WARNING}Unable to complete installation"
+            echo "${E_INFO}Attempting to restore original version of 'nadekobot'..."
+            mv nadekobot.old nadekobot || exit 1
+
+            if [[ -d nadekobot.old.old ]]; then
+                mv nadekobot.old.old nadekobot.old \
+                    || E_STDERR \
+                        "Failed to rename 'nadekobot.old.old' as 'nadekobot.old'" \
+                        "" "${E_NOTE}Please rename it manually"
+            fi
+        elif [[ -d nadekobot && -d nadekobot.old && -d nadekobot.old.old ]]; then
+            rm -rf nadekobot.old.old \
+                || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
+                    "${E_NOTE}Please remove 'nadekobot.old.old' manually"
+        fi
+    ) || E_STDERR "Failed to restore 'nadekobot'" "$?" \
+        "${E_NOTE}We will exit completely to prevent data loss"
+
+    if [[ $exit_now == false ]]; then
+        read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    fi
+
+    exit "$exit_code"
+}
+
+
+####[ Trapping Logic ]##################################################################
+
+
+trap 'clean_exit "129" "true"' SIGHUP
+trap 'clean_exit "130" "true"' SIGINT
+trap 'clean_exit "143" "true"' SIGTERM
+trap 'clean_exit "$?" "true"'  EXIT
 
 
 ####[ Main ]############################################################################
 
 
-read -rp "${E_NOTE}We will now download/update NadekoBot. Press [Enter] to begin."
+read -rp "${E_NOTE}We will now $C_ACTION_ONE NadekoBot. Press [Enter] to begin."
+cd "$C_NADEKOBOT_TMP" \
+    || E_STDERR "Failed to change working directory to '$C_NADEKOBOT_TMP'" "1"
 
 ###
 ### [ Stop Service ]
 ###
 
-## Stop the service if it's currently running.
 if [[ $E_SERVICE_STATUS == "active" ]]; then
     service_is_active=true
     E_STOP_SERVICE
 fi
 
-
 ###
-### [ Create Backup and Update ]
+### [ Download and Compile NadekoBot ]
 ###
 
-## Create a temporary folder to download NadekoBot into.
-mkdir nadekobot_tmp
-cd nadekobot_tmp || E_STDERR "Failed to change working directory" "1"
-
-echo "${E_INFO}Downloading NadekoBot into 'nadekobot_tmp'..."
+echo "${E_INFO}Downloading NadekoBot into '$C_NADEKOBOT_TMP'..."
 git clone -b "$E_BOT_INSTALL_VERSION" --recursive --depth 1 "$C_NADEKOBOT_URL" \
     || E_STDERR "Failed to download NadekoBot" "1"
 
@@ -57,77 +160,100 @@ git clone -b "$E_BOT_INSTALL_VERSION" --recursive --depth 1 "$C_NADEKOBOT_URL" \
 if [[ -d /tmp/NuGetScratch ]]; then
     echo "${E_INFO}Modifying ownership of '/tmp/NuGetScratch'..."
     sudo chown -R "$USER":"$USER" /tmp/NuGetScratch \
-        || E_STDERR "Failed to to modify the ownership of '/tmp/NuGetScratch'" "1"
-fi
-
-## A.1.
-if [[ -d  /home/$USER/.nuget ]]; then
-    echo "${E_INFO}Modifying ownership of '/home/$USER/.nuget'..."
-    sudo chown -R "$USER":"$USER" /home/"$USER"/.nuget \
-        || E_STDERR "Failed to to modify the ownership of '/home/$USER/.nuget'..." "1"
+        || E_STDERR "Failed to modify the ownership of '/tmp/NuGetScratch'" "1"
 fi
 
 echo "${E_INFO}Building NadekoBot..."
-# TODO: Improve the following line(s).
-# shellcheck disable=SC2015
-cd nadekobot \
-    && dotnet restore -f --no-cache \
-    && dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
-    && cd "$E_WORKING_DIR" \
+cd nadekobot || E_STDERR "Failed to change working directory to 'nadekobot'" "1"
+dotnet restore -f --no-cache || E_STDERR "Failed to restore .NET packages" "1"
+dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
     || E_STDERR "Failed to build NadekoBot" "1"
+cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 
-## Move credentials, database, and other data to the new version of NadekoBot.
-if [[ -d nadekobot_tmp/nadekobot && -d nadekobot ]]; then
-    echo "${E_INFO}Copying 'creds.yml' to the new version..."
-    cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS" &>/dev/null
-    echo "${E_INFO}Copying database to the new version..."
-    cp -RT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE" &>/dev/null
+###
+### [ Move Credentials, Database, and Other Data ]
+###
+### Move credentials, database, and other data to the new version of NadekoBot.
+###
+
+(
+    if [[ ! -f $C_CURRENT_CREDS ]]; then
+        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS##*/}' as '${C_NEW_CREDS##*/}'" \
+            "to '${C_NEW_CREDS%/*}'..."
+        cp -f "$C_EXAMPLE_CREDS" "$C_NEW_CREDS" || exit 1
+    else
+        echo "${E_INFO}Copying '${C_NEW_CREDS##*/}' to '${C_NEW_CREDS%/*}'..."
+        cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS" || exit 1
+    fi
+) || E_STDERR "Failed to copy credentials" "1"
+
+
+if [[ -d nadekobot ]]; then
+    if [[ ! -f $C_CURRENT_DATABASE ]]; then
+        echo "${E_WARNING}'$C_CURRENT_DATABASE' could not be found"
+        echo "${E_NOTE}Skipping copying the database..."
+    else
+        echo "${E_INFO}Copying '${C_CURRENT_DATABASE} to the '${C_NEW_DATABASE%/*}'..."
+        cp -rT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE" \
+            || E_STDERR "Failed to copy database" "1"
+    fi
 
     echo "${E_INFO}Copying other data to the new version..."
+    (
+        ## Prevent overwriting the new strings directory and aliases.yml file, by
+        ## renaming them.
+        mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings.new || exit 1
+        mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases.new.yml || exit 1
 
-    ### IMPORTANT:
-    ###     The end-user will have to manually re-add their strings after each update as
-    ###     updates may cause a number of strings to become obsolete, changed, etc.
-    ###     However, old user's strings will be backed up as strings_old.
+        # Copy current data directory to new data directory. This will overwrite any
+        # file or directory that exists in the new data directory, with the same name.
+        cp -rT "$C_CURRENT_DATA" "$C_NEW_DATA" || exit 1
 
-    ## Back up new strings to reverse rewrite.
-    rm -rf "$C_NEW_DATA"/strings_new &>/dev/null
-    mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_new
+        # Remove old strings and aliases.
+        rm -rf "$C_NEW_DATA"/strings.old "$C_NEW_DATA"/aliases.old.yml 2>/dev/null
+        ## Back up new-old strings and aliases.
+        mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings.old || exit 1
+        mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases.old.yml || exit 1
 
-    ## Delete old string backups.
-    rm -rf "$C_CURRENT_DATA"/strings_old &>/dev/null
-    rm -rf "$C_CURRENT_DATA"/strings_new &>/dev/null
+        ## Restore new strings and aliases.
+        mv -fT "$C_NEW_DATA"/strings.new "$C_NEW_DATA"/strings || exit 1
+        mv -f "$C_NEW_DATA"/aliases.new.yml "$C_NEW_DATA"/aliases.yml || exit 1
+    ) || E_STDERR "An error occurred while copying other data" "$?"
 
-    # Back up new aliases to reverse rewrite.
-    mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_new.yml
+    echo "${E_INFO}Replacing 'nadekobot' with '${C_NADEKOBOT_TMP}/nadekobot'..."
+    ## Ensures a smooth transition between versions. In the case of an error, it'll be
+    ## easier to revert to the previous version.
+    (
+        if [[ -d nadekobot.old ]]; then
+            mv nadekobot.old nadekobot.old.old || exit 5
+        fi
 
-    # Move old data folder contents (and overwrite).
-    cp -RT "$C_CURRENT_DATA" "$C_NEW_DATA"
+        mv nadekobot nadekobot.old || exit 5
+        mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 5
 
-    # Back up old aliases.
-    mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases_old.yml
-    # Restore new aliases.
-    mv -f "$C_NEW_DATA"/aliases_new.yml "$C_NEW_DATA"/aliases.yml
-
-    # Back up old strings.
-    mv -f "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings_old
-    # Restore new strings.
-    mv -f "$C_NEW_DATA"/strings_new "$C_NEW_DATA"/strings
-
-    rm -rf nadekobot_old && mv -f nadekobot nadekobot_old
+        if [[ -d nadekobot.old.old ]]; then
+            rm -rf nadekobot.old.old \
+                || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
+                    "${E_NOTE}Please remove 'nadekobot.old.old' manually"
+        fi
+    ) || E_STDERR "An error occurred while replacing 'nadekobot'" "$?"
+else
+    echo "${E_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
+    mv "$C_NADEKOBOT_TMP"/nadekobot "$E_ROOT_DIR" \
+        || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' to 'nadekobot'" "1"
+    rmdir "$C_NADEKOBOT_TMP" &>/dev/null
 fi
-
-mv nadekobot_tmp/nadekobot . && rmdir nadekobot_tmp
 
 ###
 ### [ Clean Up and Present Results ]
 ###
 
-echo -e "\n${E_SUCCESS}Finished downloading/updating NadekoBot${E_NC}"
+echo ""
+echo "${E_SUCCESS}Finished $C_ACTION_TWO NadekoBot"
 
 if [[ $service_is_active == true ]]; then
     echo "${E_NOTE}'$E_SERVICE_NAME' was stopped to update NadekoBot and needs to be" \
-        "started using one of the run modes in the installer menu${E_NC}"
+        "started using one of the run modes in the installer menu"
 fi
 
-read -rp "${E_NOTE}Press [Enter] to apply any existing changes to the installers"
+clean_exit 0

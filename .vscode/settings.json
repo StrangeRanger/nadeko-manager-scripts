@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "armv",
+        "basefile",
         "ccze",
         "CLRLN",
         "creds",
@@ -12,6 +13,7 @@
         "LINUXAIO",
         "linuxmint",
         "Mewdeko",
+        "mktemp",
         "Nadeko",
         "nadekobot",
         "Niether",
@@ -19,6 +21,8 @@
         "pname",
         "prereqs",
         "SIGTSTP",
-        "SVER"
+        "SVER",
+        "getent",
+        "usermod"
     ]
 }

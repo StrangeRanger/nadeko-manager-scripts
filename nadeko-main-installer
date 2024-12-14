@@ -2,12 +2,9 @@
 #
 # The main installer for Linux.
 #
-# TODO: Create creds.yml if it doesn't exist, instead of just saying it doesn't exist.
-# TODO: Have script check if creds.yml has a token set, and if not, prompt the user to set one.
-#
 # Comment Key:
-#   A.1.: Return to prevent further code execution.
-#   B.1.: Prevent the code from running if the option is disabled.
+#   - A.1.: Return to prevent further code execution.
+#   - B.1.: Prevent the code from running if the option is disabled.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
@@ -16,6 +13,7 @@
 ## To be exported.
 E_SERVICE_NAME="nadeko.service"
 E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
+export E_CURRENT_CREDS="nadekobot/output/creds.yml"
 
 readonly C_REQ_DOTNET_VERSION=6
 
@@ -27,53 +25,93 @@ readonly C_REQ_DOTNET_VERSION=6
 # Depending on the return/exit code from any of the executed scripts, perform the
 # corresponding/appropriate actions.
 #
-# Arguments:
+# Custom Exit Codes:
+#   - 3: Related to NadekoBot daemon service.
+#   - 4: Unsupported OS/Distro.
+#   - 5: A problem occurred finalizing an installation or the backup of files.
+#   - 50: Arbitrary exit code telling the main installer to continue running.
+#
+# PARAMETERS:
 #   - $1: exit_code (Required)
-#       - Return/exit code.
 exit_code_actions() {
     local exit_code="$1"
 
+    ## We don't specify any output for SIGINT because it's handled by 'installer-prep'.
+    ## As a note, SIGHUP and SIGTERM don't propagate to parent processes, so we also
+    ## specify the output for those signals in 'installer-prep'.
     case "$exit_code" in
-        3) return 0 ;;
-        *) exit "$exit_code" ;;
+        3|4|5|50) return 0 ;;
+        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
+        130) ;;
+        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
     esac
+
+    exit "$exit_code"
 }
 
 ####
-# Return whether or not 'ccze' is installed.
-hash_ccze() {
-    if hash ccze &>/dev/null; then
-        C_CCZE_INSTALLED=true
+# Check if the 'token' in 'creds.yml' is set.
+#
+# RETURNS:
+#   - 0: If the 'token' is not set.
+#   - 1: If the 'token' is set.
+is_token_set() {
+    if [[ ! -f $E_CURRENT_CREDS ]]; then
+        return 0
+    elif grep -Eq '^token: '\'\''' "$E_CURRENT_CREDS"; then
+        return 1
     else
-        C_CCZE_INSTALLED=false
+        return 0
     fi
 }
 
 ####
 # Provide the reason(s) for why one or more options are disabled.
+#
+# PARAMETERS:
+#   - $1: option_number (Required)
 disabled_reasons() {
-    echo "${E_CYAN}Reasons for the disabled option:"
+    local option_number="$1"
 
-    if (! hash dotnet \
-            || ! hash redis-server \
-            || (! hash python && (! hash python3 && ! hash python-is-python3)) \
-            || ! "$C_CCZE_INSTALLED" \
-            || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null; then
-        echo "  One or more prerequisites are not installed"
-        echo "    Use option 6 to install them all"
-    fi
+    echo "${E_NOTE}Reason option '$option_number' is disabled:"
 
-    if [[ -d nadekobot ]]; then
-        if [[ ! -f nadekobot/output/creds.yml ]]; then
-            echo "  The 'creds.yml' could not be found"
-            echo "    Refer to the following link for help: https://nadekobot.readthedocs.io/en/latest/creds-guide/"
-        fi
-    else
-        echo "  NadekoBot could not be found"
-        echo "    Use option 1 to download NadekoBot"
-    fi
-
-    echo "$E_NC"
+    case "$option_number" in
+        1)
+            echo "${E_NOTE}    One or more prerequisites are not installed"
+            echo "${E_NOTE}        Use option 6 to install them all"
+            echo ""
+            ;;
+        2|3)
+            if [[ ! -d nadekobot ]]; then
+                echo "${E_NOTE}    NadekoBot could not be found"
+                echo "${E_NOTE}        Use option 1 to download NadekoBot"
+                echo ""
+            elif [[ ! -f nadekobot/output/creds.yml ]]; then
+                echo "${E_NOTE}    The 'creds.yml' could not be found"
+                echo "${E_NOTE}        Refer to the following guide for help:" \
+                    "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
+                echo ""
+            elif ! is_token_set; then
+                echo "${E_NOTE}    The 'token' in 'creds.yml' is not set"
+                echo "${E_NOTE}        Refer to the following guide for help:" \
+                    "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
+                echo ""
+            else
+                echo "${E_NOTE}    Unknown reason"
+                echo ""
+            fi
+            ;;
+        4)
+            echo "${E_NOTE}    NadekoBot is not currently running"
+            echo "${E_NOTE}        Use option 2 or 3 to start NadekoBot"
+            echo ""
+            ;;
+        7)
+            echo "${E_NOTE}    NadekoBot could not be found"
+            echo "${E_NOTE}        Use option 1 to download NadekoBot"
+            echo ""
+            ;;
+    esac
 }
 
 ###
@@ -81,7 +119,10 @@ disabled_reasons() {
 ###
 
 ####
-# Store the status of NadekoBot's service, inside of $E_SERVICE_STATUS.
+# Retrieve that status of NadekoBot's service.
+#
+# NEW GLOBALS:
+#   - E_SERVICE_STATUS: The status of NadekoBot's service.
 E_GET_SERVICE_STATUS() {
     E_SERVICE_STATUS=$(systemctl is-active "$E_SERVICE_NAME")
 }
@@ -93,6 +134,9 @@ E_GET_SERVICE_STATUS() {
 #   - $1: output_text (Optional, Default: false)
 #       - True when the function should output text indicating if the service has been
 #         stopped or is currently not running.
+#       - Acceptable values:
+#           - true
+#           - false
 #
 # RETURNS:
 #   - 1: If $E_SERVICE_NAME is not currently running.
@@ -100,23 +144,20 @@ E_STOP_SERVICE() {
     local output_text="${1:-false}"
 
     if [[ $E_SERVICE_STATUS == "active" ]]; then
-        echo "Stopping '$E_SERVICE_NAME'..."
-        sudo systemctl stop "$E_SERVICE_NAME" || {
-            echo "${E_ERROR}Failed to stop '$E_SERVICE_NAME'" >&2
-            echo "${E_CYAN}You will need to restart '$E_SERVICE_NAME' to apply any" \
-                "updates to NadekoBot${E_NC}"
-            return 1
-        }
+        echo "${E_INFO}Stopping '$E_SERVICE_NAME'..."
+        sudo systemctl stop "$E_SERVICE_NAME" \
+            || E_STDERR "Failed to stop '$E_SERVICE_NAME'" "" \
+                "${E_NOTE}You will need to restart '$E_SERVICE_NAME' to apply any updates to NadekoBot"
         [[ $output_text == true ]] \
-            && echo -e "\n${E_GREEN}NadekoBot has been stopped${E_NC}"
+            && echo -e "\n${E_SUCCESS}NadekoBot has been stopped"
     else
         [[ $output_text == true ]] \
-            && echo -e "\n${E_CYAN}NadekoBot is not currently running${E_NC}"
+            && echo -e "\n${E_NOTE}NadekoBot is not currently running"
     fi
 }
 
 ########
-# Display the logs from 'nadeko.server' as they are created.
+# Display the logs from 'nadeko.service' as they are created.
 E_FOLLOW_SERVICE_LOGS() {
     (
         trap 'exit 130' SIGINT
@@ -139,37 +180,46 @@ E_WATCH_SERVICE_LOGS() {
     local log_type="$1"
 
     if [[ $log_type == "runner" ]]; then
-        echo "Displaying '$E_SERVICE_NAME' startup logs, live..."
+        echo "${E_INFO}Displaying '$E_SERVICE_NAME' startup logs, live..."
     elif [[ $log_type == "opt_five" ]]; then
-        echo "Watching '$E_SERVICE_NAME' logs, live..."
+        echo "${E_INFO}Watching '$E_SERVICE_NAME' logs, live..."
     else
-        E_STDERR "INTERNAL ERROR: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" "4"
+        E_STDERR "${E_ERROR}INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
+            "4"
     fi
 
-    echo "${E_CYAN}To stop displaying the startup logs:"
-    echo "1) Press 'Ctrl' + 'C'${E_NC}"
+    echo "${E_NOTE}To stop displaying the startup logs:"
+    echo "${E_NOTE}  1) Press 'Ctrl' + 'C'"
     echo ""
 
     E_FOLLOW_SERVICE_LOGS
 
-    [[ $1 == "runner" ]] && echo -e "\nPlease check the logs above to make sure that" \
-        "there aren't any errors, and if there are, to resolve whatever issue is" \
-        "causing them"
+    [[ $1 == "runner" ]] \
+        && echo -e "\n${E_NOTE}Please check the logs above to make sure that there" \
+            "aren't any errors. If there are, resolve whatever issue is causing them."
 
-    read -rp "Press [Enter] to return to the installer menu"
+    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
 }
+
+
+####[ Trapping Logic ]##################################################################
+
+
+trap 'exit_code_actions "129"' SIGHUP
+trap 'exit_code_actions "143"' SIGTERM
 
 
 ####[ Main ]############################################################################
 
 
+cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 printf "%sWelcome to the NadekoBot installer menu\n\n" "$E_CLRLN"
 
 while true; do
     ###
     ### [ Temporary Variables ]
     ###
-    ### The variables below constantly get modified later in the while loop, and are
+    ### The variables below constantly get modified within the while loop, and are
     ### required to be reset everytime the loop starts back at the top.
     ###
 
@@ -183,6 +233,9 @@ while true; do
     opt_two_and_three_dis=false
     opt_two_text="2. Run NadekoBot in the background"
     opt_three_text="3. Run NadekoBot in the background with auto restart"
+    ## Option 4.
+    opt_four_dis=false
+    opt_four_text="4. Stop NadekoBot"
     ## Option 5.
     opt_five_dis=false
     opt_five_text="5. Display '$E_SERVICE_NAME' logs in follow mode"
@@ -207,24 +260,32 @@ while true; do
     ###
 
     E_GET_SERVICE_STATUS
-    hash_ccze
+
+    if hash ccze &>/dev/null; then
+        ccze_installed=true
+    else
+        ccze_installed=false
+    fi
 
     ## Disable option 1 if any of the following tools are not installed.
     if (! hash dotnet \
-            || ! hash redis-server \
-            || ! hash python3 \
-            || ! "$C_CCZE_INSTALLED" \
-            || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null; then
+        || ! hash redis-server \
+        || (! hash python && (! hash python3 && ! hash python-is-python3)) \
+        || ! "$ccze_installed" \
+        || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null
+    then
         opt_one_dis=true
         opt_one_text="${E_GREY}${opt_one_text}${dis_option}${E_NC}"
     fi
 
-    ## Disable options 2, 3, and 5 if any of the tools in the previous if statement are
-    ## not installed, or none of the specified directories/files could be found.
-    if "$opt_one_dis" || [[ ! -f nadekobot/output/creds.yml ]]; then
+    ## Disable options 2, 3, 4, and 5 if any of the tools in the previous if statement
+    ## are not installed, or none of the specified directories/files could be found.
+    if [[ $opt_one_dis == true || ! -f $E_CURRENT_CREDS ]] || ! is_token_set; then
         opt_two_and_three_dis=true
         opt_two_text="${E_GREY}${opt_two_text}${dis_option}${E_NC}"
         opt_three_text="${E_GREY}${opt_three_text}${dis_option}${E_NC}"
+        opt_four_dis=true
+        opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
         opt_five_dis=true
         opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
 
@@ -234,16 +295,20 @@ while true; do
         fi
     ## Options 2 and 3 remain enabled, if 'NadekoRun' exists.
     elif [[ -f NadekoRun ]]; then
-        ## Option 5 remains enabled, if NadekoBot's service is running.
+        ## Option 4 and 5 remain enabled, if NadekoBot's service is running.
         if [[ $E_SERVICE_STATUS == "active" ]]; then
             run_mode_status=" ${E_GREEN}(Running in this mode)${E_NC}"
-        ## Disable option 5 if NadekoBot's service NOT running.
+        ## Disable option 4 and 5 if NadekoBot's service NOT running.
         elif [[ $E_SERVICE_STATUS == "inactive" ]]; then
+            opt_four_dis=true
+            opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
             opt_five_dis=true
             opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
             run_mode_status=" ${E_YELLOW}(Set up to run in this mode)${E_NC}"
-        ## Disable option 5.
+        ## Disable options 4 and 5.
         else
+            opt_four_dis=true
+            opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
             opt_five_dis=true
             opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
             run_mode_status=" ${E_YELLOW}(Status unknown)${E_NC}"
@@ -256,8 +321,10 @@ while true; do
         elif grep -q '_code_name_="NadekoRun"' NadekoRun; then
             opt_two_text="${opt_two_text}${run_mode_status}"
         fi
-    ## Options 2 and 3 remained enabled, but option 5 becomes disabled.
+    ## Options 2 and 3 remained enabled, but options 4 and 5 becomes disabled.
     else
+        opt_four_dis=true
+        opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
         opt_five_dis=true
         opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
     fi
@@ -265,7 +332,7 @@ while true; do
     echo "$opt_one_text"
     echo "$opt_two_text"
     echo "$opt_three_text"
-    echo "4. Stop NadekoBot"
+    echo "$opt_four_text"
     echo "$opt_five_text"
     echo "6. Install prerequisites"
     echo "$opt_seven_text"
@@ -276,8 +343,8 @@ while true; do
             ## B.1.
             if "$opt_one_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 1 is currently disabled${E_NC}"
-                disabled_reasons
+                echo "${E_ERROR}Option 1 is currently disabled"
+                disabled_reasons 1
                 continue
             fi
 
@@ -289,21 +356,14 @@ while true; do
             E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
             clear -x
             ./nadeko-latest-installer || exit_code_actions "$?"
-
-            # TODO: Figure out way to kill previous execution of the installer, possibly
-            #       an array of PIDs and the 'clean_up()' function. This way, cleaning
-            #       up and exiting text doesn't print duplicates.
-            # TODO: Re-due comments...
-            # Execute the newly downloaded version of 'installer-prep', so that all
-            # changes are applied.
-            exec "$E_INSTALLER_PREP"
+            clear -x
             ;;
         2|3)
             ## B.1.
             if "$opt_two_and_three_dis"; then
                 clear -x
-                echo "${E_ERROR}Option $choice is currently disabled${E_NC}"
-                disabled_reasons
+                echo "${E_ERROR}Option $choice is currently disabled"
+                disabled_reasons "$choice"
                 continue
             fi
 
@@ -319,11 +379,12 @@ while true; do
             # If option 2 was executed...
             if [[ $choice == 2 ]]; then
                 export E_CODENAME="NadekoRun"
-                printf "We will now run NadekoBot in the background. "
+                printf "%sWe will now run NadekoBot in the background. " "$E_NOTE"
             # If option 3 was executed...
             else
                 export E_CODENAME="NadekoRunAR"
-                printf "We will now run NadekoBot in the background with auto restart. "
+                printf "%sWe will now run NadekoBot in the background with auto restart. " \
+                    "$E_NOTE"
             fi
 
             read -rp "Press [Enter] to begin."
@@ -331,17 +392,24 @@ while true; do
             clear -x
             ;;
         4)
+            if "$opt_four_dis"; then
+                clear -x
+                echo "${E_ERROR}Option 4 is currently disabled"
+                disabled_reasons 4
+                continue
+            fi
+
             clear -x
-            read -rp "We will now stop NadekoBot. Press [Enter] to begin."
+            read -rp "${E_NOTE}We will now stop NadekoBot. Press [Enter] to begin."
             E_STOP_SERVICE "true"
-            read -rp "Press [Enter] to return to the installer menu"
+            read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
             clear -x
             ;;
         5)
             clear -x
             ## B.1.
             if "$opt_five_dis"; then
-                echo "${E_ERROR}Option 5 is currently disabled${E_NC}"
+                echo "${E_ERROR}Option 5 is currently disabled"
                 echo ""
                 continue
             fi
@@ -359,8 +427,8 @@ while true; do
             ## B.1.
             if "$opt_seven_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 7 is currently disabled${E_NC}"
-                disabled_reasons
+                echo "${E_ERROR}Option 7 is currently disabled"
+                disabled_reasons 7
                 continue
             fi
 
@@ -370,11 +438,11 @@ while true; do
             clear -x
             ;;
         8)
-            exit 0
+            exit_code_actions 0
             ;;
         *)
             clear -x
-            echo "${E_ERROR}Invalid input: '$choice' is not a valid option${E_NC}" >&2
+            echo "${E_ERROR}Invalid input: '$choice' is not a valid option" >&2
             echo ""
             ;;
     esac

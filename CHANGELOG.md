@@ -6,14 +6,69 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## v4.0.0 - 2024-12-xx
+
+> [!NOTE]
+> This version hasn't been released yet. It's currently in development. That said, some of these changes are currently available in the `main` branch.
+
+This release introduces A LOT of changes to the installer, including some breaking changes. These are listed in the below changelog, but some of the main changes include the naming of specific files produced by the installer. This means that you will manually need to change the names of several files, if you wish to keep them. These files will be listed before the rest of the changes will be merged into the `main` branch.
+
+Additionally, the next release will introduce support for NadekoBot v5 and MOST LIKELY drop support for NadekoBot v4. I'm not introducing this change yet, as I'm not sure how easy it will be to support both versions of NadekoBot. This release is primarily focused on improving the installer's codebase and making it more user-friendly.
+
+### Added
+
+- Added support for the following distributions and their versions:
+  - Ubuntu 24.04
+  - Linux Mint 22
+  - Debian 12
+- Users can now use `Ctrl` + `C` to safely cancel the installation of NadekoBot prerequisites.
+  - I believe this is already available to the other options, but if not, this can also be done when:
+    - backing up important files.
+    - setting up or updating NadekoBot.
+
 ### Changed
 
-- Improved script comments.
-- Improved the syntax and colorization of the output text.
+#### Braking Changes
+
+- ⚠️ Old nadekobot versions are now stored in `nadekobot.old` instead of `nadekobot_old`.
+- ⚠️ Old strings are now stored in `strings.old` instead of `strings_old`.
+- ⚠️ Old aliases are now stored in `aliases.old` instead of `aliases_old`.
+- ⚠️ Backed up files are now stored in `important-files-backup` instead of `important_file_backup`.
+
+#### Improvements
+
+- Comments have been removed where they were unnecessary, added where they were needed, and improved where they were lacking.
+- Colorization of output text has been modified to improve readability and indicate the type of information being displayed.
+- Stronger and more robust error handling has been implemented.
+- Error codes are better defined and do not interfere with standard/built-in exit codes.
+- Temporary files are handled more efficiently and are removed when no longer needed.
+- Previous version of NadekoBot is restored if an error occurs during the download or compilation of NadekoBot.
+- Previous backups are restored if an error occurs during the backup process.
+
+#### Programmatic-ish Changes
+
+- Exported variables are now styled as `E_UPPER_CASE`.
+- Constant variables are now styled as `C_UPPER_CASE`.
+
+#### Other Changes
+
+- Ownership of `$HOME/.nuget` is no longer modified.
+- If `creds.yml` does not exist, the installer will create it.
+- Option 4 is conditionally enabled/disabled based on the status of NadekoBot.
+
+### Removed
+
+- ⚠️ Removed support for distributions:
+  - ⚠️ Ubuntu 20.04, due to end of life in about 3 months.
+  - ⚠️ Ubuntu 18.04, due to end of life.
+  - ⚠️ Linux Mint 20, due to end of life in about 4 months.
+  - ⚠️ Debian 10, due to end of life.
 
 ### Fixed
 
-- Fixed where it says Mewdeko instead of NadekoBot.
+- Fixed text displaying `Mewdeko` instead of `NadekoBot`.
+- Fixed, what appeared to be, the installer catching signals multiple times.
+- Removed unnecessary `exec` that resulted in duplicate output.
 
 ## [v3.2.5] - 2022-09-06
 
