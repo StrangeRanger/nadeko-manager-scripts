@@ -14,8 +14,10 @@
 E_SERVICE_NAME="nadeko.service"
 E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
 export E_CURRENT_CREDS="nadekobot/output/creds.yml"
+export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 
 readonly C_REQ_DOTNET_VERSION=6
+
 
 
 ####[ Functions ]#######################################################################
@@ -64,6 +66,8 @@ is_token_set() {
         return 0
     fi
 }
+
+
 
 ####
 # Provide the reason(s) for why one or more options are disabled.
@@ -255,23 +259,30 @@ while true; do
         dotnet_version=${dotnet_version//.*/}  # Version: x
     fi
 
-    ###
-    ### [ Main Continued ]
-    ###
-
-    E_GET_SERVICE_STATUS
-
     if hash ccze &>/dev/null; then
         ccze_installed=true
     else
         ccze_installed=false
     fi
 
+    if [[ -f "$E_YT_DLP_PATH" ]]; then
+        yt_dlp_installed=true
+    else
+        yt_dlp_installed=false
+    fi
+
+    E_GET_SERVICE_STATUS
+
+    ###
+    ### [ Main Continued ]
+    ###
+
     ## Disable option 1 if any of the following tools are not installed.
     if (! hash dotnet \
         || ! hash redis-server \
         || (! hash python && (! hash python3 && ! hash python-is-python3)) \
         || ! "$ccze_installed" \
+        || ! "$yt_dlp_installed" \
         || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null
     then
         opt_one_dis=true
