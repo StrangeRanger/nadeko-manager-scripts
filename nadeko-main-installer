@@ -104,7 +104,7 @@ disabled_reasons() {
                 echo ""
             fi
             ;;
-        4)
+        4|5)
             echo "${E_NOTE}    NadekoBot is not currently running"
             echo "${E_NOTE}        Use option 2 or 3 to start NadekoBot"
             echo ""
