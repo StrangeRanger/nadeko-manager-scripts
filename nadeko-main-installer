@@ -13,6 +13,7 @@
 ## To be exported.
 E_SERVICE_NAME="nadeko.service"
 E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
+export E_CURRENT_CREDS="nadekobot/output/creds.yml"
 
 readonly C_REQ_DOTNET_VERSION=6
 
@@ -48,6 +49,16 @@ exit_code_actions() {
     exit "$exit_code"
 }
 
+is_token_set() {
+    [[ ! -f $E_CURRENT_CREDS ]] && return 1
+
+    if grep -Eq '^token: '\'\''' "$E_CURRENT_CREDS"; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 ####
 # Provide the reason(s) for why one or more options are disabled.
 #
@@ -71,7 +82,10 @@ disabled_reasons() {
                 echo "${E_NOTE}    The 'creds.yml' could not be found"
                 echo "${E_NOTE}        Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
-            # TODO: elif token is not filled out in 'creds.yml'...
+            elif is_token_set; then
+                echo "${E_NOTE}    The 'token' in 'creds.yml' is not set"
+                echo "${E_NOTE}        Refer to the following guide for help:" \
+                    "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
             else
                 echo "${E_NOTE}    Unknown reason"
             fi
@@ -181,6 +195,7 @@ trap 'exit_code_actions "143"' SIGTERM
 ####[ Main ]############################################################################
 
 
+cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 printf "%sWelcome to the NadekoBot installer menu\n\n" "$E_CLRLN"
 
 while true; do
@@ -245,7 +260,9 @@ while true; do
 
     ## Disable options 2, 3, and 5 if any of the tools in the previous if statement are
     ## not installed, or none of the specified directories/files could be found.
-    if [[ $opt_one_dis == true || ! -f nadekobot/output/creds.yml ]]; then
+    if [[ $opt_one_dis == true || ! -f nadekobot/output/creds.yml ]] \
+        || ! is_token_set
+    then
         opt_two_and_three_dis=true
         opt_two_text="${E_GREY}${opt_two_text}${dis_option}${E_NC}"
         opt_three_text="${E_GREY}${opt_three_text}${dis_option}${E_NC}"

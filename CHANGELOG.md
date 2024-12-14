@@ -17,6 +17,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 
 ### Added
 
+- Added support for Ubuntu 24.04.
 - Users can now use `Ctrl` + `C` to safely cancel the installation of NadekoBot prerequisites.
   - I believe this is already available to the other options, but if not, this can also be done when:
     - backing up important files.
@@ -50,6 +51,10 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 
 - Ownership of `$HOME/.nuget` is no longer modified.
 - If `creds.yml` does not exist, the installer will create it.
+
+### Removed
+
+- ⚠️ Removed support for Ubuntu 18.04, due to end of life.
 
 ### Fixed
 
