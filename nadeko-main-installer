@@ -49,13 +49,19 @@ exit_code_actions() {
     exit "$exit_code"
 }
 
+####
+# Check if the 'token' in 'creds.yml' is set.
+#
+# RETURNS:
+#   - 0: If the 'token' is not set.
+#   - 1: If the 'token' is set.
 is_token_set() {
-    [[ ! -f $E_CURRENT_CREDS ]] && return 1
-
-    if grep -Eq '^token: '\'\''' "$E_CURRENT_CREDS"; then
+    if [[ ! -f $E_CURRENT_CREDS ]]; then
         return 0
-    else
+    elif grep -Eq '^token: '\'\''' "$E_CURRENT_CREDS"; then
         return 1
+    else
+        return 0
     fi
 }
 
