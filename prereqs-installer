@@ -78,9 +78,11 @@ install_yt_dlp() {
 
     [[ -d $yt_dpl_dir ]] || mkdir -p "$yt_dpl_dir"
 
-    echo "${E_INFO}Installing 'yt-dlp'..."
-    curl -L "$yt_dlp_url" -o "$E_YT_DLP_PATH" \
-        || E_STDERR "Failed to download 'yt-dlp'" "1"
+    if [[ ! -f $E_YT_DLP_PATH ]]; then
+        echo "${E_INFO}Installing 'yt-dlp'..."
+        curl -L "$yt_dlp_url" -o "$E_YT_DLP_PATH" \
+            || E_STDERR "Failed to download 'yt-dlp'" "1"
+    fi
 
     echo "${E_INFO}Modifying permissions for 'yt-dlp'..."
     chmod a+rx "$E_YT_DLP_PATH"
