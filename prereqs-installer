@@ -2,43 +2,43 @@
 #
 # Install the prerequisites required by NadekoBot on Linux distributions.
 #
+# Comment Key:
+#   - A.1.: Apt has it's own signals handlers, meaning the traps in this script can't
+#     catch signals, such as SIGINT, to immediately exit the current action. So the
+#     command is run in the background and the process ID is stored in 'apt_pid'. If a
+#     signal is caught, the script will kill the 'apt' process and exit.
+#
 ########################################################################################
 ####[ Global Variables ]################################################################
 
 
-readonly C_REQ_DOTNET_PKG="dotnet-sdk-6.0"
-readonly C_MUSIC_PREREQS=("libopus0" "opus-tools" "libopus-dev" "libsodium-dev")
-readonly C_OTHER_PREREQS=("redis-server" "git" "ccze" "apt-transport-https" "ffmpeg" "python3")
-readonly C_YT_DL_URL="https://yt-dl.org/downloads/latest/youtube-dl"
-readonly C_YT_DL_PATH="/usr/local/bin/youtube-dl"
-
-readonly C_PREF_DOTNET_INSTALL="Explanation: https://github.com/dotnet/core/issues/7699
-Package: *
-Pin: origin \"packages.microsoft.com\"
-Pin-Priority: 1001"
-readonly C_PREF_FILE="/etc/apt/preferences.d/custom-dotnet.pref"
+readonly C_DOTNET_PKG="dotnet-sdk-8.0"
+readonly C_MUSIC_PREREQS=("libopus0" "opus-tools" "libopus-dev" "libsodium-dev"
+    "python3" "ffmpeg")
+readonly C_OTHER_PREREQS=("redis-server" "git" "ccze" "apt-transport-https" "ffmpeg")
 
 
 ####[ Functions ]#######################################################################
 
 
 ####
-# Cleanly exit the script by killing the 'apt' process, if it's running, and displaying
-# a message indicating the reason for the exit.
+# Cleanly exit the script by killing the 'apt' process and displaying an appropriate
+# message based on the exit code.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
 clean_exit() {
     local exit_code="$1"
+    local exit_now=false
 
     trap - EXIT SIGINT
     echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
-    ## continue running, even if an error occurred. Please refer to the
-    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
+    ## continue running, even if an error occurred. Refer to the 'exit_code_actions'
+    ## function in 'nadeko-latest-installer' for more information.
     case "$exit_code" in
-        1)   exit_code=50 ;;
+        1) exit_code=50 ;;
         0|5) ;;
         129)
             echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
@@ -71,6 +71,24 @@ clean_exit() {
 }
 
 ####
+# Install 'yt-dlp' at '~/.local/bin/yt-dlp'.
+install_yt_dlp() {
+    local yt_dlp_url="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
+    local yt_dpl_dir="${E_YT_DLP_PATH%/*}"
+
+    [[ -d $yt_dpl_dir ]] || mkdir -p "$yt_dpl_dir"
+
+    if [[ ! -f $E_YT_DLP_PATH ]]; then
+        echo "${E_INFO}Installing 'yt-dlp'..."
+        curl -L "$yt_dlp_url" -o "$E_YT_DLP_PATH" \
+            || E_STDERR "Failed to download 'yt-dlp'" "1"
+    fi
+
+    echo "${E_INFO}Modifying permissions for 'yt-dlp'..."
+    chmod a+rx "$E_YT_DLP_PATH"
+}
+
+####
 # NEW GLOBALS:
 #   - apt_pid: The process ID of the 'apt' process, used to kill the process when the
 #     script exits.
@@ -78,68 +96,55 @@ clean_exit() {
 # PARAMETERS:
 # 	- $1: distro_name (Required)
 # 	- $2: distro_ver (Required)
-#   - $3: python_pkg (Required)
-#       - Python package to install, for 'youtube-dl'.
-#       - Acceptable values:
-#           - python
-#           - python-is-python3
-#   - $4: dotnet_pref (Optional, Default: false)
-#       - Whether to set the preferred .NET Core installation method.
+#   - $3: ms_repo (Optional, Default: false)
+#       - Whether to install .NET from Microsoft's repository.
 #       - Acceptable values:
 #           - true
 #           - false
 install_prereqs() {
     local distro_name="$1"
     local distro_ver="$2"
-    local python_pkg="$3"
-    local dotnet_pref="${4:-false}"
+    local ms_repo="${3:-false}"
+    local ms_repo_url="https://packages.microsoft.com/config"
+    local ms_repo_pkg="packages-microsoft-prod.deb"
 
-    echo "${E_INFO}Installing .NET Core..."
-    ## Microsoft package signing key.
-    curl -O https://packages.microsoft.com/config/"$distro_name"/"$distro_ver"/packages-microsoft-prod.deb
-    sudo dpkg -i packages-microsoft-prod.deb
-    sudo rm -f packages-microsoft-prod.deb
+    # TODO: Add a check for if microsoft's version of .NET is already installed.
+    if [[ $ms_repo == true ]]; then
+        echo "${E_NOTE}Requires .NET from Microsoft's repository"
 
-    ## Ensure that .NET SDK is correctly installed on specific versions of Linux.
-    if [[ $dotnet_pref == true ]]; then
-        if (hash dotnet &>/dev/null && [[ ! $(dotnet --version) ]]) &>/dev/null; then
-            echo "${E_WARNING}While the .NET runtime is installed, the .NET SDK is not"
-            echo "${E_INFO}Uninstalling existing .NET Core installation..."
-            ( sudo apt remove -y "$C_REQ_DOTNET_PKG" && sudo apt autoremove -y ) &
-            apt_pid=$!
-            wait $apt_pid \
-                || E_STDERR "Failed to uninstall existing .NET Core installation" "$?"
-            unset apt_pid
-        fi
+        echo "${E_INFO}Adding Microsoft's package signing key..."
+        (   ## A.1.
+            curl -O "$ms_repo_url/$distro_name/$distro_ver/$ms_repo_pkg" || exit 1
+            sudo dpkg -i "$ms_repo_pkg" || exit 1
+        ) &
+        apt_pid=$!
+        wait $apt_pid || E_STDERR "Failed to add Microsoft's package signing key" $?
+        unset apt_pid
+        rm -f "$ms_repo_pkg"
 
-        if [[ ! -f /etc/apt/preferences.d/custom-dotnet.pref ]]; then
-            echo "${E_INFO}Updating preferred .NET Core install method..."
-            echo "$C_PREF_DOTNET_INSTALL" | sudo tee "$C_PREF_FILE" \
-                || E_STDERR "Failed to create '$C_PREF_FILE'" "1"
-        else
-            echo "${E_NOTE}The preferred .NET Core installation method is already set"
-            echo "${E_INFO}Skipping modification of the preferences..."
-        fi
+        echo "${E_INFO}Uninstalling existing .NET installation..."
+        ( sudo apt remove -y "$C_DOTNET_PKG" && sudo apt autoremove -y ) &  ## A.1.
+        apt_pid=$!
+        wait $apt_pid \
+            || E_STDERR "Failed to uninstall existing .NET installation" $?
+        unset apt_pid
     fi
 
-    (
+    (   ## A.1.
         echo "${E_INFO}Installing .NET Core..."
-        sudo apt update && sudo apt install -y "$C_REQ_DOTNET_PKG" || exit $?
+        sudo apt update && sudo apt install -y "$C_DOTNET_PKG" || exit $?
 
         echo "${E_INFO}Installing music prerequisites..."
         sudo apt install -y "${C_MUSIC_PREREQS[@]}" || exit $?
 
-        echo "${E_INFO}Installing other prerequisites..."
-        sudo apt install -y "${C_OTHER_PREREQS[@]}" "$python_pkg" || exit $?
+        install_yt_dlp
 
-        sudo curl -s -L "$C_YT_DL_URL" -o "$C_YT_DL_PATH" || exit 1
-        echo "${E_INFO}Modifying permissions for 'youtube-dl'..."
-        sudo chmod 755 "$C_YT_DL_PATH" \
-            || E_STDERR "Failed to modify permissions as '755' for '$C_YT_DL_PATH'" \
-                "" "${E_NOTE}Permission errors may occur when updating 'youtube-dl'"
+        echo "${E_INFO}Installing other prerequisites..."
+        sudo apt install -y "${C_OTHER_PREREQS[@]}" || exit $?
+
     ) &
     apt_pid=$!
-    wait $apt_pid || E_STDERR "Failed to install all prerequisites" "$?"
+    wait $apt_pid || E_STDERR "Failed to install all prerequisites" $?
     unset apt_pid
 
     echo -e "\n${E_SUCCESS}Finished installing prerequisites"
@@ -149,6 +154,7 @@ install_prereqs() {
 ####
 # Display a message indicating that the installer does not support the current OS.
 unsupported() {
+    E_STDERR "The installer does not support the automatic installation and" \
     echo "${E_ERROR}The installer does not support the automatic installation and" \
         "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH"
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
@@ -173,20 +179,20 @@ read -rp "Press [Enter] to continue."
 
 if [[ $E_DISTRO == "ubuntu" ]]; then
     case "$E_VER" in
-        24.04) install_prereqs "ubuntu" "$E_VER" "python-is-python3" ;;
-        22.04) install_prereqs "ubuntu" "$E_VER" "python-is-python3" ;;
+        24.04) install_prereqs "ubuntu" "$E_VER" ;;
+        22.04) install_prereqs "ubuntu" "$E_VER" ;;
         *) unsupported ;;
     esac
 elif [[ $E_DISTRO == "debian" ]]; then
     case "$E_SVER" in
-        12) install_prereqs "debian" "$E_SVER" "python-is-python3" "true" ;;
-        11) install_prereqs "debian" "$E_SVER" "python-is-python3" "true" ;;
+        12) install_prereqs "debian" "$E_SVER" "true" ;;
+        11) install_prereqs "debian" "$E_SVER" "true" ;;
         *) unsupported ;;
     esac
 elif [[ $E_DISTRO == "linuxmint" ]]; then
     case "$E_SVER" in
-        22) install_prereqs "ubuntu" "22.04" "python-is-python3" ;;
-        21) install_prereqs "ubuntu" "22.04" "python-is-python3" ;;
+        22) install_prereqs "ubuntu" "22.04" ;;
+        21) install_prereqs "ubuntu" "22.04" ;;
         *) unsupported ;;
     esac
 fi

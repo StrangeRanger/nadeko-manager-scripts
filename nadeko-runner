@@ -167,7 +167,7 @@ if [[ $E_CODENAME == "NadekoRun" ]]; then
 _code_name_=\"NadekoRun\"
 
 echo \"[INFO] Running NadekoBot in the background\"
-youtube-dl -U || echo \"[ERROR] Failed to update 'youtube-dl'\" >&2
+yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 cd $E_ROOT_DIR/nadekobot/output
@@ -185,7 +185,7 @@ else
 _code_name_=\"NadekoRunAR\"
 
 echo \"[INFO] Running NadekoBot in the background with auto restart\"
-youtube-dl -U || echo \"[ERROR] Failed to update 'youtube-dl'\" >&2
+yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 
@@ -211,7 +211,7 @@ while true; do
 
     echo \"[INFO] Waiting 5 seconds...\"
     sleep 5
-    youtube-dl -U || echo \"[ERROR] Failed to update 'youtube-dl'\" >&2
+    yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
     echo \"[INFO] Restarting NadekoBot...\"
 done
 
@@ -223,7 +223,7 @@ if [[ $E_SERVICE_STATUS == "active" ]]; then
     sudo systemctl restart "$E_SERVICE_NAME" \
         || E_STDERR "Failed to restart '$E_SERVICE_NAME'" "3"
 else
-    echo "Starting '$E_SERVICE_NAME'..."
+    echo "${E_INFO}Starting '$E_SERVICE_NAME'..."
     sudo systemctl start "$E_SERVICE_NAME" \
         || E_STDERR "Failed to start '$E_SERVICE_NAME'" "3"
 fi

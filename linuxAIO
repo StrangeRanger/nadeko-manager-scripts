@@ -63,8 +63,8 @@ installer_branch="main"
 #   x.x.x = Any other branch/tag (refer to the NadekoBot repo for available tags and
 #           branches)
 #
-# Default: "v4"
-export E_BOT_INSTALL_VERSION="v4"
+# Default: "v5"
+export E_BOT_INSTALL_VERSION="v5"
 
 # A list of files to be backed up when executing option 7.
 #
@@ -104,7 +104,7 @@ nadekobot/output/data/xp_template.json"
 ###
 
 # 'linuxAIO' revision number.
-export E_LINUXAIO_REVISION=41
+export E_LINUXAIO_REVISION=42
 # The URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
