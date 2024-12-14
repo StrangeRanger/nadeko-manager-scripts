@@ -8,12 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## v4.0.0 - 2024-12-xx
 
-> [!NOTE]
-> This version hasn't been released yet. It's currently in development. That said, some of these changes are currently available in the `main` branch.
+> [!IMPORTANT]
+> This MAY be one of the final releases, as this project will enter a maintenance phase, or be archived in the future. This is primarily due to the fact that I don't often use NadekoBot anymore, and the NadekoBot team, a while back, decided not to merge this installer into the main installer repository, which is completely understandable.
 
-This release introduces A LOT of changes to the installer, including some breaking changes. These are listed in the below changelog, but some of the main changes include the naming of specific files produced by the installer. This means that you will manually need to change the names of several files, if you wish to keep them. These files will be listed before the rest of the changes will be merged into the `main` branch.
-
-Additionally, the next release will introduce support for NadekoBot v5 and MOST LIKELY drop support for NadekoBot v4. I'm not introducing this change yet, as I'm not sure how easy it will be to support both versions of NadekoBot. This release is primarily focused on improving the installer's codebase and making it more user-friendly.
+This release introduces A LOT of changes to the installer, including some breaking changes. These are listed in the below changelog, but some of the main changes include the naming of specific files produced by the installer, supporting NadekoBot v5, and improved visuals and error handling. This means that you will need to manually change the names of several files, if you wish to keep them.
 
 ### Added
 
