@@ -101,6 +101,11 @@ disabled_reasons() {
                 echo ""
             fi
             ;;
+        4)
+            echo "${E_NOTE}    NadekoBot is not currently running"
+            echo "${E_NOTE}        Use option 2 or 3 to start NadekoBot"
+            echo ""
+            ;;
         7)
             echo "${E_NOTE}    NadekoBot could not be found"
             echo "${E_NOTE}        Use option 1 to download NadekoBot"
@@ -228,6 +233,9 @@ while true; do
     opt_two_and_three_dis=false
     opt_two_text="2. Run NadekoBot in the background"
     opt_three_text="3. Run NadekoBot in the background with auto restart"
+    ## Option 4.
+    opt_four_dis=false
+    opt_four_text="4. Stop NadekoBot"
     ## Option 5.
     opt_five_dis=false
     opt_five_text="5. Display '$E_SERVICE_NAME' logs in follow mode"
@@ -270,12 +278,14 @@ while true; do
         opt_one_text="${E_GREY}${opt_one_text}${dis_option}${E_NC}"
     fi
 
-    ## Disable options 2, 3, and 5 if any of the tools in the previous if statement are
-    ## not installed, or none of the specified directories/files could be found.
+    ## Disable options 2, 3, 4, and 5 if any of the tools in the previous if statement
+    ## are not installed, or none of the specified directories/files could be found.
     if [[ $opt_one_dis == true || ! -f $E_CURRENT_CREDS ]] || ! is_token_set; then
         opt_two_and_three_dis=true
         opt_two_text="${E_GREY}${opt_two_text}${dis_option}${E_NC}"
         opt_three_text="${E_GREY}${opt_three_text}${dis_option}${E_NC}"
+        opt_four_dis=true
+        opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
         opt_five_dis=true
         opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
 
@@ -285,16 +295,20 @@ while true; do
         fi
     ## Options 2 and 3 remain enabled, if 'NadekoRun' exists.
     elif [[ -f NadekoRun ]]; then
-        ## Option 5 remains enabled, if NadekoBot's service is running.
+        ## Option 4 and 5 remain enabled, if NadekoBot's service is running.
         if [[ $E_SERVICE_STATUS == "active" ]]; then
             run_mode_status=" ${E_GREEN}(Running in this mode)${E_NC}"
-        ## Disable option 5 if NadekoBot's service NOT running.
+        ## Disable option 4 and 5 if NadekoBot's service NOT running.
         elif [[ $E_SERVICE_STATUS == "inactive" ]]; then
+            opt_four_dis=true
+            opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
             opt_five_dis=true
             opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
             run_mode_status=" ${E_YELLOW}(Set up to run in this mode)${E_NC}"
-        ## Disable option 5.
+        ## Disable options 4 and 5.
         else
+            opt_four_dis=true
+            opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
             opt_five_dis=true
             opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
             run_mode_status=" ${E_YELLOW}(Status unknown)${E_NC}"
@@ -307,8 +321,10 @@ while true; do
         elif grep -q '_code_name_="NadekoRun"' NadekoRun; then
             opt_two_text="${opt_two_text}${run_mode_status}"
         fi
-    ## Options 2 and 3 remained enabled, but option 5 becomes disabled.
+    ## Options 2 and 3 remained enabled, but options 4 and 5 becomes disabled.
     else
+        opt_four_dis=true
+        opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
         opt_five_dis=true
         opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
     fi
@@ -316,7 +332,7 @@ while true; do
     echo "$opt_one_text"
     echo "$opt_two_text"
     echo "$opt_three_text"
-    echo "4. Stop NadekoBot"
+    echo "$opt_four_text"
     echo "$opt_five_text"
     echo "6. Install prerequisites"
     echo "$opt_seven_text"
@@ -376,6 +392,13 @@ while true; do
             clear -x
             ;;
         4)
+            if "$opt_four_dis"; then
+                clear -x
+                echo "${E_ERROR}Option 4 is currently disabled"
+                disabled_reasons 4
+                continue
+            fi
+
             clear -x
             read -rp "${E_NOTE}We will now stop NadekoBot. Press [Enter] to begin."
             E_STOP_SERVICE "true"
