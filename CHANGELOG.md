@@ -34,6 +34,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 - ⚠️ Old strings are now stored in `strings.old` instead of `strings_old`.
 - ⚠️ Old aliases are now stored in `aliases.old` instead of `aliases_old`.
 - ⚠️ Backed up files are now stored in `important-files-backup` instead of `important_file_backup`.
+- ⚠️ Replace `youtube-dl` with `yt-dlp`.
 
 #### Improvements
 
