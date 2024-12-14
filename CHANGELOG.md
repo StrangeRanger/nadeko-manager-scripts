@@ -46,6 +46,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 - Temporary files are handled more efficiently and are removed when no longer needed.
 - Previous version of NadekoBot is restored if an error occurs during the download or compilation of NadekoBot.
 - Previous backups are restored if an error occurs during the backup process.
+- Better output and reasons for why some options are disabled.
 
 #### Programmatic-ish Changes
 
