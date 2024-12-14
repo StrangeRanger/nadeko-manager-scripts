@@ -92,7 +92,7 @@ install_yt_dlp() {
 # 	- $1: distro_name (Required)
 # 	- $2: distro_ver (Required)
 #   - $3: ms_repo (Optional, Default: false)
-#       - Whether to install .NET Core from Microsoft's repository.
+#       - Whether to install .NET from Microsoft's repository.
 #       - Acceptable values:
 #           - true
 #           - false
