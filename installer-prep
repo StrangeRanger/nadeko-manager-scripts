@@ -316,18 +316,18 @@ Distro Version: $E_VER
 if [[ $bits == 64 ]]; then
     if [[ $E_DISTRO == "ubuntu" ]]; then
         case "$E_VER" in
-            22.04|20.04|18.04) execute_main_installer ;;
-            *)                 unsupported ;;
+            24.04|22.04) execute_main_installer ;;
+            *) unsupported ;;
         esac
     elif [[ $E_DISTRO == "debian" ]]; then
         case "$E_SVER" in
-            11|10) execute_main_installer ;;
-            *)     unsupported ;;
+            12|11) execute_main_installer ;;
+            *) unsupported ;;
         esac
     elif [[ $E_DISTRO == "linuxmint" ]]; then
         case "$E_SVER" in
-            21|20) execute_main_installer ;;
-            *)     unsupported ;;
+            22|21) execute_main_installer ;;
+            *) unsupported ;;
         esac
     else
         unsupported
