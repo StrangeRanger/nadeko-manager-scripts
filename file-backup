@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-# Back up the files listed in the $C_FILES_TO_BACK_UP array.
+# Back up files that are considered to be important to the user. These can be defined in
+# the 'E_FILES_TO_BACK_UP' variable in 'installer-prep'.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -22,8 +23,7 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 
 ####
-# Clean up and exit the script.
-#
+# Cleanly exit the script by removing
 # PARAMETERS:
 #   - $1: exit_code (Required)
 #   - $2: use_extra_newline (Optional, Default: false)
@@ -82,11 +82,6 @@ clean_exit() {
 
     if [[ $exit_now == false ]]; then
         read -rp "${E_NOTE}Press [Enter] to return to the main menu"
-    fi
-
-    ## Ensures that the current SIGINT signal doesn't propagate to the parent process.
-    if [[ $exit_code == 130 ]]; then
-        kill -s SIGINT "$$"
     fi
 
     exit "$exit_code"
