@@ -38,7 +38,7 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-    exit_now=false
+    local exit_now=false
 
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
