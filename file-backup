@@ -44,10 +44,10 @@ clean_exit() {
     [[ $use_extra_newline == true ]] && echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
-    ## continue running, even if an error occurred. Please refer to the
-    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
+    ## continue running, even if an error occurred. Refer to the 'exit_code_actions'
+    ## function in 'nadeko-latest-installer' for more information.
     case "$exit_code" in
-        1)   exit_code=50 ;;
+        1) exit_code=50 ;;
         0|5) ;;
         129)
             echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
@@ -120,8 +120,8 @@ for file in "${C_FILES_TO_BACK_UP[@]}"; do
 done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
-    # These files were the current backups, and will replace the previous the old
-    # [filename].old backup files.
+    # These files were the current backups, and will replace the previous old
+    # '[filename].old' backup files.
     echo "${E_INFO}Copying previously backed up files into '$C_TMP_BACKUP'..."
     for file in "$C_CURRENT_BACKUP"/*; do
         basefile="${file##*/}"
