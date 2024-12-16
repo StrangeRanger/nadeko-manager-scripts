@@ -29,6 +29,8 @@ readonly C_REQ_DOTNET_VERSION=8
 #   - 3: Related to NadekoBot daemon service.
 #   - 4: Unsupported OS/Distro.
 #   - 5: A problem occurred finalizing an installation or the backup of files.
+#   - 6: Arbitrary exit code (substitute for SIGINT) telling the main installer to
+#        continue running, after producing a proper message.
 #   - 50: Arbitrary exit code telling the main installer to continue running.
 #
 # PARAMETERS:
@@ -42,8 +44,10 @@ exit_code_actions() {
     case "$exit_code" in
         3|4|5|50) return 0 ;;
         6)
+            echo ""
             echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
             read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+            clear -x
             ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
         130) ;;
