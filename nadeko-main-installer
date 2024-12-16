@@ -41,6 +41,10 @@ exit_code_actions() {
     ## specify the output for those signals in 'installer-prep'.
     case "$exit_code" in
         3|4|5|50) return 0 ;;
+        6)
+            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+            ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
         130) ;;
         143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
@@ -379,18 +383,21 @@ while true; do
             E_DOWNLOAD_SCRIPT "nadeko-runner"
             clear -x
 
-            # If option 2 was executed...
-            if [[ $choice == 2 ]]; then
-                export E_CODENAME="NadekoRun"
-                printf "%sWe will now run NadekoBot in the background. " "$E_NOTE"
-            # If option 3 was executed...
-            else
-                export E_CODENAME="NadekoRunAR"
-                printf "%sWe will now run NadekoBot in the background with auto restart. " \
-                    "$E_NOTE"
-            fi
+            (
+                trap 'exit_code_actions "6"' SIGINT
 
-            read -rp "Press [Enter] to begin."
+                if [[ $choice == 2 ]]; then
+                    export E_CODENAME="NadekoRun"
+                    printf "%sWe will now run NadekoBot in the background. " "$E_NOTE"
+
+                else
+                    export E_CODENAME="NadekoRunAR"
+                    echo -n "${E_NOTE}We will now run NadekoBot in the background" \
+                        "with auto restart. "
+                fi
+
+                read -rp "Press [Enter] to begin."
+            )
             ./nadeko-runner || exit_code_actions "$?"
             clear -x
             ;;
