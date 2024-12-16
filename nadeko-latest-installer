@@ -45,7 +45,9 @@ fi
 
 
 ####
-# Clean up and exit the script.
+# Cleanly exit the script by removing by removing temporary files and directories. If
+# an error occurs or a premature exit is detected, the script will attempt to restore
+# the original version of 'nadekobot'.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -67,7 +69,7 @@ clean_exit() {
     ## continue running, even if an error occurred. Please refer to the
     ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
     case "$exit_code" in
-        1)   exit_code=50 ;;
+        1) exit_code=50 ;;
         0|5) ;;
         129)
             echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
