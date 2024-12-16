@@ -397,6 +397,7 @@ while true; do
                 echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
                 read -rp "${E_NOTE}Press [Enter] to return to the main menu"
                 clear -x
+                continue
             }
             ./nadeko-runner || exit_code_actions "$?"
             clear -x
