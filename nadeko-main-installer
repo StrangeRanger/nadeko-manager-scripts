@@ -383,19 +383,18 @@ while true; do
             E_DOWNLOAD_SCRIPT "nadeko-runner"
             clear -x
 
+            if [[ $choice == 2 ]]; then
+                export E_CODENAME="NadekoRun"
+                printf "%sWe will now run NadekoBot in the background. " "$E_NOTE"
+
+            else
+                export E_CODENAME="NadekoRunAR"
+                echo -n "${E_NOTE}We will now run NadekoBot in the background" \
+                    "with auto restart. "
+            fi
+
             (
                 trap 'exit_code_actions "6"' SIGINT
-
-                if [[ $choice == 2 ]]; then
-                    export E_CODENAME="NadekoRun"
-                    printf "%sWe will now run NadekoBot in the background. " "$E_NOTE"
-
-                else
-                    export E_CODENAME="NadekoRunAR"
-                    echo -n "${E_NOTE}We will now run NadekoBot in the background" \
-                        "with auto restart. "
-                fi
-
                 read -rp "Press [Enter] to begin."
             )
             ./nadeko-runner || exit_code_actions "$?"
