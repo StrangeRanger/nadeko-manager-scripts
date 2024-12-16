@@ -127,7 +127,7 @@ E_GET_SERVICE_STATUS() {
     E_SERVICE_STATUS=$(systemctl is-active "$E_SERVICE_NAME")
 }
 
-########
+####
 # Stops NadekoBot's service.
 #
 # PARAMETERS:
