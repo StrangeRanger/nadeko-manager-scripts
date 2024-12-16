@@ -195,7 +195,7 @@ E_WATCH_SERVICE_LOGS() {
     E_FOLLOW_SERVICE_LOGS
 
     [[ $1 == "runner" ]] \
-        && echo -e "\n${E_NOTE}Please check the logs above to make sure that there" \
+        && echo -e "\n\n${E_NOTE}Please check the logs above to make sure that there" \
             "aren't any errors. If there are, resolve whatever issue is causing them."
 
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
