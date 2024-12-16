@@ -24,8 +24,8 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 ####
 # Cleanly exit the script by removing by removing temporary files and directories. If
-# the an error occurs or a premature exit is detected, the script will attempt to
-# restore the original backup files.
+# an error occurs or a premature exit is detected, the script will attempt to restore
+# the original backup files.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
