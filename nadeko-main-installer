@@ -18,7 +18,6 @@ export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 readonly C_REQ_DOTNET_VERSION=8
 
 
-
 ####[ Functions ]#######################################################################
 
 
