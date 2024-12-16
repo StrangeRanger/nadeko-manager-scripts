@@ -65,8 +65,6 @@ is_token_set() {
     fi
 }
 
-
-
 ####
 # Provide the reason(s) for why one or more options are disabled.
 #
