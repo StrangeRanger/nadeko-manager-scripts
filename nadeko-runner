@@ -71,7 +71,8 @@ fi
 
 
 ####
-# Clean up and exit the script.
+# Cleanly exit the script by displaying an exit message and returning an exit code. This
+# one is simpler than the other 'clean_exit' functions in the other scripts.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -90,8 +91,8 @@ clean_exit() {
     [[ $use_extra_newline == true ]] && echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
-    ## continue running, even if an error occurred. Please refer to the
-    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
+    ## continue running, even if an error occurred. Refer to the 'exit_code_actions'
+    ## function in 'nadeko-latest-installer' for more information.
     case "$exit_code" in
         1)   exit_code=50 ;;
         0|3) ;;
