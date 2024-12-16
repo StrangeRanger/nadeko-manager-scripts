@@ -27,12 +27,19 @@ readonly C_OTHER_PREREQS=("redis-server" "git" "ccze" "apt-transport-https" "ffm
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#   - $2: use_extra_newline (Optional, Default: false)
+#       - Whether to output an extra blank line, to separate the previous output from
+#         the output of this function.
+#       - Acceptable values:
+#           - true
+#           - false
 clean_exit() {
     local exit_code="$1"
+    local use_extra_newline="${2:-false}"
     local exit_now=false
 
     trap - EXIT SIGINT
-    echo ""
+    [[ $use_extra_newline == true ]] && echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
     ## continue running, even if an error occurred. Refer to the 'exit_code_actions'
@@ -148,7 +155,7 @@ install_prereqs() {
     unset apt_pid
 
     echo -e "\n${E_SUCCESS}Finished installing prerequisites"
-    clean_exit 0
+    clean_exit 0 "true"
 }
 
 ####
@@ -156,8 +163,8 @@ install_prereqs() {
 unsupported() {
     E_STDERR "The installer does not support the automatic installation and" \
     echo "${E_ERROR}The installer does not support the automatic installation and" \
-        "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH"
-    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
+        "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH" >&2
+    read -rp "${E_NOTE}Press [Enter] to return to the main menu"
     exit 4
 }
 

@@ -18,7 +18,6 @@ export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 readonly C_REQ_DOTNET_VERSION=8
 
 
-
 ####[ Functions ]#######################################################################
 
 
@@ -65,8 +64,6 @@ is_token_set() {
         return 0
     fi
 }
-
-
 
 ####
 # Provide the reason(s) for why one or more options are disabled.
@@ -130,7 +127,7 @@ E_GET_SERVICE_STATUS() {
     E_SERVICE_STATUS=$(systemctl is-active "$E_SERVICE_NAME")
 }
 
-########
+####
 # Stops NadekoBot's service.
 #
 # PARAMETERS:
@@ -159,16 +156,16 @@ E_STOP_SERVICE() {
     fi
 }
 
-########
+####
 # Display the logs from 'nadeko.service' as they are created.
 E_FOLLOW_SERVICE_LOGS() {
     (
-        trap 'exit 130' SIGINT
+        trap 'echo -e "\n"; exit 130' SIGINT
         sudo journalctl --no-hostname -f -u "$E_SERVICE_NAME"  | ccze -A
     )
 }
 
-########
+####
 # Output additional information to go along with the output of the function
 # 'E_FOLLOW_SERVICE_LOGS'.
 #
@@ -187,7 +184,7 @@ E_WATCH_SERVICE_LOGS() {
     elif [[ $log_type == "opt_five" ]]; then
         echo "${E_INFO}Watching '$E_SERVICE_NAME' logs, live..."
     else
-        E_STDERR "${E_ERROR}INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
+        E_STDERR "INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
             "4"
     fi
 
@@ -198,7 +195,7 @@ E_WATCH_SERVICE_LOGS() {
     E_FOLLOW_SERVICE_LOGS
 
     [[ $1 == "runner" ]] \
-        && echo -e "\n${E_NOTE}Please check the logs above to make sure that there" \
+        && echo "${E_NOTE}Please check the logs above to make sure that there" \
             "aren't any errors. If there are, resolve whatever issue is causing them."
 
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
@@ -353,7 +350,7 @@ while true; do
             ## B.1.
             if "$opt_one_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 1 is currently disabled"
+                echo "${E_ERROR}Option 1 is currently disabled" >&2
                 disabled_reasons 1
                 continue
             fi
@@ -370,7 +367,7 @@ while true; do
             ## B.1.
             if "$opt_two_and_three_dis"; then
                 clear -x
-                echo "${E_ERROR}Option $choice is currently disabled"
+                echo "${E_ERROR}Option $choice is currently disabled" >&2
                 disabled_reasons "$choice"
                 continue
             fi
@@ -382,25 +379,33 @@ while true; do
             E_DOWNLOAD_SCRIPT "nadeko-runner"
             clear -x
 
-            # If option 2 was executed...
             if [[ $choice == 2 ]]; then
                 export E_CODENAME="NadekoRun"
                 printf "%sWe will now run NadekoBot in the background. " "$E_NOTE"
-            # If option 3 was executed...
+
             else
                 export E_CODENAME="NadekoRunAR"
-                printf "%sWe will now run NadekoBot in the background with auto restart. " \
-                    "$E_NOTE"
+                echo -n "${E_NOTE}We will now run NadekoBot in the background" \
+                    "with auto restart. "
             fi
 
-            read -rp "Press [Enter] to begin."
+            (
+                trap 'exit 1' SIGINT
+                read -rp "Press [Enter] to begin."
+            ) || {
+                echo ""
+                echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+                read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+                clear -x
+                continue
+            }
             ./nadeko-runner || exit_code_actions "$?"
             clear -x
             ;;
         4)
             if "$opt_four_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 4 is currently disabled"
+                echo "${E_ERROR}Option 4 is currently disabled" >&2
                 disabled_reasons 4
                 continue
             fi
@@ -415,7 +420,7 @@ while true; do
             clear -x
             ## B.1.
             if "$opt_five_dis"; then
-                echo "${E_ERROR}Option 5 is currently disabled"
+                echo "${E_ERROR}Option 5 is currently disabled" >&2
                 echo ""
                 continue
             fi
@@ -433,7 +438,7 @@ while true; do
             ## B.1.
             if "$opt_seven_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 7 is currently disabled"
+                echo "${E_ERROR}Option 7 is currently disabled" >&2
                 disabled_reasons 7
                 continue
             fi
