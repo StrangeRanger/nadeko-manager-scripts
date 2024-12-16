@@ -160,7 +160,7 @@ E_STOP_SERVICE() {
 # Display the logs from 'nadeko.service' as they are created.
 E_FOLLOW_SERVICE_LOGS() {
     (
-        trap 'exit 130' SIGINT
+        trap 'echo -e "\n"; exit 130' SIGINT
         sudo journalctl --no-hostname -f -u "$E_SERVICE_NAME"  | ccze -A
     )
 }
