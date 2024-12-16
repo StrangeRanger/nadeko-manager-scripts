@@ -24,7 +24,7 @@ readonly C_NADEKOBOT_TMP
 
 readonly C_NADEKOBOT_URL="https://gitlab.com/Kwoth/nadekobot"
 readonly C_EXAMPLE_CREDS="$C_NADEKOBOT_TMP/nadekobot/src/NadekoBot/creds_example.yml"
-readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/nadekobot/output/creds.yml"
+readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/$E_CURRENT_CREDS"
 readonly C_CURRENT_DATABASE="nadekobot/output/data/NadekoBot.db"
 readonly C_NEW_DATABASE="$C_NADEKOBOT_TMP/nadekobot/output/data/NadekoBot.db"
 readonly C_CURRENT_DATA="nadekobot/output/data"
