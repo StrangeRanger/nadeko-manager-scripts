@@ -156,7 +156,7 @@ E_STOP_SERVICE() {
     fi
 }
 
-########
+####
 # Display the logs from 'nadeko.service' as they are created.
 E_FOLLOW_SERVICE_LOGS() {
     (
@@ -165,7 +165,7 @@ E_FOLLOW_SERVICE_LOGS() {
     )
 }
 
-########
+####
 # Output additional information to go along with the output of the function
 # 'E_FOLLOW_SERVICE_LOGS'.
 #
