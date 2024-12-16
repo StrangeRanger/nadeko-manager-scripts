@@ -156,7 +156,7 @@ install_prereqs() {
 unsupported() {
     E_STDERR "The installer does not support the automatic installation and" \
     echo "${E_ERROR}The installer does not support the automatic installation and" \
-        "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH"
+        "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH" >&2
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
     exit 4
 }

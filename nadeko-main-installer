@@ -187,7 +187,7 @@ E_WATCH_SERVICE_LOGS() {
     elif [[ $log_type == "opt_five" ]]; then
         echo "${E_INFO}Watching '$E_SERVICE_NAME' logs, live..."
     else
-        E_STDERR "${E_ERROR}INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
+        E_STDERR "INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
             "4"
     fi
 
@@ -353,7 +353,7 @@ while true; do
             ## B.1.
             if "$opt_one_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 1 is currently disabled"
+                echo "${E_ERROR}Option 1 is currently disabled" >&2
                 disabled_reasons 1
                 continue
             fi
@@ -370,7 +370,7 @@ while true; do
             ## B.1.
             if "$opt_two_and_three_dis"; then
                 clear -x
-                echo "${E_ERROR}Option $choice is currently disabled"
+                echo "${E_ERROR}Option $choice is currently disabled" >&2
                 disabled_reasons "$choice"
                 continue
             fi
@@ -400,7 +400,7 @@ while true; do
         4)
             if "$opt_four_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 4 is currently disabled"
+                echo "${E_ERROR}Option 4 is currently disabled" >&2
                 disabled_reasons 4
                 continue
             fi
@@ -415,7 +415,7 @@ while true; do
             clear -x
             ## B.1.
             if "$opt_five_dis"; then
-                echo "${E_ERROR}Option 5 is currently disabled"
+                echo "${E_ERROR}Option 5 is currently disabled" >&2
                 echo ""
                 continue
             fi
@@ -433,7 +433,7 @@ while true; do
             ## B.1.
             if "$opt_seven_dis"; then
                 clear -x
-                echo "${E_ERROR}Option 7 is currently disabled"
+                echo "${E_ERROR}Option 7 is currently disabled" >&2
                 disabled_reasons 7
                 continue
             fi
