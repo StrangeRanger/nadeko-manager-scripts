@@ -396,7 +396,7 @@ while true; do
             (
                 trap 'exit_code_actions "6"' SIGINT
                 read -rp "Press [Enter] to begin."
-            )
+            ) || continue
             ./nadeko-runner || exit_code_actions "$?"
             clear -x
             ;;
