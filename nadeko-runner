@@ -66,6 +66,9 @@ SyslogIdentifier=NadekoBot
 WantedBy=multi-user.target"
 fi
 
+# Used to skip the 'read' command when exiting the script.
+exit_now=false
+
 
 ####[ Functions ]#######################################################################
 
@@ -85,7 +88,6 @@ fi
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-    local exit_now=false
 
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
@@ -229,5 +231,8 @@ else
 fi
 
 trap - SIGINT
+# The read command is used within 'E_WATCH_SERVICE_LOGS', so the one in 'clean_exit' can
+# be skipped.
+exit_now=true
 
 E_WATCH_SERVICE_LOGS "runner"
