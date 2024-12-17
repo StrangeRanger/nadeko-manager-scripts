@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-# The main installer for Linux.
+# The main installer for Linux. This script is responsible for displaying the menu
+# options and executing the necessary scripts to install, run, and manage NadekoBot.
 #
 # Comment Key:
 #   - A.1.: Return to prevent further code execution.
@@ -22,8 +23,8 @@ readonly C_REQ_DOTNET_VERSION=8
 
 
 ####
-# Depending on the return/exit code from any of the executed scripts, perform the
-# corresponding/appropriate actions.
+# Depending on the return value or exit code from any of the executed scripts, perform
+# the corresponding actions.
 #
 # Custom Exit Codes:
 #   - 3: Related to NadekoBot daemon service.
@@ -128,18 +129,15 @@ E_GET_SERVICE_STATUS() {
 }
 
 ####
-# Stops NadekoBot's service.
+# Stop NadekoBot's service.
 #
 # PARAMETERS:
 #   - $1: output_text (Optional, Default: false)
-#       - True when the function should output text indicating if the service has been
-#         stopped or is currently not running.
+#       - If the function should output text indicating if the service has been stopped
+#         or is currently not running.
 #       - Acceptable values:
 #           - true
 #           - false
-#
-# RETURNS:
-#   - 1: If $E_SERVICE_NAME is not currently running.
 E_STOP_SERVICE() {
     local output_text="${1:-false}"
 
@@ -166,16 +164,15 @@ E_FOLLOW_SERVICE_LOGS() {
 }
 
 ####
-# Output additional information to go along with the output of the function
-# 'E_FOLLOW_SERVICE_LOGS'.
+# Output additional information to go along with the output of 'E_FOLLOW_SERVICE_LOGS'.
 #
 # PARAMETERS:
 #   - $1: log_type (Required)
 #       - Indicates if the function was called from one of the runner scripts or from
 #         within the main installer.
 #       - Acceptable values:
-#           - "runner": Called from one of the runner scripts.
-#           - "opt_five": Called from the main installer.
+#           - runner: Called from one of the runner scripts.
+#           - opt_five: Called from the main installer.
 E_WATCH_SERVICE_LOGS() {
     local log_type="$1"
 
@@ -184,7 +181,7 @@ E_WATCH_SERVICE_LOGS() {
     elif [[ $log_type == "opt_five" ]]; then
         echo "${E_INFO}Watching '$E_SERVICE_NAME' logs, live..."
     else
-        E_STDERR "INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
+        E_STDERR "INTERNAL ERROR: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
             "4"
     fi
 
@@ -219,8 +216,8 @@ while true; do
     ###
     ### [ Temporary Variables ]
     ###
-    ### The variables below constantly get modified within the while loop, and are
-    ### required to be reset everytime the loop starts back at the top.
+    ### The variables below constantly get modified within the while loop, and need to
+    ### be reset everytime the loop starts back at the top.
     ###
 
     ## Disabled option text.
