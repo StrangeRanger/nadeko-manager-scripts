@@ -37,6 +37,7 @@ export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
 
 ####
 # Identify the operating system, version number, architecture, bit type (32 or 64), etc.
+# This information is then made available to the script, and the rest of the installer.
 #
 # NEW GLOBALS:
 #   - E_DISTRO: Distribution name.
@@ -110,7 +111,7 @@ linuxAIO_update() {
         echo "${E_NOTE}NOT applying existing configurations to 'linuxAIO'"
         echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'"
     ## Download the newest version of 'linuxAIO' and apply existing changes to it.
-    else
+    elif [[ $E_LINUXAIO_REVISION != "$C_CURRENT_LINUXAIO_REVISION" ]]; then
         local installer_branch
         local installer_branch_found
         installer_branch=$(grep '^installer_branch=.*' linuxAIO.old)
@@ -142,6 +143,8 @@ linuxAIO_update() {
             "and applied existing changes"
         echo "${E_NOTE}Make sure to update the variables in 'linuxAIO' that were not" \
             "automatically updated, using 'linuxAIO.old'"
+    else
+        echo "${E_SUCCESS}You are already using the latest version of 'linuxAIO'"
     fi
 
     clean_exit 0
@@ -173,7 +176,8 @@ unsupported() {
 }
 
 ####
-# Remove unnecessary files to cleanly exit the script.
+# Cleanly exit the installer by removing temporary files and exiting with an appropriate
+# message and exit code.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -194,7 +198,7 @@ clean_exit() {
     [[ $use_extra_newline == true ]] && echo ""
 
     ## While we specify output for SIGHUP and SIGTERM in 'nadeko-main-installer', we do
-    ## the same here because the those signals don't propagate to parent scripts.
+    ## the same here because the those signals don't propagate to the parent script.
     case "$exit_code" in
         0|1) echo "" ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
@@ -214,6 +218,9 @@ clean_exit() {
     exit "$exit_code"
 }
 
+####
+# Download and execute the main installer. This is one of the final actions performed by
+# this script.
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
     ./"$C_MAIN_INSTALLER"

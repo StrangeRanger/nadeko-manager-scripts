@@ -24,6 +24,7 @@ This release introduces A LOT of changes to the installer, including some breaki
   - I believe this is already available to the other options, but if not, this can also be done when:
     - backing up important files.
     - setting up or updating NadekoBot.
+- The install checks if the `token` in `creds.yml` is set, before allowing the user to start NadekoBot.
 
 ### Changed
 

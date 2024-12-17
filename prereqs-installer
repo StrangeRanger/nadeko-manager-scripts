@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Install the prerequisites required by NadekoBot on Linux distributions.
+# Install the prerequisites required by NadekoBot to run on Linux distributions.
 #
 # Comment Key:
 #   - A.1.: Apt has it's own signals handlers, meaning the traps in this script can't
@@ -161,7 +161,6 @@ install_prereqs() {
 ####
 # Display a message indicating that the installer does not support the current OS.
 unsupported() {
-    E_STDERR "The installer does not support the automatic installation and" \
     echo "${E_ERROR}The installer does not support the automatic installation and" \
         "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH" >&2
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
