@@ -6,8 +6,6 @@
 
 This is the unofficial installer for NadekoBot v5 on Linux distributions.
 
-For information on setting up NadekoBot using this installer, visit the repository's [wiki](https://github.com/StrangeRanger/NadekoBot-BashScript/wiki).
-
 ## Getting Started
 
 ### Downloading linuxAIO
