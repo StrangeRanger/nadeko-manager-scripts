@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# 'linuxAIO' serves as an intermediary between the system running Mewdeko and
+# 'linuxAIO' serves as an intermediary between the system running NadekoBot and
 # 'installer-prep'. To prevent conflicts with installer updates, this script contains
 # only the essential code.
 #
@@ -8,10 +8,14 @@
 #   Since this script resides on the user's system, any code changes pushed to GitHub
 #   are not automatically applied to the user's version. To address this, the variable
 #   $E_LINUXAIO_REVISION holds a revision number updated whenever 'linuxAIO' changes.
-#   The 'installer-prep' script also contains a variable, $current_linuxAIO_revision,
+#   The 'installer-prep' script also contains a variable, $C_CURRENT_LINUXAIO_REVISION,
 #   updated alongside $E_LINUXAIO_REVISION. When the user runs the installer,
 #   'installer-prep' compares these two variables. If they differ, the latest version
 #   of 'linuxAIO' is fetched from GitHub.
+#
+# IMPORTANT:
+#   When you modify $E_BOT_INSTALL_VERSION, ensure the the appropriate branch of the
+#   installer, set in $installer_branch, is set. If not, you WILL encounter issues.
 #
 ########################################################################################
 #### [ Variables ]
@@ -41,7 +45,8 @@ installer_repo="StrangeRanger/NadekoBot-BashScript"
 # Options:
 #   main     = Production ready code (the latest stable code)
 #   dev      = Non-production ready code (has the possibility of breaking something)
-#   NadekoV3 = The version of the installer designed for NadekoBot v3
+#   testing  = This branch is continuously changing, and will most likely cause issues
+#   NadekoV4 = The version of the installer designed for NadekoBot v4
 #
 # Default: "main"
 installer_branch="main"
@@ -58,18 +63,18 @@ installer_branch="main"
 #   and v4.
 #
 # Options:
-#   v4    = Latest version (the master/main branch)
-#   v3    = NadekoBot v3
+#   v5    = Latest version (the master/main branch)
+#   v4    = NadekoBot v4
 #   x.x.x = Any other branch/tag (refer to the NadekoBot repo for available tags and
 #           branches)
 #
-# Default: "v4"
-export E_BOT_INSTALL_VERSION="v4"
+# Default: "v5"
+export E_BOT_INSTALL_VERSION="v5"
 
 # A list of files to be backed up when executing option 7.
 #
 # When adding a new file to the variable below, make sure to follow these rules:
-#   1. The path, starting at the project's parent directory, to the file must always be
+#   1. The path, starting at the Nadeko's parent directory, to the file must always be
 #      included. This means that unless modified by the end-user, the beginning of the
 #      path will start with 'nadekobot/', followed by the rest of the path to the file.
 #   2. Each file must be separated by a single space or placed on its own line.
@@ -104,7 +109,7 @@ nadekobot/output/data/xp_template.json"
 ###
 
 # 'linuxAIO' revision number.
-export E_LINUXAIO_REVISION=41
+export E_LINUXAIO_REVISION=42
 # The URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 

@@ -66,12 +66,16 @@ SyslogIdentifier=NadekoBot
 WantedBy=multi-user.target"
 fi
 
+# Used to skip the 'read' command when exiting the script.
+exit_now=false
+
 
 ####[ Functions ]#######################################################################
 
 
 ####
-# Clean up and exit the script.
+# Cleanly exit the script by displaying an exit message and returning an exit code. This
+# one is simpler than the other 'clean_exit' functions in the other scripts.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -84,14 +88,13 @@ fi
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-    local exit_now=false
 
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
     ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
-    ## continue running, even if an error occurred. Please refer to the
-    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
+    ## continue running, even if an error occurred. Refer to the 'exit_code_actions'
+    ## function in 'nadeko-latest-installer' for more information.
     case "$exit_code" in
         1)   exit_code=50 ;;
         0|3) ;;
@@ -130,7 +133,6 @@ trap 'clean_exit "143" "true"' SIGTERM
 trap 'clean_exit "$?" "true"'  EXIT
 
 
-
 ####[ Main ]############################################################################
 
 
@@ -167,7 +169,7 @@ if [[ $E_CODENAME == "NadekoRun" ]]; then
 _code_name_=\"NadekoRun\"
 
 echo \"[INFO] Running NadekoBot in the background\"
-youtube-dl -U || echo \"[ERROR] Failed to update 'youtube-dl'\" >&2
+\"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 cd $E_ROOT_DIR/nadekobot/output
@@ -185,7 +187,7 @@ else
 _code_name_=\"NadekoRunAR\"
 
 echo \"[INFO] Running NadekoBot in the background with auto restart\"
-youtube-dl -U || echo \"[ERROR] Failed to update 'youtube-dl'\" >&2
+\"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 
@@ -211,7 +213,7 @@ while true; do
 
     echo \"[INFO] Waiting 5 seconds...\"
     sleep 5
-    youtube-dl -U || echo \"[ERROR] Failed to update 'youtube-dl'\" >&2
+    \"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
     echo \"[INFO] Restarting NadekoBot...\"
 done
 
@@ -223,11 +225,14 @@ if [[ $E_SERVICE_STATUS == "active" ]]; then
     sudo systemctl restart "$E_SERVICE_NAME" \
         || E_STDERR "Failed to restart '$E_SERVICE_NAME'" "3"
 else
-    echo "Starting '$E_SERVICE_NAME'..."
+    echo "${E_INFO}Starting '$E_SERVICE_NAME'..."
     sudo systemctl start "$E_SERVICE_NAME" \
         || E_STDERR "Failed to start '$E_SERVICE_NAME'" "3"
 fi
 
 trap - SIGINT
+# The read command is used within 'E_WATCH_SERVICE_LOGS', so the one in 'clean_exit' can
+# be skipped.
+exit_now=true
 
 E_WATCH_SERVICE_LOGS "runner"

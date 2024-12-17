@@ -8,15 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## v4.0.0 - 2024-12-xx
 
-> [!NOTE]
-> This version hasn't been released yet. It's currently in development. That said, some of these changes are currently available in the `main` branch.
+> [!IMPORTANT]
+> This MAY be one of the final releases, as this project will enter a maintenance phase, or be archived in the future. This is primarily due to the fact that I don't often use NadekoBot anymore, and the NadekoBot team, a while back, decided not to merge this installer into the main installer repository, which is completely understandable.
 
-This release introduces A LOT of changes to the installer, including some breaking changes. These are listed in the below changelog, but some of the main changes include the naming of specific files produced by the installer. This means that you will manually need to change the names of several files, if you wish to keep them. These files will be listed before the rest of the changes will be merged into the `main` branch.
-
-Additionally, the next release will introduce support for NadekoBot v5 and MOST LIKELY drop support for NadekoBot v4. I'm not introducing this change yet, as I'm not sure how easy it will be to support both versions of NadekoBot. This release is primarily focused on improving the installer's codebase and making it more user-friendly.
+This release introduces A LOT of changes to the installer, including some breaking changes. These are listed in the below changelog, but some of the main changes include the naming of specific files produced by the installer, supporting NadekoBot v5, and improved visuals and error handling. This means that you will need to manually change the names of several files, if you wish to keep them.
 
 ### Added
 
+- Add support for NadekoBot v5.
 - Added support for the following distributions and their versions:
   - Ubuntu 24.04
   - Linux Mint 22
@@ -25,6 +24,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
   - I believe this is already available to the other options, but if not, this can also be done when:
     - backing up important files.
     - setting up or updating NadekoBot.
+- The install checks if the `token` in `creds.yml` is set, before allowing the user to start NadekoBot.
 
 ### Changed
 
@@ -34,6 +34,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 - ⚠️ Old strings are now stored in `strings.old` instead of `strings_old`.
 - ⚠️ Old aliases are now stored in `aliases.old` instead of `aliases_old`.
 - ⚠️ Backed up files are now stored in `important-files-backup` instead of `important_file_backup`.
+- ⚠️ Replace `youtube-dl` with `yt-dlp`.
 
 #### Improvements
 
@@ -44,6 +45,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 - Temporary files are handled more efficiently and are removed when no longer needed.
 - Previous version of NadekoBot is restored if an error occurs during the download or compilation of NadekoBot.
 - Previous backups are restored if an error occurs during the backup process.
+- Better output and reasons for why some options are disabled.
 
 #### Programmatic-ish Changes
 
@@ -58,6 +60,7 @@ Additionally, the next release will introduce support for NadekoBot v5 and MOST 
 
 ### Removed
 
+- ⚠️ Removed support for NadekoBot v4.
 - ⚠️ Removed support for distributions:
   - ⚠️ Ubuntu 20.04, due to end of life in about 3 months.
   - ⚠️ Ubuntu 18.04, due to end of life.

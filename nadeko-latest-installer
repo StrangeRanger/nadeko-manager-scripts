@@ -4,8 +4,8 @@
 #
 # NOTE:
 #   The end-user will have to manually re-add their strings and aliases after each
-#   update, as updates may cause a number of to become obsolete or be changed, etc.
-#   However, the old strings and aliases will be backed up as 'strings.old' and
+#   update, as updates may cause a number of files to become obsolete or be changed,
+#   etc. However, the old strings and aliases will be backed up as 'strings.old' and
 #   'aliases.old.yml' respectively.
 #
 # Comment Key:
@@ -24,8 +24,7 @@ readonly C_NADEKOBOT_TMP
 
 readonly C_NADEKOBOT_URL="https://gitlab.com/Kwoth/nadekobot"
 readonly C_EXAMPLE_CREDS="$C_NADEKOBOT_TMP/nadekobot/src/NadekoBot/creds_example.yml"
-readonly C_CURRENT_CREDS="nadekobot/output/creds.yml"
-readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/nadekobot/output/creds.yml"
+readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/$E_CURRENT_CREDS"
 readonly C_CURRENT_DATABASE="nadekobot/output/data/NadekoBot.db"
 readonly C_NEW_DATABASE="$C_NADEKOBOT_TMP/nadekobot/output/data/NadekoBot.db"
 readonly C_CURRENT_DATA="nadekobot/output/data"
@@ -46,7 +45,9 @@ fi
 
 
 ####
-# Clean up and exit the script.
+# Cleanly exit the script by removing by removing temporary files and directories. If
+# an error occurs or a premature exit is detected, the script will attempt to restore
+# the original version of 'nadekobot'.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -68,7 +69,7 @@ clean_exit() {
     ## continue running, even if an error occurred. Please refer to the
     ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
     case "$exit_code" in
-        1)   exit_code=50 ;;
+        1) exit_code=50 ;;
         0|5) ;;
         129)
             echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
@@ -177,13 +178,13 @@ cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR
 ###
 
 (
-    if [[ ! -f $C_CURRENT_CREDS ]]; then
+    if [[ ! -f $E_CURRENT_CREDS ]]; then
         echo "${E_INFO}Copying '${C_EXAMPLE_CREDS##*/}' as '${C_NEW_CREDS##*/}'" \
             "to '${C_NEW_CREDS%/*}'..."
         cp -f "$C_EXAMPLE_CREDS" "$C_NEW_CREDS" || exit 1
     else
         echo "${E_INFO}Copying '${C_NEW_CREDS##*/}' to '${C_NEW_CREDS%/*}'..."
-        cp -f "$C_CURRENT_CREDS" "$C_NEW_CREDS" || exit 1
+        cp -f "$E_CURRENT_CREDS" "$C_NEW_CREDS" || exit 1
     fi
 ) || E_STDERR "Failed to copy credentials" "1"
 
