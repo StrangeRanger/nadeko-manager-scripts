@@ -45,7 +45,6 @@ installer_repo="StrangeRanger/NadekoBot-BashScript"
 # Options:
 #   main     = Production ready code (the latest stable code)
 #   dev      = Non-production ready code (has the possibility of breaking something)
-#   testing  = This branch is continuously changing, and will most likely cause issues
 #   NadekoV4 = The version of the installer designed for NadekoBot v4
 #
 # Default: "main"
