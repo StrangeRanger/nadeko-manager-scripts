@@ -108,7 +108,7 @@ nadekobot/output/data/xp_template.json"
 ###
 
 # 'linuxAIO' revision number.
-export E_LINUXAIO_REVISION=43
+export E_LINUXAIO_REVISION=44
 # The URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
@@ -123,7 +123,7 @@ export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_b
 #   correct directory, the ${0%/*} will return 'linuxAIO' rather than '.', which will
 #   activate the '||' block since it's trying to `cd` into a file rather than a
 #   directory.
-if [[ -f linuxAIO ]]; then
+if [[ ! -f linuxAIO ]]; then
     cd "${0%/*}" || {
         echo "Failed to change working directory" >&2
         echo "Change your working directory to that of the executed script"
