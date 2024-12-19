@@ -6,7 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## v4.0.0 - 2024-12-xx
+## [v4.0.1] - 2024-12-19
+
+### Changed
+
+- Moved "changing working directory to that of executed script" code from `installer-prep` to `linuxAIO`.
+
+### Removed
+
+- Removed `testing` branch as an option to download NadekoBot from.
+
+### Fixed
+
+- The code mentioned in the "Changed" section, now ACTUALLY changes the working directory to that of the executed script. Previously it changed to the directory where `installer-prep` was located.
+
+## [v4.0.0] - 2024-12-17
 
 > [!IMPORTANT]
 > This MAY be one of the final releases, as this project will enter a maintenance phase, or be archived in the future. This is primarily due to the fact that I don't often use NadekoBot anymore, and the NadekoBot team, a while back, decided not to merge this installer into the main installer repository, which is completely understandable.
@@ -338,7 +352,9 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
   - CentOS: 7
 - The option to run NadekoBot with auto-update.
 
-[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v3.2.5...HEAD
+[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v4.0.1...HEAD
+[v4.0.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.1
+[v4.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.0 
 [v3.2.5]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.5
 [v3.2.4]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.4
 [v3.2.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.3
