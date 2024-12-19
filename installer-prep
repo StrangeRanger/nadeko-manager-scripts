@@ -9,7 +9,7 @@
 
 
 # Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
-readonly C_CURRENT_LINUXAIO_REVISION=42
+readonly C_CURRENT_LINUXAIO_REVISION=44
 readonly C_MAIN_INSTALLER="nadeko-main-installer"
 
 ## Modify output text color.
@@ -30,6 +30,9 @@ E_ERROR="${E_RED}ERROR:${E_NC} "
 E_INFO="${E_BLUE}==>${E_NC} "
 E_NOTE="${E_CYAN}==>${E_NC} "
 export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
+
+export E_ROOT_DIR="$PWD"
+export E_INSTALLER_PREP="$E_ROOT_DIR/installer-prep"
 
 
 ####[ Functions ]#######################################################################
@@ -276,9 +279,9 @@ E_STDERR() {
 ####[ Trapping Logic ]##################################################################
 
 
+trap 'clean_exit "129" "true"' SIGHUP
 trap 'clean_exit "130" "true"' SIGINT
 trap 'clean_exit "143" "true"' SIGTERM
-trap 'clean_exit "129" "true"' SIGHUP
 trap 'clean_exit "$?" "true"' EXIT
 
 
@@ -292,16 +295,6 @@ if [[ $E_LINUXAIO_REVISION != "$C_CURRENT_LINUXAIO_REVISION" ]]; then
     # NOTE: The script will exit after the function has run.
     linuxAIO_update
 fi
-
-# Change the working directory to the location of the executed script.
-cd "${0%/*}" || {
-    echo "${E_ERROR}Failed to change working directory" >&2
-    echo "${E_NOTE}Change your working directory to that of the executed script"
-    clean_exit "1"
-}
-
-export E_ROOT_DIR="$PWD"
-export E_INSTALLER_PREP="$E_ROOT_DIR/installer-prep"
 
 
 ####[ Main ]############################################################################
