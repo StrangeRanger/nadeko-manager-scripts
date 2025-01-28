@@ -135,7 +135,6 @@ fetch_versions() {
     local versions
 
     if (( http_code != 200 )); then
-        # TODO: Make sure the exit code is the best choice.
         E_STDERR "Failed to fetch releases from '${API_URL}'" "1"
     fi
 
