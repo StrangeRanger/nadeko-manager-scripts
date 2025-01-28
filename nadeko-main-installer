@@ -13,7 +13,8 @@
 
 export E_SERVICE_NAME="nadeko.service"
 export E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
-export E_CURRENT_CREDS="nadekobot/output/creds.yml"
+export E_BIN_DIR="nadekobot"
+export E_CURRENT_CREDS="$E_BIN_DIR/creds.yml"
 export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 
 readonly C_REQ_DOTNET_VERSION=8
