@@ -9,7 +9,7 @@
 
 
 # Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
-readonly C_CURRENT_LINUXAIO_REVISION=44
+readonly C_CURRENT_LINUXAIO_REVISION=45
 readonly C_MAIN_INSTALLER="nadeko-main-installer"
 
 ## Modify output text color.
