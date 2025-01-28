@@ -175,15 +175,15 @@ echo \"[INFO] Running NadekoBot in the background\"
 \"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
-cd $E_ROOT_DIR/nadekobot/output
-dotnet NadekoBot.dll || {
+cd \"$E_ROOT_DIR/$E_BIN_DIR\"
+./\"$E_BOT_EXECUTABLE\" || {
     echo \"[ERROR] Failed to start NadekoBot\" >&2
     echo \"[INFO] Exiting...\"
     exit 1
 }
 
 echo \"[INFO] Stopping NadekoBot...\"
-cd $E_ROOT_DIR" > NadekoRun
+cd \"$E_ROOT_DIR\"" > NadekoRun
 else
     echo "#!/bin/bash
 
@@ -195,20 +195,20 @@ echo \"[INFO] Running NadekoBot in the background with auto restart\"
 echo \"[INFO] Starting NadekoBot...\"
 
 while true; do
-    if [[ -d $E_ROOT_DIR/nadekobot/output ]]; then
-        cd $E_ROOT_DIR/nadekobot/output || {
-            echo \"[ERROR] Failed to change working directory to '$E_ROOT_DIR/nadekobot/output'\" >&2
+    if [[ -d $E_ROOT_DIR/$E_BIN_DIR ]]; then
+        cd \"$E_ROOT_DIR/$E_BIN_DIR\" || {
+            echo \"[ERROR] Failed to change working directory to '$E_ROOT_DIR/$E_BIN_DIR'\" >&2
             echo \"[NOTE] Ensure the working directory in '/etc/systemd/system/nadeko.service' is correct\"
             echo \"[INFO] Exiting...\"
             exit 1
         }
     else
-        echo \"[WARN] '$E_ROOT_DIR/nadekobot/output' doesn't exist\" >&2
+        echo \"[WARN] '$E_ROOT_DIR/$E_BIN_DIR' doesn't exist\" >&2
         echo \"[INFO] Exiting...\"
         exit 1
     fi
 
-    dotnet NadekoBot.dll || {
+    ./\"$E_BOT_EXECUTABLE\" || {
         echo \"[ERROR] An error occurred when trying to start NadekoBot\" >&2
         echo \"[INFO] Exiting...\"
         exit 1
