@@ -17,8 +17,6 @@ export E_BIN_DIR="nadekobot"
 export E_CURRENT_CREDS="$E_BIN_DIR/creds.yml"
 export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 
-readonly C_REQ_DOTNET_VERSION=8
-
 
 ####[ Functions ]#######################################################################
 
@@ -260,11 +258,6 @@ while true; do
     ### or program, that has the possibility of changing every time the while loop runs.
     ###
 
-    if hash dotnet &>/dev/null; then
-        dotnet_version=$(dotnet --version)     # Version: x.x.x
-        dotnet_version=${dotnet_version//.*/}  # Version: x
-    fi
-
     if hash ccze &>/dev/null; then
         ccze_installed=true
     else
@@ -284,12 +277,10 @@ while true; do
     ###
 
     ## Disable option 1 if any of the following tools are not installed.
-    if (! hash dotnet \
-        || ! hash redis-server \
+    if (! hash redis-server \
         || ! hash python3 \
         || ! "$ccze_installed" \
-        || ! "$yt_dlp_installed" \
-        || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null
+        || ! "$yt_dlp_installed" ) &>/dev/null
     then
         opt_one_dis=true
         opt_one_text="${E_GREY}${opt_one_text}${dis_option}${E_NC}"
