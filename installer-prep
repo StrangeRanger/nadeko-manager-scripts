@@ -73,6 +73,11 @@ detect_sys_info() {
 ####
 # Download the latest version of 'linuxAIO' if $E_LINUXAIO_REVISION and
 # $C_CURRENT_LINUXAIO_REVISION aren't of equal value.
+#
+# EXITS:
+#   - 0: If the download and application of existing configurations to the newest version
+#       of 'linuxAIO' is successful.
+#   - 1: If the download of 'linuxAIO' fails.
 linuxAIO_update() {
     echo "${E_WARNING}You are using an older version of 'linuxAIO'"
     read -rp "${E_NOTE}Press [Enter] to download the latest version"
@@ -157,6 +162,9 @@ linuxAIO_update() {
 ####
 # Provide the end-user with the option to continue, even if their system isn't
 # officially supported.
+#
+# EXITS:
+#   - 0: If the end-user chooses not to continue.
 unsupported() {
     local choice
 
@@ -191,6 +199,9 @@ unsupported() {
 #       - Acceptable values:
 #           - true
 #           - false
+#
+# EXITS:
+#   - exit_code: The exit code provided via the first parameter.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -225,6 +236,9 @@ clean_exit() {
 ####
 # Download and execute the main installer. This is one of the final actions performed by
 # this script.
+#
+# EXITS:
+#   - $?: The exit code of the main installer.
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
     ./"$C_MAIN_INSTALLER"
@@ -266,6 +280,9 @@ E_DOWNLOAD_SCRIPT() {
 #       - If provided, exit with the provided value.
 #   - $3: additional_message (Optional, Default: "")
 #       - If provided, output an additional message.
+#
+# EXITS:
+#   - exit_code: Exits with the provided exit code, IF provided.
 E_STDERR() {
     local error_message="$1"
     local exit_code="${2:-}"
