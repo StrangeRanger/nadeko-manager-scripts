@@ -15,7 +15,8 @@
 readonly C_DOTNET_PKG="dotnet-sdk-8.0"
 readonly C_MUSIC_PREREQS=("libopus0" "opus-tools" "libopus-dev" "libsodium-dev"
     "python3" "ffmpeg")
-readonly C_OTHER_PREREQS=("redis-server" "git" "ccze" "apt-transport-https" "ffmpeg")
+readonly C_OTHER_PREREQS=("redis-server" "git" "ccze" "apt-transport-https" "ffmpeg"
+    "jq")
 
 
 ####[ Functions ]#######################################################################
