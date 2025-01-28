@@ -57,6 +57,9 @@ fi
 #       - Acceptable values:
 #           - true
 #           - false
+#
+# EXITS:
+#   - $exit_code: Argument provided by the caller, or 50 if the exit code is 1 or 130.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"

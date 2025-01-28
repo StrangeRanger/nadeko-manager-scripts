@@ -34,6 +34,12 @@ readonly C_REQ_DOTNET_VERSION=8
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#
+# RETURNS:
+#   - 0: If the script should continue running.
+#
+# EXITS:
+#   - $exit_code: Parameter passed to the function.
 exit_code_actions() {
     local exit_code="$1"
 
@@ -176,6 +182,9 @@ export -f E_FOLLOW_SERVICE_LOGS
 #       - Acceptable values:
 #           - runner: Called from one of the runner scripts.
 #           - opt_five: Called from the main installer.
+#
+# EXITS:
+#   - 4: If an invalid argument is passed to the function.
 E_WATCH_SERVICE_LOGS() {
     local log_type="$1"
 
