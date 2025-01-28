@@ -12,11 +12,9 @@
 ####[ Global Variables ]################################################################
 
 
-readonly C_DOTNET_PKG="dotnet-sdk-8.0"
 readonly C_MUSIC_PREREQS=("libopus0" "opus-tools" "libopus-dev" "libsodium-dev"
     "python3" "ffmpeg")
-readonly C_OTHER_PREREQS=("redis-server" "git" "ccze" "apt-transport-https" "ffmpeg"
-    "jq")
+readonly C_OTHER_PREREQS=("redis-server" "ccze" "apt-transport-https" "ffmpeg" "jq")
 
 
 ####[ Functions ]#######################################################################
@@ -107,51 +105,14 @@ install_yt_dlp() {
 #   - apt_pid: The process ID of the 'apt' process, used to kill the process when the
 #     script exits.
 #
-# PARAMETERS:
-# 	- $1: distro_name (Required)
-# 	- $2: distro_ver (Required)
-#   - $3: ms_repo (Optional, Default: false)
-#       - Whether to install .NET from Microsoft's repository.
-#       - Acceptable values:
-#           - true
-#           - false
-#
 # EXITS:
 #   - 0: Successfully installed all prerequisites.
 #   - 1: Failed to add Microsoft's package signing key.
 #   - $?: Failed to install all prerequisites or remove existing .NET installation.
 install_prereqs() {
-    local distro_name="$1"
-    local distro_ver="$2"
-    local ms_repo="${3:-false}"
-    local ms_repo_url="https://packages.microsoft.com/config"
-    local ms_repo_pkg="packages-microsoft-prod.deb"
-
-    # TODO: Add a check for if microsoft's version of .NET is already installed.
-    if [[ $ms_repo == true ]]; then
-        echo "${E_NOTE}Requires .NET from Microsoft's repository"
-
-        echo "${E_INFO}Adding Microsoft's package signing key..."
-        (   ## A.1.
-            curl -O "$ms_repo_url/$distro_name/$distro_ver/$ms_repo_pkg" || exit 1
-            sudo dpkg -i "$ms_repo_pkg" || exit 1
-        ) &
-        apt_pid=$!
-        wait $apt_pid || E_STDERR "Failed to add Microsoft's package signing key" $?
-        unset apt_pid
-        rm -f "$ms_repo_pkg"
-
-        echo "${E_INFO}Uninstalling existing .NET installation..."
-        ( sudo apt remove -y "$C_DOTNET_PKG" && sudo apt autoremove -y ) &  ## A.1.
-        apt_pid=$!
-        wait $apt_pid \
-            || E_STDERR "Failed to uninstall existing .NET installation" $?
-        unset apt_pid
-    fi
-
     (   ## A.1.
-        echo "${E_INFO}Installing .NET Core..."
-        sudo apt update && sudo apt install -y "$C_DOTNET_PKG" || exit $?
+        echo "${E_INFO}Updating package lists..."
+        sudo apt update  || exit $?
 
         echo "${E_INFO}Installing music prerequisites..."
         sudo apt install -y "${C_MUSIC_PREREQS[@]}" || exit $?
@@ -198,22 +159,9 @@ trap 'clean_exit "$?"'  EXIT
 printf "%sWe will now install NadekoBot's prerequisites. " "$E_NOTE"
 read -rp "Press [Enter] to continue."
 
-if [[ $E_DISTRO == "ubuntu" ]]; then
-    case "$E_VER" in
-        24.04) install_prereqs "ubuntu" "$E_VER" ;;
-        22.04) install_prereqs "ubuntu" "$E_VER" ;;
-        *) unsupported ;;
-    esac
-elif [[ $E_DISTRO == "debian" ]]; then
-    case "$E_SVER" in
-        12) install_prereqs "debian" "$E_SVER" "true" ;;
-        11) install_prereqs "debian" "$E_SVER" "true" ;;
-        *) unsupported ;;
-    esac
-elif [[ $E_DISTRO == "linuxmint" ]]; then
-    case "$E_SVER" in
-        22) install_prereqs "ubuntu" "22.04" ;;
-        21) install_prereqs "ubuntu" "22.04" ;;
-        *) unsupported ;;
-    esac
-fi
+case "$E_DISTRO-$E_VER" in
+    ubuntu-24.04|ubuntu-22.04|debian-12|debian-11|linuxmint-22|linuxmint-21)
+        install_prereqs ;;
+    *)
+        unsupported ;;
+esac
