@@ -127,6 +127,7 @@ disabled_reasons() {
 E_GET_SERVICE_STATUS() {
     E_SERVICE_STATUS=$(systemctl is-active "$E_SERVICE_NAME")
 }
+export -f E_GET_SERVICE_STATUS
 
 ####
 # Stop NadekoBot's service.
@@ -153,6 +154,7 @@ E_STOP_SERVICE() {
             && echo -e "\n${E_NOTE}NadekoBot is not currently running"
     fi
 }
+export -f E_STOP_SERVICE
 
 ####
 # Display the logs from 'nadeko.service' as they are created.
@@ -162,6 +164,7 @@ E_FOLLOW_SERVICE_LOGS() {
         sudo journalctl --no-hostname -f -u "$E_SERVICE_NAME"  | ccze -A
     )
 }
+export -f E_FOLLOW_SERVICE_LOGS
 
 ####
 # Output additional information to go along with the output of 'E_FOLLOW_SERVICE_LOGS'.
@@ -181,8 +184,7 @@ E_WATCH_SERVICE_LOGS() {
     elif [[ $log_type == "opt_five" ]]; then
         echo "${E_INFO}Watching '$E_SERVICE_NAME' logs, live..."
     else
-        E_STDERR "INTERNAL ERROR: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
-            "4"
+        E_STDERR "INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" "4"
     fi
 
     echo "${E_NOTE}To stop displaying the startup logs:"
@@ -197,6 +199,7 @@ E_WATCH_SERVICE_LOGS() {
 
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
 }
+export -f E_WATCH_SERVICE_LOGS
 
 
 ####[ Trapping Logic ]##################################################################
@@ -352,7 +355,6 @@ while true; do
                 continue
             fi
 
-            export -f E_STOP_SERVICE
             export E_SERVICE_STATUS
 
             E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
@@ -370,8 +372,6 @@ while true; do
             fi
 
             export E_SERVICE_STATUS
-            export -f E_WATCH_SERVICE_LOGS
-            export -f E_FOLLOW_SERVICE_LOGS
 
             E_DOWNLOAD_SCRIPT "nadeko-runner"
             clear -x
