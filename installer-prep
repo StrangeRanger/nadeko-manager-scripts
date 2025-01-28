@@ -261,16 +261,11 @@ execute_main_installer() {
 #           - true
 #           - false
 #
-# RETURNS:
+# EXITS:
 #   - 1: If no script name is provided.
 E_DOWNLOAD_SCRIPT() {
     local script_name="$1"
     local script_output="${2:-false}"
-
-    if [[ -z $script_name ]]; then
-        E_STDERR "INTERNAL: No script name provided to download"
-        return 1
-    fi
 
     [[ $script_output == true ]] \
         && printf "%sDownloading '%s'..." "${E_INFO}" "$script_name"
