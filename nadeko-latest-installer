@@ -21,7 +21,6 @@ C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
 
 ## File paths.
-readonly C_BOT_EXECUTABLE="NadekoBot"
 readonly C_BIN_DIR_TMP="$C_NADEKOBOT_TMP/$E_BIN_DIR"
 readonly C_EXAMPLE_CREDS="$C_BIN_DIR_TMP/creds_example.yml"
 readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/$E_CURRENT_CREDS"
@@ -197,7 +196,7 @@ tar -xf "$C_ARCHIVE_NAME" || E_STDERR "Failed to extract '${C_ARCHIVE_NAME}'" "1
 archive_dir_name=$(tar -tf "$C_ARCHIVE_NAME" | head -1 | cut -f1 -d "/")
 mv "$archive_dir_name" "$E_BIN_DIR"
 unset archive_dir_name
-chmod +x "${E_BIN_DIR}/${C_BOT_EXECUTABLE}"
+chmod +x "${E_BIN_DIR}/${E_BOT_EXECUTABLE}"
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 
 
