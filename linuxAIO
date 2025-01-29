@@ -43,12 +43,12 @@ installer_repo="StrangeRanger/NadekoBot-BashScript"
 # The branch of $installer_repo that the installer will download its scripts from.
 #
 # Options:
-#   main     = Production ready code (the latest stable code)
+#   NadekoV5 = Production ready code (the latest stable code) for NadekoBot v5
 #   dev      = Non-production ready code (has the possibility of breaking something)
 #   NadekoV4 = The version of the installer designed for NadekoBot v4
 #
 # Default: "main"
-installer_branch="main"
+installer_branch="NadekoV5"
 
 # The branch/tag, of NadekoBot's official repo, that the installer will download the bot
 # from.
@@ -62,10 +62,8 @@ installer_branch="main"
 #   and v4.
 #
 # Options:
-#   v5    = Latest version (the master/main branch)
-#   v4    = NadekoBot v4
-#   x.x.x = Any other branch/tag (refer to the NadekoBot repo for available tags and
-#           branches)
+#   v5 = NadekoBot v5
+#   v4 = NadekoBot v4
 #
 # Default: "v5"
 export E_BOT_INSTALL_VERSION="v5"
@@ -108,7 +106,7 @@ nadekobot/data/xp_template.json"
 ###
 
 # 'linuxAIO' revision number.
-export E_LINUXAIO_REVISION=45
+export E_LINUXAIO_REVISION=46
 # The URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
@@ -125,7 +123,7 @@ export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_b
 #   directory.
 if [[ ! -f linuxAIO ]]; then
     cd "${0%/*}" || {
-        echo "Failed to change working directory" >&2
+        echo "ERROR: Failed to change working directory" >&2
         echo "Change your working directory to that of the executed script"
         exit 1
     }
