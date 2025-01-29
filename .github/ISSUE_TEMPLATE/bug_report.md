@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: awaiting review, bug
+labels: awaiting review, bug, enhancement
 assignees: StrangeRanger
 
 ---
@@ -24,7 +24,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Specifics (please complete the following information):**
- - OS: [e.g. Ubuntu]
+ - OS: [e.g. Ubuntu 24.04]
  - Version: [e.g. v1.2.3]
  - Branch: [e.g. main]
 

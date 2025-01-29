@@ -77,38 +77,38 @@ export E_BOT_INSTALL_VERSION="v5"
 #      included. This means that unless modified by the end-user, the beginning of the
 #      path will start with 'nadekobot/', followed by the rest of the path to the file.
 #   2. Each file must be separated by a single space or placed on its own line.
-#       - Valid:   "nadekobot/output/creds.yml
-#                   nadekobot/output/data/bot.yml"
-#       - Valid:   "nadekobot/output/creds.yml nadekobot/output/data/bot.yml"
-#       - Invalid: "nadekobot/output/creds.yml, nadekobot/output/data/bot.yml"
-#       - Invalid: "nadekobot/output/creds.yml,nadekobot/output/data/bot.yml"
+#       - Valid:   "nadekobot/creds.yml
+#                   nadekobot/data/bot.yml"
+#       - Valid:   "nadekobot/creds.yml nadekobot/data/bot.yml"
+#       - Invalid: "nadekobot/creds.yml, nadekobot/data/bot.yml"
+#       - Invalid: "nadekobot/creds.yml,nadekobot/data/bot.yml"
 #   3. Niether the file nor the path to the file can contain a space.
-#      - Valid:   'nadekobot/output/data/NadekoBot.db'
-#      - Invalid: 'nadeko bot/output/data/NadekoBot.db'
+#      - Valid:   'nadekobot/data/NadekoBot.db'
+#      - Invalid: 'nadeko bot/data/NadekoBot.db'
 #
-# Default: "nadekobot/output/creds.yml
-#   nadekobot/output/data/NadekoBot.db
-#   nadekobot/output/data/bot.yml
-#   nadekobot/output/data/gambling.yml
-#   nadekobot/output/data/games.yml
-#   nadekobot/output/data/images.yml
-#   nadekobot/output/data/xp.yml
-#   nadekobot/output/data/xp_template.json"
-export E_FILES_TO_BACK_UP="nadekobot/output/creds.yml
-nadekobot/output/data/NadekoBot.db
-nadekobot/output/data/bot.yml
-nadekobot/output/data/gambling.yml
-nadekobot/output/data/games.yml
-nadekobot/output/data/images.yml
-nadekobot/output/data/xp.yml
-nadekobot/output/data/xp_template.json"
+# Default: "nadekobot/creds.yml
+#   nadekobot/data/NadekoBot.db
+#   nadekobot/data/bot.yml
+#   nadekobot/data/gambling.yml
+#   nadekobot/data/games.yml
+#   nadekobot/data/images.yml
+#   nadekobot/data/xp.yml
+#   nadekobot/data/xp_template.json"
+export E_FILES_TO_BACK_UP="nadekobot/creds.yml
+nadekobot/data/NadekoBot.db
+nadekobot/data/bot.yml
+nadekobot/data/gambling.yml
+nadekobot/data/games.yml
+nadekobot/data/images.yml
+nadekobot/data/xp.yml
+nadekobot/data/xp_template.json"
 
 ###
 ### [ General Variables ]
 ###
 
 # 'linuxAIO' revision number.
-export E_LINUXAIO_REVISION=44
+export E_LINUXAIO_REVISION=45
 # The URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 

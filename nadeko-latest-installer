@@ -17,28 +17,29 @@
 ####[ Variables ]#######################################################################
 
 
-export DOTNET_CLI_TELEMETRY_OPTOUT=1  # Disable .NET CLI telemetry.
-
 C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
 
-readonly C_NADEKOBOT_URL="https://gitlab.com/Kwoth/nadekobot"
-readonly C_EXAMPLE_CREDS="$C_NADEKOBOT_TMP/nadekobot/src/NadekoBot/creds_example.yml"
+## File paths.
+readonly C_BIN_DIR_TMP="$C_NADEKOBOT_TMP/$E_BIN_DIR"
+readonly C_EXAMPLE_CREDS="$C_BIN_DIR_TMP/creds_example.yml"
 readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/$E_CURRENT_CREDS"
-readonly C_CURRENT_DATABASE="nadekobot/output/data/NadekoBot.db"
-readonly C_NEW_DATABASE="$C_NADEKOBOT_TMP/nadekobot/output/data/NadekoBot.db"
-readonly C_CURRENT_DATA="nadekobot/output/data"
-readonly C_NEW_DATA="$C_NADEKOBOT_TMP/nadekobot/output/data"
+readonly C_CURRENT_DATABASE="$E_BIN_DIR/data/NadekoBot.db"
+readonly C_NEW_DATABASE="$C_BIN_DIR_TMP/data/NadekoBot.db"
+readonly C_CURRENT_DATA="$E_BIN_DIR/data"
+readonly C_NEW_DATA="$C_BIN_DIR_TMP/data"
 
+## GitLab project details.
+readonly PROJECT_ID="9321079"
+readonly API_URL="https://gitlab.com/api/v4/projects/${PROJECT_ID}"
+
+## Constants set later.
+C_BOT_VERSION=""
+C_ARCHIVE_NAME=""
+C_ARCHIVE_URL=""
+
+## Non-constant variables.
 service_is_active=false
-
-if [[ -d nadekobot ]]; then
-    readonly C_ACTION_ONE="update"
-    readonly C_ACTION_TWO="updating"
-else
-    readonly C_ACTION_ONE="download and set up"
-    readonly C_ACTION_TWO="setting up"
-fi
 
 
 ####[ Functions ]#######################################################################
@@ -57,6 +58,9 @@ fi
 #       - Acceptable values:
 #           - true
 #           - false
+#
+# EXITS:
+#   - $exit_code: Argument provided by the caller, or 50 if the exit code is 1 or 130.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -123,6 +127,37 @@ clean_exit() {
     exit "$exit_code"
 }
 
+fetch_versions() {
+    local response; response=$(curl -sS -w "%{http_code}" "${API_URL}/releases")
+    local http_code="${response: -3}"
+    local response_body="${response:0:${#response}-3}"
+    local versions
+
+    if (( http_code != 200 )); then
+        E_STDERR "Failed to fetch releases from '${API_URL}'" "1"
+    fi
+
+    # TODO: Make sure the `||` works as it should.
+    mapfile -t versions < <(echo "$response_body" | jq -r '.[].tag_name' | sort -V -r) \
+        || E_STDERR "Failed to parse releases" "1"
+
+    if (( ${#versions[@]} == 0 )); then
+        E_STDERR "No releases found" "1"
+    fi
+
+    echo "${E_NOTE}Select version to install:"
+    select version in "${versions[@]}"; do
+        if [[ -n $version ]]; then
+            C_BOT_VERSION="$version"
+            C_ARCHIVE_NAME="nadekobot-v${version}.tar"
+            C_ARCHIVE_URL="$API_URL/packages/generic/NadekoBot-build/$C_BOT_VERSION/${C_BOT_VERSION}-linux-${E_ARCH}-build.tar"
+            break
+        else
+            echo "${E_ERROR}Invalid selection"
+        fi
+    done
+}
+
 
 ####[ Trapping Logic ]##################################################################
 
@@ -136,40 +171,34 @@ trap 'clean_exit "$?" "true"'  EXIT
 ####[ Main ]############################################################################
 
 
-read -rp "${E_NOTE}We will now $C_ACTION_ONE NadekoBot. Press [Enter] to begin."
+read -rp "${E_NOTE}We will now set up NadekoBot. Press [Enter] to begin."
 cd "$C_NADEKOBOT_TMP" \
     || E_STDERR "Failed to change working directory to '$C_NADEKOBOT_TMP'" "1"
-
-###
-### [ Stop Service ]
-###
 
 if [[ $E_SERVICE_STATUS == "active" ]]; then
     service_is_active=true
     E_STOP_SERVICE
 fi
 
+fetch_versions
+
 ###
-### [ Download and Compile NadekoBot ]
+### [ Download NadekoBot Archive ]
 ###
 
-echo "${E_INFO}Downloading NadekoBot into '$C_NADEKOBOT_TMP'..."
-git clone -b "$E_BOT_INSTALL_VERSION" --recursive --depth 1 "$C_NADEKOBOT_URL" \
-    || E_STDERR "Failed to download NadekoBot" "1"
+echo "${E_INFO}Downloading '${C_BOT_VERSION}' for '${E_ARCH}'..."
+curl -L -o "$C_ARCHIVE_NAME" "$C_ARCHIVE_URL" \
+    || E_STDERR "Failed to download '${C_BOT_VERSION}'" "1"
 
-## A.1.
-if [[ -d /tmp/NuGetScratch ]]; then
-    echo "${E_INFO}Modifying ownership of '/tmp/NuGetScratch'..."
-    sudo chown -R "$USER":"$USER" /tmp/NuGetScratch \
-        || E_STDERR "Failed to modify the ownership of '/tmp/NuGetScratch'" "1"
-fi
+echo "${E_INFO}Extracting '${C_ARCHIVE_NAME}'..."
+tar -xf "$C_ARCHIVE_NAME" || E_STDERR "Failed to extract '${C_ARCHIVE_NAME}'" "1"
 
-echo "${E_INFO}Building NadekoBot..."
-cd nadekobot || E_STDERR "Failed to change working directory to 'nadekobot'" "1"
-dotnet restore -f --no-cache || E_STDERR "Failed to restore .NET packages" "1"
-dotnet build src/NadekoBot/NadekoBot.csproj -c Release -o output/ \
-    || E_STDERR "Failed to build NadekoBot" "1"
+archive_dir_name=$(tar -tf "$C_ARCHIVE_NAME" | head -1 | cut -f1 -d "/")
+mv "$archive_dir_name" "$E_BIN_DIR"
+unset archive_dir_name
+chmod +x "${E_BIN_DIR}/${E_BOT_EXECUTABLE}"
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
+
 
 ###
 ### [ Move Credentials, Database, and Other Data ]
@@ -250,7 +279,7 @@ fi
 ###
 
 echo ""
-echo "${E_SUCCESS}Finished $C_ACTION_TWO NadekoBot"
+echo "${E_SUCCESS}Finished setting up NadekoBot"
 
 if [[ $service_is_active == true ]]; then
     echo "${E_NOTE}'$E_SERVICE_NAME' was stopped to update NadekoBot and needs to be" \

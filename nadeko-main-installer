@@ -13,10 +13,10 @@
 
 export E_SERVICE_NAME="nadeko.service"
 export E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
-export E_CURRENT_CREDS="nadekobot/output/creds.yml"
+export E_BOT_EXECUTABLE="NadekoBot"
+export E_BIN_DIR="nadekobot"
+export E_CURRENT_CREDS="$E_BIN_DIR/creds.yml"
 export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
-
-readonly C_REQ_DOTNET_VERSION=8
 
 
 ####[ Functions ]#######################################################################
@@ -34,6 +34,12 @@ readonly C_REQ_DOTNET_VERSION=8
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#
+# RETURNS:
+#   - 0: If the script should continue running.
+#
+# EXITS:
+#   - $exit_code: Parameter passed to the function.
 exit_code_actions() {
     local exit_code="$1"
 
@@ -127,6 +133,7 @@ disabled_reasons() {
 E_GET_SERVICE_STATUS() {
     E_SERVICE_STATUS=$(systemctl is-active "$E_SERVICE_NAME")
 }
+export -f E_GET_SERVICE_STATUS
 
 ####
 # Stop NadekoBot's service.
@@ -153,6 +160,7 @@ E_STOP_SERVICE() {
             && echo -e "\n${E_NOTE}NadekoBot is not currently running"
     fi
 }
+export -f E_STOP_SERVICE
 
 ####
 # Display the logs from 'nadeko.service' as they are created.
@@ -162,6 +170,7 @@ E_FOLLOW_SERVICE_LOGS() {
         sudo journalctl --no-hostname -f -u "$E_SERVICE_NAME"  | ccze -A
     )
 }
+export -f E_FOLLOW_SERVICE_LOGS
 
 ####
 # Output additional information to go along with the output of 'E_FOLLOW_SERVICE_LOGS'.
@@ -173,6 +182,9 @@ E_FOLLOW_SERVICE_LOGS() {
 #       - Acceptable values:
 #           - runner: Called from one of the runner scripts.
 #           - opt_five: Called from the main installer.
+#
+# EXITS:
+#   - 4: If an invalid argument is passed to the function.
 E_WATCH_SERVICE_LOGS() {
     local log_type="$1"
 
@@ -181,8 +193,7 @@ E_WATCH_SERVICE_LOGS() {
     elif [[ $log_type == "opt_five" ]]; then
         echo "${E_INFO}Watching '$E_SERVICE_NAME' logs, live..."
     else
-        E_STDERR "INTERNAL ERROR: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" \
-            "4"
+        E_STDERR "INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" "4"
     fi
 
     echo "${E_NOTE}To stop displaying the startup logs:"
@@ -197,6 +208,7 @@ E_WATCH_SERVICE_LOGS() {
 
     read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
 }
+export -f E_WATCH_SERVICE_LOGS
 
 
 ####[ Trapping Logic ]##################################################################
@@ -247,11 +259,6 @@ while true; do
     ### or program, that has the possibility of changing every time the while loop runs.
     ###
 
-    if hash dotnet &>/dev/null; then
-        dotnet_version=$(dotnet --version)     # Version: x.x.x
-        dotnet_version=${dotnet_version//.*/}  # Version: x
-    fi
-
     if hash ccze &>/dev/null; then
         ccze_installed=true
     else
@@ -271,12 +278,10 @@ while true; do
     ###
 
     ## Disable option 1 if any of the following tools are not installed.
-    if (! hash dotnet \
-        || ! hash redis-server \
+    if (! hash redis-server \
         || ! hash python3 \
         || ! "$ccze_installed" \
-        || ! "$yt_dlp_installed" \
-        || [[ ${dotnet_version:-false} != "$C_REQ_DOTNET_VERSION" ]]) &>/dev/null
+        || ! "$yt_dlp_installed" ) &>/dev/null
     then
         opt_one_dis=true
         opt_one_text="${E_GREY}${opt_one_text}${dis_option}${E_NC}"
@@ -352,7 +357,6 @@ while true; do
                 continue
             fi
 
-            export -f E_STOP_SERVICE
             export E_SERVICE_STATUS
 
             E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
@@ -370,8 +374,6 @@ while true; do
             fi
 
             export E_SERVICE_STATUS
-            export -f E_WATCH_SERVICE_LOGS
-            export -f E_FOLLOW_SERVICE_LOGS
 
             E_DOWNLOAD_SCRIPT "nadeko-runner"
             clear -x
