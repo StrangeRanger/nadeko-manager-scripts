@@ -9,7 +9,7 @@
 
 
 # Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
-readonly C_CURRENT_LINUXAIO_REVISION=44
+readonly C_CURRENT_LINUXAIO_REVISION=45
 readonly C_MAIN_INSTALLER="nadeko-main-installer"
 
 ## Modify output text color.
@@ -52,26 +52,34 @@ export E_INSTALLER_PREP="$E_ROOT_DIR/installer-prep"
 detect_sys_info() {
     if [[ -f /etc/os-release ]]; then
         . /etc/os-release
-        E_DISTRO="$ID"
-        E_VER="$VERSION_ID"  # Version: x.x.x...
-        E_SVER=${E_VER//.*/}  # Version: x
+        export E_DISTRO="$ID"
+        export E_VER="$VERSION_ID"  # Version: x.x.x...
+        export E_SVER=${E_VER//.*/}  # Version: x
         pname="$PRETTY_NAME"
     else
         E_DISTRO=$(uname -s)
         E_VER=$(uname -r)
+        export E_DISTRO E_VER
     fi
 
     case $(uname -m) in
-        x86_64) bits="64"; E_ARCH="x64" ;;
-        i*86)   bits="32"; E_ARCH="x86" ;;
-        armv*)  bits="32"; E_ARCH="?" ;;
-        *)      bits="?";  E_ARCH="?" ;;
+        x86_64)  bits="64"; export E_ARCH="x64" ;;
+        aarch64) bits="64"; export E_ARCH="arm64" ;;
+        armv8l)  bits="32"; export E_ARCH="arm32" ;;  # ARMv8 in 32-bit mode.
+        armv*)   bits="32"; export E_ARCH="arm32" ;;  # Generic ARM 32-bit.
+        i*86)    bits="32"; export E_ARCH="x86" ;;
+        *)       bits="?";  export E_ARCH="unknown" ;;  # Fallback to uname output.
     esac
 }
 
 ####
 # Download the latest version of 'linuxAIO' if $E_LINUXAIO_REVISION and
 # $C_CURRENT_LINUXAIO_REVISION aren't of equal value.
+#
+# EXITS:
+#   - 0: If the download and application of existing configurations to the newest version
+#       of 'linuxAIO' is successful.
+#   - 1: If the download of 'linuxAIO' fails.
 linuxAIO_update() {
     echo "${E_WARNING}You are using an older version of 'linuxAIO'"
     read -rp "${E_NOTE}Press [Enter] to download the latest version"
@@ -156,6 +164,9 @@ linuxAIO_update() {
 ####
 # Provide the end-user with the option to continue, even if their system isn't
 # officially supported.
+#
+# EXITS:
+#   - 0: If the end-user chooses not to continue.
 unsupported() {
     local choice
 
@@ -190,6 +201,9 @@ unsupported() {
 #       - Acceptable values:
 #           - true
 #           - false
+#
+# EXITS:
+#   - exit_code: The exit code provided via the first parameter.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -224,6 +238,9 @@ clean_exit() {
 ####
 # Download and execute the main installer. This is one of the final actions performed by
 # this script.
+#
+# EXITS:
+#   - $?: The exit code of the main installer.
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
     ./"$C_MAIN_INSTALLER"
@@ -255,6 +272,7 @@ E_DOWNLOAD_SCRIPT() {
     curl -O -s "$E_RAW_URL"/"$script_name"
     sudo chmod +x "$script_name"
 }
+export -f E_DOWNLOAD_SCRIPT
 
 ####
 # Output an error message, and if desired, exit the script.
@@ -265,6 +283,9 @@ E_DOWNLOAD_SCRIPT() {
 #       - If provided, exit with the provided value.
 #   - $3: additional_message (Optional, Default: "")
 #       - If provided, output an additional message.
+#
+# EXITS:
+#   - exit_code: Exits with the provided exit code, IF provided.
 E_STDERR() {
     local error_message="$1"
     local exit_code="${2:-}"
@@ -274,6 +295,7 @@ E_STDERR() {
     [[ $additional_message ]] && echo -e "$additional_message" >&2
     [[ $exit_code ]] && exit "$exit_code"
 }
+export -f E_STDERR
 
 
 ####[ Trapping Logic ]##################################################################
@@ -301,10 +323,7 @@ fi
 
 
 clear -x
-
 detect_sys_info
-export E_DISTRO E_SVER E_VER E_ARCH
-export -f E_DOWNLOAD_SCRIPT E_STDERR
 
 echo "SYSTEM INFO
 Bit Type: $bits
