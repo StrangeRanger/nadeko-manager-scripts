@@ -108,7 +108,7 @@ nadekobot/data/xp_template.json"
 ###
 
 # 'linuxAIO' revision number.
-export E_LINUXAIO_REVISION=45
+export E_LINUXAIO_REVISION=46
 # The URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 
