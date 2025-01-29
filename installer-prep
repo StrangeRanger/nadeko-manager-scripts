@@ -31,6 +31,7 @@ E_INFO="${E_BLUE}==>${E_NC} "
 E_NOTE="${E_CYAN}==>${E_NC} "
 export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
 
+export E_BIN_DIR="nadekobot"
 export E_ROOT_DIR="$PWD"
 export E_INSTALLER_PREP="$E_ROOT_DIR/installer-prep"
 
@@ -257,8 +258,8 @@ execute_main_installer() {
 get_bot_version() {
     local bot_install_version
 
-    if [[ -f nadekobot/data/last_known_version.txt ]]; then
-        bot_install_version=$(<nadekobot/data/last_known_version.txt)
+    if [[ -f $E_BIN_DIR/data/last_known_version.txt ]]; then
+        bot_install_version=$(<"$E_BIN_DIR/data/last_known_version.txt")
     else
         bot_install_version="Unknown"
     fi
