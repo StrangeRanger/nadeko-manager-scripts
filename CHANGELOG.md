@@ -27,7 +27,6 @@ then execute `linuxAIO` as you normally would.
         - ⚠️ Structure of NadekoBot's directory has changed to only contain the compiled code and any other relevant files.
         - ⚠️ Configurations/structure for `E_FILES_TO_BACK_UP` in `linuxAIO` has been updated to reflect the changes made to NadekoBot's directory structure.
         - When installing NadekoBot, the installer will provide the user with the available releases you can download and install.
-- ⚠️ The main branch has been changed to `NadekoV5` to better reflect the version of NadekoBot that the installer works with.
 - Improved comments and documentation.
 - Improve architecture and bit type detection.
 
