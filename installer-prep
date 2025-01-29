@@ -247,6 +247,25 @@ execute_main_installer() {
     clean_exit "$?"
 }
 
+####
+# Retrieve the version of NadekoBot that is currently installed. This data is
+# is found in 'nadekobot/data/last_known_version.txt'.
+#
+# RETURNS:
+#   - The version of NadekoBot that is currently installed. If no version is installed,
+#     the string "Unknown" is returned.
+get_bot_version() {
+    local bot_install_version
+
+    if [[ -f nadekobot/data/last_known_version.txt ]]; then
+        bot_install_version=$(<nadekobot/data/last_known_version.txt)
+    else
+        bot_install_version="Unknown"
+    fi
+
+    echo "$bot_install_version"
+}
+
 ###
 ### [ Functions To Be Exported ]
 ###
@@ -330,6 +349,7 @@ Bit Type: $bits
 Architecture: $E_ARCH
 Distro: ${pname:=$E_DISTRO}
 Distro Version: $E_VER
+NadekoBot Version: $(get_bot_version)
 "
 
 if [[ $bits == 64 ]]; then
