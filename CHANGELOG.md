@@ -6,8 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [5.0.0] - 2025-01-29
-
 This script has some breaking changes. To make the transition easier, execute the following code:
 
 ```bash
