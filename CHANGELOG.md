@@ -6,15 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-This script has some breaking changes. To make the transition easier, execute the following code:
-
-```bash
-mv nadekobot nadekobot.bak
-cp -r nadekobot.bak/output nadekobot
-```
-
-then execute `linuxAIO` as you normally would.
-
 ### Added
 
 - `jq` is now installed as a prerequisite on all supported distributions.
