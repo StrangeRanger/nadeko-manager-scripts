@@ -120,12 +120,16 @@ export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_b
 if [[ ! -f linuxAIO ]]; then
     cd "${0%/*}" || {
         echo "Failed to change working directory" >&2
-        echo "Change your working directory to that of the executed script"if [[ ! -f linuxAIO ]]; then
-    cd "${0%/*}" || {
-        echo "Failed to change working directory" >&2
         echo "Change your working directory to that of the executed script"
         exit 1
     }
-ficurl -O "$E_RAW_URL"/installer-prep
+fi
+
+
+####[ Main ]############################################################################
+
+
+echo "Downloading the latest installer..."
+curl -O "$E_RAW_URL"/installer-prep
 sudo chmod +x installer-prep && ./installer-prep
 exit "$?"
