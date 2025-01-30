@@ -49,26 +49,6 @@ installer_repo="StrangeRanger/NadekoBot-BashScript"
 # Default: "main"
 installer_branch="main"
 
-# The branch/tag, of NadekoBot's official repo, that the installer will download the bot
-# from.
-#
-# IMPORTANT:
-#   Using a branch/tag containing code older than the one currently on your system,
-#   increases the likelihood of failed builds due to incompatible changes in the
-#   code/files copied from the current to the newly downloaded version. For this, and
-#   other reasons, it's generally not recommended to to modify $E_BOT_INSTALL_VERSION.
-#   This is especially true when it comes to a difference in major versions, such as v3
-#   and v4.
-#
-# Options:
-#   v5    = Latest version (the master/main branch)
-#   v4    = NadekoBot v4
-#   x.x.x = Any other branch/tag (refer to the NadekoBot repo for available tags and
-#           branches)
-#
-# Default: "v5"
-export E_BOT_INSTALL_VERSION="v5"
-
 # Files to back up when executing option 7.
 #
 # 1. Paths must start from Nadeko's parent directory (e.g., nadekobot/...).
@@ -103,7 +83,7 @@ nadekobot/data/xp_template.json"
 ###
 
 # 'linuxAIO' revision number.
-export E_LINUXAIO_REVISION=46
+export E_LINUXAIO_REVISION=47
 # URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
 

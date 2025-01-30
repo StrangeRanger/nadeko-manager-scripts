@@ -29,10 +29,6 @@ download_and_transfer() {
     local installer_branch_found
     installer_branch=$(grep '^installer_branch=.*' linuxAIO.old)
     installer_branch_found="$?"
-    local bot_install_version
-    local bot_install_version_found
-    bot_install_version=$(grep '^export E_BOT_INSTALL_VERSION=.*' linuxAIO.old)
-    bot_install_version_found="$?"
 
     echo "${E_INFO}Downloading latest version of 'linuxAIO'..."
 
@@ -46,9 +42,6 @@ download_and_transfer() {
 
     [[ $installer_branch_found == 0 ]] \
         && sed -i "s/^installer_branch=.*/$installer_branch/" linuxAIO
-
-    [[ $bot_install_version_found == 0 ]] \
-        && sed -i "s/^export E_BOT_INSTALL_VERSION=.*/$bot_install_version/" linuxAIO
 }
 
 ####
