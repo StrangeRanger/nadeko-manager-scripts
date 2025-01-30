@@ -6,6 +6,11 @@
 ####[ Functions ]#######################################################################
 
 
+####
+# Revert the changes made to 'linuxAIO' if the script is interrupted.
+#
+# EXITS:
+#   - 1: The entire script is to be exited.
 revert() {
     if [[ -f linuxAIO.old && ! -f linuxAIO ]]; then
         echo ""
@@ -17,6 +22,8 @@ revert() {
     exit 1
 }
 
+####
+# Download the latest version of 'linuxAIO' and transfer existing configurations to it.
 download_and_transfer() {
     local installer_branch
     local installer_branch_found
@@ -44,6 +51,11 @@ download_and_transfer() {
         && sed -i "s/^export E_BOT_INSTALL_VERSION=.*/$bot_install_version/" linuxAIO
 }
 
+####
+# Perform additional checks and modifications for 'linuxAIO' revision 45 and before.
+#
+# RETURNS:
+#   0: The function has completed or there is nothing to do.
 revision_45() {
     [[ -f nadekobot/creds_example.yml && -f nadekobot/NadekoBot.dll ]] \
         && return 0
