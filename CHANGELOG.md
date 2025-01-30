@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [v5.0.0] - 2025-01-30
+
 ### Added
 
 - `jq` is now installed as a prerequisite on all supported distributions.
@@ -358,7 +360,7 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
 - Uses `systemctl` (Linux) and `launchctl` (macOS) to run NadekoBot, instead of PM2.
 - Uses `curl` instead of `wget`.
 
-#### Removed
+### Removed
 
 - Support for:
   - Ubuntu: 14.04, 16.10, 17.04, 17.10
@@ -367,7 +369,8 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
   - CentOS: 7
 - The option to run NadekoBot with auto-update.
 
-[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v4.0.1...HEAD
+[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v5.0.0...HEAD
+[v5.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v5.0.0
 [v4.0.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.1
 [v4.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.0
 [v3.2.5]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.5
