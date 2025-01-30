@@ -16,10 +16,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - ⚠️ No longer downloads NadekoBot via `git clone`, and instead downloads them for pre-built releases.
     - As a result of this, the following changes have been made:
-        - ⚠️ Several prerequisites have been removed, namely .NET SDK, as the release is self-contained and don't need to be built.
+        - ⚠️ Several prerequisites have been removed, namely .NET SDK, as the release is self-contained and doesn't need to be built from source.
         - ⚠️ Structure of NadekoBot's directory has changed to only contain the compiled code and any other relevant files.
         - ⚠️ Configurations/structure for `E_FILES_TO_BACK_UP` in `linuxAIO` has been updated to reflect the changes made to NadekoBot's directory structure.
-        - When installing NadekoBot, the installer will provide the user with the available releases you can download and install.
+        - `E_BOT_INSTALL_VERSION` has been removed from `linuxAIO`, as it's no longer needed.
+            - When installing NadekoBot, the installer will provide the user with the available releases you can download and install.
 - Improved comments and documentation.
 - Improve architecture and bit type detection.
 
