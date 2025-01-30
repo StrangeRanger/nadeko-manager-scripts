@@ -10,9 +10,9 @@ This is the unofficial installer for NadekoBot v5 on Linux distributions.
 
 ### Downloading linuxAIO
 
-The only script that needs to be manually downloaded to your system is `linuxAIO`. To do this, execute the following set of commands:
+The only script that needs to be downloaded to your system is `linuxAIO`. To do this, execute the following set of commands:
 
-`curl -O https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/main/linuxAIO && sudo chmod +x linuxAIO`
+`curl -O https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/main/linuxAIO && chmod +x linuxAIO`
 
 ### Usage
 

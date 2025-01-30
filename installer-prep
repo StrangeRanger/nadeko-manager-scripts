@@ -9,7 +9,7 @@
 
 
 # Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
-readonly C_CURRENT_LINUXAIO_REVISION=45
+readonly C_CURRENT_LINUXAIO_REVISION=46
 readonly C_MAIN_INSTALLER="nadeko-main-installer"
 
 ## Modify output text color.
@@ -29,8 +29,10 @@ E_WARNING="${E_YELLOW}==>${E_NC} "
 E_ERROR="${E_RED}ERROR:${E_NC} "
 E_INFO="${E_BLUE}==>${E_NC} "
 E_NOTE="${E_CYAN}==>${E_NC} "
-export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE
+E_IMPORTANT="${E_CYAN}IMPORTANT:${E_NC} "
+export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE E_IMPORTANT
 
+export E_BIN_DIR="nadekobot"
 export E_ROOT_DIR="$PWD"
 export E_INSTALLER_PREP="$E_ROOT_DIR/installer-prep"
 
@@ -70,95 +72,6 @@ detect_sys_info() {
         i*86)    bits="32"; export E_ARCH="x86" ;;
         *)       bits="?";  export E_ARCH="unknown" ;;  # Fallback to uname output.
     esac
-}
-
-####
-# Download the latest version of 'linuxAIO' if $E_LINUXAIO_REVISION and
-# $C_CURRENT_LINUXAIO_REVISION aren't of equal value.
-#
-# EXITS:
-#   - 0: If the download and application of existing configurations to the newest version
-#       of 'linuxAIO' is successful.
-#   - 1: If the download of 'linuxAIO' fails.
-linuxAIO_update() {
-    echo "${E_WARNING}You are using an older version of 'linuxAIO'"
-    read -rp "${E_NOTE}Press [Enter] to download the latest version"
-    echo "${E_INFO}Downloading latest version of 'linuxAIO'..."
-
-    if [[ -f linuxAIO.old ]]; then
-        echo "${E_INFO}Removing existing 'linuxAIO.old'..."
-        rm linuxAIO.old
-    fi
-
-    if [[ -f linuxAIO.sh ]]; then
-        echo "${E_INFO}Backing up 'linuxAIO.sh' as 'linuxAIO.old'..."
-        mv linuxAIO.sh linuxAIO.old
-    elif [[ -f linuxAIO ]]; then
-        echo "${E_INFO}Backing up 'linuxAIO' as 'linuxAIO.old'..."
-        mv linuxAIO linuxAIO.old
-    fi
-
-    chmod -x linuxAIO.old
-
-    ## Due to changes in 'linuxAIO', the existing configurations cannot be directly
-    ## applied to the newest version of 'linuxAIO'. As a result, the existing
-    ## configurations will instead be backed up as 'linuxAIO.old', and the end-user will
-    ## have to reconfigure 'linuxAIO' manually.
-    ##
-    # shellcheck disable=SC2153
-    #   $_LINUXAIO_REVISION and $_RAW_URL are from revision 38 and earlier. This means
-    #   that the if statement doesn't need to test for $E_LINUXAIO_REVISION to check if
-    #   the current version of 'linuxAIO' is revision 38 or earlier.
-    if [[ $_LINUXAIO_REVISION ]] && ((_LINUXAIO_REVISION <= 38)); then
-        curl -O "$_RAW_URL/linuxAIO" || {
-            E_STDERR "Failed to download 'linuxAIO'"
-            echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
-            [[ -f linuxAIO.old ]] \
-                && mv linuxAIO.old linuxAIO \
-                && chmod +x linuxAIO
-            exit 1
-        }
-        sudo chmod +x linuxAIO
-        echo "${E_NOTE}NOT applying existing configurations to 'linuxAIO'"
-        echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'"
-    ## Download the newest version of 'linuxAIO' and apply existing changes to it.
-    elif [[ $E_LINUXAIO_REVISION != "$C_CURRENT_LINUXAIO_REVISION" ]]; then
-        local installer_branch
-        local installer_branch_found
-        installer_branch=$(grep '^installer_branch=.*' linuxAIO.old)
-        installer_branch_found="$?"
-        local bot_install_version
-        local bot_install_version_found
-        bot_install_version=$(grep '^export E_BOT_INSTALL_VERSION=.*' linuxAIO.old)
-        bot_install_version_found="$?"
-
-        curl -O "$E_RAW_URL"/linuxAIO || {
-            E_STDERR "Failed to download 'linuxAIO'"
-            echo "${E_INFO}Restoring previous version of 'linuxAIO'..."
-            [[ -f linuxAIO.old ]] \
-                && mv linuxAIO.old linuxAIO \
-                && chmod +x linuxAIO
-            exit 1
-        }
-        sudo chmod +x linuxAIO
-
-        echo "${E_INFO}Applying existing configurations to the new 'linuxAIO'..."
-
-        [[ $installer_branch_found == 0 ]] \
-            && sed -i "s/^installer_branch=.*/$installer_branch/" linuxAIO
-
-        [[ $bot_install_version_found == 0 ]] \
-            && sed -i "s/^export E_BOT_INSTALL_VERSION=.*/$bot_install_version/" linuxAIO
-
-        echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'" \
-            "and applied existing changes"
-        echo "${E_NOTE}Make sure to update the variables in 'linuxAIO' that were not" \
-            "automatically updated, using 'linuxAIO.old'"
-    else
-        echo "${E_SUCCESS}You are already using the latest version of 'linuxAIO'"
-    fi
-
-    clean_exit 0
 }
 
 ####
@@ -209,7 +122,8 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     # Files to be removed.
     local installer_files=("installer-prep" "file-backup" "prereqs-installer"
-        "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer")
+        "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer"
+        "update-linuxAIO")
 
     trap - EXIT
     [[ $use_extra_newline == true ]] && echo ""
@@ -314,8 +228,14 @@ trap 'clean_exit "$?" "true"' EXIT
 #   $_LINUXAIO_REVISION is from revision 38 and earlier. $E_LINUXAIO_REVISION is used
 #   for revision 39 and later.
 if [[ $E_LINUXAIO_REVISION != "$C_CURRENT_LINUXAIO_REVISION" ]]; then
-    # NOTE: The script will exit after the function has run.
-    linuxAIO_update
+    export E_CURRENT_LINUXAIO_REVISION="$C_CURRENT_LINUXAIO_REVISION"
+
+    echo "${E_WARNING}You are using an older version of 'linuxAIO'"
+    E_DOWNLOAD_SCRIPT "update-linuxAIO" "true"
+    ./update-linuxAIO
+
+    export -n E_CURRENT_LINUXAIO_REVISION
+    clean_exit 0
 fi
 
 

@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `jq` is now installed as a prerequisite on all supported distributions.
+
+### Changed
+
+- ⚠️ No longer downloads NadekoBot via `git clone`, and instead downloads them for pre-built releases.
+    - As a result of this, the following changes have been made:
+        - ⚠️ Several prerequisites have been removed, namely .NET SDK, as the release is self-contained and don't need to be built.
+        - ⚠️ Structure of NadekoBot's directory has changed to only contain the compiled code and any other relevant files.
+        - ⚠️ Configurations/structure for `E_FILES_TO_BACK_UP` in `linuxAIO` has been updated to reflect the changes made to NadekoBot's directory structure.
+        - When installing NadekoBot, the installer will provide the user with the available releases you can download and install.
+- Improved comments and documentation.
+- Improve architecture and bit type detection.
+
 ## [v4.0.1] - 2024-12-19
 
 ### Changed
@@ -354,7 +369,7 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
 
 [unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v4.0.1...HEAD
 [v4.0.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.1
-[v4.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.0 
+[v4.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.0
 [v3.2.5]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.5
 [v3.2.4]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.4
 [v3.2.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.3
