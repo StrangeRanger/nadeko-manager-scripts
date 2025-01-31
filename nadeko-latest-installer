@@ -1,17 +1,16 @@
 #!/bin/bash
 #
-# This script downloads and updates NadekoBot to the latest version.
+# Downloads and updates NadekoBot to a specified version.
 #
 # NOTE:
-#   The end-user will have to manually re-add their strings and aliases after each
-#   update, as updates may cause a number of files to become obsolete or be changed,
-#   etc. However, the old strings and aliases will be backed up as 'strings.old' and
-#   'aliases.old.yml' respectively.
+#   After each update, the user will need to manually reapply any custom strings and
+#   aliases, as updates may modify or replace these files. However, the old strings and
+#   aliases will be backed up as 'strings.old' and 'aliases.old.yml' respectively.
 #
 # Comment Key:
-#   - A.1.: To prevent permission errors that can occur, especially when the installer
-#     is run with root privileges and later as a non-root user, it's necessary to ensure
-#     that '/tmp/NuGetScratch' are owned by the user currently running the installer.
+#   - A.1.: Prevents permission errors that can occur, particularly if the installer is
+#     run once with root privileges and then again as a non-root user. This is handled
+#     by ensuring '/tmp/NuGetScratch' is owned by the user running the installer.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
@@ -33,11 +32,6 @@ readonly C_NEW_DATA="$C_BIN_DIR_TMP/data"
 readonly PROJECT_ID="9321079"
 readonly API_URL="https://gitlab.com/api/v4/projects/${PROJECT_ID}"
 
-## Constants set later.
-C_BOT_VERSION=""
-C_ARCHIVE_NAME=""
-C_ARCHIVE_URL=""
-
 ## Non-constant variables.
 service_is_active=false
 
@@ -46,21 +40,24 @@ service_is_active=false
 
 
 ####
-# Cleanly exit the script by removing by removing temporary files and directories. If
-# an error occurs or a premature exit is detected, the script will attempt to restore
-# the original version of 'nadekobot'.
+# Cleanly exits the script by removing temporary files and directories. If an error or
+# premature exit is detected, it attempts to restore the original 'nadekobot' directory
+# structure.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#       - The initial exit code passed by the caller. Under certain conditions, it may
+#         be changed to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output an extra blank line, to separate the previous output from
-#         the output of this function.
+#       - Whether to output an extra blank line, separating any previous output from
+#         this function’s messages.
 #       - Acceptable values:
 #           - true
 #           - false
 #
 # EXITS:
-#   - $exit_code: Argument provided by the caller, or 50 if the exit code is 1 or 130.
+#   - $exit_code: Uses the provided exit code, or 50 if the conditions for continuing
+#     (e.g., exit code 1 or 130) are met.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -69,9 +66,8 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
-    ## continue running, even if an error occurred. Please refer to the
-    ## 'exit_code_actions' function in 'nadeko-latest-installer' for more information.
+    ## The exit code may be set to 50 if 'nadeko-latest-installer' should continue
+    ## despite an error. Refer to 'exit_code_actions' for details.
     case "$exit_code" in
         1) exit_code=50 ;;
         0|5) ;;
@@ -127,6 +123,17 @@ clean_exit() {
     exit "$exit_code"
 }
 
+####
+# Retrieves all available NadekoBot versions from the GitLab API and prompts the user to
+# choose one for installation.
+#
+# NEW GLOBALS:
+#   - C_BOT_VERSION: The selected version of NadekoBot to install.
+#   - C_ARCHIVE_NAME: The archive filename to download.
+#   - C_ARCHIVE_URL: The direct URL from which the archive is downloaded.
+#
+# EXITS:
+#   - 1: If fetching releases from the GitLab API fails or if no releases are found.
 fetch_versions() {
     local response; response=$(curl -sS -w "%{http_code}" "${API_URL}/releases")
     local http_code="${response: -3}"
@@ -137,7 +144,7 @@ fetch_versions() {
         E_STDERR "Failed to fetch releases from '${API_URL}'" "1"
     fi
 
-    # TODO: Make sure the `||` works as it should.
+    # TODO: Confirm that the '||' operator works as intended here.
     mapfile -t versions < <(echo "$response_body" | jq -r '.[].tag_name' | sort -V -r) \
         || E_STDERR "Failed to parse releases" "1"
 
@@ -203,7 +210,10 @@ cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR
 ###
 ### [ Move Credentials, Database, and Other Data ]
 ###
-### Move credentials, database, and other data to the new version of NadekoBot.
+### Moves the credentials, database, and other NadekoBot data to the new version
+### directory. In case 'nadekobot' already exists, it is renamed to 'nadekobot.old'
+### (with a further fallback of 'nadekobot.old.old'), making it easier to revert to a
+### previous version if needed.
 ###
 
 (
@@ -230,29 +240,28 @@ if [[ -d nadekobot ]]; then
 
     echo "${E_INFO}Copying other data to the new version..."
     (
-        ## Prevent overwriting the new strings directory and aliases.yml file, by
-        ## renaming them.
+        ## Temporarily rename the new version's strings and aliases so they won't be
+        ## overwritten.
         mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings.new || exit 1
         mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases.new.yml || exit 1
 
-        # Copy current data directory to new data directory. This will overwrite any
-        # file or directory that exists in the new data directory, with the same name.
+        # Copy current data directory into the new one, overwriting matching
+        # files/folders.
         cp -rT "$C_CURRENT_DATA" "$C_NEW_DATA" || exit 1
 
-        # Remove old strings and aliases.
+        # Remove any old backups of strings and aliases.
         rm -rf "$C_NEW_DATA"/strings.old "$C_NEW_DATA"/aliases.old.yml 2>/dev/null
-        ## Back up new-old strings and aliases.
+
+        ## Back up the overwritten strings and aliases before restoring the new ones.
         mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings.old || exit 1
         mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases.old.yml || exit 1
 
-        ## Restore new strings and aliases.
+        ## Restore the new version's strings and aliases.
         mv -fT "$C_NEW_DATA"/strings.new "$C_NEW_DATA"/strings || exit 1
         mv -f "$C_NEW_DATA"/aliases.new.yml "$C_NEW_DATA"/aliases.yml || exit 1
     ) || E_STDERR "An error occurred while copying other data" "$?"
 
     echo "${E_INFO}Replacing 'nadekobot' with '${C_NADEKOBOT_TMP}/nadekobot'..."
-    ## Ensures a smooth transition between versions. In the case of an error, it'll be
-    ## easier to revert to the previous version.
     (
         if [[ -d nadekobot.old ]]; then
             mv nadekobot.old nadekobot.old.old || exit 5

@@ -1,18 +1,18 @@
 #!/bin/bash
 #
-# Start NadekoBot in one of two ways:
-#   - NadekoRun: Run NadekoBot in the background.
-#   - NadekoRunAR: Run NadekoBot in the background with auto restart.
+# This script starts NadekoBot in one of two modes:
+#   - NadekoRun: Runs NadekoBot in the background.
+#   - NadekoRunAR: Runs NadekoBot in the background with an automatic restart.
 #
-# Comment key:
-#   - A.1.: Used in conjunction with 'systemctl'.
-#   - B.1.: Used in the text output.
+# Comment Key:
+#   - A.1.: Used with 'systemctl'.
+#   - B.1.: Used for text output.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
 
 
-## Indicate which actions to be performed on NadekoBot's service.
+## Determine the action to be performed on the NadekoBot service based on its code name.
 if [[ $E_CODENAME == "NadekoRun" ]]; then
     readonly C_LOWER="disable"    # A.1.
     readonly C_UPPER="Disabling"  # B.1.
@@ -22,8 +22,9 @@ else
 fi
 
 ## NOTE:
-##  'StandardOutput' and 'StandardError' no longer supports 'syslog' starting in
-##  version 246 of systemd.
+##  Starting with systemd version 246, 'StandardOutput' and 'StandardError' no longer
+##  support 'syslog' as valid values. Adjust accordingly by substituting them with
+##  'journal' for newer systemd releases.
 if [[ $(systemctl --version | awk 'NR==1 {print $2}') -ge 246 ]]; then
     readonly C_SERVICE_CONTENT="[Unit]
 Description=NadekoBot service
@@ -66,7 +67,7 @@ SyslogIdentifier=NadekoBot
 WantedBy=multi-user.target"
 fi
 
-# Used to skip the 'read' command when exiting the script.
+# Used to skip the 'read' command if an immediate script exit is required.
 exit_now=false
 
 
@@ -74,20 +75,24 @@ exit_now=false
 
 
 ####
-# Cleanly exit the script by displaying an exit message and returning an exit code. This
-# one is simpler than the other 'clean_exit' functions in the other scripts.
+# Exits the script cleanly by displaying an exit message and returning an appropriate
+# exit code. This version is simpler than the 'clean_exit' functions found in other
+# scripts.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#       - The initial exit code passed to the function. Under certain conditions, it may
+#         be changed to 50 to allow the calling script to continue execution.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output an extra blank line, to separate the previous output from
-#         the output of this function.
+#       - If set to "true", an extra blank line is output to separate any prior output
+#         from the exit message.
 #       - Acceptable values:
 #           - true
 #           - false
 #
 # EXITS:
-#   - $exit_code: Argument provided by the caller, or 50 if the exit code is 1 or 130.
+#   - $exit_code: Uses the code provided by the caller, or 50 if the conditions for
+#     continuing (exit code 1 or 130) are met.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -95,9 +100,8 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
-    ## continue running, even if an error occurred. Refer to the 'exit_code_actions'
-    ## function in 'nadeko-latest-installer' for more information.
+    ## The exit code may be changed to 50 if 'nadeko-latest-installer' should continue
+    ## despite an error. Refer to 'exit_code_actions' for further details.
     case "$exit_code" in
         1)   exit_code=50 ;;
         0|3) ;;
@@ -234,8 +238,8 @@ else
 fi
 
 trap - SIGINT
-# The read command is used within 'E_WATCH_SERVICE_LOGS', so the one in 'clean_exit' can
-# be skipped.
+# Since 'E_WATCH_SERVICE_LOGS' already contains a 'read' command, we skip the one in
+# 'clean_exit' by setting:
 exit_now=true
 
 E_WATCH_SERVICE_LOGS "runner"

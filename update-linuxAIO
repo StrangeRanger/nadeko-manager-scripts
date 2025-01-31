@@ -1,16 +1,19 @@
 #!/bin/bash
 #
-#
+# This script checks for a newer release of 'linuxAIO' and, if available, downloads it.
+# Any existing configurations from the old version are then transferred to the new one
+# where possible.
 #
 ########################################################################################
 ####[ Functions ]#######################################################################
 
 
 ####
-# Revert the changes made to 'linuxAIO' if the script is interrupted.
+# Reverts any changes made to 'linuxAIO' if this script is interrupted or fails,
+# restoring the older version if it still exists.
 #
 # EXITS:
-#   - 1: The entire script is to be exited.
+#   - 1: The script terminates immediately.
 revert() {
     if [[ -f linuxAIO.old && ! -f linuxAIO ]]; then
         echo ""
@@ -23,7 +26,8 @@ revert() {
 }
 
 ####
-# Download the latest version of 'linuxAIO' and transfer existing configurations to it.
+# Downloads the latest version of 'linuxAIO' and transfers any existing configurations
+# (e.g., the installer branch) from the old version.
 download_and_transfer() {
     local installer_branch
     local installer_branch_found
@@ -45,11 +49,13 @@ download_and_transfer() {
 }
 
 ####
-# Perform additional checks and modifications for 'linuxAIO' revision 45 and before.
+# Performs additional checks and modifications for 'linuxAIO' revision 45 and earlier,
+# ensuring compatibility with updated structures.
 #
 # RETURNS:
-#   0: The function has completed or there is nothing to do.
+#   - 0: If the function completes successfully or no actions are required.
 revision_45() {
+    # TODO: Move $C_EXAMPLE_CREDS to a different location, export it, and use it here.
     [[ -f nadekobot/creds_example.yml && -f nadekobot/NadekoBot.dll ]] \
         && return 0
 
@@ -97,15 +103,14 @@ fi
 
 chmod -x linuxAIO.old
 
-## Due to changes in 'linuxAIO', the existing configurations cannot be directly
-## applied to the newest version of 'linuxAIO'. As a result, the existing
-## configurations will instead be backed up as 'linuxAIO.old', and the end-user will
-## have to reconfigure 'linuxAIO' manually.
-##
+## Due to changes in 'linuxAIO', existing configurations cannot be directly applied to
+## the newest version of 'linuxAIO'. Instead, these configurations are backed up as
+## 'linuxAIO.old', and the user must reconfigure 'linuxAIO' manually.
+#
 # shellcheck disable=SC2153
-#   $_LINUXAIO_REVISION and $_RAW_URL are from revision 38 and earlier. This means
-#   that the if statement doesn't need to test for $E_LINUXAIO_REVISION to check if
-#   the current version of 'linuxAIO' is revision 38 or earlier.
+#   $_LINUXAIO_REVISION and $_RAW_URL were used in revision 38 and earlier. Therefore,
+#   we don't check for $E_LINUXAIO_REVISION in deciding whether the current version is
+#   revision 38 or older.
 if [[ $_LINUXAIO_REVISION ]] && ((_LINUXAIO_REVISION <= 38)); then
     curl -O "$_RAW_URL/linuxAIO" || {
         E_STDERR "Failed to download 'linuxAIO'"
@@ -115,21 +120,19 @@ if [[ $_LINUXAIO_REVISION ]] && ((_LINUXAIO_REVISION <= 38)); then
 
     echo "${E_NOTE}Existing configurations will NOT be applied to 'linuxAIO'"
     echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO'"
-## Perform additional checks and modifications for specific revisions, then transfer
-## configurations.
+## For newer revisions, perform extra checks, then apply existing configurations where
+## possible.
 elif (( E_LINUXAIO_REVISION != E_CURRENT_LINUXAIO_REVISION )); then
     echo "${E_INFO}Performing additional revision checks..."
 
-    if (( E_LINUXAIO_REVISION <= 45 )); then
-        revision_45
-    fi
+    (( E_LINUXAIO_REVISION <= 45 )) && revision_45
 
     download_and_transfer
 
     echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO' with" \
         "existing configurations applied"
-    echo "${E_IMPORTANT}Review the 'linuxAIO.old' file for configurations that were not" \
-        "automatically transferred to the new 'linuxAIO'"
+    echo "${E_IMPORTANT}Review the 'linuxAIO.old' file for configurations that were" \
+        "not automatically transferred to the new 'linuxAIO'"
 else
     echo "${E_SUCCESS}You are already using the latest version of 'linuxAIO'"
 fi

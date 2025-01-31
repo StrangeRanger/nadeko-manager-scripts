@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# Install the prerequisites required by NadekoBot to run on Linux distributions.
+# Installs the prerequisites required by NadekoBot on Linux distributions.
 #
 # Comment Key:
-#   - A.1.: Apt has it's own signals handlers, meaning the traps in this script can't
-#     catch signals, such as SIGINT, to immediately exit the current action. So the
-#     command is run in the background and the process ID is stored in 'apt_pid'. If a
-#     signal is caught, the script will kill the 'apt' process and exit.
+#   - A.1.: Apt uses its own signal handlers, so this script's traps cannot immediately
+#     intercept signals (e.g., SIGINT) during the apt operation. To address this, apt is
+#     run in the background, and its process ID is stored in 'apt_pid'. If a signal is
+#     caught, the script terminates the 'apt' process and exits.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -21,20 +21,23 @@ readonly C_OTHER_PREREQS=("redis-server" "ccze" "apt-transport-https" "ffmpeg" "
 
 
 ####
-# Cleanly exit the script by killing the 'apt' process and displaying an appropriate
-# message based on the exit code.
+# Cleanly exits the script by terminating the 'apt' process (if running) and showing an
+# appropriate message based on the exit code.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#       - The exit code passed by the caller. This may be changed to 50 in certain cases
+#         (e.g., exit codes 1 or 130) to allow a parent installer script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output an extra blank line, to separate the previous output from
-#         the output of this function.
-#       - Acceptable values:
+#       - If "true", outputs an extra blank line to separate previous output from the
+#         exit message.
+#       - Valid values:
 #           - true
 #           - false
 #
 # EXITS:
-#   - $exit_code: Argument provided by the caller, or 50 if the exit code is 1 or 130.
+#   - $exit_code: The final exit code, which may be 50 if conditions for continuing are
+#     met.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -43,9 +46,8 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
-    ## continue running, even if an error occurred. Refer to the 'exit_code_actions'
-    ## function in 'nadeko-latest-installer' for more information.
+    ## The exit code may become 50 if 'nadeko-latest-installer' should continue despite
+    ## an error. See 'exit_code_actions' for more details.
     case "$exit_code" in
         1) exit_code=50 ;;
         0|5) ;;
@@ -80,10 +82,10 @@ clean_exit() {
 }
 
 ####
-# Install 'yt-dlp' at '~/.local/bin/yt-dlp'.
+# Installs 'yt-dlp' to '~/.local/bin/yt-dlp', creating the directory if needed.
 #
 # EXITS:
-#   - 1: Failed to download 'yt-dlp'.
+#   - 1: If 'yt-dlp' fails to download.
 install_yt_dlp() {
     local yt_dlp_url="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
     local yt_dpl_dir="${E_YT_DLP_PATH%/*}"
@@ -101,14 +103,17 @@ install_yt_dlp() {
 }
 
 ####
+# Installs all prerequisites required by NadekoBot. Runs 'apt' in the background so
+# signals (e.g., SIGINT) can be caught, allowing the script to terminate 'apt' if
+# needed.
+#
 # NEW GLOBALS:
-#   - apt_pid: The process ID of the 'apt' process, used to kill the process when the
-#     script exits.
+#   - apt_pid: The process ID of the 'apt' process, killed if the script exits.
 #
 # EXITS:
-#   - 0: Successfully installed all prerequisites.
+#   - 0: Successful installation of all prerequisites.
 #   - 1: Failed to add Microsoft's package signing key.
-#   - $?: Failed to install all prerequisites or remove existing .NET installation.
+#   - $?: Failed to install prerequisites or remove existing .NET installation.
 install_prereqs() {
     (   ## A.1.
         echo "${E_INFO}Updating package lists..."
@@ -132,10 +137,11 @@ install_prereqs() {
 }
 
 ####
-# Display a message indicating that the installer does not support the current OS.
+# Displays a message indicating that the current OS is unsupported for automatic
+# NadekoBot prerequisite installation.
 #
 # EXITS:
-#   - 4: The installer does not support the current OS.
+#   - 4: The current OS is unsupported.
 unsupported() {
     echo "${E_ERROR}The installer does not support the automatic installation and" \
         "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH" >&2

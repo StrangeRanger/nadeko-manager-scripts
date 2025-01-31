@@ -42,7 +42,7 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 #
 # EXITS:
 #   - $exit_code: Uses the provided exit code, or 50 if the conditions for continuing
-#       are met (e.g., exit code 1 or 130).
+#     are met (e.g., exit code 1 or 130).
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -134,6 +134,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     for file in "$C_CURRENT_BACKUP"/*; do
         basefile="${file##*/}"
 
+        # Only copy files that do not already end with '.old'.
         if [[ ! $basefile =~ ^.*\.old$ ]]; then
             cp "$file" "$C_TMP_BACKUP/$basefile.old" \
                 || E_STDERR "Failed to copy '$basefile'" "1"
@@ -152,6 +153,8 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
                 "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
      ) || E_STDERR "An error occurred while replacing old backups" "1"
 else
+    ## If no current backup directory exists, simply move the temporary backup folder to
+    ## become the new current backup directory.
     echo "${E_INFO}Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
     mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \
         || E_STDERR "Failed to move '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'" "1"
