@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
         - ⚠️ Configurations/structure for `E_FILES_TO_BACK_UP` in `linuxAIO` has been updated to reflect the changes made to NadekoBot's directory structure.
         - `E_BOT_INSTALL_VERSION` has been removed from `linuxAIO`, as it's no longer needed.
             - When installing NadekoBot, the installer will provide the user with the available releases you can download and install.
-- Improved comments and documentation.
+- Greatly improved comments and documentation.
 - Improve architecture and bit type detection.
 
 ## [v4.0.1] - 2024-12-19
