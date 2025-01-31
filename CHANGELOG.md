@@ -300,7 +300,7 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 
 ### Added
 
-- The branch/tag to download NadekoBot from (i.e., `1.9`, `2.39.1`, etc.) is now configurable via `linuxAIO.sh`.
+- The branch/tag to download NadekoBot from (e.g., `1.9`, `2.39.1`, etc.) is now configurable via `linuxAIO.sh`.
 - The current value of `$allow_run_as_root` and `$_NADEKO_INSTALL_VERSION` is set whenever downloading the latest version of `linuxAIO`.
 
 ### Changed
