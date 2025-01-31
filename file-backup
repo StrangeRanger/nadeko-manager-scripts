@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Back up files that are considered to be important to the user. These can be defined in
-# the 'E_FILES_TO_BACK_UP' variable in 'installer-prep'.
+# Backs up files deemed important to the user. These files are specified by the
+# $E_FILES_TO_BACK_UP variable in 'installer-prep'.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -14,7 +14,7 @@ C_TMP_BACKUP=$(mktemp -d -p /tmp important-nadeko-files-XXXXXXXXXX)
 readonly C_TMP_BACKUP
 
 # shellcheck disable=SC2206
-#   $E_FILES_TO_BACK_UP is purposely unquoted to allow word splitting. This will make
+#   $E_FILES_TO_BACK_UP is intentionally left unquoted to allow word splitting, making
 #   the contents of $C_FILES_TO_BACK_UP iterable.
 readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
@@ -23,21 +23,26 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 
 ####
-# Cleanly exit the script by removing by removing temporary files and directories. If
-# an error occurs or a premature exit is detected, the script will attempt to restore
-# the original backup files.
+# Cleanly exits the script by removing temporary files and directories. If an error
+# occurs or a premature exit is detected, this function attempts to restore the original
+# backup files. Under certain conditions, it also modifies the exit code to 50, allowing
+# the caller to continue processing (refer to 'exit_code_actions' in
+# 'nadeko-latest-installer' for more details).
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#       - The initial exit code with which this function was invoked. In some cases,
+#         this is modified to 50 to signal that the calling script should continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output an extra blank line, to separate the previous output from
-#         the output of this function.
+#       - Whether to output an extra blank line, separating any previous output from
+#         this function's messages.
 #       - Acceptable values:
 #           - true
 #           - false
 #
 # EXITS:
-#   - $exit_code: Argument provided by the caller, or 50 if the exit code is 1 or 130.
+#   - $exit_code: Uses the provided exit code, or 50 if the conditions for continuing
+#       are met (e.g., exit code 1 or 130).
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -46,9 +51,8 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be modified to 50, when 'nadeko-latest-installer' should
-    ## continue running, even if an error occurred. Refer to the 'exit_code_actions'
-    ## function in 'nadeko-latest-installer' for more information.
+    ## The exit code may be modified to 50 when 'nadeko-latest-installer' should
+    ## continue running despite an error. Refer to 'exit_code_actions' for more info.
     case "$exit_code" in
         1) exit_code=50 ;;
         0|5) ;;
@@ -123,8 +127,9 @@ for file in "${C_FILES_TO_BACK_UP[@]}"; do
 done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
-    # These files were the current backups, and will replace the previous old
-    # '[filename].old' backup files.
+    ## If a current backup directory exists, copy its files into the temporary backup
+    ## directory and append ".old" to their names. This effectively stages the files
+    ## to become the new "old" backups.
     echo "${E_INFO}Copying previously backed up files into '$C_TMP_BACKUP'..."
     for file in "$C_CURRENT_BACKUP"/*; do
         basefile="${file##*/}"
@@ -135,9 +140,10 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
         fi
     done
 
+    ## Move the current backup folder to $C_OLD_BACKUP, and then move the temporary
+    ## backup folder to $C_CURRENT_BACKUP. This creates a safe fallback: if an
+    ## unexpected error occurs, reverting to $C_OLD_BACKUP is simpler.
     echo "${E_INFO}Replacing '$C_CURRENT_BACKUP' with '$C_TMP_BACKUP'..."
-    ## Ensures a smooth transition between versions. In the case of an error, it'll be
-    ## easier to revert to the previous version.
     (
         mv "$C_CURRENT_BACKUP" "$C_OLD_BACKUP" || exit 1
         mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" || exit 1

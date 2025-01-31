@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 # This script checks the operating system, architecture, bit type, and other factors to
-# determine if the system is compatible with NadekoBot. If the system is supported, it
-# will download and execute the main installer.
+# confirm NadekoBot's compatibility. If the system is supported, it downloads and
+# executes the main installer.
 #
 ########################################################################################
 ####[ Exported and Global Variables ]###################################################
@@ -41,16 +41,16 @@ export E_INSTALLER_PREP="$E_ROOT_DIR/installer-prep"
 
 
 ####
-# Identify the operating system, version number, architecture, bit type (32 or 64), etc.
-# This information is then made available to the script, and the rest of the installer.
+# Identify the operating system, version, architecture, bit type (32/64), etc. This
+# information is then made available to this script and the rest of the installer.
 #
 # NEW GLOBALS:
-#   - E_DISTRO: Distribution name.
-#   - E_VER: Distribution version.
-#   - E_SVER: Distribution short version.
-#   - E_ARCH: Architecture.
-#   - pname: Pretty name.
-#   - bits: Bit type.
+#   - E_DISTRO: Distribution name
+#   - E_VER: Distribution version
+#   - E_SVER: Distribution short version
+#   - E_ARCH: Architecture
+#   - pname: Pretty name
+#   - bits: Bit type
 detect_sys_info() {
     if [[ -f /etc/os-release ]]; then
         . /etc/os-release
@@ -75,11 +75,11 @@ detect_sys_info() {
 }
 
 ####
-# Provide the end-user with the option to continue, even if their system isn't
-# officially supported.
+# Allows the user to proceed with the installation even if the current operating system
+# is not officially supported.
 #
 # EXITS:
-#   - 0: If the end-user chooses not to continue.
+#   - 0: If the user chooses NOT to continue.
 unsupported() {
     local choice
 
@@ -103,24 +103,27 @@ unsupported() {
 }
 
 ####
-# Cleanly exit the installer by removing temporary files and exiting with an appropriate
-# message and exit code.
+# Cleanly exit the installer by performing the following steps:
+#   1. Remove any temporary files created during the installation process.
+#   2. Display an appropriate exit message based on the provided exit code.
+#   3. Exit the script with the specified status code.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#       - The exit status code with which the script should terminate.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output an extra blank line, to separate the previous output from
-#         the output of this function.
+#       - If set to "true", outputs an extra blank line to visually separate previous
+#         output from the exit message.
 #       - Acceptable values:
 #           - true
 #           - false
 #
 # EXITS:
-#   - exit_code: The exit code provided via the first parameter.
+#   - exit_code: Terminates the script with the exit code provided as $1.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-    # Files to be removed.
+    # Files to be removed during the cleanup process.
     local installer_files=("installer-prep" "file-backup" "prereqs-installer"
         "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer"
         "update-linuxAIO")
@@ -128,8 +131,9 @@ clean_exit() {
     trap - EXIT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## While we specify output for SIGHUP and SIGTERM in 'nadeko-main-installer', we do
-    ## the same here because the those signals don't propagate to the parent script.
+    ## Although SIGHUP and SIGTERM output is specified in 'nadeko-main-installer', we
+    ## handle these signals here as well because they do not propagate to the parent
+    ## script.
     case "$exit_code" in
         0|1) echo "" ;;
         129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
@@ -150,11 +154,12 @@ clean_exit() {
 }
 
 ####
-# Download and execute the main installer. This is one of the final actions performed by
-# this script.
+# Downloads the main installer script and executes it. This function is typically one of
+# the final steps in the installation process. After the installer finishes, the script
+# exits using the installer's returned exit code.
 #
 # EXITS:
-#   - $?: The exit code of the main installer.
+#   - $?: The exit code returned by the main installer.
 execute_main_installer() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
     ./"$C_MAIN_INSTALLER"
@@ -166,13 +171,15 @@ execute_main_installer() {
 ###
 
 ####
-# Download the specified script and modify it's execution permissions.
+# Downloads the specified script from the $E_RAW_URL location and grants it executable
+# permissions. Optionally displays a message indicating that the download is in
+# progress.
 #
 # PARAMETERS:
 #   - $1: script_name (Required)
 #       - The name of the script to download.
 #   - $2: script_output (Optional, Default: false)
-#       - Whether to indicated that the script is being downloaded.
+#       - Whether to indicate that the script is being downloaded.
 #       - Acceptable values:
 #           - true
 #           - false
@@ -189,17 +196,19 @@ E_DOWNLOAD_SCRIPT() {
 export -f E_DOWNLOAD_SCRIPT
 
 ####
-# Output an error message, and if desired, exit the script.
+# Outputs an error message to stderr, optionally prints an additional message, and
+# terminates the script if an exit code is provided.
 #
 # PARAMETERS:
 #   - $1: error_message (Required)
+#       - The main error message to display.
 #   - $2: exit_code (Optional, Default: "")
-#       - If provided, exit with the provided value.
+#       - If provided, the script will exit with this code.
 #   - $3: additional_message (Optional, Default: "")
-#       - If provided, output an additional message.
+#       - If provided, displays this message after the main error message.
 #
 # EXITS:
-#   - exit_code: Exits with the provided exit code, IF provided.
+#   - exit_code: If specified, the script exits with the given exit code.
 E_STDERR() {
     local error_message="$1"
     local exit_code="${2:-}"

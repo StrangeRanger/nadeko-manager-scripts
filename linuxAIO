@@ -93,10 +93,10 @@ export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_b
 
 ## Change to the directory containing this script.
 ## NOTE:
-##  We must verify 'linuxAIO' is in the current directory. If the user runs `bash
-##  linuxAIO` instead of `./linuxAIO` while in the correct directory, ${0%/*} returns
-##  'linuxAIO' rather than '.', triggering the '||' block because it tries to `cd` into
-##  a file instead of a directory.
+##  We need to ensure 'linuxAIO' is in the current directory. If the user runs `bash
+##  linuxAIO` instead of `./linuxAIO` while in the correct directory, ${0%/*} will
+##  return 'linuxAIO' rather than '.', causing the '||' block to execute when it
+##  attempts to change into a file instead of a directory.
 if [[ ! -f linuxAIO ]]; then
     cd "${0%/*}" || {
         echo "Failed to change working directory" >&2
