@@ -55,23 +55,22 @@ download_and_transfer() {
 # RETURNS:
 #   - 0: If the function completes successfully or no actions are required.
 revision_45() {
-    # TODO: Move $C_EXAMPLE_CREDS to a different location, export it, and use it here.
-    [[ -f $E_BIN_DIR/creds_example.yml && -f $E_BIN_DIR/NadekoBot.dll ]] \
+    [[ -f $E_BOT_DIR/$E_CREDS_EXAMPLE && -f $E_BOT_DIR/NadekoBot.dll ]] \
         && return 0
 
-    echo "${E_WARNING}The new version of 'linuxAIO' has several breaking changes from" \
+    echo "${E_WARN}The new version of 'linuxAIO' has several breaking changes from" \
         "revision 45 and earlier. They will be handled automatically."
     echo "${E_NOTE}For more information, view the 'v5.0.0' release notes at" \
             "https://github.com/StrangeRanger/NadekoBot-BashScript/blob/main/CHANGELOG.md"
     read -rp "${E_NOTE}Press [Enter] to continue"
 
-    echo "${E_INFO}Renaming '$E_BIN_DIR' to '$E_BIN_DIR.rev45.bak'..."
-    mv "$E_BIN_DIR" "$E_BIN_DIR.rev45.bak"
+    echo "${E_INFO}Renaming '$E_BOT_DIR' to '$E_BOT_DIR.rev45.bak'..."
+    mv "$E_BOT_DIR" "$E_BOT_DIR.rev45.bak"
 
-    echo "${E_INFO}Copying '$E_BIN_DIR.rev45.bak/output' to '$E_BIN_DIR'..."
-    cp -r "$E_BIN_DIR.rev45.bak/output" "$E_BIN_DIR"
+    echo "${E_INFO}Copying '$E_BOT_DIR.rev45.bak/output' to '$E_BOT_DIR'..."
+    cp -r "$E_BOT_DIR.rev45.bak/output" "$E_BOT_DIR"
 
-    echo "${E_IMPORTANT}It is highly recommended to downloaded the newest version of" \
+    echo "${E_IMP}It is highly recommended to downloaded the newest version of" \
         "NadekoBot before continuing."
 }
 
@@ -85,7 +84,7 @@ trap 'revert' SIGINT
 ####[ Main ]############################################################################
 
 
-printf "%s" "$E_CLRLN"  # Clear the "Downloading 'linuxAIO'..." message.
+printf "%s" "$E_CLR_LN"  # Clear the "Downloading 'linuxAIO'..." message.
 read -rp "${E_NOTE}Press [Enter] to download the latest version"
 
 if [[ -f linuxAIO.old ]]; then
@@ -131,7 +130,7 @@ elif (( E_LINUXAIO_REVISION != E_CURRENT_LINUXAIO_REVISION )); then
 
     echo "${E_SUCCESS}Successfully downloaded the newest version of 'linuxAIO' with" \
         "existing configurations applied"
-    echo "${E_IMPORTANT}Review the 'linuxAIO.old' file for configurations that were" \
+    echo "${E_IMP}Review the 'linuxAIO.old' file for configurations that were" \
         "not automatically transferred to the new 'linuxAIO'"
 else
     echo "${E_SUCCESS}You are already using the latest version of 'linuxAIO'"

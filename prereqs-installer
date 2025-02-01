@@ -5,7 +5,7 @@
 # Comment Key:
 #   - A.1.: Apt uses its own signal handlers, so this script's traps cannot immediately
 #     intercept signals (e.g., SIGINT) during the apt operation. To address this, apt is
-#     run in the background, and its process ID is stored in 'apt_pid'. If a signal is
+#     run in the background, and its process ID is stored in $apt_pid. If a signal is
 #     caught, the script terminates the 'apt' process and exits.
 #
 ########################################################################################
@@ -52,19 +52,19 @@ clean_exit() {
         1) exit_code=50 ;;
         0|5) ;;
         129)
-            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)"
             exit_now=true
             ;;
         130)
-            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
         143)
-            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            echo -e "\n${E_WARN}Termination signal detected (SIGTERM)"
             exit_now=true
             ;;
         *)
-            echo -e "\n${E_WARNING}Exiting with exit code: $exit_code"
+            echo -e "\n${E_WARN}Exiting with exit code: $exit_code"
             exit_now=true
             ;;
     esac

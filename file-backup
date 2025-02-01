@@ -55,19 +55,19 @@ clean_exit() {
         1) exit_code=50 ;;
         0|5) ;;
         129)
-            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)"
             exit_now=true
             ;;
         130)
-            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
         143)
-            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            echo -e "\n${E_WARN}Termination signal detected (SIGTERM)"
             exit_now=true
             ;;
         *)
-            echo -e "\n${E_WARNING}Exiting with exit code: $exit_code"
+            echo -e "\n${E_WARN}Exiting with exit code: $exit_code"
             exit_now=true
             ;;
     esac
@@ -77,7 +77,7 @@ clean_exit() {
 
     (
         if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
-            echo "${E_WARNING}Unable to complete backup"
+            echo "${E_WARN}Unable to complete backup"
             echo "${E_INFO}Attempting to restore original backups..."
             mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
         elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
@@ -120,7 +120,7 @@ for file in "${C_FILES_TO_BACK_UP[@]}"; do
     if [[ -f $file ]]; then
         cp -f "$file" "$C_TMP_BACKUP" || E_STDERR "Failed to back up '$file'" "1"
     else
-        echo "${E_WARNING}'$file' could not be found"
+        echo "${E_WARN}'$file' could not be found"
     fi
 done
 

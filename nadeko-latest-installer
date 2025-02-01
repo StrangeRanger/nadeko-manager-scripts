@@ -15,15 +15,15 @@ C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
 
 ## File paths.
-readonly C_BIN_DIR_TMP="$C_NADEKOBOT_TMP/$E_BIN_DIR"
-readonly C_BIN_DIR_OLD="$E_BIN_DIR.old"
-readonly C_BIN_DIR_OLD_OLD="$E_BIN_DIR.old.old"
-readonly C_EXAMPLE_CREDS="$C_BIN_DIR_TMP/creds_example.yml"
-readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/$E_CURRENT_CREDS"
-readonly C_CURRENT_DATABASE="$E_BIN_DIR/data/NadekoBot.db"
-readonly C_NEW_DATABASE="$C_BIN_DIR_TMP/data/NadekoBot.db"
-readonly C_CURRENT_DATA="$E_BIN_DIR/data"
-readonly C_NEW_DATA="$C_BIN_DIR_TMP/data"
+readonly C_BOT_DIR_TMP="$C_NADEKOBOT_TMP/$E_BOT_DIR"
+readonly C_BOT_DIR_OLD="$E_BOT_DIR.old"
+readonly C_BOT_DIR_OLD_OLD="$E_BOT_DIR.old.old"
+readonly C_EXAMPLE_CREDS_PATH="$C_BOT_DIR_TMP/$E_CREDS_EXAMPLE"
+readonly C_NEW_CREDS_PATH="$C_NADEKOBOT_TMP/$E_CREDS_PATH"
+readonly C_CURRENT_DB_PATH="$E_BOT_DIR/data/NadekoBot.db"
+readonly C_NEW_DB_PATH="$C_BOT_DIR_TMP/data/NadekoBot.db"
+readonly C_CURRENT_DATA_PATH="$E_BOT_DIR/data"
+readonly C_NEW_DATA_PATH="$C_BOT_DIR_TMP/data"
 
 ## GitLab project details.
 readonly PROJECT_ID="9321079"
@@ -38,7 +38,7 @@ service_is_active=false
 
 ####
 # Cleanly exits the script by removing temporary files and directories. If an error or
-# premature exit is detected, it attempts to restore the original '$C_BIN_DIR' directory
+# premature exit is detected, it attempts to restore the original '$C_BOT_DIR' directory
 # structure.
 #
 # PARAMETERS:
@@ -69,19 +69,19 @@ clean_exit() {
         1) exit_code=50 ;;
         0|5) ;;
         129)
-            echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)"
+            echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)"
             exit_now=true
             ;;
         130)
-            echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+            echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
         143)
-            echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)"
+            echo -e "\n${E_WARN}Termination signal detected (SIGTERM)"
             exit_now=true
             ;;
         *)
-            echo -e "\n${E_WARNING}Exiting with exit code: $exit_code"
+            echo -e "\n${E_WARN}Exiting with exit code: $exit_code"
             exit_now=true
             ;;
     esac
@@ -90,27 +90,27 @@ clean_exit() {
     [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" &>/dev/null
 
     (
-        if [[ -d $E_BIN_DIR && ! -d $C_BIN_DIR_OLD && -d $C_BIN_DIR_OLD_OLD ]]; then
-            echo "${E_WARNING}Unable to complete installation"
-            echo "${E_INFO}Attempting to restore original version of '$E_BIN_DIR'..."
-            mv "$C_BIN_DIR_OLD_OLD" "$C_BIN_DIR_OLD" || exit 1
-        elif [[ ! -d $E_BIN_DIR && -d $C_BIN_DIR_OLD ]]; then
-            echo "${E_WARNING}Unable to complete installation"
-            echo "${E_INFO}Attempting to restore original version of '$E_BIN_DIR'..."
-            mv "$C_BIN_DIR_OLD" "$E_BIN_DIR" || exit 1
+        if [[ -d $E_BOT_DIR && ! -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
+            echo "${E_WARN}Unable to complete installation"
+            echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
+            mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" || exit 1
+        elif [[ ! -d $E_BOT_DIR && -d $C_BOT_DIR_OLD ]]; then
+            echo "${E_WARN}Unable to complete installation"
+            echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
+            mv "$C_BOT_DIR_OLD" "$E_BOT_DIR" || exit 1
 
-            if [[ -d $C_BIN_DIR_OLD_OLD ]]; then
-                mv "$C_BIN_DIR_OLD_OLD" "$C_BIN_DIR_OLD" \
+            if [[ -d $C_BOT_DIR_OLD_OLD ]]; then
+                mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" \
                     || E_STDERR \
-                        "Failed to rename '$C_BIN_DIR_OLD_OLD' as '$C_BIN_DIR_OLD'" \
+                        "Failed to rename '$C_BOT_DIR_OLD_OLD' as '$C_BOT_DIR_OLD'" \
                         "" "${E_NOTE}Please rename it manually"
             fi
-        elif [[ -d $E_BIN_DIR && -d $C_BIN_DIR_OLD && -d $C_BIN_DIR_OLD_OLD ]]; then
-            rm -rf "$C_BIN_DIR_OLD_OLD" \
-                || E_STDERR "Failed to remove '$C_BIN_DIR_OLD_OLD'" "" \
-                    "${E_NOTE}Please remove '$C_BIN_DIR_OLD_OLD' manually"
+        elif [[ -d $E_BOT_DIR && -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
+            rm -rf "$C_BOT_DIR_OLD_OLD" \
+                || E_STDERR "Failed to remove '$C_BOT_DIR_OLD_OLD'" "" \
+                    "${E_NOTE}Please remove '$C_BOT_DIR_OLD_OLD' manually"
         fi
-    ) || E_STDERR "Failed to restore '$E_BIN_DIR'" "$?" \
+    ) || E_STDERR "Failed to restore '$E_BOT_DIR'" "$?" \
         "${E_NOTE}We will exit completely to prevent data loss"
 
     if [[ $exit_now == false ]]; then
@@ -179,7 +179,7 @@ read -rp "${E_NOTE}We will now set up NadekoBot. Press [Enter] to begin."
 cd "$C_NADEKOBOT_TMP" \
     || E_STDERR "Failed to change working directory to '$C_NADEKOBOT_TMP'" "1"
 
-if [[ $E_SERVICE_STATUS == "active" ]]; then
+if [[ $E_BOT_SERVICE_STATUS == "active" ]]; then
     service_is_active=true
     E_STOP_SERVICE
 fi
@@ -198,9 +198,9 @@ echo "${E_INFO}Extracting '${C_ARCHIVE_NAME}'..."
 tar -xf "$C_ARCHIVE_NAME" || E_STDERR "Failed to extract '${C_ARCHIVE_NAME}'" "1"
 
 archive_dir_name=$(tar -tf "$C_ARCHIVE_NAME" | head -1 | cut -f1 -d "/")
-mv "$archive_dir_name" "$E_BIN_DIR"
+mv "$archive_dir_name" "$E_BOT_DIR"
 unset archive_dir_name
-chmod +x "${E_BIN_DIR}/${E_BOT_EXECUTABLE}"
+chmod +x "${E_BOT_DIR}/${E_BOT_EXE}"
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 
 
@@ -208,30 +208,30 @@ cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR
 ### [ Move Credentials, Database, and Other Data ]
 ###
 ### Moves the credentials, database, and other NadekoBot data to the new version
-### directory. In case '$E_BIN_DIR' already exists, it is renamed to '$C_BIN_DIR_OLD'
-### (with a further fallback of '$C_BIN_DIR_OLD_OLD'), making it easier to revert to a
+### directory. In case '$E_BOT_DIR' already exists, it is renamed to '$C_BOT_DIR_OLD'
+### (with a further fallback of '$C_BOT_DIR_OLD_OLD'), making it easier to revert to a
 ### previous version if needed.
 ###
 
 (
-    if [[ ! -f $E_CURRENT_CREDS ]]; then
-        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS##*/}' as '${C_NEW_CREDS##*/}'" \
-            "to '${C_NEW_CREDS%/*}'..."
-        cp -f "$C_EXAMPLE_CREDS" "$C_NEW_CREDS" || exit 1
+    if [[ ! -f $E_CREDS_PATH ]]; then
+        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as" \
+            "'${C_NEW_CREDS_PATH##*/}' to '${C_NEW_CREDS_PATH%/*}'..."
+        cp -f "$C_EXAMPLE_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
     else
-        echo "${E_INFO}Copying '${C_NEW_CREDS##*/}' to '${C_NEW_CREDS%/*}'..."
-        cp -f "$E_CURRENT_CREDS" "$C_NEW_CREDS" || exit 1
+        echo "${E_INFO}Copying '${C_NEW_CREDS_PATH##*/}' to '${C_NEW_CREDS_PATH%/*}'..."
+        cp -f "$E_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
     fi
 ) || E_STDERR "Failed to copy credentials" "1"
 
 
-if [[ -d $E_BIN_DIR ]]; then
-    if [[ ! -f $C_CURRENT_DATABASE ]]; then
-        echo "${E_WARNING}'$C_CURRENT_DATABASE' could not be found"
+if [[ -d $E_BOT_DIR ]]; then
+    if [[ ! -f $C_CURRENT_DB_PATH ]]; then
+        echo "${E_WARN}'$C_CURRENT_DB_PATH' could not be found"
         echo "${E_NOTE}Skipping copying the database..."
     else
-        echo "${E_INFO}Copying '${C_CURRENT_DATABASE} to the '${C_NEW_DATABASE%/*}'..."
-        cp -rT "$C_CURRENT_DATABASE" "$C_NEW_DATABASE" \
+        echo "${E_INFO}Copying '${C_CURRENT_DB_PATH} to the '${C_NEW_DB_PATH%/*}'..."
+        cp -rT "$C_CURRENT_DB_PATH" "$C_NEW_DB_PATH" \
             || E_STDERR "Failed to copy database" "1"
     fi
 
@@ -239,44 +239,45 @@ if [[ -d $E_BIN_DIR ]]; then
     (
         ## Temporarily rename the new version's strings and aliases so they won't be
         ## overwritten.
-        mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings.new || exit 1
-        mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases.new.yml || exit 1
+        mv -fT "$C_NEW_DATA_PATH"/strings "$C_NEW_DATA_PATH"/strings.new || exit 1
+        mv -f "$C_NEW_DATA_PATH"/aliases.yml "$C_NEW_DATA_PATH"/aliases.new.yml || exit 1
 
         # Copy current data directory into the new one, overwriting matching
         # files/folders.
-        cp -rT "$C_CURRENT_DATA" "$C_NEW_DATA" || exit 1
+        cp -rT "$C_CURRENT_DATA_PATH" "$C_NEW_DATA_PATH" || exit 1
 
         # Remove any old backups of strings and aliases.
-        rm -rf "$C_NEW_DATA"/strings.old "$C_NEW_DATA"/aliases.old.yml 2>/dev/null
+        rm -rf "$C_NEW_DATA_PATH"/strings.old "$C_NEW_DATA_PATH"/aliases.old.yml \
+            2>/dev/null
 
         ## Back up the overwritten strings and aliases before restoring the new ones.
-        mv -fT "$C_NEW_DATA"/strings "$C_NEW_DATA"/strings.old || exit 1
-        mv -f "$C_NEW_DATA"/aliases.yml "$C_NEW_DATA"/aliases.old.yml || exit 1
+        mv -fT "$C_NEW_DATA_PATH"/strings "$C_NEW_DATA_PATH"/strings.old || exit 1
+        mv -f "$C_NEW_DATA_PATH"/aliases.yml "$C_NEW_DATA_PATH"/aliases.old.yml || exit 1
 
         ## Restore the new version's strings and aliases.
-        mv -fT "$C_NEW_DATA"/strings.new "$C_NEW_DATA"/strings || exit 1
-        mv -f "$C_NEW_DATA"/aliases.new.yml "$C_NEW_DATA"/aliases.yml || exit 1
+        mv -fT "$C_NEW_DATA_PATH"/strings.new "$C_NEW_DATA_PATH"/strings || exit 1
+        mv -f "$C_NEW_DATA_PATH"/aliases.new.yml "$C_NEW_DATA_PATH"/aliases.yml || exit 1
     ) || E_STDERR "An error occurred while copying other data" "$?"
 
-    echo "${E_INFO}Replacing '$E_BIN_DIR' with '${C_NADEKOBOT_TMP}/$E_BIN_DIR'..."
+    echo "${E_INFO}Replacing '$E_BOT_DIR' with '${C_NADEKOBOT_TMP}/$E_BOT_DIR'..."
     (
-        if [[ -d $C_BIN_DIR_OLD ]]; then
-            mv "$C_BIN_DIR_OLD" "$C_BIN_DIR_OLD_OLD" || exit 5
+        if [[ -d $C_BOT_DIR_OLD ]]; then
+            mv "$C_BOT_DIR_OLD" "$C_BOT_DIR_OLD_OLD" || exit 5
         fi
 
-        mv "$E_BIN_DIR" "$C_BIN_DIR_OLD" || exit 5
-        mv "$C_NADEKOBOT_TMP/$E_BIN_DIR" "$E_BIN_DIR" || exit 5
+        mv "$E_BOT_DIR" "$C_BOT_DIR_OLD" || exit 5
+        mv "$C_NADEKOBOT_TMP/$E_BOT_DIR" "$E_BOT_DIR" || exit 5
 
-        if [[ -d $C_BIN_DIR_OLD_OLD ]]; then
-            rm -rf "$C_BIN_DIR_OLD_OLD" \
-                || E_STDERR "Failed to remove '$C_BIN_DIR_OLD_OLD'" "" \
-                    "${E_NOTE}Please remove '$C_BIN_DIR_OLD_OLD' manually"
+        if [[ -d $C_BOT_DIR_OLD_OLD ]]; then
+            rm -rf "$C_BOT_DIR_OLD_OLD" \
+                || E_STDERR "Failed to remove '$C_BOT_DIR_OLD_OLD'" "" \
+                    "${E_NOTE}Please remove '$C_BOT_DIR_OLD_OLD' manually"
         fi
-    ) || E_STDERR "An error occurred while replacing '$E_BIN_DIR'" "$?"
+    ) || E_STDERR "An error occurred while replacing '$E_BOT_DIR'" "$?"
 else
-    echo "${E_INFO}Moving '$C_NADEKOBOT_TMP/$E_BIN_DIR' to '$E_BIN_DIR'..."
-    mv "$C_NADEKOBOT_TMP/$E_BIN_DIR" "$E_ROOT_DIR" \
-        || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' to '$E_BIN_DIR'" "1"
+    echo "${E_INFO}Moving '$C_NADEKOBOT_TMP/$E_BOT_DIR' to '$E_BOT_DIR'..."
+    mv "$C_NADEKOBOT_TMP/$E_BOT_DIR" "$E_ROOT_DIR" \
+        || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' to '$E_BOT_DIR'" "1"
     rmdir "$C_NADEKOBOT_TMP" &>/dev/null
 fi
 
@@ -288,7 +289,7 @@ echo ""
 echo "${E_SUCCESS}Finished setting up NadekoBot"
 
 if [[ $service_is_active == true ]]; then
-    echo "${E_NOTE}'$E_SERVICE_NAME' was stopped to update NadekoBot and needs to be" \
+    echo "${E_NOTE}'$E_BOT_SERVICE' was stopped to update NadekoBot and needs to be" \
         "started using one of the run modes in the installer menu"
 fi
 

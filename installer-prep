@@ -20,19 +20,19 @@ E_CYAN="$(printf '\033[0;36m')"
 E_RED="$(printf '\033[1;31m')"
 E_NC="$(printf '\033[0m')"
 E_GREY="$(printf '\033[0;90m')"
-E_CLRLN="$(printf '\r\033[K')"
-export E_YELLOW E_GREEN E_BLUE E_CYAN E_RED E_NC E_GREY E_CLRLN
+E_CLR_LN="$(printf '\r\033[K')"
+export E_YELLOW E_GREEN E_BLUE E_CYAN E_RED E_NC E_GREY E_CLR_LN
 
 ## Short-hand colorized messages.
 E_SUCCESS="${E_GREEN}==>${E_NC} "
-E_WARNING="${E_YELLOW}==>${E_NC} "
+E_WARN="${E_YELLOW}==>${E_NC} "
 E_ERROR="${E_RED}ERROR:${E_NC} "
 E_INFO="${E_BLUE}==>${E_NC} "
 E_NOTE="${E_CYAN}==>${E_NC} "
-E_IMPORTANT="${E_CYAN}IMPORTANT:${E_NC} "
-export E_SUCCESS E_WARNING E_ERROR E_INFO E_NOTE E_IMPORTANT
+E_IMP="${E_CYAN}IMPORTANT:${E_NC} "
+export E_SUCCESS E_WARN E_ERROR E_INFO E_NOTE E_IMP
 
-export E_BIN_DIR="nadekobot"
+export E_BOT_DIR="nadekobot"
 export E_ROOT_DIR="$PWD"
 export E_INSTALLER_PREP="$E_ROOT_DIR/installer-prep"
 
@@ -85,7 +85,7 @@ unsupported() {
 
     echo "${E_ERROR}Your operating system is not OFFICIALLY supported for the" \
         "installation, setup, and/or use of NadekoBot" >&2
-    echo "${E_WARNING}${E_YELLOW}WARNING${E_NC}: By continuing, you accept that" \
+    echo "${E_WARN}${E_YELLOW}WARNING${E_NC}: By continuing, you accept that" \
         "unexpected behaviors may occur. If you run into any errors or problems with" \
         "the installation and use of the NadekoBot, you are on your own."
     read -rp "${E_INFO}Would you like to continue anyways? [y/N] " choice
@@ -136,10 +136,10 @@ clean_exit() {
     ## script.
     case "$exit_code" in
         0|1) echo "" ;;
-        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
-        130) echo -e "\n${E_WARNING}User interrupt detected (SIGINT)" ;;
-        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
-        *)   echo -e "\n${E_WARNING}Exiting with code: $exit_code" ;;
+        129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
+        130) echo -e "\n${E_WARN}User interrupt detected (SIGINT)" ;;
+        143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" ;;
+        *)   echo -e "\n${E_WARN}Exiting with code: $exit_code" ;;
     esac
 
     echo "${E_INFO}Cleaning up..."
@@ -239,7 +239,7 @@ trap 'clean_exit "$?" "true"' EXIT
 if [[ $E_LINUXAIO_REVISION != "$C_CURRENT_LINUXAIO_REVISION" ]]; then
     export E_CURRENT_LINUXAIO_REVISION="$C_CURRENT_LINUXAIO_REVISION"
 
-    echo "${E_WARNING}You are using an older version of 'linuxAIO'"
+    echo "${E_WARN}You are using an older version of 'linuxAIO'"
     E_DOWNLOAD_SCRIPT "update-linuxAIO" "true"
     ./update-linuxAIO
 
