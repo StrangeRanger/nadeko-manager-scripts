@@ -56,7 +56,7 @@ download_and_transfer() {
 #   - 0: If the function completes successfully or no actions are required.
 revision_45() {
     # TODO: Move $C_EXAMPLE_CREDS to a different location, export it, and use it here.
-    [[ -f nadekobot/creds_example.yml && -f nadekobot/NadekoBot.dll ]] \
+    [[ -f $E_BIN_DIR/creds_example.yml && -f $E_BIN_DIR/NadekoBot.dll ]] \
         && return 0
 
     echo "${E_WARNING}The new version of 'linuxAIO' has several breaking changes from" \
@@ -65,11 +65,11 @@ revision_45() {
             "https://github.com/StrangeRanger/NadekoBot-BashScript/blob/main/CHANGELOG.md"
     read -rp "${E_NOTE}Press [Enter] to continue"
 
-    echo "${E_INFO}Renaming 'nadekobot' to 'nadekobot.rev45.bak'..."
-    mv nadekobot nadekobot.rev45.bak
+    echo "${E_INFO}Renaming '$E_BIN_DIR' to '$E_BIN_DIR.rev45.bak'..."
+    mv "$E_BIN_DIR" "$E_BIN_DIR.rev45.bak"
 
-    echo "${E_INFO}Copying 'nadekobot.rev45.bak/output' to 'nadekobot'..."
-    cp -r nadekobot.rev45.bak/output nadekobot
+    echo "${E_INFO}Copying '$E_BIN_DIR.rev45.bak/output' to '$E_BIN_DIR'..."
+    cp -r "$E_BIN_DIR.rev45.bak/output" "$E_BIN_DIR"
 
     echo "${E_IMPORTANT}It is highly recommended to downloaded the newest version of" \
         "NadekoBot before continuing."

@@ -7,11 +7,6 @@
 #   aliases, as updates may modify or replace these files. However, the old strings and
 #   aliases will be backed up as 'strings.old' and 'aliases.old.yml' respectively.
 #
-# Comment Key:
-#   - A.1.: Prevents permission errors that can occur, particularly if the installer is
-#     run once with root privileges and then again as a non-root user. This is handled
-#     by ensuring '/tmp/NuGetScratch' is owned by the user running the installer.
-#
 ########################################################################################
 ####[ Variables ]#######################################################################
 
@@ -21,6 +16,8 @@ readonly C_NADEKOBOT_TMP
 
 ## File paths.
 readonly C_BIN_DIR_TMP="$C_NADEKOBOT_TMP/$E_BIN_DIR"
+readonly C_BIN_DIR_OLD="$E_BIN_DIR.old"
+readonly C_BIN_DIR_OLD_OLD="$E_BIN_DIR.old.old"
 readonly C_EXAMPLE_CREDS="$C_BIN_DIR_TMP/creds_example.yml"
 readonly C_NEW_CREDS="$C_NADEKOBOT_TMP/$E_CURRENT_CREDS"
 readonly C_CURRENT_DATABASE="$E_BIN_DIR/data/NadekoBot.db"
@@ -41,7 +38,7 @@ service_is_active=false
 
 ####
 # Cleanly exits the script by removing temporary files and directories. If an error or
-# premature exit is detected, it attempts to restore the original 'nadekobot' directory
+# premature exit is detected, it attempts to restore the original '$C_BIN_DIR' directory
 # structure.
 #
 # PARAMETERS:
@@ -93,27 +90,27 @@ clean_exit() {
     [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" &>/dev/null
 
     (
-        if [[ -d nadekobot && ! -d nadekobot.old && -d nadekobot.old.old ]]; then
+        if [[ -d $E_BIN_DIR && ! -d $C_BIN_DIR_OLD && -d $C_BIN_DIR_OLD_OLD ]]; then
             echo "${E_WARNING}Unable to complete installation"
-            echo "${E_INFO}Attempting to restore original version of 'nadekobot'..."
-            mv nadekobot.old.old nadekobot.old || exit 1
-        elif [[ ! -d nadekobot && -d nadekobot.old ]]; then
+            echo "${E_INFO}Attempting to restore original version of '$E_BIN_DIR'..."
+            mv "$C_BIN_DIR_OLD_OLD" "$C_BIN_DIR_OLD" || exit 1
+        elif [[ ! -d $E_BIN_DIR && -d $C_BIN_DIR_OLD ]]; then
             echo "${E_WARNING}Unable to complete installation"
-            echo "${E_INFO}Attempting to restore original version of 'nadekobot'..."
-            mv nadekobot.old nadekobot || exit 1
+            echo "${E_INFO}Attempting to restore original version of '$E_BIN_DIR'..."
+            mv "$C_BIN_DIR_OLD" "$E_BIN_DIR" || exit 1
 
-            if [[ -d nadekobot.old.old ]]; then
-                mv nadekobot.old.old nadekobot.old \
+            if [[ -d $C_BIN_DIR_OLD_OLD ]]; then
+                mv "$C_BIN_DIR_OLD_OLD" "$C_BIN_DIR_OLD" \
                     || E_STDERR \
-                        "Failed to rename 'nadekobot.old.old' as 'nadekobot.old'" \
+                        "Failed to rename '$C_BIN_DIR_OLD_OLD' as '$C_BIN_DIR_OLD'" \
                         "" "${E_NOTE}Please rename it manually"
             fi
-        elif [[ -d nadekobot && -d nadekobot.old && -d nadekobot.old.old ]]; then
-            rm -rf nadekobot.old.old \
-                || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
-                    "${E_NOTE}Please remove 'nadekobot.old.old' manually"
+        elif [[ -d $E_BIN_DIR && -d $C_BIN_DIR_OLD && -d $C_BIN_DIR_OLD_OLD ]]; then
+            rm -rf "$C_BIN_DIR_OLD_OLD" \
+                || E_STDERR "Failed to remove '$C_BIN_DIR_OLD_OLD'" "" \
+                    "${E_NOTE}Please remove '$C_BIN_DIR_OLD_OLD' manually"
         fi
-    ) || E_STDERR "Failed to restore 'nadekobot'" "$?" \
+    ) || E_STDERR "Failed to restore '$E_BIN_DIR'" "$?" \
         "${E_NOTE}We will exit completely to prevent data loss"
 
     if [[ $exit_now == false ]]; then
@@ -211,8 +208,8 @@ cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR
 ### [ Move Credentials, Database, and Other Data ]
 ###
 ### Moves the credentials, database, and other NadekoBot data to the new version
-### directory. In case 'nadekobot' already exists, it is renamed to 'nadekobot.old'
-### (with a further fallback of 'nadekobot.old.old'), making it easier to revert to a
+### directory. In case '$E_BIN_DIR' already exists, it is renamed to '$C_BIN_DIR_OLD'
+### (with a further fallback of '$C_BIN_DIR_OLD_OLD'), making it easier to revert to a
 ### previous version if needed.
 ###
 
@@ -228,7 +225,7 @@ cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR
 ) || E_STDERR "Failed to copy credentials" "1"
 
 
-if [[ -d nadekobot ]]; then
+if [[ -d $E_BIN_DIR ]]; then
     if [[ ! -f $C_CURRENT_DATABASE ]]; then
         echo "${E_WARNING}'$C_CURRENT_DATABASE' could not be found"
         echo "${E_NOTE}Skipping copying the database..."
@@ -261,25 +258,25 @@ if [[ -d nadekobot ]]; then
         mv -f "$C_NEW_DATA"/aliases.new.yml "$C_NEW_DATA"/aliases.yml || exit 1
     ) || E_STDERR "An error occurred while copying other data" "$?"
 
-    echo "${E_INFO}Replacing 'nadekobot' with '${C_NADEKOBOT_TMP}/nadekobot'..."
+    echo "${E_INFO}Replacing '$E_BIN_DIR' with '${C_NADEKOBOT_TMP}/$E_BIN_DIR'..."
     (
-        if [[ -d nadekobot.old ]]; then
-            mv nadekobot.old nadekobot.old.old || exit 5
+        if [[ -d $C_BIN_DIR_OLD ]]; then
+            mv "$C_BIN_DIR_OLD" "$C_BIN_DIR_OLD_OLD" || exit 5
         fi
 
-        mv nadekobot nadekobot.old || exit 5
-        mv "$C_NADEKOBOT_TMP"/nadekobot nadekobot || exit 5
+        mv "$E_BIN_DIR" "$C_BIN_DIR_OLD" || exit 5
+        mv "$C_NADEKOBOT_TMP/$E_BIN_DIR" "$E_BIN_DIR" || exit 5
 
-        if [[ -d nadekobot.old.old ]]; then
-            rm -rf nadekobot.old.old \
-                || E_STDERR "Failed to remove 'nadekobot.old.old'" "" \
-                    "${E_NOTE}Please remove 'nadekobot.old.old' manually"
+        if [[ -d $C_BIN_DIR_OLD_OLD ]]; then
+            rm -rf "$C_BIN_DIR_OLD_OLD" \
+                || E_STDERR "Failed to remove '$C_BIN_DIR_OLD_OLD'" "" \
+                    "${E_NOTE}Please remove '$C_BIN_DIR_OLD_OLD' manually"
         fi
-    ) || E_STDERR "An error occurred while replacing 'nadekobot'" "$?"
+    ) || E_STDERR "An error occurred while replacing '$E_BIN_DIR'" "$?"
 else
-    echo "${E_INFO}Moving '$C_NADEKOBOT_TMP/nadekobot' to 'nadekobot'..."
-    mv "$C_NADEKOBOT_TMP"/nadekobot "$E_ROOT_DIR" \
-        || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' to 'nadekobot'" "1"
+    echo "${E_INFO}Moving '$C_NADEKOBOT_TMP/$E_BIN_DIR' to '$E_BIN_DIR'..."
+    mv "$C_NADEKOBOT_TMP/$E_BIN_DIR" "$E_ROOT_DIR" \
+        || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' to '$E_BIN_DIR'" "1"
     rmdir "$C_NADEKOBOT_TMP" &>/dev/null
 fi
 

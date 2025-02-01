@@ -92,13 +92,11 @@ disabled_reasons() {
             echo ""
             ;;
         2|3)
-            # TODO: Replace below dir with $E_BIN_DIR to reduce hardcoding.
-            if [[ ! -d nadekobot ]]; then
+            if [[ ! -d $E_BIN_DIR ]]; then
                 echo "${E_NOTE}    NadekoBot could not be found"
                 echo "${E_NOTE}        Use option 1 to download NadekoBot"
                 echo ""
-            # TODO: Replace below file with $E_CURRENT_CREDS to fix incorrect path.
-            elif [[ ! -f nadekobot/output/creds.yml ]]; then
+            elif [[ ! -f $E_CURRENT_CREDS ]]; then
                 echo "${E_NOTE}    The 'creds.yml' could not be found"
                 echo "${E_NOTE}        Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
@@ -310,8 +308,7 @@ while true; do
         opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
 
         ## Disable option 7 if the NadekoBot directory is missing.
-        # TODO: Replace below dir with $E_BIN_DIR to reduce hardcoding.
-        if [[ ! -d nadekobot ]]; then
+        if [[ ! -d $E_BIN_DIR ]]; then
             opt_seven_dis=true
             opt_seven_text="${E_GREY}${opt_seven_text}${dis_option}${E_NC}"
         fi
