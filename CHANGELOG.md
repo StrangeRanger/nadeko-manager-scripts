@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [v5.0.0] - 2025-02-01
+
 ### Added
 
 - `jq` is now installed as a prerequisite on all supported distributions.
@@ -14,11 +16,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - ⚠️ No longer downloads NadekoBot via `git clone`, and instead downloads them for pre-built releases.
     - As a result of this, the following changes have been made:
-        - ⚠️ Several prerequisites have been removed, namely .NET SDK, as the release is self-contained and don't need to be built.
+        - ⚠️ Several prerequisites have been removed, namely .NET SDK, as the release is self-contained and doesn't need to be built from source.
         - ⚠️ Structure of NadekoBot's directory has changed to only contain the compiled code and any other relevant files.
         - ⚠️ Configurations/structure for `E_FILES_TO_BACK_UP` in `linuxAIO` has been updated to reflect the changes made to NadekoBot's directory structure.
-        - When installing NadekoBot, the installer will provide the user with the available releases you can download and install.
-- Improved comments and documentation.
+        - `E_BOT_INSTALL_VERSION` has been removed from `linuxAIO`, as it's no longer needed.
+            - When installing NadekoBot, the installer will provide the user with the available releases you can download and install.
+- Greatly improved comments and documentation.
 - Improve architecture and bit type detection.
 
 ## [v4.0.1] - 2024-12-19
@@ -297,7 +300,7 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 
 ### Added
 
-- The branch/tag to download NadekoBot from (i.e., `1.9`, `2.39.1`, etc.) is now configurable via `linuxAIO.sh`.
+- The branch/tag to download NadekoBot from (e.g., `1.9`, `2.39.1`, etc.) is now configurable via `linuxAIO.sh`.
 - The current value of `$allow_run_as_root` and `$_NADEKO_INSTALL_VERSION` is set whenever downloading the latest version of `linuxAIO`.
 
 ### Changed
@@ -358,7 +361,7 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
 - Uses `systemctl` (Linux) and `launchctl` (macOS) to run NadekoBot, instead of PM2.
 - Uses `curl` instead of `wget`.
 
-#### Removed
+### Removed
 
 - Support for:
   - Ubuntu: 14.04, 16.10, 17.04, 17.10
@@ -367,7 +370,8 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
   - CentOS: 7
 - The option to run NadekoBot with auto-update.
 
-[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v4.0.1...HEAD
+[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v5.0.0...HEAD
+[v5.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v5.0.0
 [v4.0.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.1
 [v4.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.0
 [v3.2.5]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.5

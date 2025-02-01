@@ -1,20 +1,24 @@
 #!/bin/bash
 #
-# The main installer for Linux. This script is responsible for displaying the menu
-# options and executing the necessary scripts to install, run, and manage NadekoBot.
+# The main Linux installer for NadekoBot. This script presents menu options and
+# orchestrates the execution of additional scripts to install, run, and manage
+# NadekoBot.
 #
 # Comment Key:
-#   - A.1.: Return to prevent further code execution.
+#   - A.1.: Return to stop further code execution.
 #   - B.1.: Prevent the code from running if the option is disabled.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
 
 
-export E_SERVICE_NAME="nadeko.service"
-export E_SERVICE="/etc/systemd/system/$E_SERVICE_NAME"
-export E_BOT_EXECUTABLE="NadekoBot"
-export E_CURRENT_CREDS="$E_BIN_DIR/creds.yml"
+readonly C_CREDS="creds.yml"
+
+export E_BOT_SERVICE="nadeko.service"
+export E_BOT_SERVICE_PATH="/etc/systemd/system/$E_BOT_SERVICE"
+export E_BOT_EXE="NadekoBot"
+export E_CREDS_EXAMPLE="creds_example.yml"
+export E_CREDS_PATH="$E_BOT_DIR/$C_CREDS"
 export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 
 
@@ -22,23 +26,24 @@ export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 
 
 ####
-# Depending on the return value or exit code from any of the executed scripts, perform
-# the corresponding actions.
+# Evaluates the return value or exit code from executed scripts and carries out the
+# corresponding actions.
 #
 # Custom Exit Codes:
 #   - 3: Related to NadekoBot daemon service.
-#   - 4: Unsupported OS/Distro.
-#   - 5: A problem occurred finalizing an installation or the backup of files.
-#   - 50: Arbitrary exit code telling the main installer to continue running.
+#   - 4: Unsupported OS/distro.
+#   - 5: A problem occurred while finalizing an installation or backing up files.
+#   - 50: Arbitrary exit code indicating that the main installer should continue running.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
+#       - The exit code to evaluate.
 #
 # RETURNS:
-#   - 0: If the script should continue running.
+#   - 0: If the script should continue running (exit codes 3, 4, 5, or 50).
 #
 # EXITS:
-#   - $exit_code: Parameter passed to the function.
+#   - $exit_code: Exits the script with the provided code, if not one of the above.
 exit_code_actions() {
     local exit_code="$1"
 
@@ -47,24 +52,24 @@ exit_code_actions() {
     ## specify the output for those signals in 'installer-prep'.
     case "$exit_code" in
         3|4|5|50) return 0 ;;
-        129) echo -e "\n${E_WARNING}Hangup signal detected (SIGHUP)" ;;
+        129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
         130) ;;
-        143) echo -e "\n${E_WARNING}Termination signal detected (SIGTERM)" ;;
+        143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" ;;
     esac
 
     exit "$exit_code"
 }
 
 ####
-# Check if the 'token' in 'creds.yml' is set.
+# Checks whether the 'token' field in $C_CREDS is set.
 #
 # RETURNS:
-#   - 0: If the 'token' is not set.
-#   - 1: If the 'token' is set.
+#   - 0: If the token is not set (or if $C_CREDS does not exist).
+#   - 1: If the token is set (as detected by the pattern '^token: ''').
 is_token_set() {
-    if [[ ! -f $E_CURRENT_CREDS ]]; then
+    if [[ ! -f $E_CREDS_PATH ]]; then
         return 0
-    elif grep -Eq '^token: '\'\''' "$E_CURRENT_CREDS"; then
+    elif grep -Eq '^token: '\'\''' "$E_CREDS_PATH"; then
         return 1
     else
         return 0
@@ -72,10 +77,12 @@ is_token_set() {
 }
 
 ####
-# Provide the reason(s) for why one or more options are disabled.
+# Outputs the reason(s) that a specified menu option is disabled based on the current
+# environment and file conditions (e.g., missing prerequisites or files).
 #
 # PARAMETERS:
 #   - $1: option_number (Required)
+#       - The numeric identifier of the disabled option.
 disabled_reasons() {
     local option_number="$1"
 
@@ -88,17 +95,17 @@ disabled_reasons() {
             echo ""
             ;;
         2|3)
-            if [[ ! -d nadekobot ]]; then
+            if [[ ! -d $E_BOT_DIR ]]; then
                 echo "${E_NOTE}    NadekoBot could not be found"
                 echo "${E_NOTE}        Use option 1 to download NadekoBot"
                 echo ""
-            elif [[ ! -f nadekobot/output/creds.yml ]]; then
-                echo "${E_NOTE}    The 'creds.yml' could not be found"
+            elif [[ ! -f $E_CREDS_PATH ]]; then
+                echo "${E_NOTE}    The '$C_CREDS' could not be found"
                 echo "${E_NOTE}        Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
                 echo ""
             elif ! is_token_set; then
-                echo "${E_NOTE}    The 'token' in 'creds.yml' is not set"
+                echo "${E_NOTE}    The 'token' in '$C_CREDS' is not set"
                 echo "${E_NOTE}        Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
                 echo ""
@@ -125,33 +132,34 @@ disabled_reasons() {
 ###
 
 ####
-# Retrieve that status of NadekoBot's service.
+# Retrieves the status of NadekoBot's service and updates the global variable
+# $E_BOT_SERVICE_STATUS accordingly.
 #
 # NEW GLOBALS:
-#   - E_SERVICE_STATUS: The status of NadekoBot's service.
+#   - E_BOT_SERVICE_STATUS: The current status of the NadekoBot service.
 E_GET_SERVICE_STATUS() {
-    E_SERVICE_STATUS=$(systemctl is-active "$E_SERVICE_NAME")
+    E_BOT_SERVICE_STATUS=$(systemctl is-active "$E_BOT_SERVICE")
 }
 export -f E_GET_SERVICE_STATUS
 
 ####
-# Stop NadekoBot's service.
+# Halts the NadekoBot service if it is currently running and, optionally, displays a
+# message indicating whether the service was stopped or is already inactive.
 #
 # PARAMETERS:
 #   - $1: output_text (Optional, Default: false)
-#       - If the function should output text indicating if the service has been stopped
-#         or is currently not running.
+#       - Determines whether to output text indicating the service status.
 #       - Acceptable values:
 #           - true
 #           - false
 E_STOP_SERVICE() {
     local output_text="${1:-false}"
 
-    if [[ $E_SERVICE_STATUS == "active" ]]; then
-        echo "${E_INFO}Stopping '$E_SERVICE_NAME'..."
-        sudo systemctl stop "$E_SERVICE_NAME" \
-            || E_STDERR "Failed to stop '$E_SERVICE_NAME'" "" \
-                "${E_NOTE}You will need to restart '$E_SERVICE_NAME' to apply any updates to NadekoBot"
+    if [[ $E_BOT_SERVICE_STATUS == "active" ]]; then
+        echo "${E_INFO}Stopping '$E_BOT_SERVICE'..."
+        sudo systemctl stop "$E_BOT_SERVICE" \
+            || E_STDERR "Failed to stop '$E_BOT_SERVICE'" "" \
+                "${E_NOTE}You will need to restart '$E_BOT_SERVICE' to apply any updates to NadekoBot"
         [[ $output_text == true ]] \
             && echo -e "\n${E_SUCCESS}NadekoBot has been stopped"
     else
@@ -162,22 +170,25 @@ E_STOP_SERVICE() {
 export -f E_STOP_SERVICE
 
 ####
-# Display the logs from 'nadeko.service' as they are created.
+# Displays real-time logs from the 'nadeko.service'. Uses 'ccze' to colorize output and
+# traps SIGINT to exit gracefully.
 E_FOLLOW_SERVICE_LOGS() {
     (
         trap 'echo -e "\n"; exit 130' SIGINT
-        sudo journalctl --no-hostname -f -u "$E_SERVICE_NAME"  | ccze -A
+        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE"  | ccze -A
     )
 }
 export -f E_FOLLOW_SERVICE_LOGS
 
 ####
-# Output additional information to go along with the output of 'E_FOLLOW_SERVICE_LOGS'.
+# Provides contextual information when displaying NadekoBot service logs, indicating
+# whether the logs are viewed from a runner script or directly within the main
+# installer.
 #
 # PARAMETERS:
 #   - $1: log_type (Required)
-#       - Indicates if the function was called from one of the runner scripts or from
-#         within the main installer.
+#       - Indicates whether the function was called from a runner script or from the
+#         main installer.
 #       - Acceptable values:
 #           - runner: Called from one of the runner scripts.
 #           - opt_five: Called from the main installer.
@@ -188,9 +199,9 @@ E_WATCH_SERVICE_LOGS() {
     local log_type="$1"
 
     if [[ $log_type == "runner" ]]; then
-        echo "${E_INFO}Displaying '$E_SERVICE_NAME' startup logs, live..."
+        echo "${E_INFO}Displaying '$E_BOT_SERVICE' startup logs, live..."
     elif [[ $log_type == "opt_five" ]]; then
-        echo "${E_INFO}Watching '$E_SERVICE_NAME' logs, live..."
+        echo "${E_INFO}Watching '$E_BOT_SERVICE' logs, live..."
     else
         E_STDERR "INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" "4"
     fi
@@ -221,14 +232,14 @@ trap 'exit_code_actions "143"' SIGTERM
 
 
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
-printf "%sWelcome to the NadekoBot installer menu\n\n" "$E_CLRLN"
+printf "%sWelcome to the NadekoBot installer menu\n\n" "$E_CLR_LN"
 
 while true; do
     ###
     ### [ Temporary Variables ]
     ###
-    ### The variables below constantly get modified within the while loop, and need to
-    ### be reset everytime the loop starts back at the top.
+    ### These variables are modified within the while loop and must be reset each time
+    ### the loop begins again.
     ###
 
     ## Disabled option text.
@@ -246,7 +257,7 @@ while true; do
     opt_four_text="4. Stop NadekoBot"
     ## Option 5.
     opt_five_dis=false
-    opt_five_text="5. Display '$E_SERVICE_NAME' logs in follow mode"
+    opt_five_text="5. Display '$E_BOT_SERVICE' logs in follow mode"
     ## Option 7.
     opt_seven_dis=false
     opt_seven_text="7. Back up important files"
@@ -254,8 +265,9 @@ while true; do
     ###
     ### [ Variable Checks ]
     ###
-    ### The following variables re-check the status, existence, etc., of some service
-    ### or program, that has the possibility of changing every time the while loop runs.
+    ### These checks reassess the status or existence of certain services or programs
+    ### (e.g., ccze, yt_dlp) each time the loop restarts, as their availability might
+    ### change.
     ###
 
     if hash ccze &>/dev/null; then
@@ -276,7 +288,7 @@ while true; do
     ### [ Main Continued ]
     ###
 
-    ## Disable option 1 if any of the following tools are not installed.
+    ## Disable option 1 if any of the required tools are not installed.
     if (! hash redis-server \
         || ! hash python3 \
         || ! "$ccze_installed" \
@@ -286,9 +298,10 @@ while true; do
         opt_one_text="${E_GREY}${opt_one_text}${dis_option}${E_NC}"
     fi
 
-    ## Disable options 2, 3, 4, and 5 if any of the tools in the previous if statement
-    ## are not installed, or none of the specified directories/files could be found.
-    if [[ $opt_one_dis == true || ! -f $E_CURRENT_CREDS ]] || ! is_token_set; then
+    ## Disable options 2, 3, 4, and 5 if any of the required tools (from the previous
+    ## check) are missing, or if required directories/files (e.g., $C_CREDS) do not
+    ## exist, or if the NadekoBot token is not set.
+    if [[ $opt_one_dis == true || ! -f $E_CREDS_PATH ]] || ! is_token_set; then
         opt_two_and_three_dis=true
         opt_two_text="${E_GREY}${opt_two_text}${dis_option}${E_NC}"
         opt_three_text="${E_GREY}${opt_three_text}${dis_option}${E_NC}"
@@ -297,23 +310,24 @@ while true; do
         opt_five_dis=true
         opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
 
-        if [[ ! -d nadekobot ]]; then
+        ## Disable option 7 if the NadekoBot directory is missing.
+        if [[ ! -d $E_BOT_DIR ]]; then
             opt_seven_dis=true
             opt_seven_text="${E_GREY}${opt_seven_text}${dis_option}${E_NC}"
         fi
-    ## Options 2 and 3 remain enabled, if 'NadekoRun' exists.
+    ## If NadekoRun exists, options 2 and 3 remain enabled.
+    # TODO: Replace below file with an exported variable to reduce hardcoding???
     elif [[ -f NadekoRun ]]; then
-        ## Option 4 and 5 remain enabled, if NadekoBot's service is running.
-        if [[ $E_SERVICE_STATUS == "active" ]]; then
+        ## Keep options 4 and 5 enabled if NadekoBot's service is running; otherwise,
+        ## disable them.
+        if [[ $E_BOT_SERVICE_STATUS == "active" ]]; then
             run_mode_status=" ${E_GREEN}(Running in this mode)${E_NC}"
-        ## Disable option 4 and 5 if NadekoBot's service NOT running.
-        elif [[ $E_SERVICE_STATUS == "inactive" ]]; then
+        elif [[ $E_BOT_SERVICE_STATUS == "inactive" ]]; then
             opt_four_dis=true
             opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
             opt_five_dis=true
             opt_five_text="${E_GREY}${opt_five_text}${dis_opt_v2}${E_NC}"
             run_mode_status=" ${E_YELLOW}(Set up to run in this mode)${E_NC}"
-        ## Disable options 4 and 5.
         else
             opt_four_dis=true
             opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
@@ -322,14 +336,15 @@ while true; do
             run_mode_status=" ${E_YELLOW}(Status unknown)${E_NC}"
         fi
 
-        ## If NadekoBot is running in the background with auto restart...
+        ## Display status text for background-running modes (with or without auto
+        ## restart).
         if grep -q '_code_name_="NadekoRunAR"' NadekoRun; then
             opt_three_text="${opt_three_text}${run_mode_status}"
-        ## If NadekoBot is running in the background...
         elif grep -q '_code_name_="NadekoRun"' NadekoRun; then
             opt_two_text="${opt_two_text}${run_mode_status}"
         fi
-    ## Options 2 and 3 remained enabled, but options 4 and 5 becomes disabled.
+    ## If NadekoRun does not exist, options 2 and 3 remain enabled, but 4 and 5 are
+    ## disabled.
     else
         opt_four_dis=true
         opt_four_text="${E_GREY}${opt_four_text}${dis_opt_v2}${E_NC}"
@@ -356,7 +371,7 @@ while true; do
                 continue
             fi
 
-            export E_SERVICE_STATUS
+            export E_BOT_SERVICE_STATUS
 
             E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
             clear -x
@@ -372,17 +387,17 @@ while true; do
                 continue
             fi
 
-            export E_SERVICE_STATUS
+            export E_BOT_SERVICE_STATUS
 
             E_DOWNLOAD_SCRIPT "nadeko-runner"
             clear -x
 
             if [[ $choice == 2 ]]; then
-                export E_CODENAME="NadekoRun"
+                export E_RUNNER_CODENAME="NadekoRun"
                 printf "%sWe will now run NadekoBot in the background. " "$E_NOTE"
 
             else
-                export E_CODENAME="NadekoRunAR"
+                export E_RUNNER_CODENAME="NadekoRunAR"
                 echo -n "${E_NOTE}We will now run NadekoBot in the background" \
                     "with auto restart. "
             fi
@@ -392,7 +407,7 @@ while true; do
                 read -rp "Press [Enter] to begin."
             ) || {
                 echo ""
-                echo -e "\n${E_WARNING}User interrupt detected (SIGINT)"
+                echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
                 read -rp "${E_NOTE}Press [Enter] to return to the main menu"
                 clear -x
                 continue
