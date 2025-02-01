@@ -25,9 +25,7 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 ####
 # Cleanly exits the script by removing temporary files and directories. If an error
 # occurs or a premature exit is detected, this function attempts to restore the original
-# backup files. Under certain conditions, it also modifies the exit code to 50, allowing
-# the caller to continue processing (refer to 'exit_code_actions' in
-# 'nadeko-latest-installer' for more details).
+# backup files.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
