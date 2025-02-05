@@ -15,6 +15,7 @@
         "libsodium",
         "LINUXAIO",
         "linuxmint",
+        "makecache",
         "Mewdeko",
         "mktemp",
         "Nadeko",
