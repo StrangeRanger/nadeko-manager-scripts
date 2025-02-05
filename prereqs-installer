@@ -2,27 +2,158 @@
 #
 # Installs the prerequisites required by NadekoBot on Linux distributions.
 #
+# TODO: Reword comment key to more accurately represent all package managers.
 # Comment Key:
 #   - A.1.: Apt uses its own signal handlers, so this script's traps cannot immediately
 #     intercept signals (e.g., SIGINT) during the apt operation. To address this, apt is
-#     run in the background, and its process ID is stored in $apt_pid. If a signal is
+#     run in the background, and its process ID is stored in $pkg_pid. If a signal is
 #     caught, the script terminates the 'apt' process and exits.
+#
+# NOTES:
+#   - For each distribution, refer to the following for EOL information:
+#       - Ubuntu:
+#           - 24.04 LTS: EOL: 25 Apr 2029
+#           - 22.04 LTS: EOL: 01 Apr 2027
+#           - For more information:
+#               - https://endoflife.date/ubuntu
+#               - https://ubuntu.com/about/release-cycle
+#       - Debian:
+#           - 12: EOL: 10 Jun 2026
+#           - For more information:
+#               - https://endoflife.date/debian
+#               - https://wiki.debian.org/DebianReleases
+#       - Linux Mint:
+#           - 22: EOL: 30 Apr 2029
+#           - 21: EOL: 30 Apr 2027
+#           - For more information:
+#               - https://endoflife.date/linuxmint
+#               - https://linuxmint.com/download_all.php
+#       - Fedora:
+#           - 41: EOL: 19 Nov 2025
+#           - 40: EOL: 28 May 2025
+#           - For more information:
+#               - https://endoflife.date/fedora
+#               - https://docs.fedoraproject.org/en-US/releases/lifecycle/
+#               - https://docs.fedoraproject.org/en-US/releases/eol/
+#               - https://fedorapeople.org/groups/schedule/
+#       - AlmaLinux:
+#           - 9: EOL: 31 May 2032
+#           - 8: EOL: 01 Mar 2029
+#           - For more information:
+#               - https://endoflife.date/almalinux
+#               - https://wiki.almalinux.org/release-notes/
+#       - Rocky Linux:
+#           - 9: EOL: 31 May 2032
+#           - 8: EOL: 31 May 2029
+#           - For more information:
+#               - https://endoflife.date/rockylinux
+#               - https://wiki.rockylinux.org/rocky/version/
+#       - openSUSE Leap:
+#           - 15.6: EOL: 31 Dec 2025
+#           - For more information:
+#               - https://endoflife.date/opensuse
+#               - https://en.opensuse.org/Lifetime
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
 
 
-readonly C_MUSIC_PREREQS=("libopus0" "opus-tools" "libopus-dev" "libsodium-dev"
-    "python3" "ffmpeg")
-readonly C_OTHER_PREREQS=("redis-server" "ccze" "apt-transport-https" "ffmpeg" "jq")
+declare -A -r C_SUPPORTED_DISTROS=(
+    ["ubuntu"]="22.04 24.04"
+    ["debian"]="12"
+    ["linuxmint"]="21 22"
+    ["fedora"]="40 41"
+    ["almalinux"]="8 9"
+    ["rocky"]="8 9"
+    ["opensuse-leap"]="15.6"
+    ["opensuse-tumbleweed"]="any"
+    ["arch"]="any"
+    ["macos"]="any"
+)
+
+declare -A -r C_UPDATE_CMD_MAPPING=(
+    ["ubuntu"]="sudo apt-get update"
+    ["debian"]="sudo apt-get update"
+    ["linuxmint"]="sudo apt-get update"
+    ["fedora"]="sudo dnf makecache"
+    ["almalinux"]="sudo dnf makecache"
+    ["rocky"]="sudo dnf makecache"
+    ["opensuse-leap"]="sudo zypper refresh"
+    ["opensuse-tumbleweed"]="sudo zypper refresh"
+    ["macos"]="brew update"
+)
+
+declare -A -r C_INSTALL_CMD_MAPPING=(
+    ["ubuntu"]="sudo apt-get install -y"
+    ["debian"]="sudo apt-get install -y"
+    ["linuxmint"]="sudo apt-get install -y"
+    ["fedora"]="sudo dnf install -y"
+    ["almalinux"]="sudo dnf install -y"
+    ["rocky"]="sudo dnf install -y"
+    ["opensuse-leap"]="sudo zypper install -y"
+    ["opensuse-tumbleweed"]="sudo zypper install -y"
+    ["macos"]="brew install"
+)
+
+declare -A -r C_INSTALLER_PKG_MAPPING=(
+    ["ubuntu"]="wget curl ccze jq"
+    ["debian"]="wget curl ccze jq"
+    ["linuxmint"]="wget curl ccze jq"
+    ["fedora"]="wget curl ccze jq"
+    ["almalinux"]="wget curl ccze jq"
+    ["rocky"]="wget curl ccze jq"
+    ["opensuse-leap"]="wget curl ccze jq"
+    ["opensuse-tumbleweed"]="wget curl ccze jq"
+    ["macos"]="wget curl ccze jq"
+)
+
+declare -A -r C_MUSIC_PKG_MAPPING=(
+    ["ubuntu"]="libopus0 opus-tools libopus-dev libsodium-dev python3 ffmpeg"
+    ["debian"]="libopus0 libopus-dev libsodium-dev ffmpeg"
+    ["linuxmint"]="libopus0 opus-tools libopus-dev libsodium-dev ffmpeg"
+    ["fedora"]="ffmpeg opus-tools opus libsodium"
+    ["almalinux"]="ffmpeg"
+    ["rocky"]="ffmpeg"
+    ["opensuse-leap"]="ffmpeg libopus0 yt-dlp"
+    ["opensuse-tumbleweed"]="ffmpeg libopus0 yt-dlp"
+    ["macos"]="ffmpeg openssl opus opus-tools opusfile libffi libsodium yt-dlp python3 mono-libgdiplus"
+)
 
 
 ####[ Functions ]#######################################################################
 
 
 ####
-# Cleanly exits the script by terminating the 'apt' process (if running) and showing an
-# appropriate message based on the exit code.
+# Identify the system's distribution, version, and architecture.
+#
+# NOTE:
+#   The 'os-release' file is used to determine the distribution and version. This file
+#   is present on almost every distributions running systemd.
+#
+# NEW GLOBALS:
+#   - C_DISTRO: The distribution name.
+#   - C_VER: The distribution version.
+#   - C_SVER: The distribution version without the minor version.
+detect_sys_info() {
+    if [[ $(uname -s) == "Darwin" ]]; then
+        C_DISTRO="darwin"
+        # TODO: Determine if $C_VER is necessary.
+        # C_VER=$(sw_vers -productVersion)
+    elif [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+        C_DISTRO="$ID"
+        C_VER="$VERSION_ID"  # Version: x.x.x...
+        C_SVER=${C_VER//.*/}  # Version: x
+    else
+        C_DISTRO=$(uname -s)
+        C_VER=$(uname -r)
+    fi
+}
+
+
+####
+# Cleanly exits the script by terminating the package manager process (if running) and
+# showing an appropriate message based on the exit code.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -69,9 +200,9 @@ clean_exit() {
             ;;
     esac
 
-    if [[ $apt_pid ]]; then
+    if [[ $pkg_pid ]]; then
         echo "${E_INFO}Cleaning up..."
-        sudo kill "$apt_pid" &>/dev/null
+        sudo kill "$pkg_pid" &>/dev/null
     fi
 
     if [[ $exit_now == false ]]; then
@@ -103,37 +234,89 @@ install_yt_dlp() {
 }
 
 ####
+# Perform checks or other actions that might be necessary before installing packages.
+#
+# PARAMETERS:
+#   - $1: distro (Required)
+#       - The distribution name.
+#
+# EXITS:
+#   - 1: Homebrew is not installed.
+initial_checks() {
+    local distro="$1"
+
+    case "$distro" in
+        darwin)
+            if ! command -v brew &>/dev/null; then
+                echo "${E_ERROR}Homebrew must be installed before continuing" >&2
+                exit 1  # TODO: Determine if this is the correct exit code.
+            fi
+            ;;
+        *)
+            echo "{$E_WARN}Initial check for '$distro' not implemented${NC}" >&2
+    esac
+}
+
+# TODO: Update description to reflect to use of different package managers.
+####
 # Installs all prerequisites required by NadekoBot. Runs 'apt' in the background so
 # signals (e.g., SIGINT) can be caught, allowing the script to terminate 'apt' if
 # needed.
 #
 # NEW GLOBALS:
-#   - apt_pid: The process ID of the 'apt' process, killed if the script exits.
+#   - pkg_pid: The process ID of the package manager, killed if the script exits.
+#
+# PARAMETERS:
+#   - $1: install_cmd (Required)
+#       - The command used to install packages.
+#   - $2: update_cmd (Required)
+#       - The command used to update package lists.
+#   - $3: music_pkg_list (Required)
+#       - A list of packages required for music playback.
+#   - $4: installer_pkg_list (Required)
+#       - A list of other packages required by the installer.
 #
 # EXITS:
 #   - 0: Successful installation of all prerequisites.
-#   - 1: Failed to add Microsoft's package signing key.
 #   - $?: Failed to install prerequisites or remove existing .NET installation.
 install_prereqs() {
-    (   ## A.1.
+    local install_cmd="$1"
+    local update_cmd="$2"
+    local music_pkg_list="$3"
+    local installer_pkg_list="$4"
+    local yt_dlp_found=false
+
+    echo "${E_INFO}Checking for 'yt-dlp'..."
+    # If 'yt-dlp' is NOT inside "${music_pkg_list[@]}", then we install it via
+    # 'install_yt_dlp'.
+    for pkg in $music_pkg_list; do
+        if [[ "$pkg" == "yt-dlp" ]]; then
+            yt_dlp_found=true
+            break
+        fi
+    done
+
+    # shellcheck disable=SC2086
+    #   We want to expand the array into individual arguments (packages).
+    (   # A.1. # TODO: Check if running in a sub-shell is necessary for other distros.
         echo "${E_INFO}Updating package lists..."
-        sudo apt update  || exit $?
+        $update_cmd || exit $?
 
         echo "${E_INFO}Installing music prerequisites..."
-        sudo apt install -y "${C_MUSIC_PREREQS[@]}" || exit $?
-
-        install_yt_dlp
+        $install_cmd $music_pkg_list || exit $?
 
         echo "${E_INFO}Installing other prerequisites..."
-        sudo apt install -y "${C_OTHER_PREREQS[@]}" || exit $?
-
+        $install_cmd $installer_pkg_list || exit $?
     ) &
-    apt_pid=$!
-    wait $apt_pid || E_STDERR "Failed to install all prerequisites" $?
-    unset apt_pid
+    pkg_pid=$!
+    wait $pkg_pid || E_STDERR "Failed to install all prerequisites" $?
+    unset pkg_pid
 
-    echo -e "\n${E_SUCCESS}Finished installing prerequisites"
-    clean_exit 0 "true"
+    if [[ "$yt_dlp_found" == false ]]; then
+        install_yt_dlp
+    fi
+
+    echo -en "\n${E_SUCCESS}Finished installing prerequisites"
 }
 
 ####
@@ -144,7 +327,7 @@ install_prereqs() {
 #   - 4: The current OS is unsupported.
 unsupported() {
     echo "${E_ERROR}The installer does not support the automatic installation and" \
-        "setup of NadekoBot's prerequisites for your OS: $E_DISTRO $E_VER $E_ARCH" >&2
+        "setup of NadekoBot's prerequisites for your OS" >&2
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
     exit 4
 }
@@ -165,9 +348,22 @@ trap 'clean_exit "$?"'  EXIT
 printf "%sWe will now install NadekoBot's prerequisites. " "$E_NOTE"
 read -rp "Press [Enter] to continue."
 
-case "$E_DISTRO-$E_VER" in
-    ubuntu-24.04|ubuntu-22.04|debian-12|debian-11|linuxmint-22|linuxmint-21)
-        install_prereqs ;;
-    *)
-        unsupported ;;
-esac
+detect_sys_info
+
+# TODO: Place this in the 'installer-prep' instead...
+# if [[ $C_BITS == "32" ]]; then
+#     echo "${E_ERROR}NadekoBot requires a 64-bit system to run."
+#     exit 1
+# fi
+
+for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
+    if [[ $version == "$C_VER" || $version == "$C_SVER" || $version == "any" ]]; then
+        initial_checks "$C_DISTRO"
+        install_prereqs "${C_INSTALL_CMD_MAPPING[$C_DISTRO]}" \
+            "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}" "${C_MUSIC_PKG_MAPPING[$C_DISTRO]}" \
+            "${C_INSTALLER_PKG_MAPPING[$C_DISTRO]}"
+        clean_exit 0 "true"
+    fi
+done
+
+unsupported
