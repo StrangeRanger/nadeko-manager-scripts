@@ -1,12 +1,15 @@
 {
     "cSpell.words": [
+        "almalinux",
         "armv",
         "basefile",
         "ccze",
         "CLRLN",
         "creds",
         "DISTRO",
+        "DISTROS",
         "everytime",
+        "getent",
         "journalctl",
         "libopus",
         "libsodium",
@@ -22,7 +25,6 @@
         "prereqs",
         "SIGTSTP",
         "SVER",
-        "getent",
         "usermod"
     ]
 }
