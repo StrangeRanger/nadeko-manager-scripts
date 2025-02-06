@@ -47,9 +47,9 @@ export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 exit_code_actions() {
     local exit_code="$1"
 
-    ## We don't specify any output for SIGINT because it's handled by 'installer-prep'.
+    ## We don't specify any output for SIGINT because it's handled by 'n-main-prep.bash'.
     ## As a note, SIGHUP and SIGTERM don't propagate to parent processes, so we also
-    ## specify the output for those signals in 'installer-prep'.
+    ## specify the output for those signals in 'n-main-prep.bash'.
     case "$exit_code" in
         3|4|5|50) return 0 ;;
         129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
@@ -373,9 +373,9 @@ while true; do
 
             export E_BOT_SERVICE_STATUS
 
-            E_DOWNLOAD_SCRIPT "nadeko-latest-installer" "true"
+            E_DOWNLOAD_SCRIPT "n-update.bash" "true"
             clear -x
-            ./nadeko-latest-installer || exit_code_actions "$?"
+            ./n-update.bash || exit_code_actions "$?"
             clear -x
             ;;
         2|3)
@@ -389,7 +389,7 @@ while true; do
 
             export E_BOT_SERVICE_STATUS
 
-            E_DOWNLOAD_SCRIPT "nadeko-runner"
+            E_DOWNLOAD_SCRIPT "n-runner.bash"
             clear -x
 
             if [[ $choice == 2 ]]; then
@@ -412,7 +412,7 @@ while true; do
                 clear -x
                 continue
             }
-            ./nadeko-runner || exit_code_actions "$?"
+            ./n-runner.bash || exit_code_actions "$?"
             clear -x
             ;;
         4)
@@ -444,9 +444,9 @@ while true; do
             clear -x
             ;;
         6)
-            E_DOWNLOAD_SCRIPT "prereqs-installer"
+            E_DOWNLOAD_SCRIPT "n-prereqs.bash"
             clear -x
-            ./prereqs-installer || exit_code_actions "$?"
+            ./n-prereqs.bash || exit_code_actions "$?"
             clear -x
             ;;
         7)
@@ -458,9 +458,9 @@ while true; do
                 continue
             fi
 
-            E_DOWNLOAD_SCRIPT "file-backup"
+            E_DOWNLOAD_SCRIPT "n-file-backup.bash"
             clear -x
-            ./file-backup || exit_code_actions "$?"
+            ./n-file-backup.bash || exit_code_actions "$?"
             clear -x
             ;;
         8)

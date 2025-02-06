@@ -177,7 +177,7 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may become 50 if 'nadeko-latest-installer' should continue despite
+    ## The exit code may become 50 if 'n-update.bash' should continue despite
     ## an error. See 'exit_code_actions' for more details.
     case "$exit_code" in
         1) exit_code=50 ;;
@@ -370,7 +370,7 @@ read -rp "Press [Enter] to continue."
 
 detect_sys_info
 
-# TODO: Place this in the 'installer-prep' instead...
+# TODO: Place this in 'n-main-prep.bash' instead...
 # if [[ $C_BITS == "32" ]]; then
 #     echo "${E_ERROR}NadekoBot requires a 64-bit system to run."
 #     exit 1

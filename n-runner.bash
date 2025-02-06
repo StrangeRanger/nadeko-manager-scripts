@@ -99,7 +99,7 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be changed to 50 if 'nadeko-latest-installer' should continue
+    ## The exit code may be changed to 50 if 'n-update.bash' should continue
     ## despite an error. Refer to 'exit_code_actions' for further details.
     case "$exit_code" in
         1)   exit_code=50 ;;

@@ -8,9 +8,9 @@
 ####[ Exported and Global Variables ]###################################################
 
 
-# Refer to the 'README' note at the beginning of 'linuxAIO' for more information.
+# Refer to the 'README' note at the beginning of 'm-bridge.bash' for more information.
 readonly C_CURRENT_LINUXAIO_REVISION=47
-readonly C_MAIN_INSTALLER="nadeko-main-installer"
+readonly C_MAIN_INSTALLER="n-main.bash"
 
 ## Modify output text color.
 E_YELLOW="$(printf '\033[1;33m')"
@@ -34,7 +34,7 @@ export E_SUCCESS E_WARN E_ERROR E_INFO E_NOTE E_IMP
 
 export E_BOT_DIR="nadekobot"
 export E_ROOT_DIR="$PWD"
-export E_INSTALLER_PREP="$E_ROOT_DIR/installer-prep"
+export E_INSTALLER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 
 
 ####[ Functions ]#######################################################################
@@ -124,14 +124,13 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
     # Files to be removed during the cleanup process.
-    local installer_files=("installer-prep" "file-backup" "prereqs-installer"
-        "nadeko-latest-installer" "nadeko-runner" "nadeko-main-installer"
-        "update-linuxAIO")
+    local installer_files=("n-main-prep.bash" "n-main.bash" "n-update.bash"
+        "n-runner.bash" "n-file-backup.bash" "n-prereqs.bash" "n-update-bridge.bash")
 
     trap - EXIT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## Although SIGHUP and SIGTERM output is specified in 'nadeko-main-installer', we
+    ## Although SIGHUP and SIGTERM output is specified in 'n-main.bash', we
     ## handle these signals here as well because they do not propagate to the parent
     ## script.
     case "$exit_code" in
@@ -239,9 +238,9 @@ trap 'clean_exit "$?" "true"' EXIT
 if [[ $E_LINUXAIO_REVISION != "$C_CURRENT_LINUXAIO_REVISION" ]]; then
     export E_CURRENT_LINUXAIO_REVISION="$C_CURRENT_LINUXAIO_REVISION"
 
-    echo "${E_WARN}You are using an older version of 'linuxAIO'"
-    E_DOWNLOAD_SCRIPT "update-linuxAIO" "true"
-    ./update-linuxAIO
+    echo "${E_WARN}You are using an older version of 'm-bridge.bash'"
+    E_DOWNLOAD_SCRIPT "n-update-bridge.bash" "true"
+    ./n-update-bridge.bash
 
     export -n E_CURRENT_LINUXAIO_REVISION
     clean_exit 0

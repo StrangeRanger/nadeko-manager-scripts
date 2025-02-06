@@ -1,14 +1,15 @@
 #!/bin/bash
 #
-# 'linuxAIO' acts as a bridge between the system running NadekoBot and 'installer-prep'.
-# To avoid conflicts with installer updates, this script contains only essential code.
+# This script acts as a bridge between the system running NadekoBot and
+# 'n-main-prep.bash'. To avoid conflicts with installer updates, this script contains
+# only essential code.
 #
 # README:
 #   Since this script resides on the user's system, updates pushed to GitHub do not
 #   automatically apply. To handle this, the variable $E_LINUXAIO_REVISION used to
-#   tracks changes. The 'installer-prep' script has a corresponding variable,
+#   tracks changes. The 'n-main-prep.bash' script has a corresponding variable,
 #   $C_CURRENT_LINUXAIO_REVISION, updated alongside it. When the installer runs,
-#   'installer-prep' compares these values. If they differ, the latest 'linuxAIO'
+#   'n-main-prep.bash' compares these values. If they differ, the latest 'm-bridge.bash'
 #   version is fetched from GitHub.
 #
 # IMPORTANT:
@@ -26,7 +27,7 @@
 ###
 ### ~~~ THESE VARIABLES CAN BE MODIFIED BY THE END-USER ~~~
 ###
-### When the installer fetches the newest 'linuxAIO', it merges all user-modified
+### When the installer fetches the newest 'm-bridge.bash', it merges all user-modified
 ### variables (except $installer_repo and $E_FILES_TO_BACK_UP) into the updated script.
 ###
 
@@ -82,7 +83,7 @@ nadekobot/data/xp_template.json"
 ### [ General Variables ]
 ###
 
-# 'linuxAIO' revision number.
+# 'm-bridge.bash' revision number.
 export E_LINUXAIO_REVISION=47
 # URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
@@ -93,11 +94,11 @@ export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_b
 
 ## Change to the directory containing this script.
 ## NOTE:
-##  We need to ensure 'linuxAIO' is in the current directory. If the user runs `bash
-##  linuxAIO` instead of `./linuxAIO` while in the correct directory, ${0%/*} will
-##  return 'linuxAIO' rather than '.', causing the '||' block to execute when it
+##  We need to ensure 'm-bridge.bash' is in the current directory. If the user runs `bash
+##  m-bridge.bash` instead of `./m-bridge.bash` while in the correct directory, ${0%/*} will
+##  return 'm-bridge.bash' rather than '.', causing the '||' block to execute when it
 ##  attempts to change into a file instead of a directory.
-if [[ ! -f linuxAIO ]]; then
+if [[ ! -f m-bridge.bash ]]; then
     cd "${0%/*}" || {
         echo "Failed to change working directory" >&2
         echo "Change your working directory to that of the executed script"
@@ -110,6 +111,6 @@ fi
 
 
 echo "Downloading the latest installer..."
-curl -O "$E_RAW_URL"/installer-prep
-sudo chmod +x installer-prep && ./installer-prep
+curl -O "$E_RAW_URL"/n-main-prep.bash
+sudo chmod +x n-main-prep.bash && ./n-main-prep.bash
 exit "$?"

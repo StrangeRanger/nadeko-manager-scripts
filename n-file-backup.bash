@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Backs up files deemed important to the user. These files are specified by the
-# $E_FILES_TO_BACK_UP variable in 'installer-prep'.
+# $E_FILES_TO_BACK_UP variable in 'm-bridge.bash'.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -49,7 +49,7 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be modified to 50 when 'nadeko-latest-installer' should
+    ## The exit code may be modified to 50 when 'n-update.bash' should
     ## continue running despite an error. Refer to 'exit_code_actions' for more info.
     case "$exit_code" in
         1) exit_code=50 ;;
