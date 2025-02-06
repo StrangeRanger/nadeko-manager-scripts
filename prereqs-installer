@@ -239,11 +239,14 @@ install_yt_dlp() {
 # PARAMETERS:
 #   - $1: distro (Required)
 #       - The distribution name.
+#   - $2: update_cmd (Required)
+#       - The command used to update package lists.
 #
 # EXITS:
 #   - 1: Homebrew is not installed.
 initial_checks() {
     local distro="$1"
+    local update_cmd="$2"
 
     echo "${E_INFO}Performing initial checks for '$distro'..."
 
@@ -256,12 +259,16 @@ initial_checks() {
             ;;
         rocky|almalinux)
             local el_ver; el_ver=$(rpm -E %rhel)
+            echo "${E_INFO}Updating package lists"
+            $update_cmd
             echo "${E_INFO}Installing EPEL and RPM Fusion for EL${el_ver} ($distro)..."
             dnf install -y epel-release
             dnf install -y "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${el_ver}.noarch.rpm"
             ;;
         fedora)
             local fedora_ver; fedora_ver=$(rpm -E %fedora)
+            echo "${E_INFO}Updating package lists"
+            $update_cmd
             echo "${E_INFO}Installing RPM Fusion for Fedora $fedora_ver..."
             dnf install -y "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
             ;;
@@ -371,7 +378,7 @@ detect_sys_info
 
 for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
     if [[ $version == "$C_VER" || $version == "$C_SVER" || $version == "any" ]]; then
-        initial_checks "$C_DISTRO"
+        initial_checks "$C_DISTRO" "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}"
         install_prereqs "${C_INSTALL_CMD_MAPPING[$C_DISTRO]}" \
             "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}" "${C_MUSIC_PKG_MAPPING[$C_DISTRO]}" \
             "${C_INSTALLER_PKG_MAPPING[$C_DISTRO]}"
