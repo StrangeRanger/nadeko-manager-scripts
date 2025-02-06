@@ -10,20 +10,20 @@ set -e
 # This associative array maps a distro key to the base image.
 # (Use official images when available. For Linux Mint, we rely on community images.)
 declare -A distros_base=(
-    #[ubuntu-24.04]="ubuntu:24.04"
-    #[ubuntu-22.04]="ubuntu:22.04"
-    #[debian-12]="debian:12"
-    #[debian-11]="debian:11"
+    [ubuntu-24.04]="ubuntu:24.04"
+    [ubuntu-22.04]="ubuntu:22.04"
+    [debian-12]="debian:12"
+    [debian-11]="debian:11"
     [linuxmint-22]="linuxmintd/mint22.1-amd64"  # Community image.
     [linuxmint-21]="linuxmintd/mint21.3-amd64"  # community image.
-    #[fedora-41]="fedora:41"
-    #[fedora-40]="fedora:40"
-    #[almalinux-9]="almalinux:9"
-    #[almalinux-8]="almalinux:8"
-    #[rocky-9]="rockylinux:9"
-    #[rocky-8]="rockylinux:8"
-    #[opensuse-leap-15.6]="opensuse/leap:15.6"
-    #[opensuse-tumbleweed]="opensuse/tumbleweed"
+    [fedora-41]="fedora:41"
+    [fedora-40]="fedora:40"
+    [almalinux-9]="almalinux:9"
+    [almalinux-8]="almalinux:8"
+    [rocky-9]="rockylinux:9"
+    [rocky-8]="rockylinux:8"
+    [opensuse-leap-15.6]="opensuse/leap:15.6"
+    [opensuse-tumbleweed]="opensuse/tumbleweed"
 )
 
 # This associative array maps the distro key to its package manager.
