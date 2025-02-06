@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Added several new supported Linux Distributions
+    - .........
+- Mass renaming of scripts
+    - .........
+
+### Changed
+
+- Modified/simplified required prerequisites for NadekoBot
+    - .........
+- .........
+
+### Removed
+
+- Removed several Linux Distributions
+    - .........
+
 ## [v5.0.0] - 2025-02-01
 
 ### Added
