@@ -108,15 +108,15 @@ declare -A -r C_INSTALLER_PKG_MAPPING=(
 )
 
 declare -A -r C_MUSIC_PKG_MAPPING=(
-    ["ubuntu"]="libopus0 opus-tools libopus-dev libsodium-dev python3 ffmpeg"
-    ["debian"]="libopus0 libopus-dev libsodium-dev ffmpeg"
-    ["linuxmint"]="libopus0 opus-tools libopus-dev libsodium-dev ffmpeg"
-    ["fedora"]="ffmpeg opus-tools opus libsodium"
+    ["ubuntu"]="python3 ffmpeg"
+    ["debian"]="ffmpeg"
+    ["linuxmint"]="ffmpeg"
+    ["fedora"]="ffmpeg"
     ["almalinux"]="ffmpeg"
     ["rocky"]="ffmpeg"
-    ["opensuse-leap"]="ffmpeg libopus0 yt-dlp"
-    ["opensuse-tumbleweed"]="ffmpeg libopus0 yt-dlp"
-    ["macos"]="ffmpeg openssl opus opus-tools opusfile libffi libsodium yt-dlp python3 mono-libgdiplus"
+    ["opensuse-leap"]="ffmpeg yt-dlp"
+    ["opensuse-tumbleweed"]="ffmpeg yt-dlp"
+    ["macos"]="ffmpeg openssl yt-dlp python3"
 )
 
 
