@@ -245,6 +245,8 @@ install_yt_dlp() {
 initial_checks() {
     local distro="$1"
 
+    echo "${E_INFO}Performing initial checks for '$distro'..."
+
     case "$distro" in
         darwin)
             if ! command -v brew &>/dev/null; then
@@ -254,13 +256,13 @@ initial_checks() {
             ;;
         rocky|almalinux)
             local el_ver; el_ver=$(rpm -E %rhel)
-            echo "Installing EPEL and RPM Fusion for EL${el_ver} ($distro)..."
+            echo "${E_INFO}Installing EPEL and RPM Fusion for EL${el_ver} ($distro)..."
             dnf install -y epel-release
             dnf install -y "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${el_ver}.noarch.rpm"
             ;;
         fedora)
             local fedora_ver; fedora_ver=$(rpm -E %fedora)
-            echo "Installing RPM Fusion for Fedora $fedora_ver..."
+            echo "${E_INFO}Installing RPM Fusion for Fedora $fedora_ver..."
             dnf install -y "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
             ;;
         *)
