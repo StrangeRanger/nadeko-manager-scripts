@@ -111,14 +111,15 @@ revision_47.5() {
 
     read -rp "${E_NOTE}Press 'Enter' to continue"
 
-    echo "${E_INFO}Updating variables in 'm-bridge.bash'..."
+    echo "${E_INFO}Updating variables in 'm-bridge.bash.old'..."
     sed -i \
         -e 's/installer_repo/manager_repo/g' \
         -e 's/installer_branch/manager_branch/g' \
         -e 's/E_LINUXAIO_REVISION/E_BRIDGE_REVISION/g' \
         -e 's/E_BRIDGE_REVISION/E_BRIDGE_REVISION/g' \
         -e 's/C_CURRENT_LINUXAIO_REVISION/C_LATEST_BRIDGE_REVISION/g' \
-        "m-bridge.bash" || E_STDERR "Failed to update variables in 'm-bridge.bash'" "1"
+        "m-bridge.bash.old" \
+        || E_STDERR "Failed to update variables in 'm-bridge.bash'" "1"
 }
 
 
