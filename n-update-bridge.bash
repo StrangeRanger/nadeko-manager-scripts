@@ -51,16 +51,15 @@ download_and_transfer() {
 ####
 #
 revision_40() {
-    echo "WARNING: You are using a very old version of the manager, where it's not" \
+    echo "${E_WARN}You are using a very old version of the manager, where it's not" \
         "possible to automatically transfer configurations to the new"\
         "'m-bridge.bash'." >&2
-    echo "NOTE: 'm-bridge.bash' has replaced 'linuxAIO'"
-    echo "IMPORTANT: It's highly recommended to back up your current configurations" \
+    echo "${E_NOTE}'m-bridge.bash' has replaced 'linuxAIO'"
+    echo "${E_IMP}It's highly recommended to back up your current configurations" \
         "and version of NadekoBot, then re-download NadekoBot using the newest" \
         "version of the manager."
-    echo "NOTE: The newest version of the manager can be found at" \
+    echo "${E_NOTE}The newest version of the manager can be found at" \
         "https://github.com/StrangeRanger/NadekoBot-BashScript/blob/main/m-bridge.bash"
-    echo "Exiting..."
     exit 1
 }
 
