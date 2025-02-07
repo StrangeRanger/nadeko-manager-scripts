@@ -174,9 +174,6 @@ install_yt_dlp() {
 #       - The distribution name.
 #   - $2: update_cmd (Required)
 #       - The command used to update package lists.
-#
-# EXITS:
-#   - 1: Homebrew is not installed.
 initial_checks() {
     local distro="$1"
     local update_cmd="$2"
@@ -199,8 +196,6 @@ initial_checks() {
             echo "${E_INFO}Installing RPM Fusion for Fedora $fedora_ver..."
             dnf install -y "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
             ;;
-        *)
-            echo "{$E_WARN}Initial check for '$distro' not implemented${NC}" >&2
     esac
 }
 
