@@ -59,34 +59,6 @@ detect_sys_info() {
 }
 
 ####
-# Allows the user to proceed with the installation even if the current operating system
-# is not officially supported.
-#
-# EXITS:
-#   - 0: If the user chooses NOT to continue.
-unsupported() {
-    local choice
-
-    echo "${E_ERROR}Your operating system is not OFFICIALLY supported for the" \
-        "installation, setup, and/or use of NadekoBot" >&2
-    echo "${E_WARN}${E_YELLOW}WARNING${E_NC}: By continuing, you accept that" \
-        "unexpected behaviors may occur. If you run into any errors or problems with" \
-        "the installation and use of the NadekoBot, you are on your own."
-    read -rp "${E_INFO}Would you like to continue anyways? [y/N] " choice
-
-    choice=${choice,,}
-    case "$choice" in
-        y|yes)
-            clear -x
-            execute_main_script
-            ;;
-        *)
-            clean_exit 0
-            ;;
-    esac
-}
-
-####
 # Cleanly exit the manager by performing the following steps:
 #   1. Remove any temporary files created during the installation process.
 #   2. Display an appropriate exit message based on the provided exit code.
