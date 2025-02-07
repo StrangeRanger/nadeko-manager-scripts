@@ -31,6 +31,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `prereqs-installer` => `n-prereqs.bash`
   - `update-linuxAIO` => `n-update-bridge.bash`
 - Modified/simplified required prerequisites for NadekoBot.
+- Only the bit-type it checked for compatibility upon first execution.
+- The distribution check is performed when installing prerequisites.
 
 ### Removed
 
