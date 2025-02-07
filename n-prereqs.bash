@@ -2,13 +2,6 @@
 #
 # Installs the prerequisites required by NadekoBot on Linux distributions.
 #
-# TODO: Reword comment key to more accurately represent all package managers.
-# Comment Key:
-#   - A.1.: Apt uses its own signal handlers, so this script's traps cannot immediately
-#     intercept signals (e.g., SIGINT) during the apt operation. To address this, apt is
-#     run in the background, and its process ID is stored in $pkg_pid. If a signal is
-#     caught, the script terminates the 'apt' process and exits.
-#
 ########################################################################################
 ####[ Global Variables ]################################################################
 
@@ -98,8 +91,7 @@ detect_sys_info() {
 
 
 ####
-# Cleanly exits the script by terminating the package manager process (if running) and
-# showing an appropriate message based on the exit code.
+# Cleanly exits the script by removing traps and displaying an exit message.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -145,11 +137,6 @@ clean_exit() {
             exit_now=true
             ;;
     esac
-
-    if [[ $pkg_pid ]]; then
-        echo "${E_INFO}Cleaning up..."
-        sudo kill "$pkg_pid" &>/dev/null
-    fi
 
     if [[ $exit_now == false ]]; then
         read -rp "${E_NOTE}Press [Enter] to return to the main menu"
@@ -258,19 +245,18 @@ install_prereqs() {
 
     # shellcheck disable=SC2086
     #   We want to expand the array into individual arguments (packages).
-    (   # A.1. # TODO: Check if running in a sub-shell is necessary for other distros.
+    {
         echo "${E_INFO}Updating package lists..."
-        $update_cmd || exit $?
+        $update_cmd || E_STDERR "Failed to update package lists" "$?"
 
         echo "${E_INFO}Installing music prerequisites..."
-        $install_cmd $music_pkg_list || exit $?
+        $install_cmd $music_pkg_list \
+            || E_STDERR "Failed to install music prerequisites" "$?"
 
         echo "${E_INFO}Installing other prerequisites..."
-        $install_cmd $manager_pkg_list || exit $?
-    ) &
-    pkg_pid=$!
-    wait $pkg_pid || E_STDERR "Failed to install all prerequisites" $?
-    unset pkg_pid
+        $install_cmd $manager_pkg_list \
+            || E_STDERR "Failed to install other prerequisites" "$?"
+    }
 
     if [[ "$yt_dlp_found" == false ]]; then
         install_yt_dlp
