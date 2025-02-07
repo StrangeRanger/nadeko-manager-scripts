@@ -276,7 +276,7 @@ while true; do
         ccze_installed=false
     fi
 
-    if [[ -f "$E_YT_DLP_PATH" || $(command -v yt-dlp &>/dev/null) ]]; then
+    if [[ -f "$E_YT_DLP_PATH" ]] || command -v yt-dlp &>/dev/null; then
         yt_dlp_installed=true
     else
         yt_dlp_installed=false
