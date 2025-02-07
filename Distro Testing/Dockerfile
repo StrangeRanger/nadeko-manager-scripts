@@ -3,7 +3,7 @@
 # This Dockerfile is parameterized via build-args.
 # It expects:
 #   - BASE_IMAGE: the base Docker image (e.g. ubuntu:22.04)
-#   - PKG_MANAGER: one of "apt", "dnf", or "zypper"
+#   - PKG_MANAGER: one of "apt", "dnf", "zypper", "pacman"
 ##############################
 
 # Default to Ubuntu 22.04 if no base image is specified.
@@ -32,6 +32,8 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
         zypper refresh && \
         zypper --non-interactive update && \
         zypper --non-interactive install systemd curl sudo vim; \
+    elif [ "$PKG_MANAGER" = "pacman" ]; then \
+        pacman -Syu --noconfirm systemd curl sudo vim; \
     else \
         echo "Unsupported package manager: $PKG_MANAGER" && exit 1; \
     fi
