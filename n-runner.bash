@@ -33,7 +33,8 @@ fi
 ## NOTE:
 ##  Starting with systemd version 246, 'StandardOutput' and 'StandardError' no longer
 ##  support 'syslog' as valid values.
-if [[ $(systemctl --version | awk 'NR==1 {print $2}') -ge 246 ]]; then
+read -ra systemd_version <<< "$(systemctl --version)"
+if (( ${systemd_version[1]} >= 246 )); then
     readonly C_BOT_SERVICE_CONTENT="[Unit]
 Description=NadekoBot service
 After=network.target
