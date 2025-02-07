@@ -70,41 +70,43 @@ revision_40() {
 # RETURNS:
 #   - 0: If the function completes successfully or no actions are required.
 revision_45() {
+    local additional_changes=false
     [[ -f $E_BOT_DIR/$E_CREDS_EXAMPLE && -f $E_BOT_DIR/NadekoBot.dll ]] \
         && return 0
 
-    echo "${E_WARN}The new version of 'm-bridge.bash' has several breaking changes from" \
-        "revision 45 and earlier. They will be handled automatically."
-    echo "${E_NOTE}For more information, view the 'v5.0.0' release notes at" \
-            "https://github.com/StrangeRanger/NadekoBot-BashScript/blob/main/CHANGELOG.md"
-    read -rp "${E_NOTE}Press [Enter] to continue"
+    if [[ -d "$E_BOT_DIR" ]]; then
+        additional_changes=true
+        echo "${E_WARN}The new version of 'linuxAIO', now called 'm-bridge.bash', has" \
+            "several breaking changes since revision 45 and earlier. They will be handled" \
+            "automatically."
+        read -rp "${E_NOTE}Press [Enter] to continue"
 
-    echo "${E_INFO}Renaming '$E_BOT_DIR' to '$E_BOT_DIR.rev45.bak'..."
-    mv "$E_BOT_DIR" "$E_BOT_DIR.rev45.bak"
+        echo "${E_INFO}Renaming '$E_BOT_DIR' to '$E_BOT_DIR.rev45.bak'..."
+        mv "$E_BOT_DIR" "$E_BOT_DIR.rev45.bak"
 
-    echo "${E_INFO}Copying '$E_BOT_DIR.rev45.bak/output' to '$E_BOT_DIR'..."
-    cp -r "$E_BOT_DIR.rev45.bak/output" "$E_BOT_DIR"
+        echo "${E_INFO}Copying '$E_BOT_DIR.rev45.bak/output' to '$E_BOT_DIR'..."
+        cp -r "$E_BOT_DIR.rev45.bak/output" "$E_BOT_DIR"
 
-    echo "${E_IMP}It is highly recommended to downloaded the newest version of" \
-        "NadekoBot before continuing."
+        echo "${E_IMP}It is highly recommended to downloaded the newest version of" \
+            "NadekoBot before continuing."
+    fi
+
+    revision_47.5 "$additional_changes"
 }
 
 ####
 #
 revision_47.5() {
-    echo "${E_NOTE}There are several changes to 'linuxAIO' that must be made before" \
-        "continuing:"
-    echo "  ${E_CYAN}|${E_NC}    - 'linuxAIO' will be renamed to 'm-bridge.bash'"
-    echo "  ${E_CYAN}|${E_NC}    - Variables will be updated to reflect the new name"
-    echo "  ${E_CYAN}|${E_NC}    - The script will be updated to the latest version"
-    read -rp "${E_NOTE}Press 'Enter' to continue or 'Ctrl + C' to cancel"
+    local additional_changes="${1:-false}"
 
-    echo "${E_INFO}Backing up 'linuxAIO'..."
-    cp "linuxAIO" "linuxAIO.bak" || E_STDERR "Failed to backup 'linuxAIO'" "1"
+    if [[ $additional_changes == true ]]; then
+        echo "${E_NOTE}There are several additional changes that must be made to" \
+            "'m-bridge.bash'"
+    else
+        echo "${E_NOTE}There are several changes that must be made to 'm-bridge.bash'"
+    fi
 
-    echo "${E_INFO}Renaming 'linuxAIO' to 'm-bridge.bash'..."
-    mv "linuxAIO" "m-bridge.bash" \
-        || E_STDERR "Failed to rename 'linuxAIO' to 'm-bridge.bash'" "1"
+    read -rp "${E_NOTE}Press 'Enter' to continue"
 
     echo "${E_INFO}Updating variables in 'm-bridge.bash'..."
     sed -i \
@@ -146,20 +148,24 @@ fi
 chmod -x m-bridge.bash.old
 
 if (( E_LINUXAIO_REVISION <= 40 )); then
+    # Will exit script after the function call.
     revision_40
-elif (( E_LINUXAIO_REVISION <= 45 )); then
-    download_and_transfer
-    revision_45
 elif [[ $E_LINUXAIO_REVISION -le 47 && $E_CURRENT_LINUXAIO_REVISION == 47.5 ]]; then
-    revision_47.5
+    if (( E_LINUXAIO_REVISION <= 45 )); then
+        revision_45
+    else
+        revision_47.5
+    fi
+
     download_and_transfer
 elif (( E_BRIDGE_REVISION != C_LATEST_BRIDGE_REVISION )); then
     download_and_transfer
-
-    echo "${E_SUCCESS}Successfully downloaded the newest version of 'm-bridge.bash' with" \
-        "existing configurations applied"
-    echo "${E_IMP}Review the 'm-bridge.bash.old' file for configurations that were" \
-        "not automatically transferred to the new 'm-bridge.bash'"
 else
     echo "${E_SUCCESS}You are already using the latest version of 'm-bridge.bash'"
+    exit 0
 fi
+
+echo "${E_SUCCESS}Successfully downloaded the newest version of 'm-bridge.bash' with" \
+    "existing configurations applied"
+echo "${E_IMP}Review the 'm-bridge.bash.old' file for configurations that were not" \
+    "automatically transferred to the new 'm-bridge.bash'"
