@@ -47,8 +47,8 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
     ["fedora"]="wget curl ccze jq"
     ["almalinux"]="wget curl ccze jq"
     ["rocky"]="wget curl ccze jq"
-    ["opensuse-leap"]="wget curl ccze jq"
-    ["opensuse-tumbleweed"]="wget curl ccze jq"
+    ["opensuse-leap"]="wget curl ccze jq tar"
+    ["opensuse-tumbleweed"]="wget curl ccze jq tar"
 )
 
 declare -A -r C_MUSIC_PKG_MAPPING=(
