@@ -53,5 +53,8 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
 # Set the root password.
 RUN echo 'root:password' | chpasswd
 
+# Create NadekoBot directory in root's home directory.
+RUN mkdir -p /root/NadekoBot
+
 # Run systemd as the init process.
 CMD ["/sbin/init"]
