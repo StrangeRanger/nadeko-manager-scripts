@@ -1,9 +1,11 @@
 {
     "cSpell.words": [
+        "agetty",
         "allowerasing",
         "almalinux",
         "archlinux",
         "armv",
+        "autologin",
         "basefile",
         "ccze",
         "CLRLN",
@@ -17,6 +19,7 @@
         "getent",
         "journalctl",
         "Kwoth",
+        "libicu",
         "libopus",
         "libsodium",
         "LINUXAIO",
@@ -30,6 +33,7 @@
         "Nadeko",
         "nadekobot",
         "Niether",
+        "noclear",
         "noconfirm",
         "NOPASSWD",
         "OPTOUT",
