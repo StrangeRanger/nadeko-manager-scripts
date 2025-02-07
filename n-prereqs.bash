@@ -68,7 +68,6 @@ declare -A -r C_SUPPORTED_DISTROS=(
     ["opensuse-leap"]="15.6"
     ["opensuse-tumbleweed"]="any"
     ["arch"]="any"
-    ["macos"]="any"
 )
 
 declare -A -r C_UPDATE_CMD_MAPPING=(
@@ -80,7 +79,6 @@ declare -A -r C_UPDATE_CMD_MAPPING=(
     ["rocky"]="sudo dnf makecache"
     ["opensuse-leap"]="sudo zypper refresh"
     ["opensuse-tumbleweed"]="sudo zypper refresh"
-    ["macos"]="brew update"
 )
 
 declare -A -r C_INSTALL_CMD_MAPPING=(
@@ -92,7 +90,6 @@ declare -A -r C_INSTALL_CMD_MAPPING=(
     ["rocky"]="sudo dnf install -y"
     ["opensuse-leap"]="sudo zypper install -y"
     ["opensuse-tumbleweed"]="sudo zypper install -y"
-    ["macos"]="brew install"
 )
 
 declare -A -r C_MANAGER_PKG_MAPPING=(
@@ -104,7 +101,6 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
     ["rocky"]="wget curl ccze jq"
     ["opensuse-leap"]="wget curl ccze jq"
     ["opensuse-tumbleweed"]="wget curl ccze jq"
-    ["macos"]="wget curl ccze jq"
 )
 
 declare -A -r C_MUSIC_PKG_MAPPING=(
@@ -116,7 +112,6 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["rocky"]="ffmpeg"
     ["opensuse-leap"]="ffmpeg yt-dlp"
     ["opensuse-tumbleweed"]="ffmpeg yt-dlp"
-    ["macos"]="ffmpeg openssl yt-dlp python3"
 )
 
 
@@ -135,11 +130,7 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
 #   - C_VER: The distribution version.
 #   - C_SVER: The distribution version without the minor version.
 detect_sys_info() {
-    if [[ $(uname -s) == "Darwin" ]]; then
-        C_DISTRO="darwin"
-        # TODO: Determine if $C_VER is necessary.
-        # C_VER=$(sw_vers -productVersion)
-    elif [[ -f /etc/os-release ]]; then
+    if [[ -f /etc/os-release ]]; then
         . /etc/os-release
         C_DISTRO="$ID"
         C_VER="$VERSION_ID"  # Version: x.x.x...
@@ -251,12 +242,6 @@ initial_checks() {
     echo "${E_INFO}Performing initial checks for '$distro'..."
 
     case "$distro" in
-        darwin)
-            if ! command -v brew &>/dev/null; then
-                echo "${E_ERROR}Homebrew must be installed before continuing" >&2
-                exit 1  # TODO: Determine if this is the correct exit code.
-            fi
-            ;;
         rocky|almalinux)
             local el_ver; el_ver=$(rpm -E %rhel)
             echo "${E_INFO}Updating package lists"
