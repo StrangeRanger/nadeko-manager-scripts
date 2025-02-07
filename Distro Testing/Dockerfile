@@ -2,12 +2,12 @@
 ##############################
 # This Dockerfile is parameterized via build-args.
 # It expects:
-#   - BASE_IMAGE: the base Docker image (e.g. ubuntu:22.04)
-#   - PKG_MANAGER: one of "apt", "dnf", "zypper", "pacman"
+#   - BASE_IMAGE: the base Docker image (e.g. ubuntu:24.04)
+#   - PKG_MANAGER: one of "apt", "dnf", "zypper", or "pacman"
 ##############################
 
-# Default to Ubuntu 22.04 if no base image is specified.
-ARG BASE_IMAGE=ubuntu:22.04
+# Default to Ubuntu 24.04 if no base image is specified.
+ARG BASE_IMAGE=ubuntu:24.04
 FROM ${BASE_IMAGE}
 
 # Allow build-time selection of package manager commands.
@@ -19,7 +19,8 @@ ENV container=docker
 # For apt-based images, disable interactive prompts.
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install required packages, including systemd.
+# TODO: Continue editing comments in here starting from this line.
+## Install required packages that would otherwise be missing in a minimal image.
 RUN if [ "$PKG_MANAGER" = "apt" ]; then \
         apt-get update && \
         apt-get upgrade -y && \
@@ -31,7 +32,8 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
     elif [ "$PKG_MANAGER" = "zypper" ]; then \
         zypper refresh && \
         zypper --non-interactive update && \
-        zypper --non-interactive install systemd curl sudo vim; \
+        zypper --non-interactive install systemd curl sudo vim python3-base && \
+        zypper clean --all; \
     elif [ "$PKG_MANAGER" = "pacman" ]; then \
         pacman -Syu --noconfirm systemd curl sudo vim base-devel git go && \
         if ! command -v yay >/dev/null 2>&1; then \
