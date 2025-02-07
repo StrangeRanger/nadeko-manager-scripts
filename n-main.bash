@@ -276,7 +276,7 @@ while true; do
         ccze_installed=false
     fi
 
-    if [[ -f "$E_YT_DLP_PATH" ]]; then
+    if [[ -f "$E_YT_DLP_PATH" || $(command -v yt-dlp &>/dev/null) ]]; then
         yt_dlp_installed=true
     else
         yt_dlp_installed=false
@@ -289,10 +289,10 @@ while true; do
     ###
 
     ## Disable option 1 if any of the required tools are not installed.
-    if (! command -v redis-server \
-        || ! command -v python3 \
+    if ( ! command -v python3 \
+        || ! command -v ffmpeg \
         || ! "$ccze_installed" \
-        || ! "$yt_dlp_installed" ) &>/dev/null
+        || ! "$yt_dlp_installed") &>/dev/null
     then
         opt_one_dis=true
         opt_one_text="${E_GREY}${opt_one_text}${dis_option}${E_NC}"
