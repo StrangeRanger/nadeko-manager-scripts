@@ -12,7 +12,7 @@ declare -A -r C_SUPPORTED_DISTROS=(
     ["linuxmint"]="21 22"  # Tested
     ["fedora"]="40 41"
     ["almalinux"]="8 9"
-    ["rocky"]="8 9"  # Testing
+    ["rocky"]="8 9"  # Tested Rocky 9
     ["opensuse-leap"]="15.6"
     ["opensuse-tumbleweed"]="any"
     ["arch"]="any"  # Tested
@@ -51,7 +51,7 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
     ["rocky"]="wget curl ccze jq"
     ["opensuse-leap"]="wget curl ccze jq tar awk"
     ["opensuse-tumbleweed"]="wget curl ccze jq tar awk"
-    ["arch"]="wget curl jq tar awk"  # 'ccze' gets installed separately.
+    ["arch"]="wget curl jq"  # 'ccze' gets installed separately.
 )
 
 declare -A -r C_MUSIC_PKG_MAPPING=(
@@ -193,6 +193,7 @@ initial_checks() {
             dnf install -y epel-release
             dnf install -y "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${el_ver}.noarch.rpm"
             echo "${E_INFO}Enabling CRB repository..."
+            # TODO: Verify if the CRB is enabled by default on non-docker installations.
             dnf config-manager --set-enabled crb || echo "${E_WARN}CRB repository could not be enabled, continuing..."
             ;;
         fedora)
