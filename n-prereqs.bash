@@ -9,51 +9,6 @@
 #     run in the background, and its process ID is stored in $pkg_pid. If a signal is
 #     caught, the script terminates the 'apt' process and exits.
 #
-# NOTES:
-#   - For each distribution, refer to the following for EOL information:
-#       - Ubuntu:
-#           - 24.04 LTS: EOL: 25 Apr 2029
-#           - 22.04 LTS: EOL: 01 Apr 2027
-#           - For more information:
-#               - https://endoflife.date/ubuntu
-#               - https://ubuntu.com/about/release-cycle
-#       - Debian:
-#           - 12: EOL: 10 Jun 2026
-#           - For more information:
-#               - https://endoflife.date/debian
-#               - https://wiki.debian.org/DebianReleases
-#       - Linux Mint:
-#           - 22: EOL: 30 Apr 2029
-#           - 21: EOL: 30 Apr 2027
-#           - For more information:
-#               - https://endoflife.date/linuxmint
-#               - https://linuxmint.com/download_all.php
-#       - Fedora:
-#           - 41: EOL: 19 Nov 2025
-#           - 40: EOL: 28 May 2025
-#           - For more information:
-#               - https://endoflife.date/fedora
-#               - https://docs.fedoraproject.org/en-US/releases/lifecycle/
-#               - https://docs.fedoraproject.org/en-US/releases/eol/
-#               - https://fedorapeople.org/groups/schedule/
-#       - AlmaLinux:
-#           - 9: EOL: 31 May 2032
-#           - 8: EOL: 01 Mar 2029
-#           - For more information:
-#               - https://endoflife.date/almalinux
-#               - https://wiki.almalinux.org/release-notes/
-#       - Rocky Linux:
-#           - 9: EOL: 31 May 2032
-#           - 8: EOL: 31 May 2029
-#           - For more information:
-#               - https://endoflife.date/rockylinux
-#               - https://wiki.rockylinux.org/rocky/version/
-#       - openSUSE Leap:
-#           - 15.6: EOL: 31 Dec 2025
-#           - For more information:
-#               - https://endoflife.date/opensuse
-#               - https://en.opensuse.org/Lifetime
-#
 ########################################################################################
 ####[ Global Variables ]################################################################
 
