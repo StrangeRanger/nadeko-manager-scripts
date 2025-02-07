@@ -32,7 +32,7 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
     elif [ "$PKG_MANAGER" = "zypper" ]; then \
         zypper refresh && \
         zypper --non-interactive update && \
-        zypper --non-interactive install systemd curl sudo vim python3-base && \
+        zypper --non-interactive install systemd curl sudo vim python3-base libicu && \
         zypper clean --all; \
     elif [ "$PKG_MANAGER" = "pacman" ]; then \
         pacman -Syu --noconfirm systemd curl sudo vim base-devel git go && \
