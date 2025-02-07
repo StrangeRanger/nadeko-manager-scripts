@@ -22,17 +22,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Moving away from the "installer" terminology and moving towards "manager". This is because the script does more than just install, but also manages the bot. This will more accurately reflect the purpose of the scripts as a whole.
 - Mass renaming of scripts
-  - `linuxAIO` => `m-bridge.bash`
-  - `installer-prep` => `m-bridge-prep.bash`
-  - `nadeko-latest-installer` => `m-update.bash`
-  - `nadeko-main-installer` => `n-main.bash`
-  - `file-backup` => `n-file-backup.bash`
-  - `nadeko-runner` => `n-runner.bash`
-  - `prereqs-installer` => `n-prereqs.bash`
-  - `update-linuxAIO` => `n-update-bridge.bash`
+    - `linuxAIO` => `m-bridge.bash`
+    - `installer-prep` => `m-bridge-prep.bash`
+    - `nadeko-latest-installer` => `m-update.bash`
+    - `nadeko-main-installer` => `n-main.bash`
+    - `file-backup` => `n-file-backup.bash`
+    - `nadeko-runner` => `n-runner.bash`
+    - `prereqs-installer` => `n-prereqs.bash`
+    - `update-linuxAIO` => `n-update-bridge.bash`
 - Modified/simplified required prerequisites for NadekoBot.
 - Only the bit-type it checked for compatibility upon first execution.
 - The distribution check is performed when installing prerequisites.
+- Reduce dependency on external tools:
+    - `awk`
 
 ### Removed
 
