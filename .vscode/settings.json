@@ -8,6 +8,7 @@
         "ccze",
         "CLRLN",
         "creds",
+        "devel",
         "DISTRO",
         "DISTROS",
         "elif",
@@ -22,6 +23,7 @@
         "linuxmint",
         "linuxmintd",
         "makecache",
+        "makepkg",
         "Mewdeko",
         "mktemp",
         "myimage",
@@ -29,6 +31,7 @@
         "nadekobot",
         "Niether",
         "noconfirm",
+        "NOPASSWD",
         "OPTOUT",
         "pacman",
         "paru",
@@ -38,6 +41,7 @@
         "SIGTSTP",
         "SVER",
         "sysv",
+        "userdel",
         "usermod"
     ]
 }
