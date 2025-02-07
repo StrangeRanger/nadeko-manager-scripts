@@ -21,15 +21,6 @@ else
     readonly C_ACTION_UPPER="Enabling"  # B.1.
 fi
 
-# shellcheck disable=SC2153
-#   The 'E_BOT_SERVICE_PATH' variable is defined in 'n-main.bash'.
-if [[ -f "$E_YT_DLP_PATH" ]]; then
-    readonly C_YT_DLP_PATH="$E_YT_DLP_PATH"
-else
-    C_YT_DLP_PATH="$(which yt-dlp)"
-    readonly C_YT_DLP_PATH
-fi
-
 ## NOTE:
 ##  Starting with systemd version 246, 'StandardOutput' and 'StandardError' no longer
 ##  support 'syslog' as valid values.
@@ -183,7 +174,7 @@ if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
     echo "#!/bin/bash
 
 _code_name_=\"NadekoRun\"
-export PATH=\"${C_YT_DLP_PATH%/*}:$PATH\"  # Ensure 'yt-dlp' is in the PATH
+export PATH=\"$E_LOCAL_BIN:$PATH\"  # Ensure anything in 'E_LOCAL_BIN' is accessible.
 
 echo \"[INFO] Running NadekoBot in the background\"
 yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
@@ -202,7 +193,7 @@ else
     echo "#!/bin/bash
 
 _code_name_=\"NadekoRunAR\"
-export PATH=\"${C_YT_DLP_PATH%/*}:$PATH\"  # Ensure 'yt-dlp' is in the PATH
+export PATH=\"$E_LOCAL_BIN:$PATH\"  # Ensure anything in 'E_LOCAL_BIN' is accessible.
 
 
 echo \"[INFO] Running NadekoBot in the background with auto restart\"
