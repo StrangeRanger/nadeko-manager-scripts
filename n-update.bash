@@ -290,7 +290,7 @@ echo "${E_SUCCESS}Finished setting up NadekoBot"
 
 if [[ $service_is_active == true ]]; then
     echo "${E_NOTE}'$E_BOT_SERVICE' was stopped to update NadekoBot and needs to be" \
-        "started using one of the run modes in the installer menu"
+        "started using one of the run modes in the manager menu"
 fi
 
 clean_exit 0

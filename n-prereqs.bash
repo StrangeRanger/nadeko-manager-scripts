@@ -95,7 +95,7 @@ declare -A -r C_INSTALL_CMD_MAPPING=(
     ["macos"]="brew install"
 )
 
-declare -A -r C_INSTALLER_PKG_MAPPING=(
+declare -A -r C_MANAGER_PKG_MAPPING=(
     ["ubuntu"]="wget curl ccze jq"
     ["debian"]="wget curl ccze jq"
     ["linuxmint"]="wget curl ccze jq"
@@ -158,7 +158,7 @@ detect_sys_info() {
 # PARAMETERS:
 #   - $1: exit_code (Required)
 #       - The exit code passed by the caller. This may be changed to 50 in certain cases
-#         (e.g., exit codes 1 or 130) to allow a parent installer script to continue.
+#         (e.g., exit codes 1 or 130) to allow a parent manager script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
 #       - If "true", outputs an extra blank line to separate previous output from the
 #         exit message.
@@ -293,8 +293,8 @@ initial_checks() {
 #       - The command used to update package lists.
 #   - $3: music_pkg_list (Required)
 #       - A list of packages required for music playback.
-#   - $4: installer_pkg_list (Required)
-#       - A list of other packages required by the installer.
+#   - $4: manager_pkg_list (Required)
+#       - A list of other packages required by the manager.
 #
 # EXITS:
 #   - 0: Successful installation of all prerequisites.
@@ -303,7 +303,7 @@ install_prereqs() {
     local install_cmd="$1"
     local update_cmd="$2"
     local music_pkg_list="$3"
-    local installer_pkg_list="$4"
+    local manager_pkg_list="$4"
     local yt_dlp_found=false
 
     echo "${E_INFO}Checking for 'yt-dlp'..."
@@ -326,7 +326,7 @@ install_prereqs() {
         $install_cmd $music_pkg_list || exit $?
 
         echo "${E_INFO}Installing other prerequisites..."
-        $install_cmd $installer_pkg_list || exit $?
+        $install_cmd $manager_pkg_list || exit $?
     ) &
     pkg_pid=$!
     wait $pkg_pid || E_STDERR "Failed to install all prerequisites" $?
@@ -346,8 +346,8 @@ install_prereqs() {
 # EXITS:
 #   - 4: The current OS is unsupported.
 unsupported() {
-    echo "${E_ERROR}The installer does not support the automatic installation and" \
-        "setup of NadekoBot's prerequisites for your OS" >&2
+    echo "${E_ERROR}The manager does not support the automatic installation and setup" \
+        "of NadekoBot's prerequisites for your OS" >&2
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
     exit 4
 }
@@ -381,7 +381,7 @@ for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
         initial_checks "$C_DISTRO" "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}"
         install_prereqs "${C_INSTALL_CMD_MAPPING[$C_DISTRO]}" \
             "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}" "${C_MUSIC_PKG_MAPPING[$C_DISTRO]}" \
-            "${C_INSTALLER_PKG_MAPPING[$C_DISTRO]}"
+            "${C_MANAGER_PKG_MAPPING[$C_DISTRO]}"
         clean_exit 0 "true"
     fi
 done

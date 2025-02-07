@@ -2,15 +2,15 @@
 #
 # This script checks the operating system, architecture, bit type, and other factors to
 # confirm NadekoBot's compatibility. If the system is supported, it downloads and
-# executes the main installer.
+# executes the main script.
 #
 ########################################################################################
 ####[ Exported and Global Variables ]###################################################
 
 
 # Refer to the 'README' note at the beginning of 'm-bridge.bash' for more information.
-readonly C_CURRENT_LINUXAIO_REVISION=47
-readonly C_MAIN_INSTALLER="n-main.bash"
+readonly C_LATEST_BRIDGE_REVISION=48
+readonly C_MAIN_MANAGER="n-main.bash"
 
 ## Modify output text color.
 E_YELLOW="$(printf '\033[1;33m')"
@@ -34,7 +34,7 @@ export E_SUCCESS E_WARN E_ERROR E_INFO E_NOTE E_IMP
 
 export E_BOT_DIR="nadekobot"
 export E_ROOT_DIR="$PWD"
-export E_INSTALLER_PREP="$E_ROOT_DIR/n-main-prep.bash"
+export E_MANAGER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 
 
 ####[ Functions ]#######################################################################
@@ -42,7 +42,7 @@ export E_INSTALLER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 
 ####
 # Identify the operating system, version, architecture, bit type (32/64), etc. This
-# information is then made available to this script and the rest of the installer.
+# information is then made available to this and the rest of the scripts.
 #
 # NEW GLOBALS:
 #   - E_DISTRO: Distribution name
@@ -94,7 +94,7 @@ unsupported() {
     case "$choice" in
         y|yes)
             clear -x
-            execute_main_installer
+            execute_main_script
             ;;
         *)
             clean_exit 0
@@ -103,7 +103,7 @@ unsupported() {
 }
 
 ####
-# Cleanly exit the installer by performing the following steps:
+# Cleanly exit the manager by performing the following steps:
 #   1. Remove any temporary files created during the installation process.
 #   2. Display an appropriate exit message based on the provided exit code.
 #   3. Exit the script with the specified status code.
@@ -124,7 +124,7 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
     # Files to be removed during the cleanup process.
-    local installer_files=("n-main-prep.bash" "n-main.bash" "n-update.bash"
+    local manager_files=("n-main-prep.bash" "n-main.bash" "n-update.bash"
         "n-runner.bash" "n-file-backup.bash" "n-prereqs.bash" "n-update-bridge.bash")
 
     trap - EXIT
@@ -144,7 +144,7 @@ clean_exit() {
     echo "${E_INFO}Cleaning up..."
     cd "$E_ROOT_DIR" || E_STDERR "Failed to move working directory to '$E_ROOT_DIR'" "1"
 
-    for file in "${installer_files[@]}"; do
+    for file in "${manager_files[@]}"; do
         [[ -f $file ]] && rm "$file"
     done
 
@@ -153,15 +153,15 @@ clean_exit() {
 }
 
 ####
-# Downloads the main installer script and executes it. This function is typically one of
-# the final steps in the installation process. After the installer finishes, the script
-# exits using the installer's returned exit code.
+# Downloads the main manager script and executes it. This function is typically one of
+# the final steps of this script. After it finishes, the script exits using the exit
+# code from 'n-main.bash'.
 #
 # EXITS:
-#   - $?: The exit code returned by the main installer.
-execute_main_installer() {
-    E_DOWNLOAD_SCRIPT "$C_MAIN_INSTALLER" "true"
-    ./"$C_MAIN_INSTALLER"
+#   - $?: The exit code returned by 'n-main.bash'.
+execute_main_script() {
+    E_DOWNLOAD_SCRIPT "$C_MAIN_MANAGER" "true"
+    ./"$C_MAIN_MANAGER"
     clean_exit "$?"
 }
 
@@ -232,17 +232,12 @@ trap 'clean_exit "$?" "true"' EXIT
 ####[ Prepping ]########################################################################
 
 
-# shellcheck disable=SC2153
-#   $_LINUXAIO_REVISION is from revision 38 and earlier. $E_LINUXAIO_REVISION is used
-#   for revision 39 and later.
-if [[ $E_LINUXAIO_REVISION != "$C_CURRENT_LINUXAIO_REVISION" ]]; then
-    export E_CURRENT_LINUXAIO_REVISION="$C_CURRENT_LINUXAIO_REVISION"
+if [[ $E_BRIDGE_REVISION != "$C_LATEST_BRIDGE_REVISION" ]]; then
+    export E_LATEST_BRIDGE_REVISION="$C_LATEST_BRIDGE_REVISION"
 
     echo "${E_WARN}You are using an older version of 'm-bridge.bash'"
     E_DOWNLOAD_SCRIPT "n-update-bridge.bash" "true"
     ./n-update-bridge.bash
-
-    export -n E_CURRENT_LINUXAIO_REVISION
     clean_exit 0
 fi
 
@@ -260,20 +255,21 @@ Distro: ${pname:=$E_DISTRO}
 Distro Version: $E_VER
 "
 
+# TODO: Remove the distro check, and only check for bit type and architecture.
 if [[ $bits == 64 ]]; then
     if [[ $E_DISTRO == "ubuntu" ]]; then
         case "$E_VER" in
-            24.04|22.04) execute_main_installer ;;
+            24.04|22.04) execute_main_script ;;
             *) unsupported ;;
         esac
     elif [[ $E_DISTRO == "debian" ]]; then
         case "$E_SVER" in
-            12|11) execute_main_installer ;;
+            12|11) execute_main_script ;;
             *) unsupported ;;
         esac
     elif [[ $E_DISTRO == "linuxmint" ]]; then
         case "$E_SVER" in
-            22|21) execute_main_installer ;;
+            22|21) execute_main_script ;;
             *) unsupported ;;
         esac
     else

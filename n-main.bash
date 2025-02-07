@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# The main Linux installer for NadekoBot. This script presents menu options and
+# The main Linux manager for NadekoBot. This script presents menu options and
 # orchestrates the execution of additional scripts to install, run, and manage
 # NadekoBot.
 #
@@ -33,7 +33,7 @@ export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
 #   - 3: Related to NadekoBot daemon service.
 #   - 4: Unsupported OS/distro.
 #   - 5: A problem occurred while finalizing an installation or backing up files.
-#   - 50: Arbitrary exit code indicating that the main installer should continue running.
+#   - 50: Arbitrary exit code indicating that the main manager should continue running.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -183,15 +183,15 @@ export -f E_FOLLOW_SERVICE_LOGS
 ####
 # Provides contextual information when displaying NadekoBot service logs, indicating
 # whether the logs are viewed from a runner script or directly within the main
-# installer.
+# manager.
 #
 # PARAMETERS:
 #   - $1: log_type (Required)
 #       - Indicates whether the function was called from a runner script or from the
-#         main installer.
+#         main manager.
 #       - Acceptable values:
 #           - runner: Called from one of the runner scripts.
-#           - opt_five: Called from the main installer.
+#           - opt_five: Called from the main manager.
 #
 # EXITS:
 #   - 4: If an invalid argument is passed to the function.
@@ -216,7 +216,7 @@ E_WATCH_SERVICE_LOGS() {
         && echo "${E_NOTE}Please check the logs above to make sure that there" \
             "aren't any errors. If there are, resolve whatever issue is causing them."
 
-    read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
+    read -rp "${E_NOTE}Press [Enter] to return to the manager menu"
 }
 export -f E_WATCH_SERVICE_LOGS
 
@@ -232,7 +232,7 @@ trap 'exit_code_actions "143"' SIGTERM
 
 
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
-printf "%sWelcome to the NadekoBot installer menu\n\n" "$E_CLR_LN"
+printf "%sWelcome to the NadekoBot manager menu\n\n" "$E_CLR_LN"
 
 while true; do
     ###
@@ -427,7 +427,7 @@ while true; do
             clear -x
             read -rp "${E_NOTE}We will now stop NadekoBot. Press [Enter] to begin."
             E_STOP_SERVICE "true"
-            read -rp "${E_NOTE}Press [Enter] to return to the installer menu"
+            read -rp "${E_NOTE}Press [Enter] to return to the manager menu"
             clear -x
             ;;
         5)
