@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 #
 # Create a shared directory to be used by all the docker containers, and download the
-# linuxAIO script.
+# 'm-bridge.bash' script.
 #
 ########################################################################################
 
-C_LINUXAIO_BRANCH="dev"
-C_LINUXAIO_URL="https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/refs/heads/$C_LINUXAIO_BRANCH/linuxAIO"
+C_BRIDGE="m-bridge.bash"
+C_BRIDGE_BRANCH="dev"
+C_BRIDGE_URL="https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/$C_BRIDGE_BRANCH/$C_BRIDGE"
 
 if [[ ! -d shared ]]; then
     echo "Creating shared directory..."
@@ -15,14 +16,14 @@ else
     echo "Shared directory already exists"
 fi
 
-if [[ ! -f shared/linuxAIO ]]; then
-    echo "Downloading linuxAIO..."
-    curl -L "$C_LINUXAIO_URL" -o shared/linuxAIO
+if [[ ! -f shared/$C_BRIDGE ]]; then
+    echo "Downloading $C_BRIDGE..."
+    curl -L "$C_BRIDGE_URL" -o "shared/$C_BRIDGE"
 else
-    echo "linuxAIO already exists"
+    echo "$C_BRIDGE already exists"
 fi
 
-echo "Setting linuxAIO as executable..."
-chmod +x shared/linuxAIO
+echo "Setting $C_BRIDGE as executable..."
+chmod +x "shared/$C_BRIDGE"
 
 echo "Setup complete"
