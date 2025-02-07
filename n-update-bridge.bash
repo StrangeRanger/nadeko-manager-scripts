@@ -26,14 +26,8 @@ revert() {
 }
 
 ####
-# Downloads the latest version of 'm-bridge.bash' and transfers any existing configurations
-# (e.g., the manager branch) from the old version.
-download_and_transfer() {
-    local manager_branch
-    local manager_branch_found
-    manager_branch=$(grep '^manager_branch=.*' m-bridge.bash.old)
-    manager_branch_found="$?"
-
+# ...
+download_bridge() {
     echo "${E_INFO}Downloading latest version of 'm-bridge.bash'..."
 
     curl -O "$E_RAW_URL"/m-bridge.bash || {
@@ -41,6 +35,15 @@ download_and_transfer() {
         revert
     }
     chmod +x m-bridge.bash
+}
+
+####
+# ....
+transfer_bridge_data() {
+    local manager_branch
+    local manager_branch_found
+    manager_branch=$(grep '^manager_branch=.*' m-bridge.bash.old)
+    manager_branch_found="$?"
 
     echo "${E_INFO}Applying existing configurations to the new 'm-bridge.bash'..."
 
@@ -49,7 +52,7 @@ download_and_transfer() {
 }
 
 ####
-#
+# ....
 revision_40() {
     echo "${E_WARN}You are using a very old version of the manager, where it's not" \
         "possible to automatically transfer configurations to the new"\
@@ -147,19 +150,23 @@ fi
 
 chmod -x m-bridge.bash.old
 
+echo "${E_INFO}Performing revision checks..."
 if (( E_LINUXAIO_REVISION <= 40 )); then
     # Will exit script after the function call.
     revision_40
 elif [[ $E_LINUXAIO_REVISION -le 47 && $E_CURRENT_LINUXAIO_REVISION == 47.5 ]]; then
+    download_bridge
+
     if (( E_LINUXAIO_REVISION <= 45 )); then
         revision_45
     else
         revision_47.5
     fi
 
-    download_and_transfer
+    transfer_bridge_data
 elif (( E_BRIDGE_REVISION != C_LATEST_BRIDGE_REVISION )); then
-    download_and_transfer
+    download_bridge
+    transfer_bridge_data
 else
     echo "${E_SUCCESS}You are already using the latest version of 'm-bridge.bash'"
     exit 0
