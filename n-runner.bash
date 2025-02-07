@@ -21,6 +21,15 @@ else
     readonly C_ACTION_UPPER="Enabling"  # B.1.
 fi
 
+# shellcheck disable=SC2153
+#   The 'E_BOT_SERVICE_PATH' variable is defined in 'n-main.bash'.
+if [[ -f "$E_YT_DLP_PATH" ]]; then
+    readonly C_YT_DLP_PATH="$E_YT_DLP_PATH"
+else
+    C_YT_DLP_PATH="$(which yt-dlp)"
+    readonly C_YT_DLP_PATH
+fi
+
 ## NOTE:
 ##  Starting with systemd version 246, 'StandardOutput' and 'StandardError' no longer
 ##  support 'syslog' as valid values.
@@ -175,7 +184,7 @@ if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
 _code_name_=\"NadekoRun\"
 
 echo \"[INFO] Running NadekoBot in the background\"
-\"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+\"$C_YT_DLP_PATH\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 cd \"$E_ROOT_DIR/$E_BOT_DIR\"
@@ -193,7 +202,7 @@ else
 _code_name_=\"NadekoRunAR\"
 
 echo \"[INFO] Running NadekoBot in the background with auto restart\"
-\"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+\"$C_YT_DLP_PATH\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 
@@ -219,7 +228,7 @@ while true; do
 
     echo \"[INFO] Waiting 5 seconds...\"
     sleep 5
-    \"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+    \"$C_YT_DLP_PATH\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
     echo \"[INFO] Restarting NadekoBot...\"
 done
 
