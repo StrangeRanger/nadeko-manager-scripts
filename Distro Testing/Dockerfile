@@ -6,32 +6,38 @@
 #   - PKG_MANAGER: one of "apt", "dnf", or "zypper"
 ##############################
 
-ARG BASE_IMAGE
+# Default to Ubuntu 22.04 if no base image is specified.
+ARG BASE_IMAGE=ubuntu:22.04
 FROM ${BASE_IMAGE}
 
 # Allow build-time selection of package manager commands.
 ARG PKG_MANAGER
 
-# (For apt-based images, disable interactive prompts.)
+# Tell systemd (and various packages) that we are in a container.
+ENV container=docker
+
+# For apt-based images, disable interactive prompts.
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install required packages based on the package manager.
+# Install required packages, including systemd.
 RUN if [ "$PKG_MANAGER" = "apt" ]; then \
-        apt update && apt upgrade -y && apt install -y curl sudo vim && rm -rf /var/lib/apt/lists/*; \
+        apt-get update && \
+        apt-get upgrade -y && \
+        apt-get install -y systemd systemd-sysv curl sudo vim && \
+        rm -rf /var/lib/apt/lists/*; \
     elif [ "$PKG_MANAGER" = "dnf" ]; then \
-        dnf update -y && dnf -y install --allowerasing curl sudo vim ncurses; \
+        dnf update -y && \
+        dnf install  -y --allowerasing systemd curl sudo vim ncurses; \
     elif [ "$PKG_MANAGER" = "zypper" ]; then \
-        zypper refresh && zypper --non-interactive update && zypper --non-interactive install curl sudo vim; \
+        zypper refresh && \
+        zypper --non-interactive update && \
+        zypper --non-interactive install systemd curl sudo vim; \
     else \
         echo "Unsupported package manager: $PKG_MANAGER" && exit 1; \
     fi
 
-# Create a shared folder (this can be overlaid with a volume when running).
-RUN mkdir -p /shared
+# Set the root password.
+RUN echo 'root:password' | chpasswd
 
-# Set working directory.
-WORKDIR /shared
-
-# Default command: run an interactive shell.
-CMD ["/bin/bash"]
-
+# Run systemd as the init process.
+CMD ["/sbin/init"]
