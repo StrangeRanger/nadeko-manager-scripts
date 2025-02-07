@@ -29,14 +29,14 @@ declare -A distros_base=(
     [debian-12]="debian:12"  # Tested: Works
     [linuxmint-22]="linuxmintd/mint22.1-amd64"  # Tested: Works | Community image.
     [linuxmint-21]="linuxmintd/mint21.3-amd64"  # Tested: Works | Community image.
-    [fedora-41]="fedora:41"
-    [fedora-40]="fedora:40"
-    [almalinux-9]="almalinux:9"
-    [almalinux-8]="almalinux:8"
+    [fedora-41]="fedora:41"  # TODO: Test these images
+    [fedora-40]="fedora:40"  # TODO: Test these images
+    [almalinux-9]="almalinux:9"  # TODO: Test these images
+    [almalinux-8]="almalinux:8"  # TODO: Test these images
     [rocky-9]="rockylinux:9"  # Tested: Works
-    [rocky-8]="rockylinux:8"
-    [opensuse-leap-15.6]="opensuse/leap:15.6"
-    [opensuse-tumbleweed]="opensuse/tumbleweed"
+    [rocky-8]="rockylinux:8"  # TODO: Test these images
+    [opensuse-leap-15.6]="opensuse/leap:15.6"  # TODO: Test these images
+    [opensuse-tumbleweed]="opensuse/tumbleweed"  # TODO: Test these images
     [arch]="archlinux:latest"  # Tested: Works
 )
 
