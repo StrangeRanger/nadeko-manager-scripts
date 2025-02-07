@@ -33,7 +33,7 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
         zypper --non-interactive update && \
         zypper --non-interactive install systemd curl sudo vim; \
     elif [ "$PKG_MANAGER" = "pacman" ]; then \
-        pacman -Syu --noconfirm systemd curl sudo vim; \
+        pacman -Syu --noconfirm systemd curl sudo vim yay; \
     else \
         echo "Unsupported package manager: $PKG_MANAGER" && exit 1; \
     fi
