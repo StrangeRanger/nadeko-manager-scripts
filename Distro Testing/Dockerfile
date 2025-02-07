@@ -27,7 +27,7 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
         rm -rf /var/lib/apt/lists/*; \
     elif [ "$PKG_MANAGER" = "dnf" ]; then \
         dnf update -y && \
-        dnf install  -y --allowerasing systemd curl sudo vim ncurses; \
+        dnf install  -y --allowerasing systemd curl sudo vim ncurses libicu; \
     elif [ "$PKG_MANAGER" = "zypper" ]; then \
         zypper refresh && \
         zypper --non-interactive update && \
