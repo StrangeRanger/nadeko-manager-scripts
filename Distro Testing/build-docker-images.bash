@@ -24,20 +24,20 @@ set -e
 # This associative array maps a distro key to the base image.
 # (Use official images when available. For Linux Mint, we rely on community images.)
 declare -A distros_base=(
-    [ubuntu-24.04]="ubuntu:24.04"  # Tested: Works
-    [ubuntu-22.04]="ubuntu:22.04"  # Tested: Works
-    [debian-12]="debian:12"  # Tested: Works
-    [linuxmint-22]="linuxmintd/mint22.1-amd64"  # Tested: Works | Community image.
-    [linuxmint-21]="linuxmintd/mint21.3-amd64"  # Tested: Works | Community image.
+    [ubuntu-24.04]="ubuntu:24.04"  # TODO: Test these images
+    [ubuntu-22.04]="ubuntu:22.04"  # TODO: Test these images
+    [debian-12]="debian:12"  # TODO: Test these images
+    [linuxmint-22]="linuxmintd/mint22.1-amd64"  # TODO: Test these images | Community image.
+    [linuxmint-21]="linuxmintd/mint21.3-amd64"  # TODO: Test these images | Community image.
     [fedora-41]="fedora:41"  # TODO: Test these images
     [fedora-40]="fedora:40"  # TODO: Test these images
     [almalinux-9]="almalinux:9"  # TODO: Test these images
     [almalinux-8]="almalinux:8"  # TODO: Test these images
-    [rocky-9]="rockylinux:9"  # Tested: Works
+    [rocky-9]="rockylinux:9"  # TODO: Test these images
     [rocky-8]="rockylinux:8"  # TODO: Test these images
-    [opensuse-leap-15.6]="opensuse/leap:15.6"  # TODO: Test these images
-    [opensuse-tumbleweed]="opensuse/tumbleweed"  # TODO: Test these images
-    [arch]="archlinux:latest"  # Tested: Works
+    [opensuse-leap-15.6]="opensuse/leap:15.6"  # Testing
+    [opensuse-tumbleweed]="opensuse/tumbleweed"  # Testing
+    [arch]="archlinux:latest"  # TODO: Test these images
 )
 
 # This associative array maps the distro key to its package manager.
@@ -69,10 +69,8 @@ for distro in "${!distros_base[@]}"; do
     echo "Building image: $image_tag"
     echo "  Base image: $base_image"
     echo "  Package manager: $manager"
-    docker build \
-        --build-arg BASE_IMAGE="$base_image" \
-        --build-arg PKG_MANAGER="$manager" \
-        -t "$image_tag" .
+    docker build --build-arg BASE_IMAGE="$base_image" \
+        --build-arg PKG_MANAGER="$manager" -t "$image_tag" .
     echo "Built $image_tag"
 done
 
