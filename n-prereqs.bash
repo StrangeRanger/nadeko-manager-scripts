@@ -7,15 +7,15 @@
 
 
 declare -A -r C_SUPPORTED_DISTROS=(
-    ["ubuntu"]="22.04 24.04"  # Tested
-    ["debian"]="12"  # Tested
-    ["linuxmint"]="21 22"  # Tested
+    ["ubuntu"]="22.04 24.04"
+    ["debian"]="12"
+    ["linuxmint"]="21 22"
     ["fedora"]="40 41"
     ["almalinux"]="8 9"
-    ["rocky"]="8 9"  # Tested Rocky 9
+    ["rocky"]="8 9"
     ["opensuse-leap"]="15.6"
     ["opensuse-tumbleweed"]="any"
-    ["arch"]="any"  # Tested
+    ["arch"]="any"
 )
 
 declare -A -r C_UPDATE_CMD_MAPPING=(
