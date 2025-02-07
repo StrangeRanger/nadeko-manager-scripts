@@ -49,12 +49,12 @@ export E_MANAGER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 #   - bits: Bit type
 detect_sys_info() {
     case $(uname -m) in
-        x86_64)  bits="64"; export E_ARCH="x64" ;;
-        aarch64) bits="64"; export E_ARCH="arm64" ;;
-        armv8l)  bits="32"; export E_ARCH="arm32" ;;  # ARMv8 in 32-bit mode.
-        armv*)   bits="32"; export E_ARCH="arm32" ;;  # Generic ARM 32-bit.
-        i*86)    bits="32"; export E_ARCH="x86" ;;
-        *)       bits="?";  export E_ARCH="unknown" ;;  # Fallback to uname output.
+        x86_64)  bits="64" ;;
+        aarch64) bits="64" ;;
+        armv8l)  bits="32" ;;  # ARMv8 in 32-bit mode.
+        armv*)   bits="32" ;;  # Generic ARM 32-bit.
+        i*86)    bits="32" ;;
+        *)       bits="?" ;;
     esac
 }
 
@@ -232,7 +232,7 @@ fi
 clear -x
 detect_sys_info
 
-if [[ $C_BITS == "32" ]]; then
+if [[ $bits == "32" ]]; then
     echo "${E_ERROR}Current system is 32-bit, which is not supported"
     echo "${E_NOTE}NadekoBot only supports 64-bit systems"
     exit 1
