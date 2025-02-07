@@ -7,9 +7,9 @@
 
 
 declare -A -r C_SUPPORTED_DISTROS=(
-    ["ubuntu"]="22.04 24.04"
-    ["debian"]="12"
-    ["linuxmint"]="21 22"
+    # ["ubuntu"]="22.04 24.04"
+    # ["debian"]="12"
+    # ["linuxmint"]="21 22"
     ["fedora"]="40 41"
     ["almalinux"]="8 9"
     ["rocky"]="8 9"
@@ -53,13 +53,13 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
 
 declare -A -r C_MUSIC_PKG_MAPPING=(
     ["ubuntu"]="python3 ffmpeg"
-    ["debian"]="ffmpeg"
-    ["linuxmint"]="ffmpeg"
-    ["fedora"]="ffmpeg"
-    ["almalinux"]="ffmpeg"
-    ["rocky"]="ffmpeg"
-    ["opensuse-leap"]="ffmpeg yt-dlp"
-    ["opensuse-tumbleweed"]="ffmpeg yt-dlp"
+    ["debian"]="python3 ffmpeg"
+    ["linuxmint"]="python3 ffmpeg"
+    ["fedora"]="python3 ffmpeg"
+    ["almalinux"]="python3 ffmpeg"
+    ["rocky"]="python3 ffmpeg"
+    ["opensuse-leap"]="python3 ffmpeg yt-dlp"
+    ["opensuse-tumbleweed"]="python3 ffmpeg yt-dlp"
 )
 
 
