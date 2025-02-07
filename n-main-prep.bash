@@ -209,3 +209,5 @@ if [[ $bits == "32" ]]; then
     echo "${E_NOTE}NadekoBot only supports 64-bit systems"
     exit 1
 fi
+
+execute_main_script
