@@ -7,7 +7,7 @@
 #   - To run the images, use the following command:
 #       - docker run --privileged --rm -it -v "$(pwd)/shared:/root" <image_name_tag>
 #   - Upon running/accessing the container, you'll be prompted for a username and
-#     password. They are below:
+#     password. Use the following credentials:
 #       - Username: root
 #       - Password: password
 #   - To exit the container, execute `shutdown now`, instead of `exit`.
@@ -58,7 +58,8 @@ declare -A pkg_manager=(
     [arch]="pacman"
 )
 
-# Build an image for each distro.
+
+## Build an image for each distro.
 for distro in "${!distros_base[@]}"; do
     base_image="${distros_base[$distro]}"
     manager="${pkg_manager[$distro]}"
