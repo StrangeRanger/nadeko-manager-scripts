@@ -42,18 +42,30 @@ declare -A -r C_INSTALL_CMD_MAPPING=(
     ["arch"]="sudo pacman -S --noconfirm"
 )
 
+# NOTE:
+#   - It would be redundant to specify 'curl', as it would have needed to be installed
+#     for the parent manager scripts to work.
 declare -A -r C_MANAGER_PKG_MAPPING=(
-    ["ubuntu"]="wget curl ccze jq"
-    ["debian"]="wget curl ccze jq"
-    ["linuxmint"]="wget curl ccze jq"
-    ["fedora"]="wget curl ccze jq"
-    ["almalinux"]="wget curl ccze jq"
-    ["rocky"]="wget curl ccze jq"
-    ["opensuse-leap"]="wget curl ccze jq tar awk"
-    ["opensuse-tumbleweed"]="wget curl ccze jq tar awk"
-    ["arch"]="wget curl jq"  # 'ccze' gets installed separately.
+    ["ubuntu"]="ccze jq"
+    ["debian"]="ccze jq"
+    ["linuxmint"]="ccze jq"
+    ["fedora"]="ccze jq"
+    ["almalinux"]="ccze jq"
+    ["rocky"]="ccze jq"
+    ["opensuse-leap"]="ccze jq tar"  # TODO: Check if 'tar' is installed by default.
+    ["opensuse-tumbleweed"]="ccze jq"
+    ["arch"]="jq"  # 'ccze' gets installed separately via AUR.
 )
 
+# NOTE:
+#   - As long as the installed version of python is 3.9+, the script should work.
+#   - opensuse-tumbleweed: Installing 'yt-dlp' auto installs the 'ffmpeg' (ffmpeg-7) and
+#     'python3' (python311-yt-dlp) packages. (Specified packages are as of 2025-02-07)
+#   - opensuse-leap: Installing yt-dlp auto installs 'ffmpeg' (ffmpeg-4) and 'python3'
+#     (python311-yt-dlp) packages. (Specified packages are as of 2025-02-07)
+#       - We still install 'python311' explicitly to ensure we know what version to
+#         expect. This allows us to easily symlink 'python3' to 'python311' if needed,
+#         without worrying about referencing a non-existent package.
 declare -A -r C_MUSIC_PKG_MAPPING=(
     ["ubuntu"]="python3 ffmpeg"
     ["debian"]="python3 ffmpeg"
@@ -61,8 +73,8 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["fedora"]="python3 ffmpeg"
     ["almalinux"]="python3 ffmpeg"
     ["rocky"]="python3 ffmpeg"
-    ["opensuse-leap"]="python3 ffmpeg yt-dlp"
-    ["opensuse-tumbleweed"]="python3 ffmpeg yt-dlp"
+    ["opensuse-leap"]="python311 yt-dlp"
+    ["opensuse-tumbleweed"]="yt-dlp"
     ["arch"]="python3 ffmpeg yt-dlp"
 )
 
@@ -150,15 +162,40 @@ clean_exit() {
 }
 
 ####
+# Displays a message indicating that the current OS is unsupported for automatic
+# NadekoBot prerequisite installation.
+#
+# EXITS:
+#   - 4: The current OS is unsupported.
+unsupported() {
+    echo "${E_ERROR}The manager does not support the automatic installation and setup" \
+        "of NadekoBot's prerequisites for your OS" >&2
+    read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+    exit 4
+}
+
+####
+# TODO: Add function documentation.
+create_local_bin() {
+    if [[ ! -d $E_LOCAL_BIN ]]; then
+        echo "${E_INFO}Creating '$E_LOCAL_BIN' directory..."
+        mkdir -p "$E_LOCAL_BIN"
+    fi
+}
+
+###
+### [ Install Based Functions ]
+###
+
+####
 # Installs 'yt-dlp' to '~/.local/bin/yt-dlp', creating the directory if needed.
 #
 # EXITS:
 #   - 1: If 'yt-dlp' fails to download.
 install_yt_dlp() {
     local yt_dlp_url="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp"
-    local yt_dpl_dir="${E_YT_DLP_PATH%/*}"
 
-    [[ -d $yt_dpl_dir ]] || mkdir -p "$yt_dpl_dir"
+    create_local_bin
 
     if [[ ! -f $E_YT_DLP_PATH ]]; then
         echo "${E_INFO}Installing 'yt-dlp'..."
@@ -171,41 +208,7 @@ install_yt_dlp() {
 }
 
 ####
-# Perform checks or other actions that might be necessary before installing packages.
-#
-# PARAMETERS:
-#   - $1: distro (Required)
-#       - The distribution name.
-#   - $2: update_cmd (Required)
-#       - The command used to update package lists.
-initial_checks() {
-    local distro="$1"
-    local update_cmd="$2"
-
-    echo "${E_INFO}Performing initial checks for '$distro'..."
-
-    case "$distro" in
-        rocky|almalinux)
-            local el_ver; el_ver=$(rpm -E %rhel)
-            echo "${E_INFO}Updating package lists"
-            $update_cmd
-            echo "${E_INFO}Installing EPEL and RPM Fusion for EL${el_ver} ($distro)..."
-            dnf install -y epel-release
-            dnf install -y "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${el_ver}.noarch.rpm"
-            echo "${E_INFO}Enabling CRB repository..."
-            # TODO: Verify if the CRB is enabled by default on non-docker installations.
-            dnf config-manager --set-enabled crb || echo "${E_WARN}CRB repository could not be enabled, continuing..."
-            ;;
-        fedora)
-            local fedora_ver; fedora_ver=$(rpm -E %fedora)
-            echo "${E_INFO}Updating package lists"
-            $update_cmd
-            echo "${E_INFO}Installing RPM Fusion for Fedora $fedora_ver..."
-            dnf install -y "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
-            ;;
-    esac
-}
-
+# TODO: Add function documentation.
 install_ccze_arch() {
     echo "${E_INFO}Installing 'ccze' for Arch Linux from the AUR..."
 
@@ -283,21 +286,66 @@ install_prereqs() {
     if [[ $yt_dlp_found == false ]]; then
         install_yt_dlp
     fi
-
-    echo -en "\n${E_SUCCESS}Finished installing prerequisites"
 }
 
 ####
-# Displays a message indicating that the current OS is unsupported for automatic
-# NadekoBot prerequisite installation.
+# Perform checks or other actions that might be necessary before installing packages.
 #
-# EXITS:
-#   - 4: The current OS is unsupported.
-unsupported() {
-    echo "${E_ERROR}The manager does not support the automatic installation and setup" \
-        "of NadekoBot's prerequisites for your OS" >&2
-    read -rp "${E_NOTE}Press [Enter] to return to the main menu"
-    exit 4
+# PARAMETERS:
+#   - $1: distro (Required)
+#       - The distribution name.
+#   - $2: update_cmd (Required)
+#       - The command used to update package lists.
+pre_install() {
+    local distro="$1"
+    local update_cmd="$2"
+
+    echo "${E_INFO}Performing pre install checks for '$distro'..."
+
+    case "$distro" in
+        rocky|almalinux)
+            local el_ver; el_ver=$(rpm -E %rhel)
+            echo "${E_INFO}Updating package lists"
+            $update_cmd
+            echo "${E_INFO}Installing EPEL and RPM Fusion for EL${el_ver} ($distro)..."
+            dnf install -y epel-release
+            dnf install -y "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${el_ver}.noarch.rpm"
+            echo "${E_INFO}Enabling CRB repository..."
+            # TODO: Verify if the CRB is enabled by default on non-docker installations.
+            dnf config-manager --set-enabled crb \
+                || echo "${E_WARN}CRB repository could not be enabled, continuing..."
+            ;;
+        fedora)
+            local fedora_ver; fedora_ver=$(rpm -E %fedora)
+            echo "${E_INFO}Updating package lists"
+            $update_cmd
+            echo "${E_INFO}Installing RPM Fusion for Fedora $fedora_ver..."
+            dnf install -y "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
+            ;;
+        opensuse-leap)
+            create_local_bin
+            ;;
+
+    esac
+}
+
+####
+# TODO: Add function documentation.
+post_install() {
+    local distro="$1"
+    local update_cmd="$2"
+
+    echo "${E_INFO}Performing post install checks for '$distro'..."
+
+    case "$distro" in
+        opensuse-leap)
+            if [[ ! -L $E_LOCAL_BIN/python3 ]]; then
+                echo "${E_INFO}Creating symlink for 'python3' to 'python3.11' in" \
+                    "'$E_LOCAL_BIN'..."
+                ln -s /usr/bin/python3.11 "$E_LOCAL_BIN/python3"
+            fi
+            ;;
+    esac
 }
 
 
@@ -320,10 +368,12 @@ detect_sys_info
 
 for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
     if [[ $version == "$C_VER" || $version == "$C_SVER" || $version == "any" ]]; then
-        initial_checks "$C_DISTRO" "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}"
+        pre_install "$C_DISTRO" "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}"
         install_prereqs "${C_INSTALL_CMD_MAPPING[$C_DISTRO]}" \
             "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}" "${C_MUSIC_PKG_MAPPING[$C_DISTRO]}" \
             "${C_MANAGER_PKG_MAPPING[$C_DISTRO]}"
+        post_install "$C_DISTRO" "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}"
+        echo -en "\n${E_SUCCESS}Finished installing prerequisites"
         clean_exit 0 "true"
     fi
 done
