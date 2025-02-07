@@ -192,7 +192,7 @@ initial_checks() {
             echo "${E_INFO}Installing EPEL and RPM Fusion for EL${el_ver} ($distro)..."
             dnf install -y epel-release
             dnf install -y "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${el_ver}.noarch.rpm"
-            # Enable the CodeReady Builder repository (CRB)
+            echo "${E_INFO}Enabling CRB repository..."
             dnf config-manager --set-enabled crb || echo "${E_WARN}CRB repository could not be enabled, continuing..."
             ;;
         fedora)
