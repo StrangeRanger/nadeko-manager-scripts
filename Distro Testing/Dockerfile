@@ -33,7 +33,17 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
         zypper --non-interactive update && \
         zypper --non-interactive install systemd curl sudo vim; \
     elif [ "$PKG_MANAGER" = "pacman" ]; then \
-        pacman -Syu --noconfirm systemd curl sudo vim yay; \
+        pacman -Syu --noconfirm systemd curl sudo vim base-devel git go && \
+        if ! command -v yay >/dev/null 2>&1; then \
+            useradd -m builder && \
+            echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder && \
+            git clone https://aur.archlinux.org/yay.git /home/builder/yay && \
+            chown -R builder:builder /home/builder/yay && \
+            su builder -c "cd /home/builder/yay && makepkg -si --noconfirm" && \
+            rm -rf /home/builder/yay && \
+            userdel -r builder && \
+            rm -f /etc/sudoers.d/builder; \
+        fi \
     else \
         echo "Unsupported package manager: $PKG_MANAGER" && exit 1; \
     fi
