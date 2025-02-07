@@ -27,6 +27,7 @@ declare -A -r C_UPDATE_CMD_MAPPING=(
     ["rocky"]="sudo dnf makecache"
     ["opensuse-leap"]="sudo zypper refresh"
     ["opensuse-tumbleweed"]="sudo zypper refresh"
+    ["arch"]="sudo pacman -Sy"
 )
 
 declare -A -r C_INSTALL_CMD_MAPPING=(
@@ -38,6 +39,7 @@ declare -A -r C_INSTALL_CMD_MAPPING=(
     ["rocky"]="sudo dnf install -y"
     ["opensuse-leap"]="sudo zypper install -y"
     ["opensuse-tumbleweed"]="sudo zypper install -y"
+    ["arch"]="sudo pacman -S --noconfirm"
 )
 
 declare -A -r C_MANAGER_PKG_MAPPING=(
@@ -49,6 +51,7 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
     ["rocky"]="wget curl ccze jq"
     ["opensuse-leap"]="wget curl ccze jq tar awk"
     ["opensuse-tumbleweed"]="wget curl ccze jq tar awk"
+    ["arch"]="wget curl jq tar awk"  # 'ccze' gets installed separately.
 )
 
 declare -A -r C_MUSIC_PKG_MAPPING=(
@@ -60,6 +63,7 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["rocky"]="python3 ffmpeg"
     ["opensuse-leap"]="python3 ffmpeg yt-dlp"
     ["opensuse-tumbleweed"]="python3 ffmpeg yt-dlp"
+    ["arch"]="python3 ffmpeg yt-dlp"
 )
 
 
@@ -199,6 +203,21 @@ initial_checks() {
     esac
 }
 
+install_ccze_arch() {
+    echo "${E_INFO}Installing 'ccze' for Arch Linux from the AUR..."
+
+    # Check if 'yay' is installed.
+    if command -v yay &>/dev/null; then
+        yay -S --noconfirm ccze || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
+    elif command -v paru &>/dev/null; then
+        paru -S --noconfirm ccze || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
+    else
+        echo "${E_ERROR}AUR helper not found. Please install 'yay' or 'paru' to" \
+            "continue." >&2
+        exit 1  # TODO: Determine if this is the correct exit code.
+    fi
+}
+
 # TODO: Update description to reflect to use of different package managers.
 ####
 # Installs all prerequisites required by NadekoBot. Runs 'apt' in the background so
@@ -251,6 +270,11 @@ install_prereqs() {
         echo "${E_INFO}Installing other prerequisites..."
         $install_cmd $manager_pkg_list \
             || E_STDERR "Failed to install other prerequisites" "$?"
+
+        # While this reduces the dynamic nature of the script, it's a necessary evil.
+        if [[ $C_DISTRO == "arch" ]]; then
+            install_ccze_arch
+        fi
     }
 
     if [[ "$yt_dlp_found" == false ]]; then
