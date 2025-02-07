@@ -8,8 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added several new supported Linux Distributions
-    - .........
+- Several newly supported Linux distributions:
+    - Fedora 41
+    - Fedora 40
+    - Alma Linux 9
+    - Alma Linux 8
+    - Rocky Linux 9
+    - Rocky Linux 8
+    - OpenSuse Leap 15.6
+    - OpenSuse Tumbleweed
 
 ### Changed
 
@@ -27,8 +34,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- Removed several Linux Distributions
-    - .........
+- Removed supported Linux distributions:
+    - Debian 11
 
 ## [v5.0.0] - 2025-02-01
 
