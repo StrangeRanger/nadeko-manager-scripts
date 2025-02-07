@@ -19,7 +19,8 @@ export E_BOT_SERVICE_PATH="/etc/systemd/system/$E_BOT_SERVICE"
 export E_BOT_EXE="NadekoBot"
 export E_CREDS_EXAMPLE="creds_example.yml"
 export E_CREDS_PATH="$E_BOT_DIR/$C_CREDS"
-export E_YT_DLP_PATH="$HOME/.local/bin/yt-dlp"
+export E_LOCAL_BIN="$HOME/.local/bin"
+export E_YT_DLP_PATH="$E_LOCAL_BIN/yt-dlp"
 
 
 ####[ Functions ]#######################################################################
