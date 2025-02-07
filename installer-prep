@@ -39,6 +39,57 @@ export E_ROOT_DIR="$PWD"
 
 
 ####
+# Cleanly exit the manager by performing the following steps:
+#   1. Remove any temporary files created during the installation process.
+#   2. Display an appropriate exit message based on the provided exit code.
+#   3. Exit the script with the specified status code.
+#
+# PARAMETERS:
+#   - $1: exit_code (Required)
+#       - The exit status code with which the script should terminate.
+#   - $2: use_extra_newline (Optional, Default: false)
+#       - If set to "true", outputs an extra blank line to visually separate previous
+#         output from the exit message.
+#       - Acceptable values:
+#           - true
+#           - false
+#
+# EXITS:
+#   - exit_code: Terminates the script with the exit code provided as $1.
+clean_exit() {
+    local exit_code="$1"
+    local use_extra_newline="${2:-false}"
+    # Files to be removed during the cleanup process.
+    local manager_files=("n-main-prep.bash" "n-main.bash" "n-update.bash"
+        "n-runner.bash" "n-file-backup.bash" "n-prereqs.bash" "n-update-bridge.bash"
+        "installer-prep")
+
+    trap - EXIT
+    [[ $use_extra_newline == true ]] && echo ""
+
+    ## Although SIGHUP and SIGTERM output is specified in 'n-main.bash', we
+    ## handle these signals here as well because they do not propagate to the parent
+    ## script.
+    case "$exit_code" in
+        0|1) echo "" ;;
+        129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
+        130) echo -e "\n${E_WARN}User interrupt detected (SIGINT)" ;;
+        143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" ;;
+        *)   echo -e "\n${E_WARN}Exiting with code: $exit_code" ;;
+    esac
+
+    echo "${E_INFO}Cleaning up..."
+    cd "$E_ROOT_DIR" || E_STDERR "Failed to move working directory to '$E_ROOT_DIR'" "1"
+
+    for file in "${manager_files[@]}"; do
+        [[ -f $file ]] && rm "$file"
+    done
+
+    echo "${E_INFO}Exiting..."
+    exit "$exit_code"
+}
+
+####
 # Downloads the specified script from the $E_RAW_URL location and grants it executable
 # permissions. Optionally displays a message indicating that the download is in
 # progress.
