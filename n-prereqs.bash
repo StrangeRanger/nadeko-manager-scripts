@@ -12,7 +12,7 @@ declare -A -r C_SUPPORTED_DISTROS=(
     ["linuxmint"]="21 22"  # Tested
     ["fedora"]="40 41"
     ["almalinux"]="8 9"
-    ["rocky"]="8 9"
+    ["rocky"]="8 9"  # Testing
     ["opensuse-leap"]="15.6"
     ["opensuse-tumbleweed"]="any"
     ["arch"]="any"  # Tested
@@ -192,6 +192,8 @@ initial_checks() {
             echo "${E_INFO}Installing EPEL and RPM Fusion for EL${el_ver} ($distro)..."
             dnf install -y epel-release
             dnf install -y "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${el_ver}.noarch.rpm"
+            # Enable the CodeReady Builder repository (CRB)
+            dnf config-manager --set-enabled crb || echo "${E_WARN}CRB repository could not be enabled, continuing..."
             ;;
         fedora)
             local fedora_ver; fedora_ver=$(rpm -E %fedora)
