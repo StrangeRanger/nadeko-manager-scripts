@@ -40,30 +40,14 @@ export E_MANAGER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 ####[ Functions ]#######################################################################
 
 
+# TODO: Update function comments.
 ####
 # Identify the operating system, version, architecture, bit type (32/64), etc. This
 # information is then made available to this and the rest of the scripts.
 #
 # NEW GLOBALS:
-#   - E_DISTRO: Distribution name
-#   - E_VER: Distribution version
-#   - E_SVER: Distribution short version
-#   - E_ARCH: Architecture
-#   - pname: Pretty name
 #   - bits: Bit type
 detect_sys_info() {
-    if [[ -f /etc/os-release ]]; then
-        . /etc/os-release
-        export E_DISTRO="$ID"
-        export E_VER="$VERSION_ID"  # Version: x.x.x...
-        export E_SVER=${E_VER//.*/}  # Version: x
-        pname="$PRETTY_NAME"
-    else
-        E_DISTRO=$(uname -s)
-        E_VER=$(uname -r)
-        export E_DISTRO E_VER
-    fi
-
     case $(uname -m) in
         x86_64)  bits="64"; export E_ARCH="x64" ;;
         aarch64) bits="64"; export E_ARCH="arm64" ;;
@@ -248,33 +232,8 @@ fi
 clear -x
 detect_sys_info
 
-echo "SYSTEM INFO
-Bit Type: $bits
-Architecture: $E_ARCH
-Distro: ${pname:=$E_DISTRO}
-Distro Version: $E_VER
-"
-
-# TODO: Remove the distro check, and only check for bit type and architecture.
-if [[ $bits == 64 ]]; then
-    if [[ $E_DISTRO == "ubuntu" ]]; then
-        case "$E_VER" in
-            24.04|22.04) execute_main_script ;;
-            *) unsupported ;;
-        esac
-    elif [[ $E_DISTRO == "debian" ]]; then
-        case "$E_SVER" in
-            12|11) execute_main_script ;;
-            *) unsupported ;;
-        esac
-    elif [[ $E_DISTRO == "linuxmint" ]]; then
-        case "$E_SVER" in
-            22|21) execute_main_script ;;
-            *) unsupported ;;
-        esac
-    else
-        unsupported
-    fi
-else
-    unsupported
+if [[ $C_BITS == "32" ]]; then
+    echo "${E_ERROR}Current system is 32-bit, which is not supported"
+    echo "${E_NOTE}NadekoBot only supports 64-bit systems"
+    exit 1
 fi

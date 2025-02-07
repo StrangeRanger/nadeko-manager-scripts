@@ -318,12 +318,6 @@ read -rp "Press [Enter] to continue."
 
 detect_sys_info
 
-# TODO: Place this in 'n-main-prep.bash' instead...
-# if [[ $C_BITS == "32" ]]; then
-#     echo "${E_ERROR}NadekoBot requires a 64-bit system to run."
-#     exit 1
-# fi
-
 for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
     if [[ $version == "$C_VER" || $version == "$C_SVER" || $version == "any" ]]; then
         initial_checks "$C_DISTRO" "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}"
