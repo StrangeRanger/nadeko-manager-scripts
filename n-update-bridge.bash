@@ -27,12 +27,12 @@ revert() {
 
 ####
 # Downloads the latest version of 'm-bridge.bash' and transfers any existing configurations
-# (e.g., the installer branch) from the old version.
+# (e.g., the manager branch) from the old version.
 download_and_transfer() {
-    local installer_branch
-    local installer_branch_found
-    installer_branch=$(grep '^installer_branch=.*' m-bridge.bash.old)
-    installer_branch_found="$?"
+    local manager_branch
+    local manager_branch_found
+    manager_branch=$(grep '^manager_branch=.*' m-bridge.bash.old)
+    manager_branch_found="$?"
 
     echo "${E_INFO}Downloading latest version of 'm-bridge.bash'..."
 
@@ -44,8 +44,24 @@ download_and_transfer() {
 
     echo "${E_INFO}Applying existing configurations to the new 'm-bridge.bash'..."
 
-    [[ $installer_branch_found == 0 ]] \
-        && sed -i "s/^installer_branch=.*/$installer_branch/" m-bridge.bash
+    [[ $manager_branch_found == 0 ]] \
+        && sed -i "s/^manager_branch=.*/$manager_branch/" m-bridge.bash
+}
+
+####
+#
+revision_40() {
+    echo "WARNING: You are using a very old version of the manager, where it's not" \
+        "possible to automatically transfer configurations to the new"\
+        "'m-bridge.bash'." >&2
+    echo "NOTE: 'm-bridge.bash' has replaced 'linuxAIO'"
+    echo "IMPORTANT: It's highly recommended to back up your current configurations" \
+        "and version of NadekoBot, then re-download NadekoBot using the newest" \
+        "version of the manager."
+    echo "NOTE: The newest version of the manager can be found at" \
+        "https://github.com/StrangeRanger/NadekoBot-BashScript/blob/main/m-bridge.bash"
+    echo "Exiting..."
+    exit 1
 }
 
 ####
@@ -74,6 +90,33 @@ revision_45() {
         "NadekoBot before continuing."
 }
 
+####
+#
+revision_47.5() {
+    echo "${E_NOTE}There are several changes to 'linuxAIO' that must be made before" \
+        "continuing:"
+    echo "  ${E_CYAN}|${E_NC}    - 'linuxAIO' will be renamed to 'm-bridge.bash'"
+    echo "  ${E_CYAN}|${E_NC}    - Variables will be updated to reflect the new name"
+    echo "  ${E_CYAN}|${E_NC}    - The script will be updated to the latest version"
+    read -rp "${E_NOTE}Press 'Enter' to continue or 'Ctrl + C' to cancel"
+
+    echo "${E_INFO}Backing up 'linuxAIO'..."
+    cp "linuxAIO" "linuxAIO.bak" || E_STDERR "Failed to backup 'linuxAIO'" "1"
+
+    echo "${E_INFO}Renaming 'linuxAIO' to 'm-bridge.bash'..."
+    mv "linuxAIO" "m-bridge.bash" \
+        || E_STDERR "Failed to rename 'linuxAIO' to 'm-bridge.bash'" "1"
+
+    echo "${E_INFO}Updating variables in 'm-bridge.bash'..."
+    sed -i \
+        -e 's/installer_repo/manager_repo/g' \
+        -e 's/installer_branch/manager_branch/g' \
+        -e 's/E_LINUXAIO_REVISION/E_BRIDGE_REVISION/g' \
+        -e 's/E_BRIDGE_REVISION/E_BRIDGE_REVISION/g' \
+        -e 's/C_CURRENT_LINUXAIO_REVISION/C_LATEST_BRIDGE_REVISION/g' \
+        "m-bridge.bash" || E_STDERR "Failed to update variables in 'm-bridge.bash'" "1"
+}
+
 
 ####[ Trapping Logic ]##################################################################
 
@@ -92,9 +135,10 @@ if [[ -f m-bridge.bash.old ]]; then
     rm m-bridge.bash.old
 fi
 
-if [[ -f m-bridge.bash.sh ]]; then
-    echo "${E_INFO}Backing up 'm-bridge.bash.sh' as 'm-bridge.bash.old'..."
-    mv m-bridge.bash.sh m-bridge.bash.old
+if [[ -f linuxAIO ]]; then  # Used in revisions 39 to 47.5.
+    [[ -f linuxAIO.old ]] && rm linuxAIO.old
+    echo "${E_INFO}Backing up 'linuxAIO' as 'm-bridge.bash.old'..."
+    mv linuxAIO m-bridge.bash.old
 elif [[ -f m-bridge.bash ]]; then
     echo "${E_INFO}Backing up 'm-bridge.bash' as 'm-bridge.bash.old'..."
     mv m-bridge.bash m-bridge.bash.old
@@ -102,30 +146,15 @@ fi
 
 chmod -x m-bridge.bash.old
 
-## Due to changes in 'm-bridge.bash', existing configurations cannot be directly applied to
-## the newest version of 'm-bridge.bash'. Instead, these configurations are backed up as
-## 'm-bridge.bash.old', and the user must reconfigure 'm-bridge.bash' manually.
-#
-# shellcheck disable=SC2153
-#   $_LINUXAIO_REVISION and $_RAW_URL were used in revision 38 and earlier. Therefore,
-#   we don't check for $E_LINUXAIO_REVISION in deciding whether the current version is
-#   revision 38 or older.
-if [[ $_LINUXAIO_REVISION ]] && ((_LINUXAIO_REVISION <= 38)); then
-    curl -O "$_RAW_URL/m-bridge.bash" || {
-        E_STDERR "Failed to download 'm-bridge.bash'"
-        revert
-    }
-    chmod +x m-bridge.bash
-
-    echo "${E_NOTE}Existing configurations will NOT be applied to 'm-bridge.bash'"
-    echo "${E_SUCCESS}Successfully downloaded the newest version of 'm-bridge.bash'"
-## For newer revisions, perform extra checks, then apply existing configurations where
-## possible.
-elif (( E_LINUXAIO_REVISION != E_CURRENT_LINUXAIO_REVISION )); then
-    echo "${E_INFO}Performing additional revision checks..."
-
-    (( E_LINUXAIO_REVISION <= 45 )) && revision_45
-
+if (( E_LINUXAIO_REVISION <= 40 )); then
+    revision_40
+elif (( E_LINUXAIO_REVISION <= 45 )); then
+    download_and_transfer
+    revision_45
+elif [[ $E_LINUXAIO_REVISION -le 47 && $E_CURRENT_LINUXAIO_REVISION == 47.5 ]]; then
+    revision_47.5
+    download_and_transfer
+elif (( E_BRIDGE_REVISION != C_LATEST_BRIDGE_REVISION )); then
     download_and_transfer
 
     echo "${E_SUCCESS}Successfully downloaded the newest version of 'm-bridge.bash' with" \
