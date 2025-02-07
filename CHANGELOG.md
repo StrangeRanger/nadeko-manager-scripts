@@ -10,14 +10,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added several new supported Linux Distributions
     - .........
-- Mass renaming of scripts
-    - .........
 
 ### Changed
 
-- Modified/simplified required prerequisites for NadekoBot
-    - .........
-- .........
+- Moving away from the "installer" terminology and moving towards "manager". This is because the script does more than just install, but also manages the bot. This will more accurately reflect the purpose of the scripts as a whole.
+- Mass renaming of scripts
+  - `linuxAIO` => `m-bridge.bash`
+  - `installer-prep` => `m-bridge-prep.bash`
+  - `nadeko-latest-installer` => `m-update.bash`
+  - `nadeko-main-installer` => `n-main.bash`
+  - `file-backup` => `n-file-backup.bash`
+  - `nadeko-runner` => `n-runner.bash`
+  - `prereqs-installer` => `n-prereqs.bash`
+  - `update-linuxAIO` => `n-update-bridge.bash`
+- Modified/simplified required prerequisites for NadekoBot.
 
 ### Removed
 
@@ -68,13 +74,13 @@ This release introduces A LOT of changes to the installer, including some breaki
 
 - Add support for NadekoBot v5.
 - Added support for the following distributions and their versions:
-  - Ubuntu 24.04
-  - Linux Mint 22
-  - Debian 12
+    - Ubuntu 24.04
+    - Linux Mint 22
+    - Debian 12
 - Users can now use `Ctrl` + `C` to safely cancel the installation of NadekoBot prerequisites.
-  - I believe this is already available to the other options, but if not, this can also be done when:
-    - backing up important files.
-    - setting up or updating NadekoBot.
+    - I believe this is already available to the other options, but if not, this can also be done when:
+        - backing up important files.
+        - setting up or updating NadekoBot.
 - The install checks if the `token` in `creds.yml` is set, before allowing the user to start NadekoBot.
 
 ### Changed
@@ -113,10 +119,10 @@ This release introduces A LOT of changes to the installer, including some breaki
 
 - ⚠️ Removed support for NadekoBot v4.
 - ⚠️ Removed support for distributions:
-  - ⚠️ Ubuntu 20.04, due to end of life in about 3 months.
-  - ⚠️ Ubuntu 18.04, due to end of life.
-  - ⚠️ Linux Mint 20, due to end of life in about 4 months.
-  - ⚠️ Debian 10, due to end of life.
+    - ⚠️ Ubuntu 20.04, due to end of life in about 3 months.
+    - ⚠️ Ubuntu 18.04, due to end of life.
+    - ⚠️ Linux Mint 20, due to end of life in about 4 months.
+    - ⚠️ Debian 10, due to end of life.
 
 ### Fixed
 
@@ -133,7 +139,7 @@ This release introduces A LOT of changes to the installer, including some breaki
 ### Changed
 
 - ⚠️ Renamed all of the scripts and removed their extension `.sh`.
-  - `installer_prep.sh` has been modified to easily transition between the change.
+    - `installer_prep.sh` has been modified to easily transition between the change.
 - Replaced the use of master with main.
 - Revert some if statements to fix possible SC2015 problems.
 - When new version of 'linuxAIO' is found, wait for user input before downloading the latest version.
@@ -141,9 +147,9 @@ This release introduces A LOT of changes to the installer, including some breaki
 ### Removed
 
 - ⚠️ Support for the following have been removed:
-  - Debian 9      (due to end of life)
-  - Ubuntu 16.04  (due to end of active support)
-  - Linux Mint 19 (due to end of active support)
+    - Debian 9      (due to end of life)
+    - Ubuntu 16.04  (due to end of active support)
+    - Linux Mint 19 (due to end of active support)
 - Removed code that is no longer applicable, due to other changes.
 
 ### Fixed
@@ -159,9 +165,9 @@ This release introduces A LOT of changes to the installer, including some breaki
 - Where applicable, refactored if statements to be more simplistic and functional.
 - Changed how the variables used to change the color of output text, are formatted, in the hopes of increasing portability.
 - Improve exit code functionality:
-  - Modified traps to provide proper signal exit codes.
-    - Example: 128+n where n is the signal number, such as 9 being SIGKILL.
-  - Changed exit codes to non-reserved exit codes.
+    - Modified traps to provide proper signal exit codes.
+        - Example: 128+n where n is the signal number, such as 9 being SIGKILL.
+    - Changed exit codes to non-reserved exit codes.
 - NadekoBot daemon uses `journal` for `StandardOutput` and `StandardError`, instead of `syslog`, if systemd version is 246 or later.
 - Checks if `/home/$USER/.nuget` exists before attempting to chown it.
 - Small formatting and style changes.
@@ -177,8 +183,8 @@ This release introduces A LOT of changes to the installer, including some breaki
 ### Added
 
 - Officially supports:
-  - Ubuntu 22.04
-  - Debian 11
+    - Ubuntu 22.04
+    - Debian 11
 - Shellcheck disable comments.
 
 ### Changed
@@ -209,7 +215,7 @@ This release introduces A LOT of changes to the installer, including some breaki
 ### Changed
 
 - ⚠️ Installs dotnet v6 instead of v5.
-  - This will result in the loss of compatibility with Nadeko v3.
+    - This will result in the loss of compatibility with Nadeko v3.
 - ⚠️ Uses NadekoBot branch v4 by default instead of v3.
 - `nadeko.service` restarts on failure.
 - `NadekoRun.sh` does a better job at handling errors, etc.
@@ -256,11 +262,11 @@ This release introduces A LOT of changes to the installer, including some breaki
 ### Changed
 
 - ⚠️ Improved system exiting by using exit codes instead of just executing `_CLEAN_EXIT` (which is no longer exported and was renamed to `clean_up`):
-  - 1: Some error occurred that required the installer to be exited.
-  - 2: Produced when the end-user uses `CTRL + C` or `CTRL + Z`.
-  - 3: Unexpected internal error.
-  - 4: Some error occurred that required the installer to return the its main menu.
-  - 5: The installer was executed with root perms when `linuxAIO.sh` was configured to prevent such action.
+    - 1: Some error occurred that required the installer to be exited.
+    - 2: Produced when the end-user uses `CTRL + C` or `CTRL + Z`.
+    - 3: Unexpected internal error.
+    - 4: Some error occurred that required the installer to return the its main menu.
+    - 5: The installer was executed with root perms when `linuxAIO.sh` was configured to prevent such action.
 - ⚠️ `python-is-python3` is installed as a prerequisite instead of `python`, when running on Ubuntu 20.04 and Linux Mint 20.
 - NadekoBot's startup logs are displayed in realtime, instead of waiting 60 seconds.
 - NadekoBot's logs are displayed in color (only applicable when run on Linux).
@@ -295,12 +301,12 @@ The most notable change in this version is the refactoring of the code used to d
 - ⚠️ Installs `dotnet-sdk-5.0` instead of `dotnet-sdk-3.1`.
 - Option four is disabled if NadekoBot is not currently running.
 - Major refactoring:
-  - Code used to download NadekoBot has been moved to two files. One file specific to Linux and the other macOS.
-  - Moved duplicate code into new functions.
-  - etc.
+    - Code used to download NadekoBot has been moved to two files. One file specific to Linux and the other macOS.
+    - Moved duplicate code into new functions.
+    - etc.
 - No longer creates NadekoBot's service at the time of execution. The service is created after a run mode is chosen and during the bot's startup.
 - Curl related error catching has been removed.
-  - Will be re-implemented in the future.
+    - Will be re-implemented in the future.
 - Updated and added more comments.
 
 ### Fixed
@@ -342,8 +348,8 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 - The current value of `$installer_branch` is set whenever downloading the latest version of `linuxAIO`.
 - `release/latest` is an optional branch for the `$installer_branch`.
 - Officially supports:
-  - macOS Big Sur
-  - macOS Mojave
+    - macOS Big Sur
+    - macOS Mojave
 
 ### Changed
 
@@ -362,16 +368,16 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
 ### Added
 
 - Support for:
-  - Ubuntu 20.04
-  - Mint Linux: 19, 20
-  - Debian 10
+    - Ubuntu 20.04
+    - Mint Linux: 19, 20
+    - Debian 10
 - An option to watch NadekoBot's logs live (as they are created).
 - Indicates what mode NadekoBot is set up to or is currently running in.
 - Improved error catching.
 - End-user can configure the installer's behavior.
-  - `linuxAIO.sh` consists of a few configurable settings that the end-user can modify.
+    - `linuxAIO.sh` consists of a few configurable settings that the end-user can modify.
 - Installs both Homebrew and prerequisites on macOS.
-  - Previously required manual installation.
+    - Previously required manual installation.
 - Displays NadekoBot's startup logs, when starting or restarting the bot.
 
 ### Changed
@@ -383,10 +389,10 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
 ### Removed
 
 - Support for:
-  - Ubuntu: 14.04, 16.10, 17.04, 17.10
-  - Linux Mint: 17
-  - Debian: 8
-  - CentOS: 7
+    - Ubuntu: 14.04, 16.10, 17.04, 17.10
+    - Linux Mint: 17
+    - Debian: 8
+    - CentOS: 7
 - The option to run NadekoBot with auto-update.
 
 [unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v5.0.0...HEAD
