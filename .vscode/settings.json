@@ -9,6 +9,7 @@
         "creds",
         "DISTRO",
         "DISTROS",
+        "elif",
         "EPEL",
         "everytime",
         "getent",
@@ -32,6 +33,7 @@
         "rockylinux",
         "SIGTSTP",
         "SVER",
+        "sysv",
         "usermod"
     ]
 }
