@@ -182,9 +182,10 @@ if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
     echo "#!/bin/bash
 
 _code_name_=\"NadekoRun\"
+export PATH=\"${C_YT_DLP_PATH%/*}:$PATH\"  # Ensure 'yt-dlp' is in the PATH
 
 echo \"[INFO] Running NadekoBot in the background\"
-\"$C_YT_DLP_PATH\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 cd \"$E_ROOT_DIR/$E_BOT_DIR\"
@@ -200,9 +201,11 @@ else
     echo "#!/bin/bash
 
 _code_name_=\"NadekoRunAR\"
+export PATH=\"${C_YT_DLP_PATH%/*}:$PATH\"  # Ensure 'yt-dlp' is in the PATH
+
 
 echo \"[INFO] Running NadekoBot in the background with auto restart\"
-\"$C_YT_DLP_PATH\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 
@@ -228,7 +231,7 @@ while true; do
 
     echo \"[INFO] Waiting 5 seconds...\"
     sleep 5
-    \"$C_YT_DLP_PATH\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+    yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
     echo \"[INFO] Restarting NadekoBot...\"
 done
 
