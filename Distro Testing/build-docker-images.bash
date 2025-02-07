@@ -13,7 +13,6 @@ declare -A distros_base=(
     [ubuntu-24.04]="ubuntu:24.04"
     [ubuntu-22.04]="ubuntu:22.04"
     [debian-12]="debian:12"
-    [debian-11]="debian:11"
     [linuxmint-22]="linuxmintd/mint22.1-amd64"  # Community image.
     [linuxmint-21]="linuxmintd/mint21.3-amd64"  # community image.
     [fedora-41]="fedora:41"
@@ -28,12 +27,11 @@ declare -A distros_base=(
 
 # This associative array maps the distro key to its package manager.
 declare -A pkg_manager=(
-    [ubuntu-24.04]="apt"
-    [ubuntu-22.04]="apt"
-    [debian-12]="apt"
-    [debian-11]="apt"
-    [linuxmint-22]="apt"
-    [linuxmint-21]="apt"
+    [ubuntu-24.04]="apt-get"
+    [ubuntu-22.04]="apt-get"
+    [debian-12]="apt-get"
+    [linuxmint-22]="apt-get"
+    [linuxmint-21]="apt-get"
     [fedora-41]="dnf"
     [fedora-40]="dnf"
     [almalinux-9]="dnf"
@@ -64,4 +62,3 @@ done
 echo "----------------------------------------"
 echo "All images built successfully."
 echo "You can now run the images with 'docker run -it --rm -v \"\$(pwd)/shared:/shared\" myimage-<distro>'"
-
