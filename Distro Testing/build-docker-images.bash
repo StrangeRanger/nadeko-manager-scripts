@@ -5,7 +5,7 @@
 #
 # NOTES:
 #   - To run the images, use the following command:
-#       - docker run --privileged --rm -it -v "$(pwd)/shared:/root" <image_name_tag>
+#       - docker run --privileged --rm -it -v "$(pwd)/shared:/root/NadekoBot" <image>
 #   - Upon running/accessing the container, you'll be prompted for a username and
 #     password. Use the following credentials:
 #       - Username: root
