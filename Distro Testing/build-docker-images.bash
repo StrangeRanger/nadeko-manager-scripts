@@ -17,6 +17,14 @@
 #       - The use of the `--privileged` flag.
 #       - Etc.
 #
+# Comment Key:
+#   - ALT_EXEC: Images in 'distro_base' with this comment next to them, might need to be
+#     run differently, for one or more reasons. As a result, you will most likely need
+#     to bypass the login prompt (which typically won't show up) and 'exec' into the
+#     container. For these images, use the following commands:
+#       - docker run --privileged --rm -d -v "$(pwd)/shared:/root/NadekoBot" <image>
+#       - docker exec -it <container_id> /bin/bash
+#
 ########################################################################################
 
 set -e
@@ -24,20 +32,20 @@ set -e
 # This associative array maps a distro key to the base image.
 # (Use official images when available. For Linux Mint, we rely on community images.)
 declare -A distros_base=(
-    [ubuntu-24.04]="ubuntu:24.04"  # TODO: Test these images
-    [ubuntu-22.04]="ubuntu:22.04"  # TODO: Test these images
-    [debian-12]="debian:12"  # TODO: Test these images
-    [linuxmint-22]="linuxmintd/mint22.1-amd64"  # TODO: Test these images | Community image.
-    [linuxmint-21]="linuxmintd/mint21.3-amd64"  # TODO: Test these images | Community image.
-    [fedora-41]="fedora:41"  # TODO: Test these images
-    [fedora-40]="fedora:40"  # TODO: Test these images
-    [almalinux-9]="almalinux:9"  # TODO: Test these images
-    [almalinux-8]="almalinux:8"  # TODO: Test these images
-    [rocky-9]="rockylinux:9"  # TODO: Test these images
-    [rocky-8]="rockylinux:8"  # TODO: Test these images
-    [opensuse-leap-15.6]="opensuse/leap:15.6"  # Testing
-    [opensuse-tumbleweed]="opensuse/tumbleweed"  # Testing
-    [arch]="archlinux:latest"  # TODO: Test these images
+    [ubuntu-24.04]="ubuntu:24.04"
+    [ubuntu-22.04]="ubuntu:22.04"
+    [debian-12]="debian:12"
+    [linuxmint-22]="linuxmintd/mint22.1-amd64"  # Community image. | Uses Ubuntu 24.04.1?
+    [linuxmint-21]="linuxmintd/mint21.3-amd64"  # Community image.
+    [fedora-41]="fedora:41"  # ALT_EXEC
+    [fedora-40]="fedora:40"  # ALT_EXEC
+    [almalinux-9]="almalinux:9"  # ALT_EXEC
+    [almalinux-8]="almalinux:8"  # ALT_EXEC
+    [rocky-9]="rockylinux:9"
+    [rocky-8]="rockylinux:8"  # ALT_EXEC
+    [opensuse-leap-15.6]="opensuse/leap:15.6"
+    [opensuse-tumbleweed]="opensuse/tumbleweed"
+    [arch]="archlinux:latest"
 )
 
 # This associative array maps the distro key to its package manager.

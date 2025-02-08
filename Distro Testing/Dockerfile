@@ -6,8 +6,8 @@
 #   - PKG_MANAGER: one of "apt", "dnf", "zypper", or "pacman"
 ##############################
 
-# Default to Ubuntu 24.04 if no base image is specified.
-ARG BASE_IMAGE=ubuntu:24.04
+## There is no default image on purpose. The user MUST specify one.
+ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
 # Allow build-time selection of package manager commands.
@@ -15,12 +15,10 @@ ARG PKG_MANAGER
 
 # Tell systemd (and various packages) that we are in a container.
 ENV container=docker
-
-# For apt-based images, disable interactive prompts.
 ENV DEBIAN_FRONTEND=noninteractive
 
 # TODO: Continue editing comments in here starting from this line.
-## Install required packages that would otherwise be missing in a minimal image.
+## Install systemd, curl, sudo, vim, and other dependencies.
 RUN if [ "$PKG_MANAGER" = "apt" ]; then \
         apt-get update && \
         apt-get upgrade -y && \
@@ -28,7 +26,7 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
         rm -rf /var/lib/apt/lists/*; \
     elif [ "$PKG_MANAGER" = "dnf" ]; then \
         dnf update -y && \
-        dnf install  -y --allowerasing systemd curl sudo vim ncurses libicu; \
+        dnf install  -y --allowerasing systemd curl sudo vim python3 ncurses libicu; \
     elif [ "$PKG_MANAGER" = "zypper" ]; then \
         zypper refresh && \
         zypper --non-interactive update && \
@@ -50,11 +48,6 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
         echo "Unsupported package manager: $PKG_MANAGER" && exit 1; \
     fi
 
-# Set the root password.
 RUN echo 'root:password' | chpasswd
-
-# Create NadekoBot directory in root's home directory.
 RUN mkdir -p /root/NadekoBot
-
-# Run systemd as the init process.
-CMD ["/sbin/init"]
+CMD ["/sbin/init"]  # Run systemd as the init process.
