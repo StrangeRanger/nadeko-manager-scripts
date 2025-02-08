@@ -358,7 +358,6 @@ pre_install() {
 # TODO: Add function documentation.
 post_install() {
     local distro="$1"
-    local update_cmd="$2"
 
     echo "${E_INFO}Performing post install checks for '$distro'..."
 
@@ -407,7 +406,7 @@ for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
             "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}" \
             "${C_MUSIC_PKG_MAPPING[$C_DISTRO]}" \
             "${C_MANAGER_PKG_MAPPING[$C_DISTRO]}"
-        post_install "$C_DISTRO" "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}"
+        post_install "$C_DISTRO"
         echo -en "\n${E_SUCCESS}Finished installing prerequisites"
         clean_exit 0 "true"
     fi
