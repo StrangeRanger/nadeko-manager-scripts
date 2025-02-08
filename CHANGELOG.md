@@ -18,6 +18,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - OpenSuse Leap 15.6
     - OpenSuse Tumbleweed
     - Arch Linux
+- The `NadekoRun` script outputs additional information:
+    - The current path of `python3` and `yt-dlp`.
+    - The current version of `python3`.
 
 ### Changed
 
