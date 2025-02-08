@@ -64,8 +64,8 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
 #   - opensuse-leap: Installing 'yt-dlp' auto installs 'ffmpeg' (ffmpeg-4) and 'python3'
 #     (python311-yt-dlp) packages. (Specified packages are as of 2025-02-07)
 #       - We still install 'python311' explicitly to ensure we know what version to
-#         expect. This allows us to easily symlink 'python3' to 'python311' if needed,
-#         without worrying about referencing a non-existent package.
+#         expect. This allows us to easily symlink 'python3' to 'python311' without
+#         worrying of accidentally referencing a non-existent package.
 #   - arch: Installing 'yt-dlp' auto installs the 'python3' package. Additionally, we
 #     explicitly install 'pipewire-jack' for audio support, as 'pacman' would, by
 #     default, install 'jack2' instead. For more information, refer to the following:
