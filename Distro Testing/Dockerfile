@@ -15,6 +15,7 @@ ARG PKG_MANAGER
 
 # Tell systemd (and various packages) that we are in a container.
 ENV container=docker
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 ## Install systemd, curl, sudo, vim, and other dependencies.
@@ -48,5 +49,8 @@ RUN if [ "$PKG_MANAGER" = "apt" ]; then \
     fi
 
 RUN echo 'root:password' | chpasswd
+
 RUN mkdir -p /root/NadekoBot
-CMD ["/sbin/init"]  # Run systemd as the init process.
+
+# Run systemd as the init process.
+CMD ["/sbin/init"]
