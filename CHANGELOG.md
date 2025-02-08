@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - Rocky Linux 8
     - OpenSuse Leap 15.6
     - OpenSuse Tumbleweed
+    - Arch Linux
 
 ### Changed
 
@@ -35,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The distribution check is performed when installing prerequisites.
 - Reduce dependency on external tools:
     - `awk`
+- No longer checks if your distro is supported upon executing `m-bridge.bash`. This will be handled when installing the prerequisites, such that the user can still run the bot if they install the prerequisites manually. The one thing still handles upon executing `m-bridge.bash`, is verifying the architecture, as NadekoBot only supports 64-bit architectures.
 
 ### Removed
 
