@@ -167,7 +167,7 @@ This release introduces A LOT of changes to the installer, including some breaki
 
 ### Fixed
 
-- Used `exti` instead of `exit`
+- Fixed misspelling of `exit`
 - Dotnet SDK not installing/being removed due to a [change made by Microsoft](https://github.com/dotnet/core/issues/7699).
 
 ## [v3.2.4] - 2022-07-19
