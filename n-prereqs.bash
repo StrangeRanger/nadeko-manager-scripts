@@ -325,12 +325,14 @@ pre_install() {
                     || echo "${E_WARN}CRB repository could not be enabled"
             fi
 
-            echo "${E_INFO}Installing distribution-gpg-keys..."
-            sudo dnf install -y distribution-gpg-keys
-            echo "${E_INFO}Importing RPM Fusion key..."
-            sudo rpmkeys --import "$rmpfusion_key_path"
-            echo "${E_INFO}Installing RPM Fusion for EL $el_ver..."
-            sudo dnf --setopt=localpkg_gpgcheck=1 install -y "$rmpfusion_url"
+            {
+                echo "${E_INFO}Installing distribution-gpg-keys..."
+                sudo dnf install -y distribution-gpg-keys || exit "$?"
+                echo "${E_INFO}Importing RPM Fusion key..."
+                sudo rpmkeys --import "$rmpfusion_key_path" || exit "$?"
+                echo "${E_INFO}Installing RPM Fusion for EL $el_ver..."
+                sudo dnf --setopt=localpkg_gpgcheck=1 install -y "$rmpfusion_url" || exit "$?"
+            } || E_STDERR "Failed to install RPM Fusion for EL $el_ver" "$?"
             ;;
         fedora)
             local fedora_ver; fedora_ver=$(rpm -E %fedora)
@@ -385,9 +387,10 @@ detect_sys_info
 
 for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
     if [[ $version == "$C_VER" || $version == "$C_SVER" || $version == "any" ]]; then
-        pre_install "$C_DISTRO" "$version"
+        pre_install "$C_DISTRO"
         install_prereqs "${C_INSTALL_CMD_MAPPING[$C_DISTRO]}" \
-            "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}" "${C_MUSIC_PKG_MAPPING[$C_DISTRO]}" \
+            "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}" \
+            "${C_MUSIC_PKG_MAPPING[$C_DISTRO]}" \
             "${C_MANAGER_PKG_MAPPING[$C_DISTRO]}"
         post_install "$C_DISTRO" "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}"
         echo -en "\n${E_SUCCESS}Finished installing prerequisites"
