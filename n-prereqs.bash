@@ -212,11 +212,12 @@ install_yt_dlp() {
 install_ccze_arch() {
     echo "${E_INFO}Installing 'ccze' for Arch Linux from the AUR..."
 
-    # Check if 'yay' is installed.
     if command -v yay &>/dev/null; then
-        yay -S --noconfirm ccze || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
+        yay -S --noconfirm --mflags "--rmdeps" ccze \
+            || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
     elif command -v paru &>/dev/null; then
-        paru -S --noconfirm ccze || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
+        paru -S --noconfirm --mflags "--rmdeps" ccze \
+            || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
     else
         echo "${E_ERROR}AUR helper not found. Please install 'yay' or 'paru' to" \
             "continue." >&2
