@@ -337,6 +337,8 @@ pre_install() {
                 echo "${E_INFO}Installing RPM Fusion for EL $el_ver..."
                 sudo dnf --setopt=localpkg_gpgcheck=1 install -y "$rmpfusion_url" || exit "$?"
             } || E_STDERR "Failed to install RPM Fusion for EL $el_ver" "$?"
+
+            [[ $el_ver == "8" ]] && create_local_bin
             ;;
         fedora)
             local fedora_ver; fedora_ver=$(rpm -E %fedora)
