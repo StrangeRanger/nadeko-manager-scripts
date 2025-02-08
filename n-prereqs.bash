@@ -299,26 +299,38 @@ install_prereqs() {
 # PARAMETERS:
 #   - $1: distro (Required)
 #       - The distribution name.
-#   - $2: update_cmd (Required)
-#       - The command used to update package lists.
 pre_install() {
     local distro="$1"
-    local update_cmd="$2"
 
     echo "${E_INFO}Performing pre install checks for '$distro'..."
 
     case "$distro" in
         rocky|almalinux)
             local el_ver; el_ver=$(rpm -E %rhel)
+            local rmpfusion_key_path="/usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-free-el-$el_ver"
+            local rmpfusion_url="https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$el_ver.noarch.rpm"
+
             echo "${E_INFO}Updating package lists"
-            $update_cmd
-            echo "${E_INFO}Installing EPEL and RPM Fusion for EL${el_ver} ($distro)..."
-            dnf install -y epel-release
-            dnf install -y "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${el_ver}.noarch.rpm"
-            echo "${E_INFO}Enabling CRB repository..."
-            # TODO: Verify if the CRB is enabled by default on non-docker installations.
-            dnf config-manager --set-enabled crb \
-                || echo "${E_WARN}CRB repository could not be enabled, continuing..."
+
+            echo "${E_INFO}Installing EPEL repository..."
+            sudo dnf install -y epel-release
+
+            if [[ $distro == "rocky" && $el_ver == "8" ]]; then
+                echo "${E_INFO}Enabling PowerTools repository..."
+                dnf config-manager --set-enabled powertools \
+                    || echo "${E_WARN}PowerTools repository could not be enabled"
+            elif [[ $distro == "rocky" && $el_ver == "9" ]]; then
+                echo "${E_INFO}Enabling CRB repository..."
+                sudo dnf config-manager --set-enabled crb \
+                    || echo "${E_WARN}CRB repository could not be enabled"
+            fi
+
+            echo "${E_INFO}Installing distribution-gpg-keys..."
+            sudo dnf install -y distribution-gpg-keys
+            echo "${E_INFO}Importing RPM Fusion key..."
+            sudo rpmkeys --import "$rmpfusion_key_path"
+            echo "${E_INFO}Installing RPM Fusion for EL $el_ver..."
+            sudo dnf --setopt=localpkg_gpgcheck=1 install -y "$rmpfusion_url"
             ;;
         fedora)
             local fedora_ver; fedora_ver=$(rpm -E %fedora)
@@ -373,7 +385,7 @@ detect_sys_info
 
 for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
     if [[ $version == "$C_VER" || $version == "$C_SVER" || $version == "any" ]]; then
-        pre_install "$C_DISTRO" "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}"
+        pre_install "$C_DISTRO" "$version"
         install_prereqs "${C_INSTALL_CMD_MAPPING[$C_DISTRO]}" \
             "${C_UPDATE_CMD_MAPPING[$C_DISTRO]}" "${C_MUSIC_PKG_MAPPING[$C_DISTRO]}" \
             "${C_MANAGER_PKG_MAPPING[$C_DISTRO]}"
