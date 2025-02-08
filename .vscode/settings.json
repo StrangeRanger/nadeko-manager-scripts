@@ -55,6 +55,7 @@
         "SVER",
         "sysv",
         "userdel",
-        "usermod"
+        "usermod",
+        "whereis"
     ]
 }
