@@ -176,6 +176,10 @@ if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
 _code_name_=\"NadekoRun\"
 export PATH=\"$E_LOCAL_BIN:$PATH\"  # Ensure anything in 'E_LOCAL_BIN' is accessible.
 
+echo \"[INFO] python3 path: \$(which python3)\"
+echo \"[INFO] python3 version: \$(python3 --version)\"
+echo \"[INFO] yt-dlp path: \$(which yt-dlp)\"
+
 echo \"[INFO] Running NadekoBot in the background\"
 yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
@@ -195,6 +199,9 @@ else
 _code_name_=\"NadekoRunAR\"
 export PATH=\"$E_LOCAL_BIN:$PATH\"  # Ensure anything in 'E_LOCAL_BIN' is accessible.
 
+echo \"[INFO] python3 path: \$(which python3)\"
+echo \"[INFO] python3 version: \$(python3 --version)\"
+echo \"[INFO] yt-dlp path: \$(which yt-dlp)\"
 
 echo \"[INFO] Running NadekoBot in the background with auto restart\"
 yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
