@@ -59,6 +59,7 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
 
 # NOTE:
 #   - As long as the installed version of python is 3.9+, the script should work.
+#   - rocky: 'python3' will install 'python 3.6', so we explicitly install 'python311'.
 #   - opensuse-tumbleweed: Installing 'yt-dlp' auto installs the 'ffmpeg' (ffmpeg-7) and
 #     'python3' (python311-yt-dlp) packages. (Specified packages are as of 2025-02-07)
 #   - opensuse-leap: Installing 'yt-dlp' auto installs 'ffmpeg' (ffmpeg-4) and 'python3'
@@ -76,7 +77,7 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["linuxmint"]="python3 ffmpeg"
     ["fedora"]="python3 ffmpeg"
     ["almalinux"]="python3 ffmpeg"
-    ["rocky"]="python3 ffmpeg"
+    ["rocky"]="python311 ffmpeg"
     ["opensuse-leap"]="python311 yt-dlp"
     ["opensuse-tumbleweed"]="yt-dlp"
     ["arch"]="ffmpeg yt-dlp pipewire-jack"
