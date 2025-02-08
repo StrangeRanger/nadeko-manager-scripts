@@ -365,6 +365,9 @@ post_install() {
         almalinux|rocky)
             local el_ver; el_ver=$(rpm -E %rhel)
 
+            # Version 9 of Almalinux and Rocky Linux, by default, should have a version
+            # of 'python3' that is greater than or equal to '3.9'. For this reason, we
+            # don't need to symlink 'python3.11' to the local bin.
             if [[ ! -L $E_LOCAL_BIN/python3 && $el_ver == "8" ]]; then
                 echo "${E_INFO}Creating symlink for 'python3' to 'python3.11' in" \
                     "'$E_LOCAL_BIN'..."
