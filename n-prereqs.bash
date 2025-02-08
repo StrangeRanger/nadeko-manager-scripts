@@ -363,6 +363,15 @@ post_install() {
     echo "${E_INFO}Performing post install checks for '$distro'..."
 
     case "$distro" in
+        almalinux|rocky)
+            local el_ver; el_ver=$(rpm -E %rhel)
+
+            if [[ ! -L $E_LOCAL_BIN/python3 && $el_ver == "8" ]]; then
+                echo "${E_INFO}Creating symlink for 'python3' to 'python3.11' in" \
+                    "'$E_LOCAL_BIN'..."
+                ln -s /usr/bin/python3.11 "$E_LOCAL_BIN/python3"
+            fi
+            ;;
         opensuse-leap)
             if [[ ! -L $E_LOCAL_BIN/python3 ]]; then
                 echo "${E_INFO}Creating symlink for 'python3' to 'python3.11' in" \
