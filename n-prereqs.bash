@@ -61,11 +61,15 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
 #   - As long as the installed version of python is 3.9+, the script should work.
 #   - opensuse-tumbleweed: Installing 'yt-dlp' auto installs the 'ffmpeg' (ffmpeg-7) and
 #     'python3' (python311-yt-dlp) packages. (Specified packages are as of 2025-02-07)
-#   - opensuse-leap: Installing yt-dlp auto installs 'ffmpeg' (ffmpeg-4) and 'python3'
+#   - opensuse-leap: Installing 'yt-dlp' auto installs 'ffmpeg' (ffmpeg-4) and 'python3'
 #     (python311-yt-dlp) packages. (Specified packages are as of 2025-02-07)
 #       - We still install 'python311' explicitly to ensure we know what version to
 #         expect. This allows us to easily symlink 'python3' to 'python311' if needed,
 #         without worrying about referencing a non-existent package.
+#   - arch: Installing 'yt-dlp' auto installs the 'python3' package. Additionally, we
+#     explicitly install 'pipewire-jack' for audio support, as 'pacman' would, by
+#     default, install 'jack2' instead. For more information, refer to the following:
+#     https://wiki.archlinux.org/title/JACK_Audio_Connection_Kit
 declare -A -r C_MUSIC_PKG_MAPPING=(
     ["ubuntu"]="python3 ffmpeg"
     ["debian"]="python3 ffmpeg"
@@ -75,7 +79,7 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["rocky"]="python3 ffmpeg"
     ["opensuse-leap"]="python311 yt-dlp"
     ["opensuse-tumbleweed"]="yt-dlp"
-    ["arch"]="python3 ffmpeg yt-dlp"
+    ["arch"]="ffmpeg yt-dlp pipewire-jack"
 )
 
 
