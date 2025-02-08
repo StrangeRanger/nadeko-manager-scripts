@@ -311,7 +311,7 @@ pre_install() {
             local rmpfusion_url="https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$el_ver.noarch.rpm"
 
             echo "${E_INFO}Updating package lists"
-
+            dnf update -y
             echo "${E_INFO}Installing EPEL repository..."
             sudo dnf install -y epel-release
 
