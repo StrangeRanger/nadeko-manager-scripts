@@ -17,7 +17,6 @@ ARG PKG_MANAGER
 ENV container=docker
 ENV DEBIAN_FRONTEND=noninteractive
 
-# TODO: Continue editing comments in here starting from this line.
 ## Install systemd, curl, sudo, vim, and other dependencies.
 RUN if [ "$PKG_MANAGER" = "apt" ]; then \
         apt-get update && \
