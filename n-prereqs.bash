@@ -319,14 +319,14 @@ pre_install() {
             echo "${E_INFO}Installing EPEL repository..."
             sudo dnf install -y epel-release
 
-            if [[ $distro == "rocky" && $el_ver == "8" ]]; then
+            if [[ $el_ver == "8" ]]; then
                 echo "${E_INFO}Enabling PowerTools repository..."
                 dnf config-manager --set-enabled powertools \
-                    || echo "${E_WARN}PowerTools repository could not be enabled"
-            elif [[ $distro == "rocky" && $el_ver == "9" ]]; then
+                    || echo "${E_WARN}PowerTools repository could not be enabled" >&2
+            elif [[ $el_ver == "9" ]]; then
                 echo "${E_INFO}Enabling CRB repository..."
                 sudo dnf config-manager --set-enabled crb \
-                    || echo "${E_WARN}CRB repository could not be enabled"
+                    || echo "${E_WARN}CRB repository could not be enabled" >&2
             fi
 
             {
