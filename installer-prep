@@ -1,14 +1,13 @@
 #!/bin/bash
 #
-# This script handles the transition between revision 47 and 48 of 'linuxAIO'.
+# This script handles the transition between revision 47 and 48 of 'linuxAIO', which has
+# been renamed to 'm-bridge.bash'.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
 
 
-# Using '.5' will ensure that when comparing revision numbers in 'n-update-bridge.bash',
-# will never be equal to the current revision number. It also helps indicate that this
-# is a transitional revision.
+# Using '.5' helps indicate that this is a transitional revision.
 export E_CURRENT_LINUXAIO_REVISION=47.5
 
 ## Modify output text color.
@@ -67,9 +66,6 @@ clean_exit() {
     trap - EXIT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## Although SIGHUP and SIGTERM output is specified in 'n-main.bash', we
-    ## handle these signals here as well because they do not propagate to the parent
-    ## script.
     case "$exit_code" in
         0|1) echo "" ;;
         129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
@@ -155,5 +151,5 @@ trap 'clean_exit "$?" "true"' EXIT
 echo "${E_WARN}You are using an older version of 'linuxAIO'"
 
 E_DOWNLOAD_SCRIPT "n-update-bridge.bash" "true"
-./n-update-bridge.bash || clean_exit 1
+./n-update-bridge.bash || clean_exit "$?"
 clean_exit 0
