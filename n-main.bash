@@ -290,10 +290,11 @@ while true; do
     ###
 
     ## Disable option 1 if any of the required tools are not installed.
-    if ( ! command -v python3 \
-        || ! command -v ffmpeg \
-        || ! "$ccze_installed" \
-        || ! "$yt_dlp_installed") &>/dev/null
+    if { ! command -v python3 &>/dev/null \
+        || ! command -v ffmpeg &>/dev/null \
+        || [[ $ccze_installed == false ]] \
+        || [[ $yt_dlp_installed == false ]]; } \
+        && [[ $E_SKIP_PREREQ_CHECK == false ]]
     then
         opt_one_dis=true
         opt_one_text="${E_GREY}${opt_one_text}${dis_option}${E_NC}"

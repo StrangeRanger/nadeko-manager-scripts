@@ -50,6 +50,18 @@ manager_repo="StrangeRanger/NadekoBot-BashScript"
 # Default: "main"
 manager_branch="main"
 
+# Skip checking if all the prerequisites are installed. By setting this variable to
+# "true", you acknowledge that the Bot and Manager are not guaranteed to work as
+# expected.
+#
+# Options:
+#   true  = Skip checking for prerequisites
+#   false = Check for prerequisites
+#
+# Default: "false"
+export E_SKIP_PREREQ_CHECK="false"
+
+
 # Files to back up when executing option 7.
 #
 # 1. Paths must start from Nadeko's parent directory (e.g., nadekobot/...).
@@ -84,7 +96,7 @@ nadekobot/data/xp_template.json"
 ###
 
 # 'm-bridge.bash' revision number.
-export E_BRIDGE_REVISION=48
+export E_BRIDGE_REVISION=49
 # URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$manager_repo/$manager_branch"
 
