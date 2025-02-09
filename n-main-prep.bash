@@ -9,7 +9,7 @@
 
 
 # Refer to the 'README' note at the beginning of 'm-bridge.bash' for more information.
-readonly C_LATEST_BRIDGE_REVISION=48
+readonly C_LATEST_BRIDGE_REVISION=49
 readonly C_MAIN_MANAGER="n-main.bash"
 
 ## Modify output text color.
