@@ -46,7 +46,7 @@ transfer_bridge_data() {
     manager_branch_found="$?"
     local skip_prereq_check
     local skip_prereq_check_found
-    skip_prereq_check=$(grep '^E_SKIP_PREREQ_CHECK=.*' m-bridge.bash.old)
+    skip_prereq_check=$(grep '^export E_SKIP_PREREQ_CHECK=.*' m-bridge.bash.old)
     skip_prereq_check_found="$?"
 
     echo "${E_INFO}Applying existing configurations to the new 'm-bridge.bash'..."
@@ -55,7 +55,7 @@ transfer_bridge_data() {
         && sed -i "s/^manager_branch=.*/$manager_branch/" m-bridge.bash
 
     [[ $skip_prereq_check_found == 0 ]] \
-        && sed -i "s/^E_SKIP_PREREQ_CHECK=.*/$skip_prereq_check/" m-bridge.bash
+        && sed -i "s/^export E_SKIP_PREREQ_CHECK=.*/$skip_prereq_check/" m-bridge.bash
 }
 
 ####
