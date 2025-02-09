@@ -18,6 +18,10 @@ declare -A -r C_SUPPORTED_DISTROS=(
     ["arch"]="any"
 )
 
+# NOTE:
+#   - The update command for arch is empty because it's not recommended to run
+#     'pacman -Sy' without '-u', but we don't want to upgrade the system or existing
+#     packages.
 declare -A -r C_UPDATE_CMD_MAPPING=(
     ["ubuntu"]="sudo apt-get update"
     ["debian"]="sudo apt-get update"
@@ -27,7 +31,7 @@ declare -A -r C_UPDATE_CMD_MAPPING=(
     ["rocky"]="sudo dnf makecache"
     ["opensuse-leap"]="sudo zypper refresh"
     ["opensuse-tumbleweed"]="sudo zypper refresh"
-    ["arch"]="sudo pacman -Sy"
+    ["arch"]=""
 )
 
 declare -A -r C_INSTALL_CMD_MAPPING=(
@@ -283,8 +287,12 @@ install_prereqs() {
     # shellcheck disable=SC2086
     #   We want to expand the array into individual arguments (packages).
     {
-        echo "${E_INFO}Updating package lists..."
-        $update_cmd || E_STDERR "Failed to update package lists" "$?"
+        if [[ -z $update_cmd ]]; then
+            echo "${E_WARN}No update command provided, skipping package list update..."
+        else
+            echo "${E_INFO}Updating package lists..."
+            $update_cmd || E_STDERR "Failed to update package lists" "$?"
+        fi
 
         echo "${E_INFO}Installing music prerequisites..."
         $install_cmd $music_pkg_list \
