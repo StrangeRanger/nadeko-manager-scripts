@@ -21,12 +21,7 @@ else
     readonly C_ACTION_UPPER="Enabling"  # B.1.
 fi
 
-## NOTE:
-##  Starting with systemd version 246, 'StandardOutput' and 'StandardError' no longer
-##  support 'syslog' as valid values.
-read -ra systemd_version <<< "$(systemctl --version)"
-if (( ${systemd_version[1]} >= 246 )); then
-    readonly C_BOT_SERVICE_CONTENT="[Unit]
+readonly C_BOT_SERVICE_CONTENT="[Unit]
 Description=NadekoBot service
 After=network.target
 StartLimitIntervalSec=60
@@ -45,27 +40,6 @@ SyslogIdentifier=NadekoBot
 
 [Install]
 WantedBy=multi-user.target"
-else
-    readonly C_BOT_SERVICE_CONTENT="[Unit]
-Description=NadekoBot service
-After=network.target
-StartLimitIntervalSec=60
-StartLimitBurst=2
-
-[Service]
-Type=simple
-User=$USER
-WorkingDirectory=$E_ROOT_DIR
-ExecStart=/bin/bash NadekoRun
-Restart=on-failure
-RestartSec=5
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=NadekoBot
-
-[Install]
-WantedBy=multi-user.target"
-fi
 
 # Used to skip the 'read' command if an immediate script exit is required.
 exit_now=false
