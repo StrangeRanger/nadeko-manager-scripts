@@ -210,4 +210,10 @@ if [[ $bits == "32" ]]; then
     exit 1
 fi
 
+if [[ $(ps -p 1 -o comm=) != "systemd" ]]; then
+    echo "${E_ERROR}Systemd is not installed or running"
+    echo "${E_NOTE}The Manager requires systemd to function properly"
+    exit 1
+fi
+
 execute_main_script
