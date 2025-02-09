@@ -70,9 +70,11 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
 #       - We still install 'python311' explicitly to ensure we know what version to
 #         expect. This allows us to easily symlink 'python3' to 'python311' without
 #         worrying of accidentally referencing a non-existent package.
-#   - arch: Installing 'yt-dlp' auto installs the 'python3' package. Additionally, we
-#     explicitly install 'pipewire-jack' for audio support, as 'pacman' would, by
-#     default, install 'jack2' instead. For more information, refer to the following:
+#   - arch: Installing 'yt-dlp' auto installs the 'python3' package. As a note, when
+#     installing 'ffmpeg', it will automatically attempt to install 'jack2'. If you
+#     rather install 'pipewire-jack', which has better integration with 'pipewire', you
+#     you may want to replace it with 'pipewire-jack' in the package list. For more info
+#     on the difference between the two, please visit the following link:
 #     https://wiki.archlinux.org/title/JACK_Audio_Connection_Kit
 declare -A -r C_MUSIC_PKG_MAPPING=(
     ["ubuntu"]="python3 ffmpeg"
@@ -83,7 +85,7 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["rocky"]="python311 ffmpeg"
     ["opensuse-leap"]="python311 yt-dlp"
     ["opensuse-tumbleweed"]="yt-dlp"
-    ["arch"]="ffmpeg yt-dlp pipewire-jack"
+    ["arch"]="ffmpeg yt-dlp"
 )
 
 
