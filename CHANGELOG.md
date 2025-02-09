@@ -33,10 +33,11 @@ Like with the `v5.0.0` release, all breaking changes are handled automatically, 
 - The `Distro Testing` directory and all of it's contents have been created to make the testing of the Manager easier.
     - It contains a script (`build-docker-images.bash`) which will utilize the `Dockerfile` to build images for each supported distribution. From there, you can access the container to test the Manager.
     - `setup.bash` is used to prepare the shared directory for the container, to allow for the testing of the Manager.
+- ⚠️ `systemd` is now a hard requirement for the Manager.
 
 ### Changed
 
-- The Installer is now referred to as the Manager, as the scripts do more than just install the bot and is prerequisites. This will more accurately reflect the purpose of the scripts as a whole.
+- The Installer is now referred to as the Manager, as the scripts do more than just install the bot and its prerequisites. This will more accurately reflect the purpose of the scripts as a whole.
 - ⚠️ All of the scripts have been renamed:
     - `linuxAIO` => `m-bridge.bash`
     - `installer-prep` => `m-bridge-prep.bash`
@@ -48,7 +49,7 @@ Like with the `v5.0.0` release, all breaking changes are handled automatically, 
     - `update-linuxAIO` => `n-update-bridge.bash`
 - ⚠️ Several variables in `m-bridge.bash` (previously `linuxAIO`) have been modified.
 - Simplified prerequisites for NadekoBot.
-- Where the script used to check for compatibility using the bit-type, architecture, distribution, and distro version, now only checks for the bit-type. The distribution and version check is performed when installing prerequisites.
+- Where the script used to check for compatibility using the bit-type, architecture, distribution, and distro version, now only checks for the bit-type and if the system utilizes `systemd`. The distribution and version check is performed when installing prerequisites.
 - Reduce dependency on external tools, such as `awk`.
 - The previous version of `installer-prep` has been repurposed to allow a smooth transition from revision `47` to `48+`/Manager `v5.0.x` to `v6.0.0`.
 
