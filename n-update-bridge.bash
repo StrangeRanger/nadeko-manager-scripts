@@ -51,11 +51,17 @@ transfer_bridge_data() {
 
     echo "${E_INFO}Applying existing configurations to the new 'm-bridge.bash'..."
 
-    [[ $manager_branch_found == 0 ]] \
-        && sed -i "s/^manager_branch=.*/$manager_branch/" m-bridge.bash
+    if [[ $manager_branch_found == 0 ]]; then
+        sed -i "s/^manager_branch=.*/$manager_branch/" m-bridge.bash
+    else
+        echo "${E_WARN}Failed to find 'manager_branch' in 'm-bridge.bash.old'"
+    fi
 
-    [[ $skip_prereq_check_found == 0 ]] \
-        && sed -i "s/^export E_SKIP_PREREQ_CHECK=.*/$skip_prereq_check/" m-bridge.bash
+    if [[ $skip_prereq_check_found == 0 ]]; then
+        sed -i "s/^export E_SKIP_PREREQ_CHECK=.*/$skip_prereq_check/" m-bridge.bash
+    else
+        echo "${E_WARN}Failed to find 'E_SKIP_PREREQ_CHECK' in 'm-bridge.bash.old'"
+    fi
 }
 
 ####
