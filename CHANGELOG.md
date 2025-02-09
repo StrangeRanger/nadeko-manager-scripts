@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+<!--## [v6.0.0] - 2025-02-xx-->
+
+I know, "A new major release? It hasn't even been 2 weeks!" Well, I've made a lot of changes I've wanted to add for a while, but hadn't figured out the best way to do before the `v5.0.0` release. This release is a big one, with a lot of changes, including some breaking changes. Below is a list of the most significant changes to the installer (now called the Manager).
+
+Like with the `v5.0.0` release, all breaking changes are handled automatically, so you shouldn't have to lift a finger.
+
 ### Added
 
 - Several newly supported Linux distributions:
@@ -21,11 +27,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `NadekoRun` script outputs additional information:
     - The current path of `python3` and `yt-dlp`.
     - The current version of `python3`.
+- New configurable variable in `m-bridge.bash`:
+    - `E_SKIP_PREREQ_CHECK`: Allows the user to skip the prerequisite check when executing the script.
+        - This variable is carried over when a new version of `m-bridge.bash` is downloaded.
+- The `Distro Testing` directory and all of it's contents have been created to make the testing of the Manager easier.
+    - It contains a script (`build-docker-images.bash`) which will utilize the `Dockerfile` to build images for each supported distribution. From there, you can access the container to test the Manager.
+    - `setup.bash` is used to prepare the shared directory for the container, to allow for the testing of the Manager.
 
 ### Changed
 
-- Moving away from the "installer" terminology and moving towards "manager". This is because the script does more than just install, but also manages the bot. This will more accurately reflect the purpose of the scripts as a whole.
-- Mass renaming of scripts
+- The Installer is now referred to as the Manager, as the scripts do more than just install the bot and is prerequisites. This will more accurately reflect the purpose of the scripts as a whole.
+- ⚠️ All of the scripts have been renamed:
     - `linuxAIO` => `m-bridge.bash`
     - `installer-prep` => `m-bridge-prep.bash`
     - `nadeko-latest-installer` => `m-update.bash`
@@ -34,17 +46,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `nadeko-runner` => `n-runner.bash`
     - `prereqs-installer` => `n-prereqs.bash`
     - `update-linuxAIO` => `n-update-bridge.bash`
-- Modified/simplified required prerequisites for NadekoBot.
-- Only the bit-type it checked for compatibility upon first execution.
-- The distribution check is performed when installing prerequisites.
-- Reduce dependency on external tools:
-    - `awk`
-- No longer checks if your distro is supported upon executing `m-bridge.bash`. This will be handled when installing the prerequisites, such that the user can still run the bot if they install the prerequisites manually. The one thing still handles upon executing `m-bridge.bash`, is verifying the architecture, as NadekoBot only supports 64-bit architectures.
+- ⚠️ Several variables in `m-bridge.bash` (previously `linuxAIO`) have been modified.
+- Simplified prerequisites for NadekoBot.
+- Where the script used to check for compatibility using the bit-type, architecture, distribution, and distro version, now only checks for the bit-type. The distribution and version check is performed when installing prerequisites.
+- Reduce dependency on external tools, such as `awk`.
+- The previous version of `installer-prep` has been repurposed to allow a smooth transition from revision `47` to `48+`/Manager `v5.0.x` to `v6.0.0`.
 
 ### Removed
 
-- Removed supported Linux distributions:
-    - Debian 11
+- ⚠️ Removed supported for:
+    - ⚠️ Debian 11: Due to end of life.
+    - ⚠️ Ubuntu 20.04: Python 3.9+ is required, which is not available on Ubuntu 20.04.
+    - ⚠️ Linux Mint 20: Python 3.9+ is required, which is not available on Linux Mint 20.
 
 ## [v5.0.0] - 2025-02-01
 
