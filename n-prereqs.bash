@@ -229,9 +229,15 @@ install_ccze_arch() {
         paru -S --noconfirm --mflags "--rmdeps" ccze \
             || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
     else
-        echo "${E_ERROR}AUR helper not found. Please install 'yay' or 'paru' to" \
-            "continue." >&2
-        exit 1  # TODO: Determine if this is the correct exit code.
+        echo "${E_WARN}AUR helper not found, continuing with manual installation..."
+        echo "${E_INFO}Installing necessary build tools..."
+        sudo pacman -S --needed base-devel git
+        echo "${E_INFO}Cloning the AUR package..."
+        git clone https://aur.archlinux.org/ccze.git /tmp/ccze
+        cd /tmp/ccze || E_STDERR "Failed to change to '/tmp/ccze'" "1"
+        echo "${E_INFO}Building and installing 'ccze'..."
+        makepkg -si
+        cd - || E_STDERR "Failed to change back to the previous directory" "1"
     fi
 }
 
@@ -352,7 +358,6 @@ pre_install() {
         opensuse-leap)
             create_local_bin
             ;;
-
     esac
 }
 
