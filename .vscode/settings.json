@@ -45,6 +45,7 @@
         "pipewire",
         "pname",
         "powertools",
+        "PREREQ",
         "prereqs",
         "rmdeps",
         "rmpfusion",
