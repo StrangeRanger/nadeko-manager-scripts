@@ -159,7 +159,7 @@ fi
 chmod -x m-bridge.bash.old
 
 echo "${E_INFO}Performing revision checks..."
-if (( E_LINUXAIO_REVISION <= 40 )); then
+if [[ -n $E_LINUXAIO_REVISION ]] && (( E_LINUXAIO_REVISION <= 40 )); then
     # Will exit script after the function call.
     revision_40
 elif [[ $E_LINUXAIO_REVISION -le 47 && $E_CURRENT_LINUXAIO_REVISION == 47.5 ]]; then
