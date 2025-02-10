@@ -328,7 +328,6 @@ while true; do
             opt_seven_text="${E_GREY}${opt_seven_text}${dis_option}${E_NC}"
         fi
     ## If NadekoRun exists, options 2 and 3 remain enabled.
-    # TODO: Replace below file with an exported variable to reduce hardcoding???
     elif [[ -f NadekoRun ]]; then
         ## Keep options 4 and 5 enabled if NadekoBot's service is running; otherwise,
         ## disable them.
