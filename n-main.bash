@@ -66,12 +66,10 @@ exit_code_actions() {
 # unset.
 #
 # RETURNS:
-#   - 0: If the token field is NOT set or if the credentials file does NOT exist.
-#   - 1: If the token field is set.
+#   - 0: If the token is set.
+#   - 1: If the token is not set.
 is_token_set() {
-    if [[ ! -f $E_CREDS_PATH ]]; then
-        return 0
-    elif grep -Eq '^token: '\'\''' "$E_CREDS_PATH"; then
+    if grep -Eq '^token: '\'\''' "$E_CREDS_PATH"; then
         return 1
     else
         return 0
