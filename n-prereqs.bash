@@ -46,6 +46,8 @@ declare -A -r C_INSTALL_CMD_MAPPING=(
     ["arch"]="sudo pacman -S --noconfirm"
 )
 
+# These are the packages required by the Manager scripts.
+#
 # NOTE:
 #   - 'curl' is omitted because it must already be installed for the parent manager
 #     scripts to work.
@@ -61,6 +63,8 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
     ["arch"]="jq"  # 'ccze' gets installed separately via AUR.
 )
 
+# These are the packages required to use the music functionality of NadekoBot.
+#
 # NOTE:
 #   - The script requires Python 3.9+ for proper operation.
 #   - For almalinux (8): 'python3' installs Python 3.6 by default, so 'python311' is
@@ -95,7 +99,7 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
 
 
 ####
-# Identify the system's distribution and version.
+# Identify the system's distribution and version number.
 #
 # NOTE:
 #   The '/etc/os-release' file is used to determine the distribution and version. It's
@@ -120,7 +124,8 @@ detect_sys_info() {
 
 
 ####
-# Cleanly exits the script by removing traps and displaying an exit message.
+# Display an exit message based on the provided exit code, and exit the script with the
+# specified code.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -178,9 +183,6 @@ unsupported() {
 
 ####
 # Create the local bin directory if it doesn't exist.
-#
-# NOTE:
-#   - Uses the E_LOCAL_BIN global variable to determine the directory path.
 create_local_bin() {
     if [[ ! -d $E_LOCAL_BIN ]]; then
         echo "${E_INFO}Creating '$E_LOCAL_BIN' directory..."
@@ -241,9 +243,7 @@ install_ccze_arch() {
 
 ####
 # Installs all prerequisites required by NadekoBot using the provided package manager
-# commands. It updates package lists (if an update command is provided) and installs
-# both music and Manager packages. Additionally, it installs 'yt-dlp' separately if it
-# is not already included in the music package list.
+# commands.
 #
 # PARAMETERS:
 #   - $1: install_cmd (Required)
@@ -304,7 +304,8 @@ install_prereqs() {
 }
 
 ####
-# Perform pre-installation checks and configuration before installing the main packages.
+# Perform pre-installation checks and configurations before installing the main
+# packages.
 #
 # PARAMETERS:
 #   - $1: distro (Required)
@@ -366,7 +367,8 @@ pre_install() {
 }
 
 ####
-# Perform post-installation checks and configuration after installing the main packages.
+# Perform post-installation checks and configurations after installing the main
+# packages.
 #
 # PARAMETERS:
 #   - $1: distro (Required)
@@ -379,8 +381,6 @@ post_install() {
         almalinux|rocky)
             local el_ver; el_ver=$(rpm -E %rhel)
 
-            # For EL version 8, create a symlink for 'python3' pointing to 'python3.11'
-            # because the default version is older than 3.9.
             if [[ ! -L $E_LOCAL_BIN/python3 && $el_ver == "8" ]]; then
                 echo "${E_INFO}Creating symlink for 'python3' to 'python3.11' in" \
                     "'$E_LOCAL_BIN'..."
@@ -388,7 +388,6 @@ post_install() {
             fi
             ;;
         opensuse-leap)
-            # Ensure that the 'python3' symlink exists in '$E_LOCAL_BIN'.
             if [[ ! -L $E_LOCAL_BIN/python3 ]]; then
                 echo "${E_INFO}Creating symlink for 'python3' to 'python3.11' in" \
                     "'$E_LOCAL_BIN'..."

@@ -1,8 +1,19 @@
 #!/bin/bash
 #
-# This script starts NadekoBot in one of two modes:
+# NadekoBot Service Setup and Runner Script
+#
+# This script configures and manages the systemd service for NadekoBot, allowing it to
+# run in one of two modes:
 #   - NadekoRun: Runs NadekoBot in the background.
-#   - NadekoRunAR: Runs NadekoBot in the background with an automatic restart.
+#   - NadekoRunAR: Runs NadekoBot in the background with automatic restart on failure or
+#     system reboot.
+#
+# The script performs the following tasks:
+#   1. Creates or updates the systemd service unit file for NadekoBot.
+#   2. Generates the appropriate runner script ("NadekoRun") based on the chosen mode.
+#   3. Enables or disables the service using systemctl according to the selected mode.
+#   4. Starts or restarts the NadekoBot service.
+#   5. Displays the service logs after the service has been started.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -45,8 +56,8 @@ exit_now=false
 
 
 ####
-# Exits the script cleanly by displaying an exit message and returning an appropriate
-# exit code. This simplified version is used when minimal cleanup is needed.
+# Display an exit message based on the provided exit code, and exit the script with the
+# specified code.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -132,7 +143,7 @@ if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
     echo "#!/bin/bash
 
 _code_name_=\"NadekoRun\"
-export PATH=\"$E_LOCAL_BIN:$PATH\"  # Ensure anything in 'E_LOCAL_BIN' is accessible.
+export PATH=\"$E_LOCAL_BIN:$PATH\"
 
 echo \"[INFO] python3 path: \$(which python3)\"
 echo \"[INFO] python3 version: \$(python3 --version)\"
@@ -155,7 +166,7 @@ else
     echo "#!/bin/bash
 
 _code_name_=\"NadekoRunAR\"
-export PATH=\"$E_LOCAL_BIN:$PATH\"  # Ensure anything in 'E_LOCAL_BIN' is accessible.
+export PATH=\"$E_LOCAL_BIN:$PATH\"
 
 echo \"[INFO] python3 path: \$(which python3)\"
 echo \"[INFO] python3 version: \$(python3 --version)\"
@@ -170,7 +181,6 @@ while true; do
     if [[ -d $E_ROOT_DIR/$E_BOT_DIR ]]; then
         cd \"$E_ROOT_DIR/$E_BOT_DIR\" || {
             echo \"[ERROR] Failed to change working directory to '$E_ROOT_DIR/$E_BOT_DIR'\" >&2
-            echo \"[NOTE] Ensure the working directory in '/etc/systemd/system/nadeko.service' is correct\"
             echo \"[INFO] Exiting...\"
             exit 1
         }
