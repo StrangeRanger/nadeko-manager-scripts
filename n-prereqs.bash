@@ -142,24 +142,16 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may become 50 if 'n-main.bash' should continue despite an error.
     case "$exit_code" in
-        1) exit_code=50 ;;
         0|5) ;;
-        129)
-            echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)"
-            exit_now=true
+        1)
+            exit_code=50
             ;;
         130)
             echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
-        143)
-            echo -e "\n${E_WARN}Termination signal detected (SIGTERM)"
-            exit_now=true
-            ;;
         *)
-            echo -e "\n${E_WARN}Exiting with exit code: $exit_code"
             exit_now=true
             ;;
     esac

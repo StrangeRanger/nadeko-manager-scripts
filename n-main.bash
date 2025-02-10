@@ -53,6 +53,7 @@ exit_code_actions() {
         129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
         130) ;;  # SIGINT is handled elsewhere; no message is printed here.
         143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" ;;
+        *) echo -e "\n${E_WARN}Exiting with exit code: $exit_code" ;;
     esac
 
     exit "$exit_code"
