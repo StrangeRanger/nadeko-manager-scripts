@@ -1,29 +1,29 @@
 #!/bin/bash
 #
-# This script checks the operating system, architecture, bit type, and other factors to
-# confirm NadekoBot's compatibility. If the system is supported, it downloads and
-# executes the main script.
+# This script prepares for the rest of the Manager by identify the system's
+# architecture to ensure compatibility with NadekoBot. It also contains variables and
+# functions that are used by the rest of the scripts.
 #
 ########################################################################################
 ####[ Exported and Global Variables ]###################################################
 
 
-# Refer to the 'README' note at the beginning of 'm-bridge.bash' for more information.
+# See the 'README' note at the beginning of 'm-bridge.bash' for details.
 readonly C_LATEST_BRIDGE_REVISION=49
 readonly C_MAIN_MANAGER="n-main.bash"
 
-## Modify output text color.
-E_YELLOW="$(printf '\033[1;33m')"
-E_GREEN="$(printf '\033[0;32m')"
-E_BLUE="$(printf '\033[0;34m')"
-E_CYAN="$(printf '\033[0;36m')"
-E_RED="$(printf '\033[1;31m')"
-E_NC="$(printf '\033[0m')"
-E_GREY="$(printf '\033[0;90m')"
-E_CLR_LN="$(printf '\r\033[K')"
+## Define ANSI escape sequences for colored terminal output.
+E_YELLOW="$(printf '\033[1;33m')"  # Bold yellow text.
+E_GREEN="$(printf '\033[0;32m')"   # Green text.
+E_BLUE="$(printf '\033[0;34m')"    # Blue text.
+E_CYAN="$(printf '\033[0;36m')"    # Cyan text.
+E_RED="$(printf '\033[1;31m')"     # Bold red text.
+E_NC="$(printf '\033[0m')"         # Reset to default terminal color.
+E_GREY="$(printf '\033[0;90m')"    # Grey text.
+E_CLR_LN="$(printf '\r\033[K')"    # Clear the current line.
 export E_YELLOW E_GREEN E_BLUE E_CYAN E_RED E_NC E_GREY E_CLR_LN
 
-## Short-hand colorized messages.
+## Define shorthand colorized message prefixes for terminal output.
 E_SUCCESS="${E_GREEN}==>${E_NC} "
 E_WARN="${E_YELLOW}==>${E_NC} "
 E_ERROR="${E_RED}ERROR:${E_NC} "
@@ -40,7 +40,6 @@ export E_MANAGER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 ####[ Functions ]#######################################################################
 
 
-# TODO: Update function comments.
 ####
 # Identify the operating system, version, architecture, bit type (32/64), etc. This
 # information is then made available to this and the rest of the scripts.
