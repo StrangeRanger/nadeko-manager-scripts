@@ -36,26 +36,23 @@ export E_BOT_DIR="nadekobot"
 export E_ROOT_DIR="$PWD"
 export E_MANAGER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 
+###
+### Variables requiring extra checks before being set and exported.
+###
+
+## Define the system's architecture in bits (32 or 64).
+case $(uname -m) in
+    x86_64)  BITS="64"; export E_ARCH="x64" ;;
+    aarch64) BITS="64"; export E_ARCH="arm64" ;;
+    armv8l)  BITS="32"; export E_ARCH="arm32" ;;  # ARMv8 in 32-bit mode.
+    armv*)   BITS="32"; export E_ARCH="arm32" ;;  # Generic ARM 32-bit.
+    i*86)    BITS="32"; export E_ARCH="x86" ;;
+    *)       BITS="?";  export E_ARCH="unknown" ;;  # Fallback to uname output.
+esac
+
 
 ####[ Functions ]#######################################################################
 
-
-####
-# Identify the operating system, version, architecture, bit type (32/64), etc. This
-# information is then made available to this and the rest of the scripts.
-#
-# NEW GLOBALS:
-#   - bits: Bit type
-detect_sys_info() {
-    case $(uname -m) in
-        x86_64)  bits="64"; export E_ARCH="x64" ;;
-        aarch64) bits="64"; export E_ARCH="arm64" ;;
-        armv8l)  bits="32"; export E_ARCH="arm32" ;;  # ARMv8 in 32-bit mode.
-        armv*)   bits="32"; export E_ARCH="arm32" ;;  # Generic ARM 32-bit.
-        i*86)    bits="32"; export E_ARCH="x86" ;;
-        *)       bits="?";  export E_ARCH="unknown" ;;  # Fallback to uname output.
-    esac
-}
 
 ####
 # Cleanly exit the manager by performing the following steps:
@@ -201,9 +198,8 @@ fi
 
 
 clear -x
-detect_sys_info
 
-if [[ $bits == "32" ]]; then
+if [[ $BITS == "32" ]]; then
     echo "${E_ERROR}Current system is 32-bit, which is not supported"
     echo "${E_NOTE}NadekoBot only supports 64-bit systems"
     exit 1
