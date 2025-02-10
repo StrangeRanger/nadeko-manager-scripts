@@ -1,19 +1,24 @@
 #!/bin/bash
 #
-# This script checks for a newer release of 'm-bridge.bash' and, if available, downloads it.
-# Any existing configurations from the old version are then transferred to the new one
-# where possible.
+# m-bridge.bash Update and Configuration Migration Script
+#
+# This script automates the update process for 'm-bridge.bash'. It checks for a newer
+# version of the script (or its legacy counterpart 'linuxAIO'), backs up the current
+# version by renaming it to 'm-bridge.bash.old', and then downloads and installs the
+# latest version. Additionally, it transfers existing configuration settings (such as
+# manager branch and prerequisite checks) from the old version to the new one. The
+# script also performs revision-specific checks and compatibility adjustments, ensuring
+# that users are notified when manual intervention may be required.
 #
 ########################################################################################
 ####[ Functions ]#######################################################################
 
 
 ####
-# Reverts any changes made to 'm-bridge.bash' if this script is interrupted or fails,
-# restoring the older version if it still exists.
+# Reverts changes made to 'm-bridge.bash' if the script is interrupted or fails.
 #
 # EXITS:
-#   - 1: The script terminates immediately.
+#   - 1: Terminates the script immediately.
 revert() {
     if [[ -f m-bridge.bash.old && ! -f m-bridge.bash ]]; then
         echo ""
@@ -26,10 +31,9 @@ revert() {
 }
 
 ####
-# ...
+# Downloads the latest 'm-bridge.bash' from $E_RAW_URL and makes it executable.
 download_bridge() {
     echo "${E_INFO}Downloading latest version of 'm-bridge.bash'..."
-
     curl -O "$E_RAW_URL"/m-bridge.bash || {
         E_STDERR "Failed to download 'm-bridge.bash'"
         revert
@@ -38,7 +42,7 @@ download_bridge() {
 }
 
 ####
-# ....
+# Transfers configuration settings from the old 'm-bridge.bash' to the new version.
 transfer_bridge_data() {
     local manager_branch
     local manager_branch_found
@@ -51,13 +55,13 @@ transfer_bridge_data() {
 
     echo "${E_INFO}Applying existing configurations to the new 'm-bridge.bash'..."
 
-    if [[ $manager_branch_found == 0 ]]; then
+    if (( manager_branch_found == 0 )); then
         sed -i "s/^manager_branch=.*/$manager_branch/" m-bridge.bash
     else
         echo "${E_WARN}Failed to find 'manager_branch' in 'm-bridge.bash.old'"
     fi
 
-    if [[ $skip_prereq_check_found == 0 ]]; then
+    if (( skip_prereq_check_found == 0 )); then
         sed -i "s/^export E_SKIP_PREREQ_CHECK=.*/$skip_prereq_check/" m-bridge.bash
     else
         echo "${E_WARN}Failed to find 'E_SKIP_PREREQ_CHECK' in 'm-bridge.bash.old'"
@@ -65,23 +69,27 @@ transfer_bridge_data() {
 }
 
 ####
-# ....
+# Notifies the user that the current Manager version (revision 40) is very outdated and
+# does not support the automatic transfer of configurations to the new 'm-bridge.bash'.
+#
+# EXITS:
+#   - 1: Terminates the script after displaying the notification.
 revision_40() {
-    echo "${E_WARN}You are using a very old version of the manager, where it's not" \
+    echo "${E_WARN}You are using a very old version of the Manager, where it's not" \
         "possible to automatically transfer configurations to the new"\
         "'m-bridge.bash'." >&2
     echo "${E_NOTE}'m-bridge.bash' has replaced 'linuxAIO'"
-    echo "${E_IMP}It's highly recommended to back up your current configurations" \
-        "and version of NadekoBot, then re-download NadekoBot using the newest" \
-        "version of the manager."
-    echo "${E_NOTE}The newest version of the manager can be found at" \
+    echo "${E_IMP}It's highly recommended to back up your current configurations and" \
+        "version of NadekoBot, then re-download NadekoBot using the newest version of" \
+        "the Manager."
+    echo "${E_NOTE}The newest version of the Manager can be found at" \
         "https://github.com/StrangeRanger/NadekoBot-BashScript/blob/main/m-bridge.bash"
     exit 1
 }
 
 ####
-# Performs additional checks and modifications for 'm-bridge.bash' revision 45 and earlier,
-# ensuring compatibility with updated structures.
+# Performs additional checks and modifications for 'm-bridge.bash' revision 45 and
+# earlier, ensuring compatibility with updated structures.
 #
 # RETURNS:
 #   - 0: If the function completes successfully or no actions are required.
@@ -93,8 +101,8 @@ revision_45() {
     if [[ -d "$E_BOT_DIR" ]]; then
         additional_changes=true
         echo "${E_WARN}The new version of 'linuxAIO', now called 'm-bridge.bash', has" \
-            "several breaking changes since revision 45 and earlier. They will be handled" \
-            "automatically."
+            "several breaking changes since revision 45 and earlier. They will be" \
+            "handled automatically."
         read -rp "${E_NOTE}Press [Enter] to continue"
 
         echo "${E_INFO}Renaming '$E_BOT_DIR' to '$E_BOT_DIR.rev45.bak'..."
@@ -111,7 +119,14 @@ revision_45() {
 }
 
 ####
+# Updates variable names in 'm-bridge.bash.old' to match the new naming conventions.
 #
+# PARAMETERS:
+#   - $1: additional_changes (Optional, Default: false)
+#       - Indicates whether additional changes are required.
+#
+# EXITS:
+#   - 1: If the function fails to update the variables in 'm-bridge.bash'.
 revision_47.5() {
     local additional_changes="${1:-false}"
 
@@ -153,7 +168,7 @@ if [[ -f m-bridge.bash.old ]]; then
     rm m-bridge.bash.old
 fi
 
-if [[ -f linuxAIO ]]; then  # Used in revisions 39 to 47.5.
+if [[ -f linuxAIO ]]; then  # Used in revisions 40 to 47.5.
     [[ -f linuxAIO.old ]] && rm linuxAIO.old
     echo "${E_INFO}Backing up 'linuxAIO' as 'm-bridge.bash.old'..."
     mv linuxAIO m-bridge.bash.old
@@ -166,8 +181,7 @@ chmod -x m-bridge.bash.old
 
 echo "${E_INFO}Performing revision checks..."
 if [[ -n $E_LINUXAIO_REVISION ]] && (( E_LINUXAIO_REVISION <= 40 )); then
-    # Will exit script after the function call.
-    revision_40
+    revision_40  # Will exit script after the function call.
 elif [[ $E_LINUXAIO_REVISION -le 47 && $E_CURRENT_LINUXAIO_REVISION == 47.5 ]]; then
     download_bridge
 

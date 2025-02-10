@@ -1,11 +1,22 @@
 #!/bin/bash
 #
-# Downloads and updates NadekoBot to a specified version.
+# NadekoBot Update Utility
+#
+# This script automates the process of updating NadekoBot to a user-selected version.
+# It performs the following tasks:
+#   1. Connects to the GitLab API to retrieve available NadekoBot release versions.
+#   2. Prompts the user to select a desired version for installation.
+#   3. Downloads and extracts the corresponding release archive.
+#   4. Backs up the current bot configuration and data (including credentials, database,
+#      strings, and aliases) to facilitate rollback if needed.
+#   5. Transfers custom data to the new installation while preserving prior
+#      configurations.
+#   6. Handles service interruptions and cleans up temporary files upon completion.
 #
 # NOTE:
-#   After each update, the user will need to manually reapply any custom strings and
-#   aliases, as updates may modify or replace these files. However, the old strings and
-#   aliases will be backed up as 'strings.old' and 'aliases.old.yml' respectively.
+#   After each update, any custom modifications to strings and aliases must be
+#   re-applied manually. However, backups of the previous versions are saved as
+#   'strings.old' and 'aliases.old.yml' respectively.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
@@ -37,24 +48,21 @@ service_is_active=false
 
 
 ####
-# Cleanly exits the script by removing temporary files and directories. If an error or
-# premature exit is detected, it attempts to restore the original '$C_BOT_DIR' directory
-# structure.
+# Cleans up temporary files and directories, and attempts to restore the original
+# $E_BOT_DIR if an error or premature exit is detected.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
 #       - The initial exit code passed by the caller. Under certain conditions, it may
-#         be changed to 50 to allow the calling script to continue.
+#         be modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output an extra blank line, separating any previous output from
-#         this function’s messages.
-#       - Acceptable values:
-#           - true
-#           - false
+#       - If "true", outputs an extra blank line to distinguish previous output from the
+#         exit messages.
+#       - Acceptable values: true, false.
 #
 # EXITS:
-#   - $exit_code: Uses the provided exit code, or 50 if the conditions for continuing
-#     (e.g., exit code 1 or 130) are met.
+#   - $exit_code: The final exit code, which may be 50 if conditions for continuation
+#     are met.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -63,8 +71,6 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be set to 50 if 'n-update.bash' should continue
-    ## despite an error. Refer to 'exit_code_actions' for details.
     case "$exit_code" in
         1) exit_code=50 ;;
         0|5) ;;
@@ -89,28 +95,35 @@ clean_exit() {
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" &>/dev/null
 
-    (
+    {
+        ## Checks if the main bot directory exists, the first backup is missing, but the
+        ## second backup exists. It then tries to restore by renaming the second backup.
         if [[ -d $E_BOT_DIR && ! -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
             echo "${E_WARN}Unable to complete installation"
             echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
             mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" || exit 1
+        ## Checks if the main bot directory is missing but the first backup exists. It
+        ## restores the main directory from the first backup.
         elif [[ ! -d $E_BOT_DIR && -d $C_BOT_DIR_OLD ]]; then
             echo "${E_WARN}Unable to complete installation"
             echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
             mv "$C_BOT_DIR_OLD" "$E_BOT_DIR" || exit 1
 
+            ## If a second backup exists, it renames that to become the first backup.
             if [[ -d $C_BOT_DIR_OLD_OLD ]]; then
                 mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" \
                     || E_STDERR \
                         "Failed to rename '$C_BOT_DIR_OLD_OLD' as '$C_BOT_DIR_OLD'" \
                         "" "${E_NOTE}Please rename it manually"
             fi
+        ## Checks if all three directories exist (main, first backup, and second backup)
+        ## and deletes the second backup as it's no longer needed.
         elif [[ -d $E_BOT_DIR && -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
             rm -rf "$C_BOT_DIR_OLD_OLD" \
                 || E_STDERR "Failed to remove '$C_BOT_DIR_OLD_OLD'" "" \
                     "${E_NOTE}Please remove '$C_BOT_DIR_OLD_OLD' manually"
         fi
-    ) || E_STDERR "Failed to restore '$E_BOT_DIR'" "$?" \
+    } || E_STDERR "Failed to restore '$E_BOT_DIR'" "$?" \
         "${E_NOTE}We will exit completely to prevent data loss"
 
     if [[ $exit_now == false ]]; then
@@ -122,12 +135,12 @@ clean_exit() {
 
 ####
 # Retrieves all available NadekoBot versions from the GitLab API and prompts the user to
-# choose one for installation.
+# select one for installation.
 #
 # NEW GLOBALS:
-#   - C_BOT_VERSION: The selected version of NadekoBot to install.
-#   - C_ARCHIVE_NAME: The archive filename to download.
-#   - C_ARCHIVE_URL: The direct URL from which the archive is downloaded.
+#   - C_BOT_VERSION: The selected NadekoBot version to install.
+#   - C_ARCHIVE_NAME: The filename of the archive to download.
+#   - C_ARCHIVE_URL: The direct URL for downloading the archive.
 #
 # EXITS:
 #   - 1: If fetching releases from the GitLab API fails or if no releases are found.
@@ -141,7 +154,8 @@ fetch_versions() {
         E_STDERR "Failed to fetch releases from '${API_URL}'" "1"
     fi
 
-    # TODO: Confirm that the '||' operator works as intended here.
+    # TODO: Confirm that the '||' operator works as intended.
+    # Convert the JSON response to an array of version tags, sorted in reverse order.
     mapfile -t versions < <(echo "$response_body" | jq -r '.[].tag_name' | sort -V -r) \
         || E_STDERR "Failed to parse releases" "1"
 
@@ -222,7 +236,7 @@ cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR
         echo "${E_INFO}Copying '${C_NEW_CREDS_PATH##*/}' to '${C_NEW_CREDS_PATH%/*}'..."
         cp -f "$E_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
     fi
-) || E_STDERR "Failed to copy credentials" "1"
+) || E_STDERR "Failed to copy credentials" "$?"
 
 
 if [[ -d $E_BOT_DIR ]]; then
@@ -230,7 +244,7 @@ if [[ -d $E_BOT_DIR ]]; then
         echo "${E_WARN}'$C_CURRENT_DB_PATH' could not be found"
         echo "${E_NOTE}Skipping copying the database..."
     else
-        echo "${E_INFO}Copying '${C_CURRENT_DB_PATH} to the '${C_NEW_DB_PATH%/*}'..."
+        echo "${E_INFO}Copying '${C_CURRENT_DB_PATH}' to the '${C_NEW_DB_PATH%/*}'..."
         cp -rT "$C_CURRENT_DB_PATH" "$C_NEW_DB_PATH" \
             || E_STDERR "Failed to copy database" "1"
     fi
@@ -259,7 +273,7 @@ if [[ -d $E_BOT_DIR ]]; then
         mv -f "$C_NEW_DATA_PATH"/aliases.new.yml "$C_NEW_DATA_PATH"/aliases.yml || exit 1
     ) || E_STDERR "An error occurred while copying other data" "$?"
 
-    echo "${E_INFO}Replacing '$E_BOT_DIR' with '${C_NADEKOBOT_TMP}/$E_BOT_DIR'..."
+    echo "${E_INFO}Replacing '$E_BOT_DIR' with '$C_NADEKOBOT_TMP/$E_BOT_DIR'..."
     (
         if [[ -d $C_BOT_DIR_OLD ]]; then
             mv "$C_BOT_DIR_OLD" "$C_BOT_DIR_OLD_OLD" || exit 5

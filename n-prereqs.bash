@@ -19,8 +19,8 @@ declare -A -r C_SUPPORTED_DISTROS=(
 )
 
 # NOTE:
-#   - The update command for arch is empty because it's not recommended to run
-#     'pacman -Sy' without '-u', but we don't want to upgrade the system or existing
+#   - The update command for arch is empty because running 'pacman -Sy' without '-u'
+#     is discouraged; this avoids unintentionally upgrading the system or existing
 #     packages.
 declare -A -r C_UPDATE_CMD_MAPPING=(
     ["ubuntu"]="sudo apt-get update"
@@ -47,8 +47,8 @@ declare -A -r C_INSTALL_CMD_MAPPING=(
 )
 
 # NOTE:
-#   - It would be redundant to specify 'curl', as it would have needed to be installed
-#     for the parent manager scripts to work.
+#   - 'curl' is omitted because it must already be installed for the parent manager
+#     scripts to work.
 declare -A -r C_MANAGER_PKG_MAPPING=(
     ["ubuntu"]="ccze jq"
     ["debian"]="ccze jq"
@@ -62,23 +62,21 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
 )
 
 # NOTE:
-#   - As long as the installed version of python is 3.9+, the script should work.
-#   - almalinux (8): 'python3' will install 'python3.6', wo we explicitly install
-#     'python311'.
-#   - rocky (8): 'python3' will install 'python 3.6', so we explicitly install
-#     'python311'.
-#   - opensuse-tumbleweed: Installing 'yt-dlp' auto installs the 'ffmpeg' (ffmpeg-7) and
-#     'python3' (python311-yt-dlp) packages. (Specified packages are as of 2025-02-07)
-#   - opensuse-leap: Installing 'yt-dlp' auto installs 'ffmpeg' (ffmpeg-4) and 'python3'
-#     (python311-yt-dlp) packages. (Specified packages are as of 2025-02-07)
-#       - We still install 'python311' explicitly to ensure we know what version to
-#         expect. This allows us to easily symlink 'python3' to 'python311' without
-#         worrying of accidentally referencing a non-existent package.
-#   - arch: Installing 'yt-dlp' auto installs the 'python3' package. As a note, when
-#     installing 'ffmpeg', it will automatically attempt to install 'jack2'. If you
-#     rather install 'pipewire-jack', which has better integration with 'pipewire', you
-#     you may want to replace it with 'pipewire-jack' in the package list. For more info
-#     on the difference between the two, please visit the following link:
+#   - The script requires Python 3.9+ for proper operation.
+#   - For almalinux (8): 'python3' installs Python 3.6 by default, so 'python311' is
+#     explicitly installed.
+#   - For rocky (8): 'python3' installs Python 3.6 by default, so 'python311' is
+#     explicitly installed.
+#   - On opensuse-tumbleweed: Installing 'yt-dlp' automatically installs 'ffmpeg'
+#     (ffmpeg-7) and 'python3' (python311-yt-dlp) packages (as of 2025-02-07).
+#   - On opensuse-leap: Installing 'yt-dlp' auto-installs 'ffmpeg' (ffmpeg-4) and
+#     'python3' (python311-yt-dlp) packages (as of 2025-02-07).
+#       - 'python311' is still explicitly installed to ensure the expected version,
+#         allowing a reliable symlink from 'python3' to 'python311'.
+#   - For arch: Installing 'yt-dlp' auto-installs the 'python3' package.
+#     Note: Installing 'ffmpeg' may attempt to install 'jack2'. If you prefer
+#     'pipewire-jack' for better PipeWire integration, consider replacing 'jack2' with
+#     'pipewire-jack' in the package list. More info:
 #     https://wiki.archlinux.org/title/JACK_Audio_Connection_Kit
 declare -A -r C_MUSIC_PKG_MAPPING=(
     ["ubuntu"]="python3 ffmpeg"
@@ -97,25 +95,26 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
 
 
 ####
-# Identify the system's distribution, version, and architecture.
+# Identify the system's distribution and version.
 #
 # NOTE:
-#   The 'os-release' file is used to determine the distribution and version. This file
-#   is present on almost every distributions running systemd.
+#   The '/etc/os-release' file is used to determine the distribution and version. It's
+#   present on nearly all systemd-based Linux distributions.
 #
 # NEW GLOBALS:
-#   - C_DISTRO: The distribution name.
-#   - C_VER: The distribution version.
-#   - C_SVER: The distribution version without the minor version.
+#   - C_DISTRO: The distribution name (or kernel name if '/etc/os-release' is absent).
+#   - C_VER: The full distribution version (or kernel version when falling back).
+#   - C_SVER: The major version number extracted from $C_VER.
 detect_sys_info() {
     if [[ -f /etc/os-release ]]; then
         . /etc/os-release
         C_DISTRO="$ID"
-        C_VER="$VERSION_ID"  # Version: x.x.x...
-        C_SVER=${C_VER//.*/}  # Version: x
+        C_VER="$VERSION_ID"  # Format: x.y.z...
+        C_SVER=${C_VER%%.*}  # Major version: x
     else
         C_DISTRO=$(uname -s)
         C_VER=$(uname -r)
+        C_SVER=${C_VER%%.*}
     fi
 }
 
@@ -125,18 +124,16 @@ detect_sys_info() {
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#       - The exit code passed by the caller. This may be changed to 50 in certain cases
-#         (e.g., exit codes 1 or 130) to allow a parent manager script to continue.
+#       - The initial exit code passed by the caller. Under certain conditions, it may
+#         be modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - If "true", outputs an extra blank line to separate previous output from the
-#         exit message.
-#       - Valid values:
-#           - true
-#           - false
+#       - If "true", outputs an extra blank line to distinguish previous output from the
+#         exit messages.
+#       - Acceptable values: true, false.
 #
 # EXITS:
-#   - $exit_code: The final exit code, which may be 50 if conditions for continuing are
-#     met.
+#   - $exit_code: The final exit code, which may be 50 if conditions for continuation
+#     are met.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -145,8 +142,7 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may become 50 if 'n-update.bash' should continue despite
-    ## an error. See 'exit_code_actions' for more details.
+    ## The exit code may become 50 if 'n-main.bash' should continue despite an error.
     case "$exit_code" in
         1) exit_code=50 ;;
         0|5) ;;
@@ -182,14 +178,17 @@ clean_exit() {
 # EXITS:
 #   - 4: The current OS is unsupported.
 unsupported() {
-    echo "${E_ERROR}The manager does not support the automatic installation and setup" \
+    echo "${E_ERROR}The Manager does not support the automatic installation and setup" \
         "of NadekoBot's prerequisites for your OS" >&2
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
     exit 4
 }
 
 ####
-# TODO: Add function documentation.
+# Create the local bin directory if it doesn't exist.
+#
+# NOTE:
+#   - Uses the E_LOCAL_BIN global variable to determine the directory path.
 create_local_bin() {
     if [[ ! -d $E_LOCAL_BIN ]]; then
         echo "${E_INFO}Creating '$E_LOCAL_BIN' directory..."
@@ -198,7 +197,7 @@ create_local_bin() {
 }
 
 ###
-### [ Install Based Functions ]
+### [ Install-based Functions ]
 ###
 
 ####
@@ -222,7 +221,10 @@ install_yt_dlp() {
 }
 
 ####
-# TODO: Add function documentation.
+# Installs 'ccze' for Arch Linux from the AUR using an available AUR helper or manually.
+#
+# EXITS:
+#   - Non-zero exit code: If any installation step fails.
 install_ccze_arch() {
     echo "${E_INFO}Installing 'ccze' for Arch Linux from the AUR..."
 
@@ -245,14 +247,11 @@ install_ccze_arch() {
     fi
 }
 
-# TODO: Update description to reflect to use of different package managers.
 ####
-# Installs all prerequisites required by NadekoBot. Runs 'apt' in the background so
-# signals (e.g., SIGINT) can be caught, allowing the script to terminate 'apt' if
-# needed.
-#
-# NEW GLOBALS:
-#   - pkg_pid: The process ID of the package manager, killed if the script exits.
+# Installs all prerequisites required by NadekoBot using the provided package manager
+# commands. It updates package lists (if an update command is provided) and installs
+# both music and Manager packages. Additionally, it installs 'yt-dlp' separately if it
+# is not already included in the music package list.
 #
 # PARAMETERS:
 #   - $1: install_cmd (Required)
@@ -265,8 +264,7 @@ install_ccze_arch() {
 #       - A list of other packages required by the manager.
 #
 # EXITS:
-#   - 0: Successful installation of all prerequisites.
-#   - $?: Failed to install prerequisites or remove existing .NET installation.
+#   - $?: If any prerequisite installation step fails.
 install_prereqs() {
     local install_cmd="$1"
     local update_cmd="$2"
@@ -275,8 +273,8 @@ install_prereqs() {
     local yt_dlp_found=false
 
     echo "${E_INFO}Checking for 'yt-dlp'..."
-    # If 'yt-dlp' is NOT inside "${music_pkg_list[@]}", then we install it via
-    # 'install_yt_dlp'.
+    # If 'yt-dlp' is NOT included in the music package list, mark it for separate
+    # installation.
     for pkg in $music_pkg_list; do
         if [[ "$pkg" == "yt-dlp" ]]; then
             yt_dlp_found=true
@@ -285,7 +283,7 @@ install_prereqs() {
     done
 
     # shellcheck disable=SC2086
-    #   We want to expand the array into individual arguments (packages).
+    #   We want to expand the package lists into individual arguments.
     {
         if [[ -z $update_cmd ]]; then
             echo "${E_WARN}No update command provided, skipping package list update..."
@@ -314,11 +312,10 @@ install_prereqs() {
 }
 
 ####
-# Perform checks or other actions that might be necessary before installing packages.
+# Perform pre-installation checks and configuration before installing the main packages.
 #
 # PARAMETERS:
 #   - $1: distro (Required)
-#       - The distribution name.
 pre_install() {
     local distro="$1"
 
@@ -330,8 +327,9 @@ pre_install() {
             local rmpfusion_key_path="/usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-free-el-$el_ver"
             local rmpfusion_url="https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$el_ver.noarch.rpm"
 
-            echo "${E_INFO}Updating package lists"
+            echo "${E_INFO}Updating package lists..."
             dnf update -y
+
             echo "${E_INFO}Installing EPEL repository..."
             sudo dnf install -y epel-release
 
@@ -348,8 +346,10 @@ pre_install() {
             {
                 echo "${E_INFO}Installing distribution-gpg-keys..."
                 sudo dnf install -y distribution-gpg-keys || exit "$?"
+
                 echo "${E_INFO}Importing RPM Fusion key..."
                 sudo rpmkeys --import "$rmpfusion_key_path" || exit "$?"
+
                 echo "${E_INFO}Installing RPM Fusion for EL $el_ver..."
                 sudo dnf --setopt=localpkg_gpgcheck=1 install -y "$rmpfusion_url" || exit "$?"
             } || E_STDERR "Failed to install RPM Fusion for EL $el_ver" "$?"
@@ -358,10 +358,14 @@ pre_install() {
             ;;
         fedora)
             local fedora_ver; fedora_ver=$(rpm -E %fedora)
-            echo "${E_INFO}Updating package lists"
+            local rmpfusion_url="https://mirror.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
+
+            echo "${E_INFO}Updating package lists..."
+            # TODO: Replace is actual command, this will result an error...
             $update_cmd
+
             echo "${E_INFO}Installing RPM Fusion for Fedora $fedora_ver..."
-            dnf install -y "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
+            dnf install -y "$rmpfusion_url" || E_STDERR "Failed to install RPM Fusion" "$?"
             ;;
         opensuse-leap)
             create_local_bin
@@ -370,7 +374,10 @@ pre_install() {
 }
 
 ####
-# TODO: Add function documentation.
+# Perform post-installation checks and configuration after installing the main packages.
+#
+# PARAMETERS:
+#   - $1: distro (Required)
 post_install() {
     local distro="$1"
 
@@ -380,9 +387,8 @@ post_install() {
         almalinux|rocky)
             local el_ver; el_ver=$(rpm -E %rhel)
 
-            # Version 9 of Almalinux and Rocky Linux, by default, should have a version
-            # of 'python3' that is greater than or equal to '3.9'. For this reason, we
-            # don't need to symlink 'python3.11' to the local bin.
+            # For EL version 8, create a symlink for 'python3' pointing to 'python3.11'
+            # because the default version is older than 3.9.
             if [[ ! -L $E_LOCAL_BIN/python3 && $el_ver == "8" ]]; then
                 echo "${E_INFO}Creating symlink for 'python3' to 'python3.11' in" \
                     "'$E_LOCAL_BIN'..."
@@ -390,6 +396,7 @@ post_install() {
             fi
             ;;
         opensuse-leap)
+            # Ensure that the 'python3' symlink exists in '$E_LOCAL_BIN'.
             if [[ ! -L $E_LOCAL_BIN/python3 ]]; then
                 echo "${E_INFO}Creating symlink for 'python3' to 'python3.11' in" \
                     "'$E_LOCAL_BIN'..."

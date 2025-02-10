@@ -49,9 +49,7 @@ export E_ROOT_DIR="$PWD"
 #   - $2: use_extra_newline (Optional, Default: false)
 #       - If set to "true", outputs an extra blank line to visually separate previous
 #         output from the exit message.
-#       - Acceptable values:
-#           - true
-#           - false
+#       - Acceptable values: true, false.
 #
 # EXITS:
 #   - exit_code: Terminates the script with the exit code provided as $1.
@@ -95,9 +93,7 @@ clean_exit() {
 #       - The name of the script to download.
 #   - $2: script_output (Optional, Default: false)
 #       - Whether to indicate that the script is being downloaded.
-#       - Acceptable values:
-#           - true
-#           - false
+#       - Acceptable values: true, false.
 E_DOWNLOAD_SCRIPT() {
     local script_name="$1"
     local script_output="${2:-false}"
@@ -123,7 +119,7 @@ export -f E_DOWNLOAD_SCRIPT
 #       - If provided, displays this message after the main error message.
 #
 # EXITS:
-#   - exit_code: If specified, the script exits with the given exit code.
+#   - exit_code: If $2 is specified, the script exits with the given exit code.
 E_STDERR() {
     local error_message="$1"
     local exit_code="${2:-}"

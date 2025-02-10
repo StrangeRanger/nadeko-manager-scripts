@@ -4,21 +4,17 @@
 #   - NadekoRun: Runs NadekoBot in the background.
 #   - NadekoRunAR: Runs NadekoBot in the background with an automatic restart.
 #
-# Comment Key:
-#   - A.1.: Used with 'systemctl'.
-#   - B.1.: Used for text output.
-#
 ########################################################################################
 ####[ Global Variables ]################################################################
 
 
 ## Determine the action to be performed on the NadekoBot service based on its code name.
 if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
-    readonly C_ACTION_LOWER="disable"    # A.1.
-    readonly C_ACTION_UPPER="Disabling"  # B.1.
+    readonly C_ACTION_LOWER="disable"    # Used with 'systemctl'.
+    readonly C_ACTION_UPPER="Disabling"  # Used for text output.
 else
-    readonly C_ACTION_LOWER="enable"    # A.1.
-    readonly C_ACTION_UPPER="Enabling"  # B.1.
+    readonly C_ACTION_LOWER="enable"    # Used with 'systemctl'.
+    readonly C_ACTION_UPPER="Enabling"  # Used for text output.
 fi
 
 readonly C_BOT_SERVICE_CONTENT="[Unit]
@@ -50,23 +46,20 @@ exit_now=false
 
 ####
 # Exits the script cleanly by displaying an exit message and returning an appropriate
-# exit code. This version is simpler than the 'clean_exit' functions found in other
-# scripts.
+# exit code. This simplified version is used when minimal cleanup is needed.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#       - The initial exit code passed to the function. Under certain conditions, it may
-#         be changed to 50 to allow the calling script to continue execution.
+#       - The initial exit code passed by the caller. Under certain conditions, it may
+#         be modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - If set to "true", an extra blank line is output to separate any prior output
-#         from the exit message.
-#       - Acceptable values:
-#           - true
-#           - false
+#       - If "true", outputs an extra blank line to distinguish previous output from the
+#         exit messages.
+#       - Acceptable values: true, false.
 #
 # EXITS:
-#   - $exit_code: Uses the code provided by the caller, or 50 if the conditions for
-#     continuing (exit code 1 or 130) are met.
+#   - $exit_code: The final exit code, which may be 50 if conditions for continuation
+#     are met.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -74,8 +67,7 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be changed to 50 if 'n-update.bash' should continue
-    ## despite an error. Refer to 'exit_code_actions' for further details.
+    ## The exit code may become 50 if 'n-main.bash' should continue despite an error.
     case "$exit_code" in
         1)   exit_code=50 ;;
         0|3) ;;

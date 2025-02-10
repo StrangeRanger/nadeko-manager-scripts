@@ -73,12 +73,12 @@ is_token_set() {
 }
 
 ####
-# Outputs the reason(s) that a specified menu option is disabled based on the current
-# environment and file conditions (e.g., missing prerequisites or files).
+# Outputs the reason why a specified menu option is disabled based on the current system
+# state and file conditions (e.g., missing prerequisites or required files).
 #
 # PARAMETERS:
 #   - $1: option_number (Required)
-#       - The numeric identifier of the disabled option.
+#       - The numeric identifier of the disabled menu option.
 disabled_reasons() {
     local option_number="$1"
 
@@ -124,30 +124,29 @@ disabled_reasons() {
 }
 
 ###
-### [ Functions To Be Exported ]
+### [ Functions to be Exported ]
 ###
 
 ####
-# Retrieves the status of NadekoBot's service and updates the global variable
-# $E_BOT_SERVICE_STATUS accordingly.
+# Retrieves the current status of the NadekoBot service using systemctl and updates the
+# global variable $E_BOT_SERVICE_STATUS accordingly.
 #
 # NEW GLOBALS:
-#   - E_BOT_SERVICE_STATUS: The current status of the NadekoBot service.
+#   - E_BOT_SERVICE_STATUS: The current status of the NadekoBot service (e.g., "active",
+#     "inactive").
 E_GET_SERVICE_STATUS() {
     E_BOT_SERVICE_STATUS=$(systemctl is-active "$E_BOT_SERVICE")
 }
 export -f E_GET_SERVICE_STATUS
 
 ####
-# Halts the NadekoBot service if it is currently running and, optionally, displays a
+# Halts the NadekoBot service if it is currently running, and optionally outputs a
 # message indicating whether the service was stopped or is already inactive.
 #
 # PARAMETERS:
 #   - $1: output_text (Optional, Default: false)
-#       - Determines whether to output text indicating the service status.
-#       - Acceptable values:
-#           - true
-#           - false
+#       - If "true", prints messages indicating the service status.
+#       - Acceptable values: true, false.
 E_STOP_SERVICE() {
     local output_text="${1:-false}"
 
@@ -166,31 +165,30 @@ E_STOP_SERVICE() {
 export -f E_STOP_SERVICE
 
 ####
-# Displays real-time logs from the 'nadeko.service'. Uses 'ccze' to colorize output and
-# traps SIGINT to exit gracefully.
+# Displays real-time logs from the NadekoBot service by following its journal entries.
+# The output is piped through 'ccze' to add color, and SIGINT (Ctrl+C) is trapped to
+# exit gracefully.
 E_FOLLOW_SERVICE_LOGS() {
     (
         trap 'echo -e "\n"; exit 130' SIGINT
-        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE"  | ccze -A
+        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A
     )
 }
 export -f E_FOLLOW_SERVICE_LOGS
 
 ####
 # Provides contextual information when displaying NadekoBot service logs, indicating
-# whether the logs are viewed from a runner script or directly within the main
-# manager.
+# whether the logs are viewed from a runner script or directly from the main Manager.
 #
 # PARAMETERS:
 #   - $1: log_type (Required)
-#       - Indicates whether the function was called from a runner script or from the
-#         main manager.
+#       - Specifies the caller context.
 #       - Acceptable values:
 #           - runner: Called from one of the runner scripts.
-#           - opt_five: Called from the main manager.
+#           - opt_five: Called from the main Manager.
 #
 # EXITS:
-#   - 4: If an invalid argument is passed to the function.
+#   - 2: If an invalid parameter is provided.
 E_WATCH_SERVICE_LOGS() {
     local log_type="$1"
 
@@ -199,7 +197,7 @@ E_WATCH_SERVICE_LOGS() {
     elif [[ $log_type == "opt_five" ]]; then
         echo "${E_INFO}Watching '$E_BOT_SERVICE' logs, live..."
     else
-        E_STDERR "INTERNAL: Invalid argument for 'E_WATCH_SERVICE_LOGS': $1" "4"
+        E_STDERR "INTERNAL: Invalid parameter for 'E_WATCH_SERVICE_LOGS': $1" "2"
     fi
 
     echo "${E_NOTE}To stop displaying the startup logs:"
@@ -208,11 +206,12 @@ E_WATCH_SERVICE_LOGS() {
 
     E_FOLLOW_SERVICE_LOGS
 
-    [[ $1 == "runner" ]] \
-        && echo "${E_NOTE}Please check the logs above to make sure that there" \
-            "aren't any errors. If there are, resolve whatever issue is causing them."
+    if [[ $1 == "runner" ]]; then
+        echo "${E_NOTE}Please check the logs above to make sure that there aren't any" \
+            "errors. If there are, resolve whatever issue is causing them."
+    fi
 
-    read -rp "${E_NOTE}Press [Enter] to return to the manager menu"
+    read -rp "${E_NOTE}Press [Enter] to return to the main menu"
 }
 export -f E_WATCH_SERVICE_LOGS
 

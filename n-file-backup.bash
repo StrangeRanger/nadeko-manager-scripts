@@ -14,8 +14,9 @@ C_TMP_BACKUP=$(mktemp -d -p /tmp important-nadeko-files-XXXXXXXXXX)
 readonly C_TMP_BACKUP
 
 # shellcheck disable=SC2206
-#   $E_FILES_TO_BACK_UP is intentionally left unquoted to allow word splitting, making
-#   the contents of $C_FILES_TO_BACK_UP iterable.
+#   The variable $E_FILES_TO_BACK_UP is intentionally left unquoted so that word
+#   splitting occurs. This converts its contents into an array, with each word becoming
+#   an individual element in $C_FILES_TO_BACK_UP.
 readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 
@@ -23,24 +24,23 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 
 ####
-# Cleanly exits the script by removing temporary files and directories. If an error
-# occurs or a premature exit is detected, this function attempts to restore the original
-# backup files.
+# Cleans up temporary files and directories, and attempts to restore original backup
+# files in case of an error or premature exit. This helps prevent data loss by ensuring
+# that backup files are restored if the backup process could not be completed
+# successfully.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#       - The initial exit code with which this function was invoked. In some cases,
-#         this is modified to 50 to signal that the calling script should continue.
+#       - The initial exit code passed by the caller. Under certain conditions, it may
+#         be modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - Whether to output an extra blank line, separating any previous output from
-#         this function's messages.
-#       - Acceptable values:
-#           - true
-#           - false
+#       - If "true", outputs an extra blank line to distinguish previous output from the
+#         exit messages.
+#       - Acceptable values: true, false.
 #
 # EXITS:
-#   - $exit_code: Uses the provided exit code, or 50 if the conditions for continuing
-#     are met (e.g., exit code 1 or 130).
+#   - $exit_code: The final exit code, which may be 50 if conditions for continuation
+#     are met.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -49,8 +49,7 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be modified to 50 when 'n-update.bash' should
-    ## continue running despite an error. Refer to 'exit_code_actions' for more info.
+    ## The exit code may become 50 if 'n-main.bash' should continue despite an error.
     case "$exit_code" in
         1) exit_code=50 ;;
         0|5) ;;
@@ -75,6 +74,7 @@ clean_exit() {
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_TMP_BACKUP" ]] && rm -rf "$C_TMP_BACKUP" &>/dev/null
 
+    ## Attempt to restore original backups if necessary.
     (
         if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
             echo "${E_WARN}Unable to complete backup"
