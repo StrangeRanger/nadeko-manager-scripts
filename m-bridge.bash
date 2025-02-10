@@ -1,20 +1,21 @@
 #!/bin/bash
 #
-# 'linuxAIO' acts as a bridge between the system running NadekoBot and 'installer-prep'.
-# To avoid conflicts with installer updates, this script contains only essential code.
+# This script acts as a bridge between the system running NadekoBot and
+# 'n-main-prep.bash'. To avoid conflicts with manager updates, this script contains
+# only essential code.
 #
 # README:
 #   Since this script resides on the user's system, updates pushed to GitHub do not
-#   automatically apply. To handle this, the variable $E_LINUXAIO_REVISION used to
-#   tracks changes. The 'installer-prep' script has a corresponding variable,
-#   $C_CURRENT_LINUXAIO_REVISION, updated alongside it. When the installer runs,
-#   'installer-prep' compares these values. If they differ, the latest 'linuxAIO'
+#   automatically apply. To handle this, the variable $E_BRIDGE_REVISION used to
+#   tracks changes. The 'n-main-prep.bash' script has a corresponding variable,
+#   $C_LATEST_BRIDGE_REVISION, updated alongside it. When the manager runs,
+#   'n-main-prep.bash' compares these values. If they differ, the latest 'm-bridge.bash'
 #   version is fetched from GitHub.
 #
 # IMPORTANT:
-#   If you change $installer_branch to anything other than "main" or "dev",
+#   If you change $manager_branch to anything other than "main" or "dev",
 #   you must install the matching version of NadekoBot. For example, if you set
-#   $installer_branch to "NadekoV4", you need to install NadekoBot v4. Failing
+#   $manager_branch to "NadekoV4", you need to install NadekoBot v4. Failing
 #   to do so will likely result in a broken installation.
 #
 ########################################################################################
@@ -26,28 +27,40 @@
 ###
 ### ~~~ THESE VARIABLES CAN BE MODIFIED BY THE END-USER ~~~
 ###
-### When the installer fetches the newest 'linuxAIO', it merges all user-modified
-### variables (except $installer_repo and $E_FILES_TO_BACK_UP) into the updated script.
+### When the manager fetches the newest 'm-bridge.bash', it merges all user-modified
+### variables (except $manager_repo and $E_FILES_TO_BACK_UP) into the updated script.
 ###
 
-# The repository containing the installer's scripts.
+# The repository containing the manager's scripts.
 #
 # Only modify this variable if you have created a fork and plan on customizing the
-# installer.
+# manager.
 #
-# Format:  installer_repo="[github username]/[repository name]"
+# Format:  manager_repo="[github username]/[repository name]"
 # Default: "StrangeRanger/NadekoBot-BashScript"
-installer_repo="StrangeRanger/NadekoBot-BashScript"
+manager_repo="StrangeRanger/NadekoBot-BashScript"
 
-# The branch of $installer_repo from which the installer downloads its scripts.
+# The branch of $manager_repo from which the manager downloads its scripts.
 #
 # Options:
 #   main     = Production-ready (latest stable code)
 #   dev      = Development code (may be unstable)
-#   NadekoV4 = Installer version for NadekoBot v4
+#   NadekoV4 = Manager version for NadekoBot v4
 #
 # Default: "main"
-installer_branch="main"
+manager_branch="main"
+
+# Skip checking if all the prerequisites are installed. By setting this variable to
+# "true", you acknowledge that the Bot and Manager are not guaranteed to work as
+# expected.
+#
+# Options:
+#   true  = Skip checking for prerequisites
+#   false = Check for prerequisites
+#
+# Default: "false"
+export E_SKIP_PREREQ_CHECK="false"
+
 
 # Files to back up when executing option 7.
 #
@@ -82,10 +95,10 @@ nadekobot/data/xp_template.json"
 ### [ General Variables ]
 ###
 
-# 'linuxAIO' revision number.
-export E_LINUXAIO_REVISION=47
+# 'm-bridge.bash' revision number.
+export E_BRIDGE_REVISION=49
 # URL to the raw code of a specified script.
-export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_branch"
+export E_RAW_URL="https://raw.githubusercontent.com/$manager_repo/$manager_branch"
 
 
 ####[ Prepping ]########################################################################
@@ -93,11 +106,11 @@ export E_RAW_URL="https://raw.githubusercontent.com/$installer_repo/$installer_b
 
 ## Change to the directory containing this script.
 ## NOTE:
-##  We need to ensure 'linuxAIO' is in the current directory. If the user runs `bash
-##  linuxAIO` instead of `./linuxAIO` while in the correct directory, ${0%/*} will
-##  return 'linuxAIO' rather than '.', causing the '||' block to execute when it
-##  attempts to change into a file instead of a directory.
-if [[ ! -f linuxAIO ]]; then
+##  We need to ensure 'm-bridge.bash' is in the current directory. If the user runs
+##  `bash m-bridge.bash` instead of `./m-bridge.bash` while in the correct directory,
+##  ${0%/*} will return 'm-bridge.bash' rather than '.', causing the '||' block to
+##  execute when it attempts to change into a file instead of a directory.
+if [[ ! -f m-bridge.bash ]]; then
     cd "${0%/*}" || {
         echo "Failed to change working directory" >&2
         echo "Change your working directory to that of the executed script"
@@ -109,7 +122,7 @@ fi
 ####[ Main ]############################################################################
 
 
-echo "Downloading the latest installer..."
-curl -O "$E_RAW_URL"/installer-prep
-sudo chmod +x installer-prep && ./installer-prep
+echo "Downloading the latest manager..."
+curl -O "$E_RAW_URL"/n-main-prep.bash
+sudo chmod +x n-main-prep.bash && ./n-main-prep.bash
 exit "$?"

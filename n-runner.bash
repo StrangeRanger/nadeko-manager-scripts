@@ -1,12 +1,19 @@
 #!/bin/bash
 #
-# This script starts NadekoBot in one of two modes:
-#   - NadekoRun: Runs NadekoBot in the background.
-#   - NadekoRunAR: Runs NadekoBot in the background with an automatic restart.
+# NadekoBot Service Setup and Runner Script
 #
-# Comment Key:
-#   - A.1.: Used with 'systemctl'.
-#   - B.1.: Used for text output.
+# This script configures and manages the systemd service for NadekoBot, allowing it to
+# run in one of two modes:
+#   - NadekoRun: Runs NadekoBot in the background.
+#   - NadekoRunAR: Runs NadekoBot in the background with automatic restart on failure or
+#     system reboot.
+#
+# The script performs the following tasks:
+#   1. Creates or updates the systemd service unit file for NadekoBot.
+#   2. Generates the appropriate runner script ("NadekoRun") based on the chosen mode.
+#   3. Enables or disables the service using systemctl according to the selected mode.
+#   4. Starts or restarts the NadekoBot service.
+#   5. Displays the service logs after the service has been started.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -14,18 +21,14 @@
 
 ## Determine the action to be performed on the NadekoBot service based on its code name.
 if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
-    readonly C_ACTION_LOWER="disable"    # A.1.
-    readonly C_ACTION_UPPER="Disabling"  # B.1.
+    readonly C_ACTION_LOWER="disable"    # Used with 'systemctl'.
+    readonly C_ACTION_UPPER="Disabling"  # Used for text output.
 else
-    readonly C_ACTION_LOWER="enable"    # A.1.
-    readonly C_ACTION_UPPER="Enabling"  # B.1.
+    readonly C_ACTION_LOWER="enable"    # Used with 'systemctl'.
+    readonly C_ACTION_UPPER="Enabling"  # Used for text output.
 fi
 
-## NOTE:
-##  Starting with systemd version 246, 'StandardOutput' and 'StandardError' no longer
-##  support 'syslog' as valid values.
-if [[ $(systemctl --version | awk 'NR==1 {print $2}') -ge 246 ]]; then
-    readonly C_BOT_SERVICE_CONTENT="[Unit]
+readonly C_BOT_SERVICE_CONTENT="[Unit]
 Description=NadekoBot service
 After=network.target
 StartLimitIntervalSec=60
@@ -44,27 +47,6 @@ SyslogIdentifier=NadekoBot
 
 [Install]
 WantedBy=multi-user.target"
-else
-    readonly C_BOT_SERVICE_CONTENT="[Unit]
-Description=NadekoBot service
-After=network.target
-StartLimitIntervalSec=60
-StartLimitBurst=2
-
-[Service]
-Type=simple
-User=$USER
-WorkingDirectory=$E_ROOT_DIR
-ExecStart=/bin/bash NadekoRun
-Restart=on-failure
-RestartSec=5
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=NadekoBot
-
-[Install]
-WantedBy=multi-user.target"
-fi
 
 # Used to skip the 'read' command if an immediate script exit is required.
 exit_now=false
@@ -74,24 +56,21 @@ exit_now=false
 
 
 ####
-# Exits the script cleanly by displaying an exit message and returning an appropriate
-# exit code. This version is simpler than the 'clean_exit' functions found in other
-# scripts.
+# Display an exit message based on the provided exit code, and exit the script with the
+# specified code.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#       - The initial exit code passed to the function. Under certain conditions, it may
-#         be changed to 50 to allow the calling script to continue execution.
+#       - The initial exit code passed by the caller. Under certain conditions, it may
+#         be modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - If set to "true", an extra blank line is output to separate any prior output
-#         from the exit message.
-#       - Acceptable values:
-#           - true
-#           - false
+#       - If "true", outputs an extra blank line to distinguish previous output from the
+#         exit messages.
+#       - Acceptable values: true, false.
 #
 # EXITS:
-#   - $exit_code: Uses the code provided by the caller, or 50 if the conditions for
-#     continuing (exit code 1 or 130) are met.
+#   - $exit_code: The final exit code, which may be 50 if conditions for continuation
+#     are met.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -99,25 +78,16 @@ clean_exit() {
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## The exit code may be changed to 50 if 'nadeko-latest-installer' should continue
-    ## despite an error. Refer to 'exit_code_actions' for further details.
     case "$exit_code" in
-        1)   exit_code=50 ;;
         0|3) ;;
-        129)
-            echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)"
-            exit_now=true
+        1)
+            exit_code=50
             ;;
         130)
             echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
             exit_code=50
             ;;
-        143)
-            echo -e "\n${E_WARN}Termination signal detected (SIGTERM)"
-            exit_now=true
-            ;;
         *)
-            echo -e "\n${E_WARN}Exiting with exit code: $exit_code"
             exit_now=true
             ;;
     esac
@@ -173,9 +143,14 @@ if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
     echo "#!/bin/bash
 
 _code_name_=\"NadekoRun\"
+export PATH=\"$E_LOCAL_BIN:$PATH\"
+
+echo \"[INFO] python3 path: \$(which python3)\"
+echo \"[INFO] python3 version: \$(python3 --version)\"
+echo \"[INFO] yt-dlp path: \$(which yt-dlp)\"
 
 echo \"[INFO] Running NadekoBot in the background\"
-\"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 cd \"$E_ROOT_DIR/$E_BOT_DIR\"
@@ -191,9 +166,14 @@ else
     echo "#!/bin/bash
 
 _code_name_=\"NadekoRunAR\"
+export PATH=\"$E_LOCAL_BIN:$PATH\"
+
+echo \"[INFO] python3 path: \$(which python3)\"
+echo \"[INFO] python3 version: \$(python3 --version)\"
+echo \"[INFO] yt-dlp path: \$(which yt-dlp)\"
 
 echo \"[INFO] Running NadekoBot in the background with auto restart\"
-\"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
 
@@ -201,7 +181,6 @@ while true; do
     if [[ -d $E_ROOT_DIR/$E_BOT_DIR ]]; then
         cd \"$E_ROOT_DIR/$E_BOT_DIR\" || {
             echo \"[ERROR] Failed to change working directory to '$E_ROOT_DIR/$E_BOT_DIR'\" >&2
-            echo \"[NOTE] Ensure the working directory in '/etc/systemd/system/nadeko.service' is correct\"
             echo \"[INFO] Exiting...\"
             exit 1
         }
@@ -219,7 +198,7 @@ while true; do
 
     echo \"[INFO] Waiting 5 seconds...\"
     sleep 5
-    \"$HOME/.local/bin/yt-dlp\" -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+    yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
     echo \"[INFO] Restarting NadekoBot...\"
 done
 

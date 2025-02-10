@@ -1,22 +1,25 @@
 # NadekoBot-BashScript
 
 [![Project Tracker](https://img.shields.io/badge/repo%20status-Project%20Tracker-lightgrey)](https://wiki.hthompson.dev/en/project-tracker)
-[![Style Guide](https://img.shields.io/badge/code%20style-Style%20Guide-blueviolet)](https://github.com/StrangeRanger/bash-style-guide)
+[![Style Guide](https://img.shields.io/badge/code%20style-Style%20Guide-blueviolet)](https://bsg.hthompson.dev/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/63b063408cea4065a5dbe8e7ba8fdfd2)](https://www.codacy.com/gh/StrangeRanger/NadekoBot-BashScript/dashboard?utm_source=github.com&utm_medium=referral&utm_content=StrangeRanger/NadekoBot-BashScript&utm_campaign=Badge_Grade)
 
-This is the unofficial installer for NadekoBot v5 on Linux distributions.
+This is the unofficial installer and manager for NadekoBot v5 on Linux.
 
 ## Getting Started
 
 ### Downloading linuxAIO
 
-The only script that needs to be downloaded to your system is `linuxAIO`. To do this, execute the following set of commands:
+The only script that needs to be downloaded to your system is `m-bridge.bash`. To do this, execute the following set of commands:
 
-`curl -O https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/main/linuxAIO && chmod +x linuxAIO`
+```bash
+curl -O https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/main/m-bridge.bash
+chmod +x m-bridge.bash
+```
 
 ### Usage
 
-To use the installer, execute the following command: `./linuxAIO`
+To use the manager, execute the following command: `./m-bridge.bash`
 
 If the following command was successfully executed, a menu with the following options (or something very similar) should be displayed:
 
@@ -33,10 +36,16 @@ If the following command was successfully executed, a menu with the following op
 
 ## Officially Supported Distributions
 
-The following is a list of all the Linux distributions that the installer has been tested and are officially support on:
+The following is a list of all the Linux distributions that the manager has been tested and are officially support on:
 
-| Distro/OS  | Version Number |
-| ---------- | -------------- |
-| Ubuntu     | 24.04, 22.04   |
-| Linux Mint | 22, 21         |
-| Debian     | 12, 11         |
+| Distro/OS           | Version Number | End of Life                       | EOL Information                                                                                                                                                                                        |
+| ------------------- | -------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Ubuntu              | 24.04<br>22.04 | April 25, 2029<br>April 01, 2027  | [endoflife.date](https://endoflife.date/ubuntu)<br>[ubuntu.com](https://ubuntu.com/about/release-cycle)                                                                                                |
+| Linux Mint          | 22<br>21       | April 30, 2029<br>April 30, 2027  | [endoflife.date](https://endoflife.date/linuxmint)<br>[linuxmint.com](https://linuxmint.com/download_all.php)                                                                                          |
+| Debian              | 12             | June 10, 2026                     | [endoflife.date](https://endoflife.date/debian)<br>[wiki.debian.org](https://wiki.debian.org/DebianReleases)                                                                                           |
+| Fedora              | 41<br>40       | November 19, 2025<br>May 28, 2025 | [endoflife.date](https://endoflife.date/fedora)<br>[docs.fedoraproject.org](https://docs.fedoraproject.org/en-US/releases/lifecycle/)<br>[fedorapeople.org](https://fedorapeople.org/groups/schedule/) |
+| Alma Linux          | 9<br>8         | May 31, 2032<br>March 01, 2029    | [endoflife.date](https://endoflife.date/almalinux)<br>[wiki.almalinux.org](https://wiki.almalinux.org/release-notes/)                                                                                  |
+| Rocky Linux         | 9<br>8         | May 31, 2032<br>May 31, 2029      | [endoflife.date](https://endoflife.date/rockylinux)<br>[wiki.rockylinux.org](https://wiki.rockylinux.org/rocky/version/)                                                                               |
+| OpenSuse Leap       | 15.6           | December 31, 2025                 | [endoflife.date](https://endoflife.date/opensuse)<br>[en.opensuse.org](https://en.opensuse.org/Lifetime)                                                                                               |
+| OpenSuse Tumbleweed | Rolling        | N/A                               | N/A                                                                                                                                                                                                    |
+| Arch Linux          | Rolling        | N/A                               | N/A                                                                                                                                                                                                    |
