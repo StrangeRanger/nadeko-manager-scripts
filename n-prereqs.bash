@@ -354,8 +354,7 @@ pre_install() {
             local rmpfusion_url="https://mirror.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
 
             echo "${E_INFO}Updating package lists..."
-            # TODO: Replace is actual command, this will result an error...
-            $update_cmd
+            dnf update -y
 
             echo "${E_INFO}Installing RPM Fusion for Fedora $fedora_ver..."
             dnf install -y "$rmpfusion_url" || E_STDERR "Failed to install RPM Fusion" "$?"
