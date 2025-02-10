@@ -61,10 +61,6 @@ exit_code_actions() {
 ####
 # Determines whether the 'token' field in the credentials file is set.
 #
-# This function checks the credentials file at $E_CREDS_PATH for a line matching the
-# "pattern ^token: ''". If such a line is found, it is interpreted as the token being
-# unset.
-#
 # RETURNS:
 #   - 0: If the token is set.
 #   - 1: If the token is not set.
