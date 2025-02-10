@@ -1,6 +1,21 @@
 #!/bin/bash
 #
-# Installs the prerequisites required by NadekoBot on Linux distributions.
+# NadekoBot Prerequisites Installer for Linux
+#
+# This script automates the installation of all prerequisites required by NadekoBot on
+# various Linux distributions. It performs the following tasks:
+#   - Detects the current Linux distribution and version using /etc/os-release or uname.
+#   - Validates support for the detected OS based on predefined distro and version
+#     mappings.
+#   - Executes distribution-specific pre-installation steps (e.g., enabling repositories
+#     on Fedora, AlmaLinux, and Rocky) to prepare the system for package installation.
+#   - Updates package lists and installs necessary packages for both the NadekoBot
+#     Manager (e.g., ccze, jq) and its music functionality (e.g., python3, ffmpeg,
+#     yt-dlp) using the appropriate package manager commands.
+#   - Handles special cases such as installing 'yt-dlp' to a local bin directory and
+#     installing 'ccze' on Arch Linux via an AUR helper or manual build if needed.
+#   - Performs post-installation configuration, like creating symlinks for Python, to
+#     ensure proper functionality.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################

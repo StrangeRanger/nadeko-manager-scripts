@@ -1,8 +1,23 @@
 #!/bin/bash
 #
-# This script prepares for the rest of the Manager by identify the system's
-# architecture to ensure compatibility with NadekoBot. It also contains variables and
-# functions that are used by the rest of the scripts.
+# NadekoBot Manager Pre-Preparation Script
+#
+# This script sets up the environment for the NadekoBot Manager by verifying system
+# compatibility and initializing global variables and functions required by the Manager.
+# It performs several key tasks:
+#   - Detects the system's architecture (e.g., x64, arm64) to ensure only supported
+#     64-bit systems are used.
+#   - Defines ANSI escape sequences and message prefixes for consistent, colorized
+#     terminal output.
+#   - Exports essential environment variables (such as directories and script names)
+#     used by the Manager and its sub-scripts.
+#   - Implements functions for cleanup, error handling, and remote script downloading.
+#   - Checks if the current m-bridge revision is up-to-date; if not, it updates the
+#     bridge script.
+#   - Verifies that systemd is installed and running, a prerequisite for managing
+#     NadekoBot services.
+#   - Finally, it executes the main Manager script (n-main.bash) once all preconditions
+#     are met.
 #
 ########################################################################################
 ####[ Exported and Global Variables ]###################################################
@@ -90,7 +105,7 @@ clean_exit() {
         129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
         130) echo -e "\n${E_WARN}User interrupt detected (SIGINT)" ;;
         143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" ;;
-        *)   echo -e "\n${E_WARN}Exiting with code: $exit_code" ;;
+        *)   echo -e "\n${E_WARN}Exiting with status code: $exit_code" ;;
     esac
 
     echo "${E_INFO}Cleaning up..."
@@ -147,14 +162,13 @@ export -f E_DOWNLOAD_SCRIPT
 #
 # PARAMETERS:
 #   - $1: error_message (Required)
-#       - The main error message to display.
 #   - $2: exit_code (Optional, Default: "")
 #       - If provided, the script will exit with this code.
 #   - $3: additional_message (Optional, Default: "")
 #       - If provided, displays this message after the main error message.
 #
 # EXITS:
-#   - If $exit_code is specified, the script exits with that code.
+#   - $exit_code: The exit code provided by the caller.
 E_STDERR() {
     local error_message="$1"
     local exit_code="${2:-}"

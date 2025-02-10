@@ -1,8 +1,20 @@
 #!/bin/bash
 #
-# The main Manager script for NadekoBot. This script presents menu options and
-# orchestrates the execution of additional scripts to install, run, and manage
-# NadekoBot.
+# NadekoBot Manager - Main Control and Orchestration Script
+#
+# This script provides a menu-driven interface for installing, running, stopping, and
+# managing NadekoBot on a Linux system. It coordinates various operations by invoking
+# supplemental scripts, including:
+#   - n-update.bash: Downloads or updates NadekoBot.
+#   - n-runner.bash: Launches NadekoBot in one of two background modes
+#                    (standard or auto-restart).
+#   - n-prereqs.bash: Installs all required prerequisites for NadekoBot.
+#   - n-file-backup.bash: Backs up essential configurations and data files.
+#
+# In addition to orchestrating these tasks, the script performs runtime checks for
+# required tools and file conditions, displays real-time service logs, and manages
+# service status. It also defines custom exit code actions and signal traps to ensure
+# smooth operation and proper error handling.
 #
 # Comment Key:
 #   - A.1.: Return to stop further code execution.
@@ -47,7 +59,7 @@ export E_YT_DLP_PATH="$E_LOCAL_BIN/yt-dlp"
 exit_code_actions() {
     local exit_code="$1"
 
-    # For exit codes 3, 4, 5, or 50, continue running the main manager.
+    # For exit codes 3, 4, 5, or 50, continue running the main Manager.
     case "$exit_code" in
         3|4|5|50) return 0 ;;
         129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
@@ -60,6 +72,10 @@ exit_code_actions() {
 
 ####
 # Determines whether the 'token' field in the credentials file is set.
+#
+# NOTE:
+#   This is not a comprehensive check for the validity of the token; it only verifies
+#   that the token field is not empty.
 #
 # RETURNS:
 #   - 0: If the token is set.
@@ -184,8 +200,8 @@ export -f E_FOLLOW_SERVICE_LOGS
 #   - $1: log_type (Required)
 #       - Specifies the caller context.
 #       - Acceptable values:
-#           - runner: Called from one of the runner scripts.
-#           - opt_five: Called from the main Manager.
+#           - runner: Called from the runner scripts.
+#           - opt_five: Called from the main Manager (this script).
 #
 # EXITS:
 #   - 2: If an invalid parameter is provided.

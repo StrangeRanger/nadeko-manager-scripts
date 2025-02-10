@@ -1,7 +1,16 @@
 #!/bin/bash
 #
-# Backs up files deemed important to the user. These files are specified by the
-# $E_FILES_TO_BACK_UP variable in 'm-bridge.bash'.
+# Important Files Backup Script
+#
+# This script creates a backup of user-designated important files, as specified by the
+# $E_FILES_TO_BACK_UP variable defined in 'm-bridge.bash'. It performs the following
+# tasks:
+#   - Creates a temporary backup directory.
+#   - Copies each file listed in $E_FILES_TO_BACK_UP into this temporary directory.
+#   - If an existing backup is found, it is preserved by renaming it as the old backup,
+#     then replaced by the new backup.
+#   - In the event of an error or interruption, the script attempts to restore the
+#     previous backup to prevent data loss.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -68,10 +77,13 @@ clean_exit() {
 
     ## Attempt to restore original backups if necessary.
     (
+        # Checks if the "current backup" directory is missing but the "old backup"
+        # directory exists.
         if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
             echo "${E_WARN}Unable to complete backup"
             echo "${E_INFO}Attempting to restore original backups..."
             mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
+        # Checks if both the "current backup" and the "old backup" directories exist.
         elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
             rm -rf "$C_OLD_BACKUP" \
                 || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
@@ -141,7 +153,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
         rm -rf "$C_OLD_BACKUP" \
             || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
                 "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
-     ) || E_STDERR "An error occurred while replacing old backups" "1"
+     ) || E_STDERR "An error occurred while replacing old backups" "$?"
 else
     ## If no current backup directory exists, simply move the temporary backup folder to
     ## become the new current backup directory.
