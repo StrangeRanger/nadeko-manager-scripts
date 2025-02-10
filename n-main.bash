@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# The main Linux manager for NadekoBot. This script presents menu options and
+# The main Manager script for NadekoBot. This script presents menu options and
 # orchestrates the execution of additional scripts to install, run, and manage
 # NadekoBot.
 #
@@ -9,7 +9,7 @@
 #   - B.1.: Prevent the code from running if the option is disabled.
 #
 ########################################################################################
-####[ Variables ]#######################################################################
+####[ Global Variables ]################################################################
 
 
 readonly C_CREDS="creds.yml"
@@ -27,34 +27,31 @@ export E_YT_DLP_PATH="$E_LOCAL_BIN/yt-dlp"
 
 
 ####
-# Evaluates the return value or exit code from executed scripts and carries out the
-# corresponding actions.
+# Evaluates the exit code from executed scripts and takes the appropriate action.
 #
 # Custom Exit Codes:
-#   - 3: Related to NadekoBot daemon service.
+#   - 3: Indicates an issue related to the NadekoBot daemon service.
 #   - 4: Unsupported OS/distro.
-#   - 5: A problem occurred while finalizing an installation or backing up files.
-#   - 50: Arbitrary exit code indicating that the main manager should continue running.
+#   - 5: An error occurred during finalization or backup.
+#   - 50: Special code indicating that the main Manager script should continue running.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
 #       - The exit code to evaluate.
 #
 # RETURNS:
-#   - 0: If the script should continue running (exit codes 3, 4, 5, or 50).
+#   - 0: If the exit code is one of 3, 4, 5, or 50, allowing the script to continue.
 #
 # EXITS:
-#   - $exit_code: Exits the script with the provided code, if not one of the above.
+#   - The script terminates with the provided exit code if it is not one of the above.
 exit_code_actions() {
     local exit_code="$1"
 
-    ## We don't specify any output for SIGINT because it's handled by 'n-main-prep.bash'.
-    ## As a note, SIGHUP and SIGTERM don't propagate to parent processes, so we also
-    ## specify the output for those signals in 'n-main-prep.bash'.
+    # For exit codes 3, 4, 5, or 50, continue running the main manager.
     case "$exit_code" in
         3|4|5|50) return 0 ;;
         129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
-        130) ;;
+        130) ;;  # SIGINT is handled elsewhere; no message is printed here.
         143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" ;;
     esac
 
@@ -62,11 +59,15 @@ exit_code_actions() {
 }
 
 ####
-# Checks whether the 'token' field in $C_CREDS is set.
+# Determines whether the 'token' field in the credentials file is set.
+#
+# This function checks the credentials file at $E_CREDS_PATH for a line matching the
+# "pattern ^token: ''". If such a line is found, it is interpreted as the token being
+# unset.
 #
 # RETURNS:
-#   - 0: If the token is not set (or if $C_CREDS does not exist).
-#   - 1: If the token is set (as detected by the pattern '^token: ''').
+#   - 0: If the token field is NOT set or if the credentials file does NOT exist.
+#   - 1: If the token field is set.
 is_token_set() {
     if [[ ! -f $E_CREDS_PATH ]]; then
         return 0
