@@ -86,38 +86,38 @@ disabled_reasons() {
 
     case "$option_number" in
         1)
-            echo "${E_NOTE}    One or more prerequisites are not installed"
-            echo "${E_NOTE}        Use option 6 to install them all"
+            echo "${E_NOTE}  One or more prerequisites are not installed"
+            echo "${E_NOTE}    Use option 6 to install them all"
             echo ""
             ;;
         2|3)
             if [[ ! -d $E_BOT_DIR ]]; then
-                echo "${E_NOTE}    NadekoBot could not be found"
-                echo "${E_NOTE}        Use option 1 to download NadekoBot"
+                echo "${E_NOTE}  NadekoBot could not be found"
+                echo "${E_NOTE}    Use option 1 to download NadekoBot"
                 echo ""
             elif [[ ! -f $E_CREDS_PATH ]]; then
-                echo "${E_NOTE}    The '$C_CREDS' could not be found"
-                echo "${E_NOTE}        Refer to the following guide for help:" \
+                echo "${E_NOTE}  The '$C_CREDS' could not be found"
+                echo "${E_NOTE}    Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
                 echo ""
             elif ! is_token_set; then
-                echo "${E_NOTE}    The 'token' in '$C_CREDS' is not set"
-                echo "${E_NOTE}        Refer to the following guide for help:" \
+                echo "${E_NOTE}  The 'token' in '$C_CREDS' is not set"
+                echo "${E_NOTE}    Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
                 echo ""
             else
-                echo "${E_NOTE}    Unknown reason"
+                echo "${E_NOTE}  Unknown reason"
                 echo ""
             fi
             ;;
         4|5)
-            echo "${E_NOTE}    NadekoBot is not currently running"
-            echo "${E_NOTE}        Use option 2 or 3 to start NadekoBot"
+            echo "${E_NOTE}  NadekoBot is not currently running"
+            echo "${E_NOTE}    Use option 2 or 3 to start NadekoBot"
             echo ""
             ;;
         7)
-            echo "${E_NOTE}    NadekoBot could not be found"
-            echo "${E_NOTE}        Use option 1 to download NadekoBot"
+            echo "${E_NOTE}  NadekoBot could not be found"
+            echo "${E_NOTE}    Use option 1 to download NadekoBot"
             echo ""
             ;;
     esac
