@@ -13,6 +13,9 @@ FROM ${BASE_IMAGE}
 # Allow build-time selection of package manager commands.
 ARG PKG_MANAGER
 
+# Automatically connect the image to the associated GitHub repository.
+LABEL org.opencontainers.image.source https://github.com/StrangeRanger/NadekoBot-BashScript
+
 # Tell systemd (and various packages) that we are in a container.
 ENV container=docker
 
