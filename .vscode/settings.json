@@ -49,6 +49,7 @@
         "powertools",
         "PREREQ",
         "prereqs",
+        "procps",
         "rmdeps",
         "rmpfusion",
         "rockylinux",
