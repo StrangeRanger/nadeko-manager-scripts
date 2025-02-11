@@ -1,8 +1,8 @@
-# NadekoBot-BashScript
+# nadeko-manager-scripts
 
 [![Project Tracker](https://img.shields.io/badge/repo%20status-Project%20Tracker-lightgrey)](https://wiki.hthompson.dev/en/project-tracker)
 [![Style Guide](https://img.shields.io/badge/code%20style-Style%20Guide-blueviolet)](https://bsg.hthompson.dev/)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/63b063408cea4065a5dbe8e7ba8fdfd2)](https://www.codacy.com/gh/StrangeRanger/NadekoBot-BashScript/dashboard?utm_source=github.com&utm_medium=referral&utm_content=StrangeRanger/NadekoBot-BashScript&utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/63b063408cea4065a5dbe8e7ba8fdfd2)](https://www.codacy.com/gh/StrangeRanger/nadeko-manager-scripts/dashboard?utm_source=github.com&utm_medium=referral&utm_content=StrangeRanger/nadeko-manager-scripts&utm_campaign=Badge_Grade)
 
 This is the unofficial installer and manager for NadekoBot v5 on Linux.
 
@@ -13,7 +13,7 @@ This is the unofficial installer and manager for NadekoBot v5 on Linux.
 The only script that needs to be downloaded to your system is `m-bridge.bash`. To do this, execute the following set of commands:
 
 ```bash
-curl -O https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/main/m-bridge.bash
+curl -O https://raw.githubusercontent.com/StrangeRanger/nadeko-manager-scripts/main/m-bridge.bash
 chmod +x m-bridge.bash
 ```
 

@@ -24,7 +24,7 @@
 
 
 # See the 'README' note at the beginning of 'm-bridge.bash' for details.
-readonly C_LATEST_BRIDGE_REVISION=49
+readonly C_LATEST_BRIDGE_REVISION=50
 readonly C_MAIN_MANAGER="n-main.bash"
 
 ## Define ANSI escape sequences for colored terminal output.
