@@ -17,7 +17,7 @@ ARG BASE_IMAGE
 ARG PKG_MANAGER
 
 # Automatically connect the image to the associated GitHub repository.
-LABEL org.opencontainers.image.source=https://github.com/StrangeRanger/NadekoBot-BashScript
+LABEL org.opencontainers.image.source=https://github.com/StrangeRanger/NadekoBot-ManagerScripts
 
 # Set a description for the image.
 LABEL org.opencontainers.image.description="A Docker image to test NadekoBot's Manager scripts on '${BASE_IMAGE}' image."
