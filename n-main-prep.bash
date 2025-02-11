@@ -152,7 +152,7 @@ E_DOWNLOAD_SCRIPT() {
         && printf "%sDownloading '%s'..." "${E_INFO}" "$script_name"
 
     curl -O -s "$E_RAW_URL"/"$script_name"
-    sudo chmod +x "$script_name"
+    chmod +x "$script_name"
 }
 export -f E_DOWNLOAD_SCRIPT
 

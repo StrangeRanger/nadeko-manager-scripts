@@ -136,7 +136,7 @@ if [[ -f NadekoRun ]]; then
 else
     echo "${E_INFO}Creating 'NadekoRun'..."
     touch NadekoRun
-    sudo chmod +x NadekoRun
+    chmod +x NadekoRun
 fi
 
 if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then

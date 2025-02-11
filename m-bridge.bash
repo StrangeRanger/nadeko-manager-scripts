@@ -124,5 +124,5 @@ fi
 
 echo "Downloading the latest manager..."
 curl -O "$E_RAW_URL"/n-main-prep.bash
-sudo chmod +x n-main-prep.bash && ./n-main-prep.bash
+chmod +x n-main-prep.bash && ./n-main-prep.bash
 exit "$?"
