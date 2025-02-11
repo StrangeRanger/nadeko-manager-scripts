@@ -18,7 +18,9 @@ ARG PKG_MANAGER
 
 # Automatically connect the image to the associated GitHub repository.
 LABEL org.opencontainers.image.source=https://github.com/StrangeRanger/NadekoBot-BashScript
-LABEL org.opencontainers.image.description="A Docker image to test NadekoBot's BashScript on $BASE_IMAGE images."
+
+# Set a description for the image.
+LABEL org.opencontainers.image.description="A Docker image to test NadekoBot's Manager scripts on '${BASE_IMAGE}' image."
 
 # Tell systemd (and various packages) that we are in a container.
 ENV container=docker
