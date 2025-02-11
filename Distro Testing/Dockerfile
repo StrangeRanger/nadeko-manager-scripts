@@ -6,7 +6,7 @@
 #   - PKG_MANAGER: one of "apt", "dnf", "zypper", or "pacman"
 ##############################
 
-## There is no default image on purpose. The user MUST specify one.
+# Declare the build argument for use in FROM.
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
@@ -17,10 +17,10 @@ ARG BASE_IMAGE
 ARG PKG_MANAGER
 
 # Automatically connect the image to the associated GitHub repository.
-LABEL org.opencontainers.image.source=https://github.com/StrangeRanger/nadeko-manager-scripts
+LABEL org.opencontainers.image.source="https://github.com/StrangeRanger/nadeko-manager-scripts"
 
 # Set a description for the image.
-LABEL org.opencontainers.image.description="A Docker image to test NadekoBot's Manager scripts on '${BASE_IMAGE}' image."
+LABEL org.opencontainers.image.description="A Docker image to test NadekoBot's Manager scripts on ${BASE_IMAGE} image."
 
 # Tell systemd (and various packages) that we are in a container.
 ENV container=docker
