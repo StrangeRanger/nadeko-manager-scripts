@@ -24,7 +24,7 @@
 
 
 # See the 'README' note at the beginning of 'm-bridge.bash' for details.
-readonly C_LATEST_BRIDGE_REVISION=49
+readonly C_LATEST_BRIDGE_REVISION=50
 readonly C_MAIN_MANAGER="n-main.bash"
 
 ## Define ANSI escape sequences for colored terminal output.
@@ -152,7 +152,7 @@ E_DOWNLOAD_SCRIPT() {
         && printf "%sDownloading '%s'..." "${E_INFO}" "$script_name"
 
     curl -O -s "$E_RAW_URL"/"$script_name"
-    sudo chmod +x "$script_name"
+    chmod +x "$script_name"
 }
 export -f E_DOWNLOAD_SCRIPT
 

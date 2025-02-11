@@ -37,8 +37,8 @@
 # manager.
 #
 # Format:  manager_repo="[github username]/[repository name]"
-# Default: "StrangeRanger/NadekoBot-BashScript"
-manager_repo="StrangeRanger/NadekoBot-BashScript"
+# Default: "StrangeRanger/nadeko-manager-scripts"
+manager_repo="StrangeRanger/nadeko-manager-scripts"
 
 # The branch of $manager_repo from which the manager downloads its scripts.
 #
@@ -96,7 +96,7 @@ nadekobot/data/xp_template.json"
 ###
 
 # 'm-bridge.bash' revision number.
-export E_BRIDGE_REVISION=49
+export E_BRIDGE_REVISION=50
 # URL to the raw code of a specified script.
 export E_RAW_URL="https://raw.githubusercontent.com/$manager_repo/$manager_branch"
 
@@ -124,5 +124,5 @@ fi
 
 echo "Downloading the latest manager..."
 curl -O "$E_RAW_URL"/n-main-prep.bash
-sudo chmod +x n-main-prep.bash && ./n-main-prep.bash
+chmod +x n-main-prep.bash && ./n-main-prep.bash
 exit "$?"

@@ -83,7 +83,7 @@ revision_40() {
         "version of NadekoBot, then re-download NadekoBot using the newest version of" \
         "the Manager."
     echo "${E_NOTE}The newest version of the Manager can be found at" \
-        "https://github.com/StrangeRanger/NadekoBot-BashScript/blob/main/m-bridge.bash"
+        "https://github.com/StrangeRanger/nadeko-manager-scripts/blob/main/m-bridge.bash"
     exit 1
 }
 

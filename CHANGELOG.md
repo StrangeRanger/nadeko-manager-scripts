@@ -317,7 +317,7 @@ This release introduces A LOT of changes to the installer, including some breaki
 
 ### Changed
 
-- Refactored code to allow for better flexibility for the [following fixes](https://github.com/StrangeRanger/NadekoBot-BashScript/commit/4092d925677ade7a8f1ce18dc9d1b94baa80d531).
+- Refactored code to allow for better flexibility for the [following fixes](https://github.com/StrangeRanger/nadeko-manager-scripts/commit/4092d925677ade7a8f1ce18dc9d1b94baa80d531).
 - Slightly changed the way that the new version of NadekoBot is downloaded and built.
 
 ## [v3.0.3] - 2021-05-23
@@ -389,7 +389,7 @@ Additionally, you'll need to delete `/lib/systemd/system/nadeko.service`, as the
 
 - Shellcheck warnings [SC2064](https://github.com/koalaman/shellcheck/wiki/SC2064) and [SC2053](https://github.com/koalaman/shellcheck/wiki/SC2053).
 - Several other shellcheck warnings.
-- Issue [#14](https://github.com/StrangeRanger/NadekoBot-BashScript/issues/14).
+- Issue [#14](https://github.com/StrangeRanger/nadeko-manager-scripts/issues/14).
 
 ## [v2.1.0] - 2020-12-10
 
@@ -425,19 +425,19 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
     - CentOS: 7
 - The option to run NadekoBot with auto-update.
 
-[unreleased]: https://github.com/StrangeRanger/NadekoBot-BashScript/compare/v5.0.0...HEAD
-[v5.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v5.0.0
-[v4.0.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.1
-[v4.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v4.0.0
-[v3.2.5]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.5
-[v3.2.4]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.4
-[v3.2.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.3
-[v3.2.2]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.2
-[v3.2.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.2.0
-[v3.1.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.1.1
-[v3.1.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.1.0
-[v3.0.4]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.4
-[v3.0.3]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.3
-[v3.0.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v3.0.0
-[v2.1.1]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.1
-[v2.1.0]: https://github.com/StrangeRanger/NadekoBot-BashScript/releases/tag/v2.1.0
+[unreleased]: https://github.com/StrangeRanger/nadeko-manager-scripts/compare/v5.0.0...HEAD
+[v5.0.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v5.0.0
+[v4.0.1]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v4.0.1
+[v4.0.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v4.0.0
+[v3.2.5]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.2.5
+[v3.2.4]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.2.4
+[v3.2.3]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.2.3
+[v3.2.2]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.2.2
+[v3.2.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.2.0
+[v3.1.1]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.1.1
+[v3.1.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.1.0
+[v3.0.4]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.0.4
+[v3.0.3]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.0.3
+[v3.0.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v3.0.0
+[v2.1.1]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v2.1.1
+[v2.1.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v2.1.0

@@ -7,7 +7,7 @@
 
 C_BRIDGE="m-bridge.bash"
 C_BRIDGE_BRANCH="dev"
-C_BRIDGE_URL="https://raw.githubusercontent.com/StrangeRanger/NadekoBot-BashScript/$C_BRIDGE_BRANCH/$C_BRIDGE"
+C_BRIDGE_URL="https://raw.githubusercontent.com/StrangeRanger/nadeko-manager-scripts/$C_BRIDGE_BRANCH/$C_BRIDGE"
 
 if [[ ! -d shared ]]; then
     echo "Creating shared directory..."
