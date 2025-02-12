@@ -24,7 +24,7 @@ LABEL org.opencontainers.image.description="A Docker image to test NadekoBot's M
 # Tell systemd (and various packages) that we are in a container.
 ENV container=docker
 
-# TODO: Add a description...
+# Set non-interactive mode for package installations and upgrades on Debian-based systems.
 ENV DEBIAN_FRONTEND=noninteractive
 
 ## Install systemd, curl, sudo, vim, and other dependencies.
