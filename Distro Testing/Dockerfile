@@ -10,21 +10,21 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-# Re-declare the build argument so it’s available in this stage.
+# Re-declare the build argument so it’s available in the next stages.
 ARG BASE_IMAGE
 
 # Allow build-time selection of package manager commands.
 ARG PKG_MANAGER
 
-# Automatically connect the image to the associated GitHub repository.
+## OCI annotation labels.
 LABEL org.opencontainers.image.source="https://github.com/StrangeRanger/nadeko-manager-scripts"
-
-# Set a description for the image.
+LABEL org.opencontainers.image.authors="strangeranger@hthompson.dev"
 LABEL org.opencontainers.image.description="A Docker image to test NadekoBot's Manager scripts on ${BASE_IMAGE} image."
 
 # Tell systemd (and various packages) that we are in a container.
 ENV container=docker
 
+# TODO: Add a description...
 ENV DEBIAN_FRONTEND=noninteractive
 
 ## Install systemd, curl, sudo, vim, and other dependencies.
