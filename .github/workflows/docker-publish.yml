@@ -9,6 +9,9 @@ on:
   push:
     paths:
       - "Distro Testing/Dockerfile"
+      - "Distro Testing/install-deps.bash"
+      - "Distro Testing/setup.bash"
+      - "m-bridge.bash"
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'  # Runs every Sunday at 00:00 UTC
