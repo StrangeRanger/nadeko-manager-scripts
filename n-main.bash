@@ -139,22 +139,6 @@ disabled_reasons() {
     esac
 }
 
-####
-# Displays real-time logs from the NadekoBot service by following its journal entries,
-# piping the output through 'ccze' to add color. The function waits for the user to
-# press Enter to stop following the logs.
-follow_service_logs() {
-    local journal_pid
-
-    sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
-    journal_pid=$!
-
-    read -r
-
-    kill "$journal_pid"
-    wait "$journal_pid" 2>/dev/null
-}
-
 ###
 ### [ Functions to be Exported ]
 ###
@@ -197,6 +181,23 @@ E_STOP_SERVICE() {
 export -f E_STOP_SERVICE
 
 ####
+# Displays real-time logs from the NadekoBot service by following its journal entries,
+# piping the output through 'ccze' to add color. The function waits for the user to
+# press Enter to stop following the logs.
+E_FOLLOW_SERVICE_LOGS() {
+    local journal_pid
+
+    sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
+    journal_pid=$!
+
+    read -r
+
+    kill "$journal_pid"
+    wait "$journal_pid" 2>/dev/null
+}
+export -f E_FOLLOW_SERVICE_LOGS
+
+####
 # Provides contextual information when displaying NadekoBot service logs, indicating
 # whether the logs are viewed from a runner script or directly from the main Manager.
 #
@@ -223,7 +224,7 @@ E_WATCH_SERVICE_LOGS() {
     echo "${E_NOTE}Press [Enter] to stop watching the logs"
     echo ""
 
-    follow_service_logs
+    E_FOLLOW_SERVICE_LOGS
 
     if [[ $log_type == "runner" ]]; then
         echo "${E_NOTE}Please check the logs above to make sure that there aren't any" \
