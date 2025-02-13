@@ -36,7 +36,7 @@ If the following command was successfully executed, a menu with the following op
 
 ## Officially Supported Distributions
 
-The following is a list of all the Linux distributions that the manager has been tested and are officially support on:
+The following is a list of all the Linux distributions that the Manager has been tested and are officially support on:
 
 | Distro/OS           | Version Number | End of Life                       | EOL Information                                                                                                                                                                                        |
 | ------------------- | -------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -49,3 +49,22 @@ The following is a list of all the Linux distributions that the manager has been
 | OpenSuse Leap       | 15.6           | December 31, 2025                 | [endoflife.date](https://endoflife.date/opensuse)<br>[en.opensuse.org](https://en.opensuse.org/Lifetime)                                                                                               |
 | OpenSuse Tumbleweed | Rolling        | N/A                               | N/A                                                                                                                                                                                                    |
 | Arch Linux          | Rolling        | N/A                               | N/A                                                                                                                                                                                                    |
+
+## Testing
+
+I've utilized Docker images to test the Manager on various Linux distributions. This is done via the Dockerfile and script located in the `Distro Testing` directory.
+
+There are two methods to test the Manager scripts:
+
+1. **Pulling Pre-built Images from Docker Hub**: You can pull the pre-built images for each distribution using the appropriate tags. For detailed instructions on how to run and interact with these images, refer to the [Docker Hub repository](https://hub.docker.com/repository/docker/strangeranger/nadeko-manager-testing/).
+
+2. **Building Images Locally**: If you prefer to build the images on your machine, you can execute the provided script that builds all of the images locally. Simply run:
+
+   ```bash
+   cd "Distro Testing"
+   ./build-docker-images.bash
+   ```
+
+   This script will construct the Docker images for all supported Linux distributions. Once the build process completes, you can run the images using the same instructions as for the pre-built versions.
+
+For more information on how to interact with and run the images, see the instructions on the [Docker Hub repository](https://hub.docker.com/repository/docker/strangeranger/nadeko-manager-testing/).
