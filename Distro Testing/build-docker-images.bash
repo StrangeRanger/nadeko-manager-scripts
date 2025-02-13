@@ -71,7 +71,8 @@ declare -A pkg_manager=(
 for distro in "${!distros_base[@]}"; do
     base_image="${distros_base[$distro]}"
     manager="${pkg_manager[$distro]}"
-    image_tag="nadekobot-testing-${distro}"
+    common_repo="nadeko-manager-testing"
+    image_tag="${common_repo}:${distro}"
 
     echo "----------------------------------------"
     echo "Building image: $image_tag"
