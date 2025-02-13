@@ -52,6 +52,7 @@ Like with the `v5.0.0` release, all breaking changes are handled automatically, 
 - Where the script used to check for compatibility using the bit-type, architecture, distribution, and distro version, now only checks for the bit-type and if the system utilizes `systemd`. The distribution and version check is performed when installing prerequisites.
 - Reduce dependency on external tools, such as `awk`.
 - The previous version of `installer-prep` has been repurposed to allow a smooth transition from revision `47` to `48+`/Manager `v5.0.x` to `v6.0.0`.
+- Instead of requiring the user to use `Ctrl` + `C` to stop watching the service logs, the Manager will wait for the user to press the `Enter` key.
 
 ### Removed
 
