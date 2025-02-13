@@ -56,7 +56,7 @@ I've utilized Docker images to test the Manager on various Linux distributions. 
 
 There are two methods to test the Manager scripts:
 
-1. **Pulling Pre-built Images from Docker Hub**: You can pull the pre-built images for each distribution using the appropriate tags. For detailed instructions on how to run and interact with these images, refer to the [Docker Hub repository](https://hub.docker.com/repository/docker/strangeranger/nadeko-manager-testing/).
+1. **Pulling Pre-built Images from Docker Hub**: You can pull the pre-built images for each distribution using the appropriate tags. For detailed instructions on how to run and interact with these images, refer to the [Docker Hub repository](https://hub.docker.com/r/strangeranger/nadeko-manager-testing).
 
 2. **Building Images Locally**: If you prefer to build the images on your machine, you can execute the provided script that builds all of the images locally. Simply run:
 
@@ -67,4 +67,4 @@ There are two methods to test the Manager scripts:
 
    This script will construct the Docker images for all supported Linux distributions. Once the build process completes, you can run the images using the same instructions as for the pre-built versions.
 
-For more information on how to interact with and run the images, see the instructions on the [Docker Hub repository](https://hub.docker.com/repository/docker/strangeranger/nadeko-manager-testing/).
+For more information on how to interact with and run the images, see the instructions on the [Docker Hub repository](https://hub.docker.com/r/strangeranger/nadeko-manager-testing).

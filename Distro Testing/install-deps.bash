@@ -47,7 +47,6 @@ elif [[ "$C_PKG_MANAGER" = "pacman" ]]; then
         userdel -r builder
         rm -f /etc/sudoers.d/builder
     fi
-    pacman -Rns --noconfirm base-devel git go yay
     pacman -Scc --noconfirm
 else
     echo "Unsupported package manager: $C_PKG_MANAGER"

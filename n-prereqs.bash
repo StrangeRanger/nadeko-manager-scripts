@@ -366,7 +366,7 @@ pre_install() {
             ;;
         fedora)
             local fedora_ver; fedora_ver=$(rpm -E %fedora)
-            local rmpfusion_url="https://mirror.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
+            local rmpfusion_url="https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
 
             echo "${E_INFO}Updating package lists..."
             dnf update -y

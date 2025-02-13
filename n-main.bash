@@ -181,14 +181,19 @@ E_STOP_SERVICE() {
 export -f E_STOP_SERVICE
 
 ####
-# Displays real-time logs from the NadekoBot service by following its journal entries.
-# The output is piped through 'ccze' to add color, and SIGINT (Ctrl+C) is trapped to
-# exit gracefully.
+# Displays real-time logs from the NadekoBot service by following its journal entries,
+# piping the output through 'ccze' to add color. The function waits for the user to
+# press Enter to stop following the logs.
 E_FOLLOW_SERVICE_LOGS() {
-    (
-        trap 'echo -e "\n"; exit 130' SIGINT
-        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A
-    )
+    local journal_pid
+
+    sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
+    journal_pid=$!
+
+    read -r
+
+    kill "$journal_pid"
+    wait "$journal_pid" 2>/dev/null
 }
 export -f E_FOLLOW_SERVICE_LOGS
 
@@ -216,13 +221,12 @@ E_WATCH_SERVICE_LOGS() {
         E_STDERR "INTERNAL: Invalid parameter for 'E_WATCH_SERVICE_LOGS': $1" "2"
     fi
 
-    echo "${E_NOTE}To stop displaying the startup logs:"
-    echo "${E_NOTE}  1) Press 'Ctrl' + 'C'"
+    echo "${E_NOTE}Press [Enter] to stop watching the logs"
     echo ""
 
     E_FOLLOW_SERVICE_LOGS
 
-    if [[ $1 == "runner" ]]; then
+    if [[ $log_type == "runner" ]]; then
         echo "${E_NOTE}Please check the logs above to make sure that there aren't any" \
             "errors. If there are, resolve whatever issue is causing them."
     fi
