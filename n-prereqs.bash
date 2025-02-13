@@ -249,10 +249,10 @@ install_ccze_arch() {
         sudo pacman -S --needed base-devel git
         echo "${E_INFO}Cloning the AUR package..."
         git clone https://aur.archlinux.org/ccze.git /tmp/ccze
-        cd /tmp/ccze || E_STDERR "Failed to change to '/tmp/ccze'" "1"
+        pushd /tmp/ccze >/dev/null || E_STDERR "Failed to change to '/tmp/ccze'" "1"
         echo "${E_INFO}Building and installing 'ccze'..."
         makepkg -si || E_STDERR "Failed to build and install 'ccze'" "$?"
-        cd - || E_STDERR "Failed to change back to the previous directory" "1"
+        popd >/dev/null || E_STDERR "Failed to change back to the previous directory" "1"
     fi
 }
 

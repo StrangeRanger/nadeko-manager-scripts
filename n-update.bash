@@ -183,7 +183,7 @@ trap 'clean_exit "$?" "true"'  EXIT
 
 
 read -rp "${E_NOTE}We will now set up NadekoBot. Press [Enter] to begin."
-cd "$C_NADEKOBOT_TMP" \
+pushd "$C_NADEKOBOT_TMP" >/dev/null \
     || E_STDERR "Failed to change working directory to '$C_NADEKOBOT_TMP'" "1"
 
 if [[ $E_BOT_SERVICE_STATUS == "active" ]]; then
@@ -208,7 +208,7 @@ archive_dir_name=$(tar -tf "$C_ARCHIVE_NAME" | head -1 | cut -f1 -d "/")
 mv "$archive_dir_name" "$E_BOT_DIR"
 unset archive_dir_name
 chmod +x "${E_BOT_DIR}/${E_BOT_EXE}"
-cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
+popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "1"
 
 
 ###
