@@ -236,7 +236,7 @@ trap 'exit_code_actions "143"' SIGTERM
 
 
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
-printf "%sWelcome to the NadekoBot manager menu\n\n" "$E_CLR_LN"
+printf "%sWelcome to the NadekoBot Manager menu\n\n" "$E_CLR_LN"
 
 while true; do
     ###
