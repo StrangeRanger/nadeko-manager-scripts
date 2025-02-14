@@ -3,15 +3,6 @@
 # NadekoBot Update Utility
 #
 # This script automates the process of updating NadekoBot to a user-selected version.
-# It performs the following tasks:
-#   1. Connects to the GitLab API to retrieve available NadekoBot release versions.
-#   2. Prompts the user to select a desired version for installation.
-#   3. Downloads and extracts the corresponding release archive.
-#   4. Backs up the current bot configuration and data (including credentials, database,
-#      strings, and aliases) to facilitate rollback if needed.
-#   5. Transfers custom data to the new installation while preserving prior
-#      configurations.
-#   6. Handles service interruptions and cleans up temporary files upon completion.
 #
 # NOTE:
 #   After each update, any custom modifications to strings and aliases must be
@@ -61,8 +52,7 @@ service_is_active=false
 #       - Acceptable values: true, false.
 #
 # EXITS:
-#   - $exit_code: The final exit code, which may be 50 if conditions for continuation
-#     are met.
+#   - $exit_code: The final exit code.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -88,29 +78,23 @@ clean_exit() {
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" &>/dev/null
 
+    ## Attempts to restore the original $E_BOT_DIR if necessary.
     {
-        ## Checks if the main bot directory exists, the first backup is missing, but the
-        ## second backup exists. It then tries to restore by renaming the second backup.
         if [[ -d $E_BOT_DIR && ! -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
             echo "${E_WARN}Unable to complete installation"
             echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
             mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" || exit 1
-        ## Checks if the main bot directory is missing but the first backup exists. It
-        ## restores the main directory from the first backup.
         elif [[ ! -d $E_BOT_DIR && -d $C_BOT_DIR_OLD ]]; then
             echo "${E_WARN}Unable to complete installation"
             echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
             mv "$C_BOT_DIR_OLD" "$E_BOT_DIR" || exit 1
 
-            ## If a second backup exists, it renames that to become the first backup.
             if [[ -d $C_BOT_DIR_OLD_OLD ]]; then
                 mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" \
                     || E_STDERR \
                         "Failed to rename '$C_BOT_DIR_OLD_OLD' as '$C_BOT_DIR_OLD'" \
                         "" "${E_NOTE}Please rename it manually"
             fi
-        ## Checks if all three directories exist (main, first backup, and second backup)
-        ## and deletes the second backup as it's no longer needed.
         elif [[ -d $E_BOT_DIR && -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
             rm -rf "$C_BOT_DIR_OLD_OLD" \
                 || E_STDERR "Failed to remove '$C_BOT_DIR_OLD_OLD'" "" \

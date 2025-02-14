@@ -34,9 +34,8 @@ declare -A -r C_SUPPORTED_DISTROS=(
 )
 
 # NOTE:
-#   - The update command for arch is empty because running 'pacman -Sy' without '-u'
-#     is discouraged; this avoids unintentionally upgrading the system or existing
-#     packages.
+#   The update command for arch is empty because running 'pacman -Sy' without '-u' is
+#   discouraged; this avoids unintentionally upgrading the system or existing packages.
 declare -A -r C_UPDATE_CMD_MAPPING=(
     ["ubuntu"]="sudo apt-get update"
     ["debian"]="sudo apt-get update"
@@ -61,11 +60,6 @@ declare -A -r C_INSTALL_CMD_MAPPING=(
     ["arch"]="sudo pacman -S --noconfirm"
 )
 
-# These are the packages required by the Manager scripts.
-#
-# NOTE:
-#   - 'curl' is omitted because it must already be installed for the parent manager
-#     scripts to work.
 declare -A -r C_MANAGER_PKG_MAPPING=(
     ["ubuntu"]="ccze jq"
     ["debian"]="ccze jq"
@@ -78,21 +72,19 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
     ["arch"]="jq"  # 'ccze' gets installed separately via AUR.
 )
 
-# These are the packages required to use the music functionality of NadekoBot.
-#
 # NOTE:
 #   - The script requires Python 3.9+ for proper operation.
-#   - For almalinux (8): 'python3' installs Python 3.6 by default, so 'python311' is
+#   - almalinux 8: 'python3' installs Python 3.6 by default, so 'python311' is
 #     explicitly installed.
-#   - For rocky (8): 'python3' installs Python 3.6 by default, so 'python311' is
-#     explicitly installed.
-#   - On opensuse-tumbleweed: Installing 'yt-dlp' automatically installs 'ffmpeg'
+#   - rocky 8: 'python3' installs Python 3.6 by default, so 'python311' is explicitly
+#     installed.
+#   - opensuse-tumbleweed: Installing 'yt-dlp' automatically installs 'ffmpeg'
 #     (ffmpeg-7) and 'python3' (python311-yt-dlp) packages (as of 2025-02-07).
-#   - On opensuse-leap: Installing 'yt-dlp' auto-installs 'ffmpeg' (ffmpeg-4) and
+#   - opensuse-leap: Installing 'yt-dlp' auto-installs 'ffmpeg' (ffmpeg-4) and
 #     'python3' (python311-yt-dlp) packages (as of 2025-02-07).
 #       - 'python311' is still explicitly installed to ensure the expected version,
 #         allowing a reliable symlink from 'python3' to 'python311'.
-#   - For arch: Installing 'yt-dlp' auto-installs the 'python3' package.
+#   - arch: Installing 'yt-dlp' auto-installs the 'python3' package.
 #     Note: Installing 'ffmpeg' may attempt to install 'jack2'. If you prefer
 #     'pipewire-jack' for better PipeWire integration, consider replacing 'jack2' with
 #     'pipewire-jack' in the package list. More info:
@@ -115,10 +107,6 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
 
 ####
 # Identify the system's distribution and version number.
-#
-# NOTE:
-#   The '/etc/os-release' file is used to determine the distribution and version. It's
-#   present on nearly all systemd-based Linux distributions.
 #
 # NEW GLOBALS:
 #   - C_DISTRO: The distribution name (or kernel name if '/etc/os-release' is absent).
@@ -152,8 +140,7 @@ detect_sys_info() {
 #       - Acceptable values: true, false.
 #
 # EXITS:
-#   - $exit_code: The final exit code, which may be 50 if conditions for continuation
-#     are met.
+#   - $exit_code: The final exit code.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"

@@ -6,9 +6,7 @@
 # version of the script (or its legacy counterpart 'linuxAIO'), backs up the current
 # version by renaming it to 'm-bridge.bash.old', and then downloads and installs the
 # latest version. Additionally, it transfers existing configuration settings (such as
-# manager branch and prerequisite checks) from the old version to the new one. The
-# script also performs revision-specific checks and compatibility adjustments, ensuring
-# that users are notified when manual intervention may be required.
+# manager branch and prerequisite checks) from the old version to the new one.
 #
 ########################################################################################
 ####[ Functions ]#######################################################################
@@ -69,8 +67,9 @@ transfer_bridge_data() {
 }
 
 ####
-# Notifies the user that the current Manager version (revision 40) is very outdated and
-# does not support the automatic transfer of configurations to the new 'm-bridge.bash'.
+# Notifies the user that the current Manager version (revision 40 or earlier) is very
+# outdated and does not support the automatic transfer of configurations to the new
+# 'm-bridge.bash'.
 #
 # EXITS:
 #   - 1: Terminates the script after displaying the notification.
@@ -124,6 +123,7 @@ revision_45() {
 # PARAMETERS:
 #   - $1: additional_changes (Optional, Default: false)
 #       - Indicates whether additional changes are required.
+#       - Accepted values: true, false.
 #
 # EXITS:
 #   - 1: If the function fails to update the variables in 'm-bridge.bash'.

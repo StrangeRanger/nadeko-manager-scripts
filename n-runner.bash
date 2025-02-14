@@ -8,13 +8,6 @@
 #   - NadekoRunAR: Runs NadekoBot in the background with automatic restart on failure or
 #     system reboot.
 #
-# The script performs the following tasks:
-#   1. Creates or updates the systemd service unit file for NadekoBot.
-#   2. Generates the appropriate runner script ("NadekoRun") based on the chosen mode.
-#   3. Enables or disables the service using systemctl according to the selected mode.
-#   4. Starts or restarts the NadekoBot service.
-#   5. Displays the service logs after the service has been started.
-#
 ########################################################################################
 ####[ Global Variables ]################################################################
 
@@ -69,8 +62,7 @@ exit_now=false
 #       - Acceptable values: true, false.
 #
 # EXITS:
-#   - $exit_code: The final exit code, which may be 50 if conditions for continuation
-#     are met.
+#   - $exit_code: The final exit code.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -125,7 +117,7 @@ echo "$C_BOT_SERVICE_CONTENT" | sudo tee "$E_BOT_SERVICE_PATH" &>/dev/null \
     || E_STDERR "Failed to create '$E_BOT_SERVICE'" "3" \
         "${E_NOTE}This service must exist for NadekoBot to work"
 
-## Disable/enable the service.
+## Disable/enable the NadekoBot service.
 echo "${E_INFO}$C_ACTION_UPPER '$E_BOT_SERVICE'..."
 sudo systemctl "$C_ACTION_LOWER" "$E_BOT_SERVICE" \
     || E_STDERR "Failed to $C_ACTION_LOWER '$E_BOT_SERVICE'" "3" \
@@ -217,7 +209,7 @@ fi
 
 trap - SIGINT
 # Since 'E_WATCH_SERVICE_LOGS' already contains a 'read' command, we skip the one in
-# 'clean_exit' by setting:
+# 'clean_exit'.
 exit_now=true
 
 E_WATCH_SERVICE_LOGS "runner"
