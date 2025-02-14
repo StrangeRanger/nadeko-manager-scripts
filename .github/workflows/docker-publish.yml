@@ -59,4 +59,4 @@ jobs:
           tags: strangeranger/nadeko-manager-testing:${{ matrix.distro.name }}
           push: true
           cache-from: type=gha
-          cache-to: type=gha,mode=max,compression=zstd
+          cache-to: type=gha,mode=max
