@@ -9,7 +9,7 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-# Re-declare the build argument so it’s available in the next stages.
+# Re-declare the BASE_IMAGE build argument so it’s available in the next stages.
 ARG BASE_IMAGE
 ARG PKG_MANAGER
 
