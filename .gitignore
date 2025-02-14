@@ -1,5 +1,6 @@
-# Secrets file.
+# Files used for testing.
 .secrets
+push.json
 
 # Other files or directories to ignore.
 shared/
