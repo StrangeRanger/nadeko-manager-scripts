@@ -3,6 +3,7 @@ name: Build and Push Multiple Docker Images
 on:
   push:
     paths:
+      - ".github/workflows/docker-publish.yml"
       - "Distro Testing/Dockerfile"
       - "Distro Testing/install-deps.bash"
       - "Distro Testing/setup.bash"
