@@ -19,8 +19,8 @@ C_ROOT_PASSWORD="password"
 if [[ "$C_PKG_MANAGER" = "apt" ]]; then
     apt-get update
     apt-get upgrade -y
-    apt-get install -y --no-install-recommends ca-certificates curl sudo systemd \
-        systemd-sysv vim
+    apt-get install -y --no-install-recommends ca-certificates curl procps sudo \
+        systemd systemd-sysv vim
     apt-get autoremove -y
     apt-get clean -y
     rm -rf /var/lib/apt/lists/*

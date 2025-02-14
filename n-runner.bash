@@ -153,7 +153,7 @@ echo \"[INFO] Running NadekoBot in the background\"
 yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
 
 echo \"[INFO] Starting NadekoBot...\"
-cd \"$E_ROOT_DIR/$E_BOT_DIR\"
+pushd \"$E_ROOT_DIR/$E_BOT_DIR\" >/dev/null
 ./\"$E_BOT_EXE\" || {
     echo \"[ERROR] Failed to start NadekoBot\" >&2
     echo \"[INFO] Exiting...\"
@@ -161,7 +161,7 @@ cd \"$E_ROOT_DIR/$E_BOT_DIR\"
 }
 
 echo \"[INFO] Stopping NadekoBot...\"
-cd \"$E_ROOT_DIR\"" > NadekoRun
+popd >/dev/null" > NadekoRun
 else
     echo "#!/bin/bash
 
