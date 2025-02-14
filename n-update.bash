@@ -3,15 +3,6 @@
 # NadekoBot Update Utility
 #
 # This script automates the process of updating NadekoBot to a user-selected version.
-# It performs the following tasks:
-#   1. Connects to the GitLab API to retrieve available NadekoBot release versions.
-#   2. Prompts the user to select a desired version for installation.
-#   3. Downloads and extracts the corresponding release archive.
-#   4. Backs up the current bot configuration and data (including credentials, database,
-#      strings, and aliases) to facilitate rollback if needed.
-#   5. Transfers custom data to the new installation while preserving prior
-#      configurations.
-#   6. Handles service interruptions and cleans up temporary files upon completion.
 #
 # NOTE:
 #   After each update, any custom modifications to strings and aliases must be
@@ -24,6 +15,7 @@
 
 C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
+readonly C_NADEKO_MAJOR_VERSION="5"
 
 ## File paths.
 readonly C_BOT_DIR_TMP="$C_NADEKOBOT_TMP/$E_BOT_DIR"
@@ -61,8 +53,7 @@ service_is_active=false
 #       - Acceptable values: true, false.
 #
 # EXITS:
-#   - $exit_code: The final exit code, which may be 50 if conditions for continuation
-#     are met.
+#   - $exit_code: The final exit code.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
@@ -88,29 +79,23 @@ clean_exit() {
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" &>/dev/null
 
+    ## Attempts to restore the original $E_BOT_DIR if necessary.
     {
-        ## Checks if the main bot directory exists, the first backup is missing, but the
-        ## second backup exists. It then tries to restore by renaming the second backup.
         if [[ -d $E_BOT_DIR && ! -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
             echo "${E_WARN}Unable to complete installation"
             echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
             mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" || exit 1
-        ## Checks if the main bot directory is missing but the first backup exists. It
-        ## restores the main directory from the first backup.
         elif [[ ! -d $E_BOT_DIR && -d $C_BOT_DIR_OLD ]]; then
             echo "${E_WARN}Unable to complete installation"
             echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
             mv "$C_BOT_DIR_OLD" "$E_BOT_DIR" || exit 1
 
-            ## If a second backup exists, it renames that to become the first backup.
             if [[ -d $C_BOT_DIR_OLD_OLD ]]; then
                 mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" \
                     || E_STDERR \
                         "Failed to rename '$C_BOT_DIR_OLD_OLD' as '$C_BOT_DIR_OLD'" \
                         "" "${E_NOTE}Please rename it manually"
             fi
-        ## Checks if all three directories exist (main, first backup, and second backup)
-        ## and deletes the second backup as it's no longer needed.
         elif [[ -d $E_BOT_DIR && -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
             rm -rf "$C_BOT_DIR_OLD_OLD" \
                 || E_STDERR "Failed to remove '$C_BOT_DIR_OLD_OLD'" "" \
@@ -138,23 +123,14 @@ clean_exit() {
 # EXITS:
 #   - 1: If fetching releases from the GitLab API fails or if no releases are found.
 fetch_versions() {
-    local response; response=$(curl -sS -w "%{http_code}" "${API_URL}/releases")
-    local http_code="${response: -3}"
-    local response_body="${response:0:${#response}-3}"
     local versions
 
-    if (( http_code != 200 )); then
-        E_STDERR "Failed to fetch releases from '${API_URL}'" "1"
-    fi
+    mapfile -t versions < <(
+        curl -sSf "${API_URL}/repository/tags?search=^$C_NADEKO_MAJOR_VERSION" \
+        | jq -r '.[].release | select(. != null) | .tag_name'
+    )
 
-    # TODO: Confirm that the '||' operator works as intended.
-    # Convert the JSON response to an array of version tags, sorted in reverse order.
-    mapfile -t versions < <(echo "$response_body" | jq -r '.[].tag_name' | sort -V -r) \
-        || E_STDERR "Failed to parse releases" "1"
-
-    if (( ${#versions[@]} == 0 )); then
-        E_STDERR "No releases found" "1"
-    fi
+    (( ${#versions[@]} > 0 )) || E_STDERR "Failed to find any releases" "1"
 
     echo "${E_NOTE}Select version to install:"
     select version in "${versions[@]}"; do

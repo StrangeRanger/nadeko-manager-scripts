@@ -10,10 +10,7 @@
 # Enable strict error handling.
 set -euxo pipefail
 
-
-# Retrieve the package manager from arguments.
 C_PKG_MANAGER="$1"
-C_ROOT_PASSWORD="password"
 
 
 if [[ "$C_PKG_MANAGER" = "apt" ]]; then
@@ -36,7 +33,6 @@ elif [[ "$C_PKG_MANAGER" = "zypper" ]]; then
     zypper clean --all
 elif [[ "$C_PKG_MANAGER" = "pacman" ]]; then
     pacman -Syu --noconfirm base-devel curl git go sudo systemd vim
-    # If 'yay' (an AUR helper) is not installed, build it.
     if ! command -v yay &>/dev/null; then
         useradd -m builder
         echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder
@@ -53,16 +49,10 @@ else
     exit 1
 fi
 
-# Set the root password.
-echo "root:$C_ROOT_PASSWORD" | chpasswd
-
-# Create the working directory.
 mkdir -p /root/NadekoBot
 
-# Remove temporary files that are no longer needed.
+## Clean up system to reduce image size.
 rm -rf /tmp/* /var/tmp/*
-
-# Optionally, clear log files to reduce image size.
 if [ -d /var/log ]; then
     find /var/log -type f -exec truncate -s 0 {} \;
 fi

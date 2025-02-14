@@ -8,13 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 <!--## [v6.0.0] - 2025-02-xx-->
 
-I know, "A new major release? It hasn't even been 2 weeks!" Well, I've made a lot of changes I've wanted to add for a while, but hadn't figured out the best way to do before the `v5.0.0` release. This release is a big one, with a lot of changes, including some breaking changes. Below is a list of the most significant changes to the installer (now called the Manager).
-
-Like with the `v5.0.0` release, all breaking changes are handled automatically, so you shouldn't have to lift a finger.
+Yes, it's another major release—but with good reason. Many long-awaited changes have been implemented since v5.0.0, including significant improvements and some breaking changes. All breaking changes continue to be handled automatically, so no manual intervention is required. Below is a summary of the most important updates to the installer, now rebranded as the Manager.
 
 ### Added
 
-- Several newly supported Linux distributions:
+- **Support for New Linux Distributions:**
     - Fedora 41
     - Fedora 40
     - Alma Linux 9
@@ -24,42 +22,49 @@ Like with the `v5.0.0` release, all breaking changes are handled automatically, 
     - OpenSuse Leap 15.6
     - OpenSuse Tumbleweed
     - Arch Linux
-- The `NadekoRun` script outputs additional information:
-    - The current path of `python3` and `yt-dlp`.
-    - The current version of `python3`.
-- New configurable variable in `m-bridge.bash`:
-    - `E_SKIP_PREREQ_CHECK`: Allows the user to skip the prerequisite check when executing the script.
-        - This variable is carried over when a new version of `m-bridge.bash` is downloaded.
-- The `Distro Testing` directory and all of it's contents have been created to make the testing of the Manager easier.
-    - It contains a script (`build-docker-images.bash`) which will utilize the `Dockerfile` to build images for each supported distribution. From there, you can access the container to test the Manager.
-    - `setup.bash` is used to prepare the shared directory for the container, to allow for the testing of the Manager.
-- ⚠️ `systemd` is now a hard requirement for the Manager.
+- **Enhanced `NadekoRun` Script:**
+    - Displays additional information, including the current paths for `python3` and `yt-dlp`, as well as the current version of `python3`.
+- **New Configurable Variable in `m-bridge.bash`:**
+    - `E_SKIP_PREREQ_CHECK`: Allows users to skip the prerequisite check when executing the script. This setting persists when a new version of `m-bridge.bash` is downloaded.
+- **Distro Testing Directory:**
+    - A new directory has been created to simplify Manager testing:
+        - **`build-docker-images.bash`:** Uses the provided `Dockerfile` to build images for each supported distribution, enabling container-based testing of the Manager.
+        - **Pre-built Docker Images:** If you prefer not to build images locally, pre-built Docker images for testing the Manager are available on [Docker Hub](https://hub.docker.com/r/strangeranger/nadeko-manager-testing/).
+- **System Requirement:**
+  - ⚠️ `systemd` is now a hard requirement for the Manager.
 
 ### Changed
 
-- The Installer is now referred to as the Manager, as the scripts do more than just install the bot and its prerequisites. This will more accurately reflect the purpose of the scripts as a whole.
-- ⚠️ All of the scripts have been renamed:
-    - `linuxAIO` => `m-bridge.bash`
-    - `installer-prep` => `m-bridge-prep.bash`
-    - `nadeko-latest-installer` => `m-update.bash`
-    - `nadeko-main-installer` => `n-main.bash`
-    - `file-backup` => `n-file-backup.bash`
-    - `nadeko-runner` => `n-runner.bash`
-    - `prereqs-installer` => `n-prereqs.bash`
-    - `update-linuxAIO` => `n-update-bridge.bash`
-- ⚠️ Several variables in `m-bridge.bash` (previously `linuxAIO`) have been modified.
-- Simplified prerequisites for NadekoBot.
-- Where the script used to check for compatibility using the bit-type, architecture, distribution, and distro version, now only checks for the bit-type and if the system utilizes `systemd`. The distribution and version check is performed when installing prerequisites.
-- Reduce dependency on external tools, such as `awk`.
-- The previous version of `installer-prep` has been repurposed to allow a smooth transition from revision `47` to `48+`/Manager `v5.0.x` to `v6.0.0`.
-- Instead of requiring the user to use `Ctrl` + `C` to stop watching the service logs, the Manager will wait for the user to press the `Enter` key.
+- **Rebranding:**
+  - The Installer is now called the Manager, reflecting its functionality beyond simply installing the bot and its prerequisites.
+- **Script Renaming:**
+  - `linuxAIO` → `m-bridge.bash`
+  - `installer-prep` → `m-bridge-prep.bash`
+  - `nadeko-latest-installer` → `m-update.bash`
+  - `nadeko-main-installer` → `n-main.bash`
+  - `file-backup` → `n-file-backup.bash`
+  - `nadeko-runner` → `n-runner.bash`
+  - `prereqs-installer` → `n-prereqs.bash`
+  - `update-linuxAIO` → `n-update-bridge.bash`
+- **Variable Modifications:**
+  - Several variables in `m-bridge.bash` (formerly `linuxAIO`) have been updated.
+- **Prerequisite Simplification:**
+  - Streamlined the prerequisites for NadekoBot.
+- **Compatibility Checks:**
+  - The Manager now only verifies the system's bit-type and whether it uses `systemd`. Distribution and version checks are deferred to the prerequisite installation phase.
+- **Reduced External Dependencies:**
+  - Reduced reliance on external tools, such as `awk`.
+- **Upgrade Transition:**
+  - Repurposed the previous version of `installer-prep` to ensure a smooth transition from revision 47 to 48+ (i.e., from Manager v5.0.x to v6.0.0).
+- **Improved Log Monitoring:**
+  - The Manager now waits for the user to press the `Enter` key to stop monitoring service logs, instead of requiring `Ctrl` + `C`.
 
 ### Removed
 
-- ⚠️ Removed supported for:
-    - ⚠️ Debian 11: Due to end of life.
-    - ⚠️ Ubuntu 20.04: Python 3.9+ is required, which is not available on Ubuntu 20.04.
-    - ⚠️ Linux Mint 20: Python 3.9+ is required, which is not available on Linux Mint 20.
+- **Deprecated Distribution Support:**
+  - ⚠️ Debian 11 — End-of-life.
+  - ⚠️ Ubuntu 20.04 — Requires Python 3.9+, which is not available.
+  - ⚠️ Linux Mint 20 — Requires Python 3.9+, which is not available.
 
 ## [v5.0.0] - 2025-02-01
 

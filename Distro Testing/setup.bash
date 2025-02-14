@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# Create a shared directory to be used by all the docker containers, and download the
-# 'm-bridge.bash' script.
+# Download the script to initiate the installation and management of NadekoBot.
 #
 ########################################################################################
 

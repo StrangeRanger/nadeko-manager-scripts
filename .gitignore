@@ -1,6 +1,6 @@
+# Secrets file.
+.secrets
+
 # Other files or directories to ignore.
 shared/
 TODO.md
-
-# Secrets file
-.secrets

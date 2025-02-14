@@ -4,17 +4,11 @@
 #
 # This script provides a menu-driven interface for installing, running, stopping, and
 # managing NadekoBot on a Linux system. It coordinates various operations by invoking
-# supplemental scripts, including:
-#   - n-update.bash: Downloads or updates NadekoBot.
-#   - n-runner.bash: Launches NadekoBot in one of two background modes
-#                    (standard or auto-restart).
-#   - n-prereqs.bash: Installs all required prerequisites for NadekoBot.
-#   - n-file-backup.bash: Backs up essential configurations and data files.
+# supplemental scripts.
 #
 # In addition to orchestrating these tasks, the script performs runtime checks for
 # required tools and file conditions, displays real-time service logs, and manages
-# service status. It also defines custom exit code actions and signal traps to ensure
-# smooth operation and proper error handling.
+# service status.
 #
 # Comment Key:
 #   - A.1.: Return to stop further code execution.
@@ -49,17 +43,15 @@ export E_YT_DLP_PATH="$E_LOCAL_BIN/yt-dlp"
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#       - The exit code to evaluate.
 #
 # RETURNS:
 #   - 0: If the exit code is one of 3, 4, 5, or 50, allowing the script to continue.
 #
 # EXITS:
-#   - The script terminates with the provided exit code if it is not one of the above.
+#   - $exit_code: The exit code provided by the caller.
 exit_code_actions() {
     local exit_code="$1"
 
-    # For exit codes 3, 4, 5, or 50, continue running the main Manager.
     case "$exit_code" in
         3|4|5|50) return 0 ;;
         129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
@@ -93,14 +85,13 @@ is_token_set() {
 # state and file conditions (e.g., missing prerequisites or required files).
 #
 # PARAMETERS:
-#   - $1: option_number (Required)
-#       - The numeric identifier of the disabled menu option.
+#   - $1: menu_option_number (Required)
 disabled_reasons() {
-    local option_number="$1"
+    local menu_option_number="$1"
 
-    echo "${E_NOTE}Reason option '$option_number' is disabled:"
+    echo "${E_NOTE}Reason option '$menu_option_number' is disabled:"
 
-    case "$option_number" in
+    case "$menu_option_number" in
         1)
             echo "${E_NOTE}  One or more prerequisites are not installed"
             echo "${E_NOTE}    Use option 6 to install them all"
@@ -181,9 +172,7 @@ E_STOP_SERVICE() {
 export -f E_STOP_SERVICE
 
 ####
-# Displays real-time logs from the NadekoBot service by following its journal entries,
-# piping the output through 'ccze' to add color. The function waits for the user to
-# press Enter to stop following the logs.
+# Displays real-time logs from the NadekoBot service by following its journal entries.
 E_FOLLOW_SERVICE_LOGS() {
     local journal_pid
 

@@ -4,30 +4,15 @@
 #
 # This script sets up the environment for the NadekoBot Manager by verifying system
 # compatibility and initializing global variables and functions required by the Manager.
-# It performs several key tasks:
-#   - Detects the system's architecture (e.g., x64, arm64) to ensure only supported
-#     64-bit systems are used.
-#   - Defines ANSI escape sequences and message prefixes for consistent, colorized
-#     terminal output.
-#   - Exports essential environment variables (such as directories and script names)
-#     used by the Manager and its sub-scripts.
-#   - Implements functions for cleanup, error handling, and remote script downloading.
-#   - Checks if the current m-bridge revision is up-to-date; if not, it updates the
-#     bridge script.
-#   - Verifies that systemd is installed and running, a prerequisite for managing
-#     NadekoBot services.
-#   - Finally, it executes the main Manager script (n-main.bash) once all preconditions
-#     are met.
 #
 ########################################################################################
 ####[ Exported and Global Variables ]###################################################
 
 
 # See the 'README' note at the beginning of 'm-bridge.bash' for details.
-readonly C_LATEST_BRIDGE_REVISION=50
+readonly C_LATEST_BRIDGE_REVISION=52
 readonly C_MAIN_MANAGER="n-main.bash"
 
-## Define ANSI escape sequences for colored terminal output.
 E_YELLOW="$(printf '\033[1;33m')"
 E_GREEN="$(printf '\033[0;32m')"
 E_BLUE="$(printf '\033[0;34m')"
@@ -38,7 +23,6 @@ E_GREY="$(printf '\033[0;90m')"
 E_CLR_LN="$(printf '\r\033[K')"
 export E_YELLOW E_GREEN E_BLUE E_CYAN E_RED E_NC E_GREY E_CLR_LN
 
-## Define shorthand colorized message prefixes for terminal output.
 E_SUCCESS="${E_GREEN}==>${E_NC} "
 E_WARN="${E_YELLOW}==>${E_NC} "
 E_ERROR="${E_RED}ERROR:${E_NC} "
@@ -55,7 +39,6 @@ export E_MANAGER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 ### Variables requiring extra checks before being set and exported.
 ###
 
-## Define the system's architecture and bit type (32 or 64).
 case $(uname -m) in
     x86_64)  BITS="64"; export E_ARCH="x64" ;;
     aarch64) BITS="64"; export E_ARCH="arm64" ;;
@@ -71,11 +54,6 @@ esac
 
 ####
 # Cleanly exit the Manager by performing cleanup tasks and then terminating the script.
-# The function performs the following actions:
-#   1. Removes temporary Manager files created during the installation process.
-#   2. Displays an exit message based on the provided exit code.
-#   3. Changes directory back to the root directory and exits with the specified status
-#      code.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -90,16 +68,12 @@ esac
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-    # List of temporary Manager files to remove during cleanup.
     local manager_files=("n-main-prep.bash" "n-main.bash" "n-update.bash"
         "n-runner.bash" "n-file-backup.bash" "n-prereqs.bash" "n-update-bridge.bash")
 
     trap - EXIT
     [[ $use_extra_newline == true ]] && echo ""
 
-    ## Handle signals for SIGHUP, SIGINT, and SIGTERM.
-    ## Although these signals are processed in 'n-main.bash', they are handled here as
-    ## well because they do not propagate to the parent script.
     case "$exit_code" in
         0|1) echo "" ;;
         129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
@@ -136,8 +110,7 @@ execute_main_script() {
 
 ####
 # Downloads the specified script from the remote location defined by $E_RAW_URL and
-# grants it executable permissions. Optionally, it displays a message indicating that
-# the download is in progress.
+# grants it executable permissions.
 #
 # PARAMETERS:
 #   - $1: script_name (Required)
