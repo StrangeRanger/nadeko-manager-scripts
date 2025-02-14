@@ -93,7 +93,7 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["ubuntu"]="python3 ffmpeg"
     ["debian"]="python3 ffmpeg"
     ["linuxmint"]="python3 ffmpeg"
-    ["fedora"]="python3 ffmpeg"
+    ["fedora"]="python3 ffmpeg-free"
     ["almalinux"]="python311 ffmpeg"
     ["rocky"]="python311 ffmpeg"
     ["opensuse-leap"]="python311 yt-dlp"
@@ -350,16 +350,6 @@ pre_install() {
             } || E_STDERR "Failed to install RPM Fusion for EL $el_ver" "$?"
 
             [[ $el_ver == "8" ]] && create_local_bin
-            ;;
-        fedora)
-            local fedora_ver; fedora_ver=$(rpm -E %fedora)
-            local rmpfusion_url="https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
-
-            echo "${E_INFO}Updating package lists..."
-            dnf update -y
-
-            echo "${E_INFO}Installing RPM Fusion for Fedora $fedora_ver..."
-            dnf install -y "$rmpfusion_url" || E_STDERR "Failed to install RPM Fusion" "$?"
             ;;
         opensuse-leap)
             create_local_bin
