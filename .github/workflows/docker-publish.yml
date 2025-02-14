@@ -54,5 +54,6 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ matrix.distro.base }}
             PKG_MANAGER=${{ matrix.distro.pkg }}
+          platforms: linux/amd64,linux/arm64
           tags: strangeranger/nadeko-manager-testing:${{ matrix.distro.name }}
           push: true
