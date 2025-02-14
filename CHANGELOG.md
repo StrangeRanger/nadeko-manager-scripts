@@ -30,9 +30,6 @@ Like with the `v5.0.0` release, all breaking changes are handled automatically, 
 - New configurable variable in `m-bridge.bash`:
     - `E_SKIP_PREREQ_CHECK`: Allows the user to skip the prerequisite check when executing the script.
         - This variable is carried over when a new version of `m-bridge.bash` is downloaded.
-- New configurable variable in `m-bridge.bash`:
-    - `E_NADEKO_MAJOR_VERSION`: Allows the user to set the major version of NadekoBot to display for download.
-        - This variable is carried over when a new version of `m-bridge.bash` is downloaded.
 - The `Distro Testing` directory and all of it's contents have been created to make the testing of the Manager easier.
     - It contains a script (`build-docker-images.bash`) which will utilize the `Dockerfile` to build images for each supported distribution. From there, you can access the container to test the Manager.
     - `setup.bash` is used to prepare the shared directory for the container, to allow for the testing of the Manager.
