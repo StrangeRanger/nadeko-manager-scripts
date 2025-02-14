@@ -46,6 +46,10 @@ transfer_bridge_data() {
     local manager_branch_found
     manager_branch=$(grep '^manager_branch=.*' m-bridge.bash.old)
     manager_branch_found="$?"
+    local nadeko_major_version
+    local nadeko_major_version_found
+    nadeko_major_version=$(grep '^export E_NADEKO_MAJOR_VERSION=.*' m-bridge.bash.old)
+    nadeko_major_version_found="$?"
     local skip_prereq_check
     local skip_prereq_check_found
     skip_prereq_check=$(grep '^export E_SKIP_PREREQ_CHECK=.*' m-bridge.bash.old)
@@ -57,6 +61,12 @@ transfer_bridge_data() {
         sed -i "s/^manager_branch=.*/$manager_branch/" m-bridge.bash
     else
         echo "${E_WARN}Failed to find 'manager_branch' in 'm-bridge.bash.old'"
+    fi
+
+    if (( nadeko_major_version_found == 0 )); then
+        sed -i "s/^export E_NADEKO_MAJOR_VERSION=.*/$nadeko_major_version/" m-bridge.bash
+    else
+        echo "${E_WARN}Failed to find 'E_NADEKO_MAJOR_VERSION' in 'm-bridge.bash.old'"
     fi
 
     if (( skip_prereq_check_found == 0 )); then

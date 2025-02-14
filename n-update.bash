@@ -122,23 +122,14 @@ clean_exit() {
 # EXITS:
 #   - 1: If fetching releases from the GitLab API fails or if no releases are found.
 fetch_versions() {
-    local response; response=$(curl -sS -w "%{http_code}" "${API_URL}/releases")
-    local http_code="${response: -3}"
-    local response_body="${response:0:${#response}-3}"
     local versions
 
-    if (( http_code != 200 )); then
-        E_STDERR "Failed to fetch releases from '${API_URL}'" "1"
-    fi
+    mapfile -t versions < <(
+        curl -sSf "${API_URL}/repository/tags?search=^$E_NADEKO_MAJOR_VERSION" \
+        | jq -r '.[].release | select(. != null) | .tag_name'
+    )
 
-    # TODO: Confirm that the '||' operator works as intended.
-    # Convert the JSON response to an array of version tags, sorted in reverse order.
-    mapfile -t versions < <(echo "$response_body" | jq -r '.[].tag_name' | sort -V -r) \
-        || E_STDERR "Failed to parse releases" "1"
-
-    if (( ${#versions[@]} == 0 )); then
-        E_STDERR "No releases found" "1"
-    fi
+    (( ${#versions[@]} > 0 )) || E_STDERR "Failed to find any releases" "1"
 
     echo "${E_NOTE}Select version to install:"
     select version in "${versions[@]}"; do

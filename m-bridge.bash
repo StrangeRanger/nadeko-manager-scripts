@@ -31,7 +31,9 @@
 # Default: "StrangeRanger/nadeko-manager-scripts"
 manager_repo="StrangeRanger/nadeko-manager-scripts"
 
-# The branch of $manager_repo from which the manager downloads its scripts.
+# The branch of $manager_repo from which the manager downloads its scripts. If you
+# change this variable to anything other than 'main' or 'dev', please read the IMPORTANT
+# note above.
 #
 # Options:
 #   main     = Production-ready (latest stable code)
@@ -40,6 +42,17 @@ manager_repo="StrangeRanger/nadeko-manager-scripts"
 #
 # Default: "main"
 manager_branch="main"
+
+
+# Only versions matching this major version will be listed for download. If you change
+# this variable, please read the IMPORTANT note above.
+#
+# Options:
+#   "5" = NadekoBot v5
+#   "4" = NadekoBot v4
+#
+# Default: "5"
+export E_NADEKO_MAJOR_VERSION="5"
 
 # Skip checking if all the prerequisites are installed. By setting this variable to
 # "true", you acknowledge that the Bot and Manager are not guaranteed to work as
