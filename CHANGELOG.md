@@ -13,22 +13,23 @@ Yes, it's another major release—but with good reason. Many long-awaited change
 ### Added
 
 - **Support for New Linux Distributions:**
-  - Fedora 41
-  - Fedora 40
-  - Alma Linux 9
-  - Alma Linux 8
-  - Rocky Linux 9
-  - Rocky Linux 8
-  - OpenSuse Leap 15.6
-  - OpenSuse Tumbleweed
-  - Arch Linux
+    - Fedora 41
+    - Fedora 40
+    - Alma Linux 9
+    - Alma Linux 8
+    - Rocky Linux 9
+    - Rocky Linux 8
+    - OpenSuse Leap 15.6
+    - OpenSuse Tumbleweed
+    - Arch Linux
 - **Enhanced `NadekoRun` Script:**
-  - Displays additional information, including the current paths for `python3` and `yt-dlp`, as well as the current version of `python3`.
+    - Displays additional information, including the current paths for `python3` and `yt-dlp`, as well as the current version of `python3`.
 - **New Configurable Variable in `m-bridge.bash`:**
-  - `E_SKIP_PREREQ_CHECK`: Allows users to skip the prerequisite check when executing the script. This setting persists when a new version of `m-bridge.bash` is downloaded.
+    - `E_SKIP_PREREQ_CHECK`: Allows users to skip the prerequisite check when executing the script. This setting persists when a new version of `m-bridge.bash` is downloaded.
 - **Distro Testing Directory:**
-  - A new directory has been created to simplify Manager testing.
-    - **`build-docker-images.bash`:** Uses the provided `Dockerfile` to build images for each supported distribution, allowing you to test the Manager in a container.
+    - A new directory has been created to simplify Manager testing:
+        - **`build-docker-images.bash`:** Uses the provided `Dockerfile` to build images for each supported distribution, enabling container-based testing of the Manager.
+        - **Pre-built Docker Images:** If you prefer not to build images locally, pre-built Docker images for testing the Manager are available on [Docker Hub](https://hub.docker.com/r/strangeranger/nadeko-manager-testing/).
 - **System Requirement:**
   - ⚠️ `systemd` is now a hard requirement for the Manager.
 
