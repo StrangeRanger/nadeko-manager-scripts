@@ -81,7 +81,7 @@ nadekobot/data/xp_template.json"
 ### [ Non-configurable Variables ]
 ###
 
-export E_BRIDGE_REVISION=51
+export E_BRIDGE_REVISION=52
 export E_RAW_URL="https://raw.githubusercontent.com/$manager_repo/$manager_branch"
 
 
