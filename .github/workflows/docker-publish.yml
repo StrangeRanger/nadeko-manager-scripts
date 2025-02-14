@@ -55,6 +55,6 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ matrix.distro.base }}
             PKG_MANAGER=${{ matrix.distro.pkg }}
-          platforms: ${{ matrix.distro.name == 'arch' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
+          platforms: ${{ (matrix.distro.name == 'arch' || matrix.distro.name == 'linuxmint-22' || matrix.distro.name == 'linuxmint-21') && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
           tags: strangeranger/nadeko-manager-testing:${{ matrix.distro.name }}
           push: true
