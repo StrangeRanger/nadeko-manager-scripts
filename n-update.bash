@@ -15,6 +15,7 @@
 
 C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
+readonly C_NADEKO_MAJOR_VERSION="5"
 
 ## File paths.
 readonly C_BOT_DIR_TMP="$C_NADEKOBOT_TMP/$E_BOT_DIR"
@@ -125,7 +126,7 @@ fetch_versions() {
     local versions
 
     mapfile -t versions < <(
-        curl -sSf "${API_URL}/repository/tags?search=^$E_NADEKO_MAJOR_VERSION" \
+        curl -sSf "${API_URL}/repository/tags?search=^$C_NADEKO_MAJOR_VERSION" \
         | jq -r '.[].release | select(. != null) | .tag_name'
     )
 

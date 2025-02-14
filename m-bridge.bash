@@ -9,11 +9,6 @@
 #   it doesn't match $C_LATEST_BRIDGE_REVISION in 'n-main-prep.bash', the latest version
 #   of 'm-bridge.bash' is downloaded.
 #
-# IMPORTANT:
-#   Changing $manager_branch to something other than "main" or "dev" means you must
-#   install the corresponding NadekoBot version (e.g. "NadekoV4" requires NadekoBot v4),
-#   or the installation may break.
-#
 ########################################################################################
 ####[ Variables ]#######################################################################
 
@@ -31,28 +26,15 @@
 # Default: "StrangeRanger/nadeko-manager-scripts"
 manager_repo="StrangeRanger/nadeko-manager-scripts"
 
-# The branch of $manager_repo from which the manager downloads its scripts. If you
-# change this variable to anything other than 'main' or 'dev', please read the IMPORTANT
-# note above.
+# The branch of $manager_repo from which the manager downloads its scripts.
 #
 # Options:
 #   main     = Production-ready (latest stable code)
 #   dev      = Development code (may be unstable)
-#   NadekoV4 = Manager version for NadekoBot v4
+#   NadekoV5 = Manager version for NadekoBot v5 (NOT APPLICABLE UNTIL A LATER RELEASE)
 #
 # Default: "main"
 manager_branch="main"
-
-
-# Only versions matching this major version will be listed for download. If you change
-# this variable, please read the IMPORTANT note above.
-#
-# Options:
-#   "5" = NadekoBot v5
-#   "4" = NadekoBot v4
-#
-# Default: "5"
-export E_NADEKO_MAJOR_VERSION="5"
 
 # Skip checking if all the prerequisites are installed. By setting this variable to
 # "true", you acknowledge that the Bot and Manager are not guaranteed to work as
