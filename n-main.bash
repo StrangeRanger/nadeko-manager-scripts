@@ -407,7 +407,6 @@ while true; do
 
             (
                 trap 'exit 1' SIGINT
-                echo ""
                 read -rp "Press [Enter] to begin."
             ) || {
                 echo ""
