@@ -332,14 +332,14 @@ pre_install() {
             local rmpfusion_url="https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$el_ver.noarch.rpm"
 
             echo "${E_INFO}Updating package lists..."
-            dnf update -y
+            sudo dnf update -y
 
             echo "${E_INFO}Installing EPEL repository..."
             sudo dnf install -y epel-release
 
             if [[ $el_ver == "8" ]]; then
                 echo "${E_INFO}Enabling PowerTools repository..."
-                dnf config-manager --set-enabled powertools \
+                sudo dnf config-manager --set-enabled powertools \
                     || echo "${E_WARN}PowerTools repository could not be enabled" >&2
             elif [[ $el_ver == "9" ]]; then
                 echo "${E_INFO}Enabling CRB repository..."
