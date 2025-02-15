@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "allowerasing",
         "almalinux",
         "archlinux",
         "armv",
@@ -12,8 +13,10 @@
         "DOCKERHUB",
         "endoflife",
         "EPEL",
+        "findutils",
         "gpgcheck",
         "Kwoth",
+        "libicu",
         "LINUXAIO",
         "linuxmintd",
         "localpkg",
