@@ -142,7 +142,7 @@ disabled_reasons() {
 # NEW GLOBALS:
 #   - E_BOT_SERVICE_STATUS: The current status of NadekoBot's service.
 E_GET_SERVICE_STATUS() {
-    E_BOT_SERVICE_STATUS=$(systemctl is-active "$E_BOT_SERVICE")
+    E_BOT_SERVICE_STATUS=$(sudo systemctl is-active "$E_BOT_SERVICE")
 }
 export -f E_GET_SERVICE_STATUS
 
