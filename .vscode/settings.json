@@ -1,10 +1,35 @@
 {
     "cSpell.words": [
+        "almalinux",
+        "archlinux",
+        "armv",
+        "basefile",
+        "bootstrapper",
+        "Buildx",
+        "ccze",
+        "devel",
+        "DISTROS",
+        "DOCKERHUB",
         "endoflife",
+        "EPEL",
+        "gpgcheck",
         "Kwoth",
         "LINUXAIO",
+        "linuxmintd",
+        "localpkg",
+        "makepkg",
         "Mewdeko",
+        "mflags",
+        "noconfirm",
+        "paru",
+        "powertools",
         "PREREQ",
-        "prereqs"
+        "prereqs",
+        "rmdeps",
+        "rmpfusion",
+        "rockylinux",
+        "rpmfusion",
+        "rpmkeys",
+        "SVER"
     ]
 }

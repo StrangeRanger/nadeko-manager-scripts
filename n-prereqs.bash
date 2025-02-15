@@ -3,19 +3,7 @@
 # NadekoBot Prerequisites Installer for Linux
 #
 # This script automates the installation of all prerequisites required by NadekoBot on
-# various Linux distributions. It performs the following tasks:
-#   - Detects the current Linux distribution and version using /etc/os-release or uname.
-#   - Validates support for the detected OS based on predefined distro and version
-#     mappings.
-#   - Executes distribution-specific pre-installation steps (e.g., enabling repositories
-#     on Fedora, AlmaLinux, and Rocky) to prepare the system for package installation.
-#   - Updates package lists and installs necessary packages for both the NadekoBot
-#     Manager (e.g., ccze, jq) and its music functionality (e.g., python3, ffmpeg,
-#     yt-dlp) using the appropriate package manager commands.
-#   - Handles special cases such as installing 'yt-dlp' to a local bin directory and
-#     installing 'ccze' on Arch Linux via an AUR helper or manual build if needed.
-#   - Performs post-installation configuration, like creating symlinks for Python, to
-#     ensure proper functionality.
+# various Linux distributions.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -93,7 +81,7 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["ubuntu"]="python3 ffmpeg"
     ["debian"]="python3 ffmpeg"
     ["linuxmint"]="python3 ffmpeg"
-    ["fedora"]="python3 ffmpeg"
+    ["fedora"]="python3 ffmpeg-free"
     ["almalinux"]="python311 ffmpeg"
     ["rocky"]="python311 ffmpeg"
     ["opensuse-leap"]="python311 yt-dlp"
@@ -135,9 +123,8 @@ detect_sys_info() {
 #       - The initial exit code passed by the caller. Under certain conditions, it may
 #         be modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - If "true", outputs an extra blank line to distinguish previous output from the
-#         exit messages.
-#       - Acceptable values: true, false.
+#       - Whether to output an extra newline before the exit message.
+#       - Acceptable values: true, false
 #
 # EXITS:
 #   - $exit_code: The final exit code.
@@ -146,7 +133,9 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     local exit_now=false
 
-    trap - EXIT SIGINT
+    # Remove the exit trap to prevent re-entry after exiting.
+    # Remove the other traps, as they are no longer needed.
+    trap - EXIT SIGINT SIGHUP SIGTERM
     [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in
@@ -171,8 +160,8 @@ clean_exit() {
 }
 
 ####
-# Displays a message indicating that the current OS is unsupported for automatic
-# NadekoBot prerequisite installation.
+# Display a message indicating that the current OS is unsupported for the automatic
+# installation of NadekoBot's prerequisites.
 #
 # EXITS:
 #   - 4: The current OS is unsupported.
@@ -187,7 +176,7 @@ unsupported() {
 # Create the local bin directory if it doesn't exist.
 create_local_bin() {
     if [[ ! -d $E_LOCAL_BIN ]]; then
-        echo "${E_INFO}Creating '$E_LOCAL_BIN' directory..."
+        echo "${E_INFO}Creating '$E_LOCAL_BIN'..."
         mkdir -p "$E_LOCAL_BIN"
     fi
 }
@@ -197,7 +186,7 @@ create_local_bin() {
 ###
 
 ####
-# Installs 'yt-dlp' to '~/.local/bin/yt-dlp', creating the directory if needed.
+# Install 'yt-dlp' to '~/.local/bin/yt-dlp' and modify its permissions.
 #
 # EXITS:
 #   - 1: If 'yt-dlp' fails to download.
@@ -217,11 +206,16 @@ install_yt_dlp() {
 }
 
 ####
-# Installs 'ccze' for Arch Linux from the AUR using an available AUR helper or manually.
+# Install 'ccze' for Arch Linux from the AUR, using an AUR helper if available.
 #
 # EXITS:
 #   - Non-zero exit code: If any installation step fails.
 install_ccze_arch() {
+    if command -v ccze &>/dev/null; then
+        echo "${E_INFO}'ccze' is already installed, skipping..."
+        return
+    fi
+
     echo "${E_INFO}Installing 'ccze' for Arch Linux from the AUR..."
 
     if command -v yay &>/dev/null; then
@@ -232,6 +226,18 @@ install_ccze_arch() {
             || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
     else
         echo "${E_WARN}AUR helper not found, continuing with manual installation..."
+
+        echo "${E_NOTE}We need to install additional build tools and clone the AUR package"
+        echo "${E_NOTE}  'base-devel' and 'git' will be installed"
+        read -rp "${E_NOTE}Would you like to continue? [y/N] " confirm
+        confirm=${confirm,,}
+        if [[ ! $confirm =~ ^y ]]; then
+            echo "${E_RED}==>${E_NC} Installation of 'ccze' and required build tools" \
+                "aborted by user"
+            echo "${E_WARN}'ccze' is required to colorize NadekoBot's logs"
+            return 1
+        fi
+
         echo "${E_INFO}Installing necessary build tools..."
         sudo pacman -S --needed base-devel git
         echo "${E_INFO}Cloning the AUR package..."
@@ -244,7 +250,7 @@ install_ccze_arch() {
 }
 
 ####
-# Installs all prerequisites required by NadekoBot using the provided package manager
+# Install all prerequisites required by NadekoBot using the provided package manager
 # commands.
 #
 # PARAMETERS:
@@ -255,10 +261,10 @@ install_ccze_arch() {
 #   - $3: music_pkg_list (Required)
 #       - A list of packages required for music playback.
 #   - $4: manager_pkg_list (Required)
-#       - A list of other packages required by the manager.
+#       - A list of other packages required by the Manager.
 #
 # EXITS:
-#   - $?: If any prerequisite installation step fails.
+#   - $?: If any of the installation steps fail.
 install_prereqs() {
     local install_cmd="$1"
     local update_cmd="$2"
@@ -350,16 +356,6 @@ pre_install() {
             } || E_STDERR "Failed to install RPM Fusion for EL $el_ver" "$?"
 
             [[ $el_ver == "8" ]] && create_local_bin
-            ;;
-        fedora)
-            local fedora_ver; fedora_ver=$(rpm -E %fedora)
-            local rmpfusion_url="https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_ver}.noarch.rpm"
-
-            echo "${E_INFO}Updating package lists..."
-            dnf update -y
-
-            echo "${E_INFO}Installing RPM Fusion for Fedora $fedora_ver..."
-            dnf install -y "$rmpfusion_url" || E_STDERR "Failed to install RPM Fusion" "$?"
             ;;
         opensuse-leap)
             create_local_bin

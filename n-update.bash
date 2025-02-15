@@ -48,9 +48,8 @@ service_is_active=false
 #       - The initial exit code passed by the caller. Under certain conditions, it may
 #         be modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - If "true", outputs an extra blank line to distinguish previous output from the
-#         exit messages.
-#       - Acceptable values: true, false.
+#       - Whether to output an extra newline before the exit message.
+#       - Acceptable values: true, false
 #
 # EXITS:
 #   - $exit_code: The final exit code.
@@ -59,7 +58,7 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     local exit_now=false
 
-    trap - EXIT SIGINT
+    trap - EXIT  # Remove the exit trap to prevent re-entry after exiting.
     [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in

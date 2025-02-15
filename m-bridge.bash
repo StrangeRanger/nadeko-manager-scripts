@@ -20,13 +20,13 @@
 ### variables (except $manager_repo and $E_FILES_TO_BACK_UP) into the updated script.
 ###
 
-# The repository containing the manager's scripts.
+# The repository containing the Manager's scripts.
 #
 # Format:  manager_repo="[github username]/[repository name]"
 # Default: "StrangeRanger/nadeko-manager-scripts"
 manager_repo="StrangeRanger/nadeko-manager-scripts"
 
-# The branch of $manager_repo from which the manager downloads its scripts.
+# The branch of $manager_repo from which the Manager downloads its scripts.
 #
 # Options:
 #   main     = Production-ready (latest stable code)
@@ -50,14 +50,15 @@ export E_SKIP_PREREQ_CHECK="false"
 
 # Files to back up when executing option 7.
 #
-# 1. Paths must start from Nadeko's parent directory (e.g., nadekobot/...).
-# 2. Separate files with a space or list them on separate lines.
-#     - Valid:   "nadekobot/creds.yml
-#                 nadekobot/data/bot.yml"
-#     - Valid:   "nadekobot/creds.yml nadekobot/data/bot.yml"
-#     - Invalid: "nadekobot/creds.yml, nadekobot/data/bot.yml"
-#     - Invalid: "nadekobot/creds.yml,nadekobot/data/bot.yml"
-# 3. Neither the file name nor its path can contain spaces.
+# Usage Notes:
+#   1. Paths must start from Nadeko's parent directory (e.g., 'nadekobot/...'').
+#   2. Separate files with a space or list them on separate lines.
+#       - Valid:   "nadekobot/creds.yml
+#                   nadekobot/data/bot.yml"
+#       - Valid:   "nadekobot/creds.yml nadekobot/data/bot.yml"
+#       - Invalid: "nadekobot/creds.yml, nadekobot/data/bot.yml"
+#       - Invalid: "nadekobot/creds.yml,nadekobot/data/bot.yml"
+#   3. Neither the file name nor its path can contain spaces.
 #
 # Default:
 #   "nadekobot/creds.yml
