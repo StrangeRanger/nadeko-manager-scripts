@@ -4,8 +4,8 @@ Perform testing on the following images:
 - [ ] debian-12
 - [ ] linuxmint-22
 - [ ] linuxmint-21
-- [ ] fedora-41
-- [ ] fedora-40
+- [x] fedora-41
+- [x] fedora-40
 - [ ] almalinux-9
 - [ ] almalinux-8
 - [ ] rocky-9
