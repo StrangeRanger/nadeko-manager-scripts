@@ -225,6 +225,7 @@ install_ccze_arch() {
         paru -S --noconfirm --mflags "--rmdeps" ccze \
             || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
     else
+        local ccze_tmp_dir="/tmp/ccze"
         echo "${E_WARN}AUR helper not found, continuing with manual installation..."
 
         echo "${E_NOTE}We need to install additional build tools and clone the AUR package"
@@ -241,11 +242,13 @@ install_ccze_arch() {
         echo "${E_INFO}Installing necessary build tools..."
         sudo pacman -S --needed base-devel git
         echo "${E_INFO}Cloning the AUR package..."
-        git clone https://aur.archlinux.org/ccze.git /tmp/ccze
-        pushd /tmp/ccze >/dev/null || E_STDERR "Failed to change to '/tmp/ccze'" "1"
+        git clone https://aur.archlinux.org/ccze.git "$ccze_tmp_dir"
+        pushd "$ccze_tmp_dir" >/dev/null || E_STDERR "Failed to change to '$ccze_tmp_dir'" "1"
         echo "${E_INFO}Building and installing 'ccze'..."
         makepkg -si || E_STDERR "Failed to build and install 'ccze'" "$?"
         popd >/dev/null || E_STDERR "Failed to change back to the previous directory" "1"
+        echo "${E_INFO}Cleaning up..."
+        rm -rf "$ccze_tmp_dir" &>/dev/null
     fi
 }
 
