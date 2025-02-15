@@ -401,8 +401,8 @@ while true; do
 
             else
                 export E_RUNNER_CODENAME="NadekoRunAR"
-                echo -n "${E_NOTE}We will now run NadekoBot in the background" \
-                    "with auto restart. "
+                echo -n "${E_NOTE}We will now run NadekoBot in the background with" \
+                    "auto restart. "
             fi
 
             (
