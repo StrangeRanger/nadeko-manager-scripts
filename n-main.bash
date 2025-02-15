@@ -176,12 +176,12 @@ export -f E_STOP_SERVICE
 E_FOLLOW_SERVICE_LOGS() {
     local journal_pid
 
-    if [[ $ccze_installed == false ]]; then
-        echo "${E_WARN}The 'ccze' command is not installed; logs will not be colorized"
-        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" &
+    if command -v ccze &>/dev/null; then
+        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
         journal_pid=$!
     else
-        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
+        echo "${E_WARN}The 'ccze' command is not installed; logs will not be colorized"
+        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" &
         journal_pid=$!
     fi
 
@@ -279,12 +279,6 @@ while true; do
     ### (e.g., ccze, yt_dlp) each time the loop restarts, as their availability might
     ### change.
     ###
-
-    if command -v ccze &>/dev/null; then
-        ccze_installed=true
-    else
-        ccze_installed=false
-    fi
 
     if [[ -f "$E_YT_DLP_PATH" ]] || command -v yt-dlp &>/dev/null; then
         yt_dlp_installed=true
