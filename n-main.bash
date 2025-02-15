@@ -176,8 +176,14 @@ export -f E_STOP_SERVICE
 E_FOLLOW_SERVICE_LOGS() {
     local journal_pid
 
-    sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
-    journal_pid=$!
+    if [[ $ccze_installed == false ]]; then
+        echo "${E_WARN}The 'ccze' command is not installed; logs will not be colorized"
+        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" &
+        journal_pid=$!
+    else
+        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
+        journal_pid=$!
+    fi
 
     read -r
 
@@ -295,7 +301,6 @@ while true; do
     ## Disable option 1 if any of the required tools are not installed.
     if { ! command -v python3 &>/dev/null \
         || ! command -v ffmpeg &>/dev/null \
-        || [[ $ccze_installed == false ]] \
         || [[ $yt_dlp_installed == false ]]; } \
         && [[ $E_SKIP_PREREQ_CHECK == false ]]
     then
