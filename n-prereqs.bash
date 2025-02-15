@@ -211,6 +211,11 @@ install_yt_dlp() {
 # EXITS:
 #   - Non-zero exit code: If any installation step fails.
 install_ccze_arch() {
+    if command -v ccze &>/dev/null; then
+        echo "${E_INFO}'ccze' is already installed, skipping..."
+        return
+    fi
+
     echo "${E_INFO}Installing 'ccze' for Arch Linux from the AUR..."
 
     if command -v yay &>/dev/null; then
