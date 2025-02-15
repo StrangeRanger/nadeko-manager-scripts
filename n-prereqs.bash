@@ -221,6 +221,17 @@ install_ccze_arch() {
             || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
     else
         echo "${E_WARN}AUR helper not found, continuing with manual installation..."
+
+        echo "${E_NOTE}We need to install additional build tools and clone the AUR package"
+        echo "${E_NOTE}  'base-devel' and 'git' will be installed"
+        read -rp "${E_NOTE}Would you like to continue? [y/N] " confirm
+        confirm=${confirm,,}
+        if [[ ! $confirm =~ ^y ]]; then
+            echo "${E_ERROR}Installation of 'ccze' and required build tools aborted"
+            echo "${E_WARN}'ccze' is required to colorize NadekoBot's logs"
+            return 1
+        fi
+
         echo "${E_INFO}Installing necessary build tools..."
         sudo pacman -S --needed base-devel git
         echo "${E_INFO}Cloning the AUR package..."
