@@ -1,9 +1,9 @@
 Perform testing on the following images:
-- [ ] ubuntu-24.04
-- [ ] ubuntu-22.04
-- [ ] debian-12
-- [ ] linuxmint-22
-- [ ] linuxmint-21
+- [x] ubuntu-24.04
+- [x] ubuntu-22.04
+- [x] debian-12
+- [x] linuxmint-22
+- [x] linuxmint-21
 - [x] fedora-41
 - [x] fedora-40
 - [ ] almalinux-9
@@ -12,4 +12,4 @@ Perform testing on the following images:
 - [ ] rocky-8
 - [ ] opensuse-leap-15.6
 - [ ] opensuse-tumbleweed
-- [ ] arch
+- [x] arch
