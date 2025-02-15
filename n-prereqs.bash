@@ -123,9 +123,8 @@ detect_sys_info() {
 #       - The initial exit code passed by the caller. Under certain conditions, it may
 #         be modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - If "true", outputs an extra blank line to distinguish previous output from the
-#         exit messages.
-#       - Acceptable values: true, false.
+#       - Whether to output an extra newline before the exit message.
+#       - Acceptable values: true, false
 #
 # EXITS:
 #   - $exit_code: The final exit code.
@@ -134,7 +133,9 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     local exit_now=false
 
-    trap - EXIT SIGINT
+    # Remove the exit trap to prevent re-entry after exiting.
+    # Remove the other traps, as they are no longer needed.
+    trap - EXIT SIGINT SIGHUP SIGTERM
     [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in
@@ -159,8 +160,8 @@ clean_exit() {
 }
 
 ####
-# Displays a message indicating that the current OS is unsupported for automatic
-# NadekoBot prerequisite installation.
+# Display a message indicating that the current OS is unsupported for the automatic
+# installation of NadekoBot's prerequisites.
 #
 # EXITS:
 #   - 4: The current OS is unsupported.
@@ -175,7 +176,7 @@ unsupported() {
 # Create the local bin directory if it doesn't exist.
 create_local_bin() {
     if [[ ! -d $E_LOCAL_BIN ]]; then
-        echo "${E_INFO}Creating '$E_LOCAL_BIN' directory..."
+        echo "${E_INFO}Creating '$E_LOCAL_BIN'..."
         mkdir -p "$E_LOCAL_BIN"
     fi
 }
@@ -185,7 +186,7 @@ create_local_bin() {
 ###
 
 ####
-# Installs 'yt-dlp' to '~/.local/bin/yt-dlp', creating the directory if needed.
+# Install 'yt-dlp' to '~/.local/bin/yt-dlp' and modify its permissions.
 #
 # EXITS:
 #   - 1: If 'yt-dlp' fails to download.
@@ -205,7 +206,7 @@ install_yt_dlp() {
 }
 
 ####
-# Installs 'ccze' for Arch Linux from the AUR using an available AUR helper or manually.
+# Install 'ccze' for Arch Linux from the AUR, using an AUR helper if available.
 #
 # EXITS:
 #   - Non-zero exit code: If any installation step fails.
@@ -232,7 +233,7 @@ install_ccze_arch() {
 }
 
 ####
-# Installs all prerequisites required by NadekoBot using the provided package manager
+# Install all prerequisites required by NadekoBot using the provided package manager
 # commands.
 #
 # PARAMETERS:
@@ -243,10 +244,10 @@ install_ccze_arch() {
 #   - $3: music_pkg_list (Required)
 #       - A list of packages required for music playback.
 #   - $4: manager_pkg_list (Required)
-#       - A list of other packages required by the manager.
+#       - A list of other packages required by the Manager.
 #
 # EXITS:
-#   - $?: If any prerequisite installation step fails.
+#   - $?: If any of the installation steps fail.
 install_prereqs() {
     local install_cmd="$1"
     local update_cmd="$2"

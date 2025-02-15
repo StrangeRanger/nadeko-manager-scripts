@@ -1,9 +1,12 @@
 #!/bin/bash
 #
-# NadekoBot Manager Pre-Preparation Script
+# NadekoBot Manager Bridge Script
 #
-# This script sets up the environment for the NadekoBot Manager by verifying system
-# compatibility and initializing global variables and functions required by the Manager.
+# This script acts as a bootstrapper for the NadekoBot Manager. It performs environment
+# validation (ensuring a 64-bit system and systemd are present), checks for bridge
+# updates, and downloads the main Manager script from a remote source. After setting up
+# global variables and performing initial checks, it executes the main Manager script
+# and ensures proper cleanup on exit.
 #
 ########################################################################################
 ####[ Exported and Global Variables ]###################################################
@@ -36,7 +39,7 @@ export E_ROOT_DIR="$PWD"
 export E_MANAGER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 
 ###
-### Variables requiring extra checks before being set and exported.
+### Variables that require extra checks before being set and exported.
 ###
 
 case $(uname -m) in
@@ -59,9 +62,8 @@ esac
 #   - $1: exit_code (Required)
 #       - The exit status code with which the script should terminate.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - If "true", outputs an extra blank line to distinguish previous output from the
-#         exit messages.
-#       - Acceptable values: true, false.
+#       - Whether to output an extra newline before the exit message.
+#       - Acceptable values: true, false
 #
 # EXITS:
 #   - $exit_code: The exit code passed by the caller.
@@ -71,7 +73,7 @@ clean_exit() {
     local manager_files=("n-main-prep.bash" "n-main.bash" "n-update.bash"
         "n-runner.bash" "n-file-backup.bash" "n-prereqs.bash" "n-update-bridge.bash")
 
-    trap - EXIT
+    trap - EXIT  # Remove the exit trap to prevent re-entry after exiting.
     [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in
@@ -94,10 +96,8 @@ clean_exit() {
 }
 
 ####
-# Downloads and executes the main Manager script, then exits with its exit code.
-#
-# EXITS:
-#   - $?: The exit code returned by the main Manager script.
+# Download and execute the main Manager script, then call 'clean_exit' with the exit
+# code returned by the script.
 execute_main_script() {
     E_DOWNLOAD_SCRIPT "$C_MAIN_MANAGER" "true"
     ./"$C_MAIN_MANAGER"
@@ -109,19 +109,19 @@ execute_main_script() {
 ###
 
 ####
-# Downloads the specified script from the remote location defined by $E_RAW_URL and
-# grants it executable permissions.
+# Download the specified script from the remote location defined by $E_RAW_URL and grant
+# it executable permissions.
 #
 # PARAMETERS:
 #   - $1: script_name (Required)
-#   - $2: script_output (Optional, Default: false)
-#       - If "true", prints a message indicating that the download is underway.
+#   - $2: should_print (Optional, Default: false)
+#       - Whether to print a message indicating that the script is being downloaded.
 #       - Acceptable values: true, false.
 E_DOWNLOAD_SCRIPT() {
     local script_name="$1"
-    local script_output="${2:-false}"
+    local should_print="${2:-false}"
 
-    [[ $script_output == true ]] \
+    [[ $should_print == true ]] \
         && printf "%sDownloading '%s'..." "${E_INFO}" "$script_name"
 
     curl -O -s "$E_RAW_URL"/"$script_name"
@@ -130,18 +130,18 @@ E_DOWNLOAD_SCRIPT() {
 export -f E_DOWNLOAD_SCRIPT
 
 ####
-# Outputs an error message to stderr, optionally prints an additional message, and
-# terminates the script if an exit code is provided.
+# Output an error message to stderr, optionally print an additional message,
+# and terminate the script if an exit code is provided.
 #
 # PARAMETERS:
 #   - $1: error_message (Required)
 #   - $2: exit_code (Optional, Default: "")
-#       - If provided, the script will exit with this code.
+#       - If provided, exit the script with this exit code.
 #   - $3: additional_message (Optional, Default: "")
-#       - If provided, displays this message after the main error message.
+#       - If provided, display the given message after the main error message.
 #
 # EXITS:
-#   - $exit_code: The exit code provided by the caller.
+#   - $exit_code: The exit code passed by the caller.
 E_STDERR() {
     local error_message="$1"
     local exit_code="${2:-}"
@@ -166,6 +166,7 @@ trap 'clean_exit "$?" "true"' EXIT
 ####[ Prepping ]########################################################################
 
 
+# Verify that the revision number in 'm-bridge.bash' matches the latest revision.
 if [[ $E_BRIDGE_REVISION != "$C_LATEST_BRIDGE_REVISION" ]]; then
     export E_LATEST_BRIDGE_REVISION="$C_LATEST_BRIDGE_REVISION"
 

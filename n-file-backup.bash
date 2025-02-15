@@ -24,7 +24,7 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
 
 ####
-# Cleans up temporary files and directories, and attempts to restore original backup
+# Clean up temporary files and directories, and attempt to restore the original backup
 # files in case of an error or premature exit.
 #
 # PARAMETERS:
@@ -32,9 +32,8 @@ readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 #       - The initial exit code passed by the caller. Under certain conditions, it may
 #         be modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
-#       - If "true", outputs an extra blank line to distinguish previous output from the
-#         exit messages.
-#       - Acceptable values: true, false.
+#       - Whether to output an extra newline before the exit message.
+#       - Acceptable values: true, false
 #
 # EXITS:
 #   - $exit_code: The final exit code.
@@ -43,7 +42,7 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     local exit_now=false
 
-    trap - EXIT SIGINT
+    trap - EXIT # Remove the exit trap to prevent re-entry after exiting.
     [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in
@@ -97,12 +96,12 @@ trap 'clean_exit "$?" "true"'  EXIT
 ####[ Main ]############################################################################
 
 
+cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 echo "${E_NOTE}We will now back up the following files:"
 for file in "${C_FILES_TO_BACK_UP[@]}";
     do echo "  ${E_CYAN}|${E_NC}    $file"
 done
 read -rp "${E_NOTE}Press [Enter] to continue"
-cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 
 echo "${E_INFO}Backing up files into '$C_TMP_BACKUP'..."
 for file in "${C_FILES_TO_BACK_UP[@]}"; do
@@ -120,7 +119,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     for file in "$C_CURRENT_BACKUP"/*; do
         basefile="${file##*/}"
 
-        # Only copy files that do not already end with '.old'.
+        ## Only copy files that do not already end with '.old'.
         if [[ ! $basefile =~ ^.*\.old$ ]]; then
             cp "$file" "$C_TMP_BACKUP/$basefile.old" \
                 || E_STDERR "Failed to copy '$basefile'" "1"
