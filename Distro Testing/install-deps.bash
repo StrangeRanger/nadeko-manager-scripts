@@ -29,7 +29,7 @@ elif [[ "$C_PKG_MANAGER" = "dnf" ]]; then
 elif [[ "$C_PKG_MANAGER" = "zypper" ]]; then
     zypper refresh
     zypper --non-interactive update
-    zypper --non-interactive install curl libicu python3-base sudo systemd vim
+    zypper --non-interactive install curl libicu python3-base sudo systemd vim which
     zypper clean --all
 elif [[ "$C_PKG_MANAGER" = "pacman" ]]; then
     pacman -Syu --noconfirm base-devel curl git go sudo systemd vim
