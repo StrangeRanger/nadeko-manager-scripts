@@ -181,6 +181,7 @@ E_FOLLOW_SERVICE_LOGS() {
         journal_pid=$!
     else
         echo "${E_WARN}The 'ccze' command is not installed; logs will not be colorized"
+        echo ""
         sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" &
         journal_pid=$!
     fi
