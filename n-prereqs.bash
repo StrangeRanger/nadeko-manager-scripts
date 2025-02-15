@@ -232,8 +232,8 @@ install_ccze_arch() {
         read -rp "${E_NOTE}Would you like to continue? [y/N] " confirm
         confirm=${confirm,,}
         if [[ ! $confirm =~ ^y ]]; then
-            echo "${E_INFO}Installation of 'ccze' and required build tools" \
-                "${E_RED}aborted${E_NC}"
+            echo "${E_RED}==>${E_NC}Installation of 'ccze' and required build tools" \
+                "aborted by user"
             echo "${E_WARN}'ccze' is required to colorize NadekoBot's logs"
             return 1
         fi
