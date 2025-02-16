@@ -84,8 +84,8 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["fedora"]="python3 ffmpeg-free"
     ["almalinux"]="python311 ffmpeg"
     ["rocky"]="python311 ffmpeg"
-    ["opensuse-leap"]="python311 yt-dlp"
-    ["opensuse-tumbleweed"]="yt-dlp"
+    ["opensuse-leap"]="python311 ffmpeg"
+    ["opensuse-tumbleweed"]="python311 ffmpeg"
     ["arch"]="ffmpeg yt-dlp"
 )
 
