@@ -24,11 +24,9 @@ RUN groupadd --system nadeko \
     && useradd -m -g nadeko -s /bin/bash nadeko \
     && echo "nadeko:NadekoBot123!" | chpasswd \
     && mkdir -p /home/nadeko/NadekoBot \
-    && chown -R nadeko:nadeko /home/nadeko \
     && mkdir -p /etc/sudoers.d \
     && echo "nadeko ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/nadeko \
-    && chmod 0440 /etc/sudoers.d/nadeko \
-    && mkdir -p /home/nadeko/NadekoBot
+    && chmod 0440 /etc/sudoers.d/nadeko
 
 COPY install-deps.bash /usr/local/sbin/install-deps.bash
 RUN chmod +x /usr/local/sbin/install-deps.bash \
