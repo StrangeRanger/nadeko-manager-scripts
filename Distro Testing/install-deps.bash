@@ -29,7 +29,7 @@ elif [[ "$C_PKG_MANAGER" = "dnf" ]]; then
 elif [[ "$C_PKG_MANAGER" = "zypper" ]]; then
     zypper refresh
     zypper --non-interactive update
-    zypper --non-interactive install curl libicu python3-base sudo systemd vim
+    zypper --non-interactive install curl libicu python3-base sudo systemd vim which
     zypper clean --all
 elif [[ "$C_PKG_MANAGER" = "pacman" ]]; then
     pacman -Syu --noconfirm base-devel curl git go sudo systemd vim
@@ -39,7 +39,6 @@ elif [[ "$C_PKG_MANAGER" = "pacman" ]]; then
         git clone https://aur.archlinux.org/yay.git /home/builder/yay
         chown -R builder:builder /home/builder/yay
         su builder -c "cd /home/builder/yay && makepkg -si --noconfirm"
-        rm -rf /home/builder/yay
         userdel -r builder
         rm -f /etc/sudoers.d/builder
     fi
@@ -48,8 +47,6 @@ else
     echo "Unsupported package manager: $C_PKG_MANAGER"
     exit 1
 fi
-
-mkdir -p /root/NadekoBot
 
 ## Clean up system to reduce image size.
 rm -rf /tmp/* /var/tmp/*
