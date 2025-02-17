@@ -1,9 +1,16 @@
 #!/bin/bash
 #
-# NadekoBot Prerequisites Installer for Linux
+# NadekoBot Prerequisites Installer Script
 #
-# This script automates the installation of all prerequisites required by NadekoBot on
-# various Linux distributions.
+# This script automates the installation of NadekoBot's prerequisites on supported Linux
+# distributions. It detects the system's OS and version, validates compatibility against
+# a predefined list, and then executes distro-specific pre-installation checks, package
+# list updates, and installation commands.
+#
+# Key tasks include installing required packages (e.g., Python, ffmpeg, jq, ccze,
+# yt-dlp), handling special configuration steps (such as enabling extra repositories or
+# creating symlinks), and performing post-installation adjustments. If the OS is
+# unsupported, the script notifies the user and exits gracefully.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################

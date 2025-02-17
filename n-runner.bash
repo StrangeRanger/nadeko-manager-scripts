@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# NadekoBot Service Setup and Runner Script
+# NadekoBot Service Runner Configuration Script
 #
-# This script configures and manages the systemd service for NadekoBot, allowing it to
-# run in one of two modes:
-#   - NadekoRun: Runs NadekoBot in the background.
-#   - NadekoRunAR: Runs NadekoBot in the background with automatic restart on failure or
-#     system reboot.
+# This script configures the systemd service for NadekoBot and prepares the runner script
+# (NadekoRun) based on the chosen run mode. Depending on the value of E_RUNNER_CODENAME,
+# it either creates a standard or an auto-restart version of the runner script, writes
+# or updates the service file accordingly, and then starts or restarts the service.
+# Finally, it displays the service logs to provide immediate feedback on the operation.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################

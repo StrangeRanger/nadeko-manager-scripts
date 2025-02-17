@@ -1,13 +1,18 @@
 #!/bin/bash
 #
-# NadekoBot Update Utility
+# NadekoBot Setup/Update Script
 #
-# This script automates the process of updating NadekoBot to a user-selected version.
+# This script automates the update process for NadekoBot (major version 5). It stops the
+# NadekoBot service if it is active, retrieves available releases from the GitLab API,
+# and prompts the user to select a version for installation. The script then downloads
+# and extracts the chosen archive, migrates credentials, the database, and other data
+# (backing up custom strings and aliases), and replaces the existing installation with
+# the new version.
 #
 # NOTE:
 #   After each update, any custom modifications to strings and aliases must be
 #   re-applied manually. However, backups of the previous versions are saved as
-#   'strings.old' and 'aliases.old.yml' respectively.
+#   'strings.old' and 'aliases.old.yml'.
 #
 ########################################################################################
 ####[ Variables ]#######################################################################
@@ -32,7 +37,6 @@ readonly C_NEW_DATA_PATH="$C_BOT_DIR_TMP/data"
 readonly PROJECT_ID="9321079"
 readonly API_URL="https://gitlab.com/api/v4/projects/${PROJECT_ID}"
 
-## Non-constant variables.
 service_is_active=false
 
 
