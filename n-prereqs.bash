@@ -1,9 +1,16 @@
 #!/bin/bash
 #
-# NadekoBot Prerequisites Installer for Linux
+# NadekoBot Prerequisites Installer Script
 #
-# This script automates the installation of all prerequisites required by NadekoBot on
-# various Linux distributions.
+# This script automates the installation of NadekoBot's prerequisites on supported Linux
+# distributions. It detects the system's OS and version, validates compatibility against
+# a predefined list, and then executes distro-specific pre-installation checks, package
+# list updates, and installation commands.
+#
+# Key tasks include installing required packages (e.g., Python, ffmpeg, jq, ccze,
+# yt-dlp), handling special configuration steps (such as enabling extra repositories or
+# creating symlinks), and performing post-installation adjustments. If the OS is
+# unsupported, the script notifies the user and exits gracefully.
 #
 ########################################################################################
 ####[ Global Variables ]################################################################
@@ -84,8 +91,8 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
     ["fedora"]="python3 ffmpeg-free"
     ["almalinux"]="python311 ffmpeg"
     ["rocky"]="python311 ffmpeg"
-    ["opensuse-leap"]="python311 yt-dlp"
-    ["opensuse-tumbleweed"]="yt-dlp"
+    ["opensuse-leap"]="python311 ffmpeg"
+    ["opensuse-tumbleweed"]="python311 ffmpeg"
     ["arch"]="ffmpeg yt-dlp"
 )
 
@@ -225,6 +232,7 @@ install_ccze_arch() {
         paru -S --noconfirm --mflags "--rmdeps" ccze \
             || E_STDERR "Failed to install 'ccze' from the AUR" "$?"
     else
+        local ccze_tmp_dir="/tmp/ccze"
         echo "${E_WARN}AUR helper not found, continuing with manual installation..."
 
         echo "${E_NOTE}We need to install additional build tools and clone the AUR package"
@@ -241,11 +249,13 @@ install_ccze_arch() {
         echo "${E_INFO}Installing necessary build tools..."
         sudo pacman -S --needed base-devel git
         echo "${E_INFO}Cloning the AUR package..."
-        git clone https://aur.archlinux.org/ccze.git /tmp/ccze
-        pushd /tmp/ccze >/dev/null || E_STDERR "Failed to change to '/tmp/ccze'" "1"
+        git clone https://aur.archlinux.org/ccze.git "$ccze_tmp_dir"
+        pushd "$ccze_tmp_dir" >/dev/null || E_STDERR "Failed to change to '$ccze_tmp_dir'" "1"
         echo "${E_INFO}Building and installing 'ccze'..."
         makepkg -si || E_STDERR "Failed to build and install 'ccze'" "$?"
         popd >/dev/null || E_STDERR "Failed to change back to the previous directory" "1"
+        echo "${E_INFO}Cleaning up..."
+        rm -rf "$ccze_tmp_dir" &>/dev/null
     fi
 }
 
@@ -329,14 +339,14 @@ pre_install() {
             local rmpfusion_url="https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$el_ver.noarch.rpm"
 
             echo "${E_INFO}Updating package lists..."
-            dnf update -y
+            sudo dnf update -y
 
             echo "${E_INFO}Installing EPEL repository..."
             sudo dnf install -y epel-release
 
             if [[ $el_ver == "8" ]]; then
                 echo "${E_INFO}Enabling PowerTools repository..."
-                dnf config-manager --set-enabled powertools \
+                sudo dnf config-manager --set-enabled powertools \
                     || echo "${E_WARN}PowerTools repository could not be enabled" >&2
             elif [[ $el_ver == "9" ]]; then
                 echo "${E_INFO}Enabling CRB repository..."

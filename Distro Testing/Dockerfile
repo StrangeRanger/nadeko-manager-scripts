@@ -20,16 +20,26 @@ LABEL org.opencontainers.image.description="A Docker image to test NadekoBot's M
 ENV container=docker
 ENV DEBIAN_FRONTEND=noninteractive
 
+RUN groupadd --system nadeko \
+    && useradd -m -g nadeko -s /bin/bash nadeko \
+    && echo "nadeko:NadekoBot123!" | chpasswd \
+    && mkdir -p /home/nadeko/NadekoBot \
+    && mkdir -p /etc/sudoers.d \
+    && echo "nadeko ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/nadeko \
+    && chmod 0440 /etc/sudoers.d/nadeko
+
 COPY install-deps.bash /usr/local/sbin/install-deps.bash
 RUN chmod +x /usr/local/sbin/install-deps.bash \
     && /usr/local/sbin/install-deps.bash "$PKG_MANAGER" \
     && rm /usr/local/sbin/install-deps.bash
 
-WORKDIR /root/NadekoBot
+WORKDIR /home/nadeko/NadekoBot
 
 COPY setup.bash /usr/local/sbin/setup.bash
 RUN chmod +x /usr/local/sbin/setup.bash \
     && /usr/local/sbin/setup.bash \
-    && rm /usr/local/sbin/setup.bash
+    && rm /usr/local/sbin/setup.bash \
+    && chown -R nadeko:nadeko /home/nadeko \
+    && chmod 700 /home/nadeko
 
 CMD ["/sbin/init"]
