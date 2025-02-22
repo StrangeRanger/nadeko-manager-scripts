@@ -181,12 +181,8 @@ curl -L -o "$C_ARCHIVE_NAME" "$C_ARCHIVE_URL" \
     || E_STDERR "Failed to download '${C_BOT_VERSION}'" "1"
 
 echo "${E_INFO}Extracting '${C_ARCHIVE_NAME}'..."
-tar -xf "$C_ARCHIVE_NAME" || E_STDERR "Failed to extract '${C_ARCHIVE_NAME}'" "1"
-
-archive_dir_name=$(tar -tf "$C_ARCHIVE_NAME" | head -1 | cut -f1 -d "/")
-mv "$archive_dir_name" "$E_BOT_DIR"
-unset archive_dir_name
-chmod +x "${E_BOT_DIR}/${E_BOT_EXE}"
+mkdir -p "$E_BOT_DIR"
+tar -xf "$C_ARCHIVE_NAME" -C "$E_BOT_DIR" --strip-components=1 || E_STDERR "Failed to extract '${C_ARCHIVE_NAME}'" "1"
 popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "1"
 
 
