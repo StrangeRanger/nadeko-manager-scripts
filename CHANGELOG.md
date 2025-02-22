@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Simplified and improved how NadekoBot release archives are handled and extracted.
+
 ## [v6.0.0] - 2025-02-16
 
 Yes, it's another major release—but with good reason. Many long-awaited changes have been implemented since v5.0.0, including significant improvements and some breaking changes. All breaking changes continue to be handled automatically, so no manual intervention is required. Below is a summary of the most important updates to the installer, now rebranded as the Manager.
