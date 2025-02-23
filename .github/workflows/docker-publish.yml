@@ -16,6 +16,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         distro: [
           { name: "ubuntu-24.04", base: "ubuntu:24.04", pkg: "apt" },
