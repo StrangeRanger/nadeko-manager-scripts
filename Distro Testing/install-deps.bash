@@ -17,7 +17,7 @@ if [[ "$C_PKG_MANAGER" = "apt" ]]; then
     C_ARCH="$(dpkg --print-architecture)"
     ## There have been problems with QEMU on arm64 dealing with upgrading 'libc-bin'.
     if [[ $C_ARCH == "arm64"]]; then
-        apg-get update
+        apt-get update
     else
         apt-get update
         apt-get upgrade -y
