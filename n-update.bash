@@ -162,13 +162,11 @@ compare_versions() {
 #   - C_ARCHIVE_URL: The direct URL for downloading the archive.
 #
 # EXITS:
-#   - 1: If fetching releases from the GitLab API fails or if no releases are found.
+#   - 1: .......
 fetch_versions() {
-    local -a available_versions
-    local -a display_versions
+    local -a available_versions display_versions
     local -A cmp_map
-    local cmp_result
-    local current_version
+    local cmp_result current_version
     local IFS='.'
     local api_tag_url="https://api.github.com/repos/nadeko-bot/nadekobot/tags"
     local release_url="https://github.com/nadeko-bot/nadekobot/releases/download"
@@ -183,8 +181,9 @@ fetch_versions() {
 
     (( ${#available_versions[@]} > 0 )) || E_STDERR "Failed to find any releases" "1"
 
-    if [[ -f $BIN_DIR/$BOT_EXECUTABLE ]]; then
-        if ! current_version=$(timeout 5s ./"$BIN_DIR"/"$BOT_EXECUTABLE" --version); then
+    if [[ -f $E_BOT_DIR/$E_BOT_EXE ]]; then
+        if ! current_version=$(timeout 5s ./"$E_BOT_DIR"/"$E_BOT_EXE" --version); then
+            echo "${E_WARN}Failed to retrieve the current version of NadekoBot" >&2
             current_version=""
         fi
     fi
@@ -196,13 +195,13 @@ fetch_versions() {
             cmp_map["$ver"]=$cmp_result  # Save the comparison results for later use.
 
             if [[ $cmp_result == "older" ]]; then
-                display_versions+=("${RED}$ver${NC}")
+                display_versions+=("${C_RED}$ver${C_NC}")
             elif [[ $cmp_result == "newer" ]]; then
-                display_versions+=("${GREEN}$ver${NC}")
+                display_versions+=("${C_GREEN}$ver${C_NC}")
             elif [[ $cmp_result == "equal" ]]; then
-                display_versions+=("${BLUE}$ver${NC}")
+                display_versions+=("${C_BLUE}$ver${C_NC}")
             else
-                echo "${RED}ERROR: INTERNAL: Invalid comparison result${NC}" >&2
+                echo "${C_ERROR}INTERNAL: Invalid comparison result" >&2
                 exit 1
             fi
         else
@@ -210,9 +209,35 @@ fetch_versions() {
         fi
     done
 
-    echo "${E_NOTE}Select version to install:"
-    select version in "${available_versions[@]}"; do
-        if [[ -n $version ]]; then
+    echo -e "${C_NOTE}Select version to install:"
+    select version in "${display_versions[@]}"; do
+        ## Ensure the non-color-coded version is selected/used.
+        local version_index=$((REPLY - 1))
+        local selected_version="${available_versions[$version_index]}"
+
+        if [[ -n $selected_version ]]; then
+            if [[ -n $current_version ]]; then
+                local status=${cmp_map["$selected_version"]}
+
+                if [[ $status == "older" ]]; then
+                    echo -n "${C_WARN}Downgrading can result in data loss. "
+                    read -r -n 1 -p "Are you sure you want to continue? [y/N]: " confirm
+                elif [[ $status == "newer" ]]; then
+                    echo -n "${C_NOTE}You are about to update to a newer version. "
+                    read -r -n 1 -p "Continue? [y/N]: " confirm
+                elif [[ $status == "equal" ]]; then
+                    echo -n "${C_NOTE}You are about to reinstall the same version. "
+                    read -rp "Continue? [y/N]: " confirm
+                else
+                    echo "${C_ERROR}INTERNAL: Invalid comparison result" >&2
+                    exit 1
+                fi
+
+                echo
+                confirm=${confirm,,}
+                [[ ! $confirm =~ ^y ]] && break
+            fi
+
             C_BOT_VERSION="$version"
             C_ARCHIVE_NAME="nadekobot-v${version}.tar.gz"
             C_ARCHIVE_URL="$release_url/$version/nadeko-linux-${E_ARCH}.tar.gz"
