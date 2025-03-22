@@ -111,6 +111,48 @@ clean_exit() {
 }
 
 ####
+# Compare two version strings and determine if one is newer, older, or the same as the
+# other. This is done by splitting the version strings into parts and comparing each
+# part, starting from the major number to the patch number.
+#
+# PARAMETERS:
+#   - $1: version_a (Required)
+#       - The version that will be compared.
+#   - $2: version_b (Required)
+#       - The version to compare against.
+#
+# RETURNS:
+#   - newer: If version_a is newer than version_b.
+#   - older: If version_a is older than version_b.
+#   - equal: If version_a is the same as version_b.
+compare_versions() {
+    local version_a="$1"
+    local version_a_major version_a_minor version_a_patch
+    local version_b="$2"
+    local version_b_major version_b_minor version_b_patch
+    local IFS='.'
+
+    read -r version_a_major version_a_minor version_a_patch <<< "$version_a"
+    read -r version_b_major version_b_minor version_b_patch <<< "$version_b"
+
+    if (( version_a_major > version_b_major )); then
+        echo "newer"
+    elif (( version_a_major < version_b_major )); then
+        echo "older"
+    elif (( version_a_minor > version_b_minor )); then
+        echo "newer"
+    elif (( version_a_minor < version_b_minor )); then
+        echo "older"
+    elif (( version_a_patch > version_b_patch )); then
+        echo "newer"
+    elif (( version_a_patch < version_b_patch )); then
+        echo "older"
+    else
+        echo "equal"
+    fi
+}
+
+####
 # Retrieves all available NadekoBot versions from the GitLab API and prompts the user to
 # select one for installation.
 #
@@ -122,22 +164,54 @@ clean_exit() {
 # EXITS:
 #   - 1: If fetching releases from the GitLab API fails or if no releases are found.
 fetch_versions() {
-    local versions
+    local -a available_versions
+    local -a display_versions
+    local -A cmp_map
+    local cmp_result
+    local current_version
+    local IFS='.'
     local api_tag_url="https://api.github.com/repos/nadeko-bot/nadekobot/tags"
     local release_url="https://github.com/nadeko-bot/nadekobot/releases/download"
     # shellcheck disable=SC2016
     #   This is a jq filter string, not a shell command that needs to be expanded.
     local jq_filter='map(select(.name | startswith($major))) | .[].name'
 
-    mapfile -t versions < <(
+    mapfile -t available_versions < <(
         curl -sSf "$api_tag_url" \
             | jq -r --arg major "$C_NADEKO_MAJOR_VERSION" "$jq_filter"
     )
 
-    (( ${#versions[@]} > 0 )) || E_STDERR "Failed to find any releases" "1"
+    (( ${#available_versions[@]} > 0 )) || E_STDERR "Failed to find any releases" "1"
+
+    if [[ -f $BIN_DIR/$BOT_EXECUTABLE ]]; then
+        if ! current_version=$(timeout 5s ./"$BIN_DIR"/"$BOT_EXECUTABLE" --version); then
+            current_version=""
+        fi
+    fi
+
+    ## Colorize each version based on its comparison to the current version.
+    for ver in "${available_versions[@]}"; do
+        if [[ -n $current_version && $current_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            cmp_result=$(compare_versions "$ver" "$current_version")
+            cmp_map["$ver"]=$cmp_result  # Save the comparison results for later use.
+
+            if [[ $cmp_result == "older" ]]; then
+                display_versions+=("${RED}$ver${NC}")
+            elif [[ $cmp_result == "newer" ]]; then
+                display_versions+=("${GREEN}$ver${NC}")
+            elif [[ $cmp_result == "equal" ]]; then
+                display_versions+=("${BLUE}$ver${NC}")
+            else
+                echo "${RED}ERROR: INTERNAL: Invalid comparison result${NC}" >&2
+                exit 1
+            fi
+        else
+            display_versions+=("$ver")
+        fi
+    done
 
     echo "${E_NOTE}Select version to install:"
-    select version in "${versions[@]}"; do
+    select version in "${available_versions[@]}"; do
         if [[ -n $version ]]; then
             C_BOT_VERSION="$version"
             C_ARCHIVE_NAME="nadekobot-v${version}.tar.gz"
