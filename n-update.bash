@@ -141,7 +141,7 @@ fetch_versions() {
         if [[ -n $version ]]; then
             C_BOT_VERSION="$version"
             C_ARCHIVE_NAME="nadekobot-v${version}.tar.gz"
-            C_ARCHIVE_URL="$release_url/$version/nadeko-linux-${E_ARCH}-build.tar.gz"
+            C_ARCHIVE_URL="$release_url/$version/nadeko-linux-${E_ARCH}.tar.gz"
             break
         else
             echo "${E_ERROR}Invalid selection"
