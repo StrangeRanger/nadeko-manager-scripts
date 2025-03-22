@@ -24,6 +24,7 @@
         "makepkg",
         "Mewdeko",
         "mflags",
+        "NADEKO",
         "noconfirm",
         "paru",
         "pipewire",
@@ -35,6 +36,7 @@
         "rockylinux",
         "rpmfusion",
         "rpmkeys",
+        "startswith",
         "SVER"
     ]
 }

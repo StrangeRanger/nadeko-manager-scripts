@@ -20,7 +20,8 @@
 
 C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
-readonly C_NADEKO_MAJOR_VERSION="5"
+readonly C_NADEKO_MAJOR_VERSION="6"
+readonly C_API_URL="https://api.github.com/repos/nadeko-bot/nadekobot/tags"
 
 ## File paths.
 readonly C_BOT_DIR_TMP="$C_NADEKOBOT_TMP/$E_BOT_DIR"
@@ -32,10 +33,6 @@ readonly C_CURRENT_DB_PATH="$E_BOT_DIR/data/NadekoBot.db"
 readonly C_NEW_DB_PATH="$C_BOT_DIR_TMP/data/NadekoBot.db"
 readonly C_CURRENT_DATA_PATH="$E_BOT_DIR/data"
 readonly C_NEW_DATA_PATH="$C_BOT_DIR_TMP/data"
-
-## GitLab project details.
-readonly PROJECT_ID="9321079"
-readonly API_URL="https://gitlab.com/api/v4/projects/${PROJECT_ID}"
 
 service_is_active=false
 
@@ -127,10 +124,13 @@ clean_exit() {
 #   - 1: If fetching releases from the GitLab API fails or if no releases are found.
 fetch_versions() {
     local versions
+    # shellcheck disable=SC2016
+    #   This is a jq filter string, not a shell command that needs to be expanded.
+    local jq_filter='map(select(.name | startswith($major))) | .[].name'
 
     mapfile -t versions < <(
-        curl -sSf "${API_URL}/repository/tags?search=^$C_NADEKO_MAJOR_VERSION" \
-        | jq -r '.[].release | select(. != null) | .tag_name'
+        curl -sSf "$C_API_URL" \
+        | jq -r --arg major "$C_NADEKO_MAJOR_VERSION" "$jq_filter"
     )
 
     (( ${#versions[@]} > 0 )) || E_STDERR "Failed to find any releases" "1"
@@ -140,7 +140,7 @@ fetch_versions() {
         if [[ -n $version ]]; then
             C_BOT_VERSION="$version"
             C_ARCHIVE_NAME="nadekobot-v${version}.tar"
-            C_ARCHIVE_URL="$API_URL/packages/generic/NadekoBot-build/$C_BOT_VERSION/${C_BOT_VERSION}-linux-${E_ARCH}-build.tar"
+            C_ARCHIVE_URL="$C_API_URL/packages/generic/NadekoBot-build/$C_BOT_VERSION/${C_BOT_VERSION}-linux-${E_ARCH}-build.tar"
             break
         else
             echo "${E_ERROR}Invalid selection"
