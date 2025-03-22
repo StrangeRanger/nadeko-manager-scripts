@@ -21,7 +21,6 @@
 C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
 readonly C_NADEKOBOT_TMP
 readonly C_NADEKO_MAJOR_VERSION="6"
-readonly C_API_URL="https://api.github.com/repos/nadeko-bot/nadekobot/tags"
 
 ## File paths.
 readonly C_BOT_DIR_TMP="$C_NADEKOBOT_TMP/$E_BOT_DIR"
@@ -124,13 +123,15 @@ clean_exit() {
 #   - 1: If fetching releases from the GitLab API fails or if no releases are found.
 fetch_versions() {
     local versions
+    local api_tag_url="https://api.github.com/repos/nadeko-bot/nadekobot/tags"
+    local release_url="https://github.com/nadeko-bot/nadekobot/releases/download"
     # shellcheck disable=SC2016
     #   This is a jq filter string, not a shell command that needs to be expanded.
     local jq_filter='map(select(.name | startswith($major))) | .[].name'
 
     mapfile -t versions < <(
-        curl -sSf "$C_API_URL" \
-        | jq -r --arg major "$C_NADEKO_MAJOR_VERSION" "$jq_filter"
+        curl -sSf "$api_tag_url" \
+            | jq -r --arg major "$C_NADEKO_MAJOR_VERSION" "$jq_filter"
     )
 
     (( ${#versions[@]} > 0 )) || E_STDERR "Failed to find any releases" "1"
@@ -139,8 +140,8 @@ fetch_versions() {
     select version in "${versions[@]}"; do
         if [[ -n $version ]]; then
             C_BOT_VERSION="$version"
-            C_ARCHIVE_NAME="nadekobot-v${version}.tar"
-            C_ARCHIVE_URL="$C_API_URL/packages/generic/NadekoBot-build/$C_BOT_VERSION/${C_BOT_VERSION}-linux-${E_ARCH}-build.tar"
+            C_ARCHIVE_NAME="nadekobot-v${version}.tar.gz"
+            C_ARCHIVE_URL="$release_url/$version/nadeko-linux-${E_ARCH}-build.tar.gz"
             break
         else
             echo "${E_ERROR}Invalid selection"
@@ -176,13 +177,14 @@ fetch_versions
 ### [ Download NadekoBot Archive ]
 ###
 
-echo "${E_INFO}Downloading '${C_BOT_VERSION}' for '${E_ARCH}'..."
+echo "${E_INFO}Downloading '${C_BOT_VERSION}' for 'linux-${E_ARCH}'..."
 curl -L -o "$C_ARCHIVE_NAME" "$C_ARCHIVE_URL" \
     || E_STDERR "Failed to download '${C_BOT_VERSION}'" "1"
 
 echo "${E_INFO}Extracting '${C_ARCHIVE_NAME}'..."
 mkdir -p "$E_BOT_DIR"
-tar -xf "$C_ARCHIVE_NAME" -C "$E_BOT_DIR" --strip-components=1 || E_STDERR "Failed to extract '${C_ARCHIVE_NAME}'" "1"
+tar -xzf "$C_ARCHIVE_NAME" -C "$E_BOT_DIR" --strip-components=1 \
+    || E_STDERR "Failed to extract '${C_ARCHIVE_NAME}'" "1"
 popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "1"
 
 

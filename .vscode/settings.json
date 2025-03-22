@@ -8,6 +8,7 @@
         "bootstrapper",
         "Buildx",
         "ccze",
+        "CREDS",
         "devel",
         "DISTROS",
         "DOCKERHUB",
