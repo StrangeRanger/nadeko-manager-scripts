@@ -34,10 +34,43 @@ readonly C_EXAMPLE_CREDS_PATH="$C_TMP_BOT_DIR_PATH/data/$E_CREDS_EXAMPLE"
 readonly C_NEW_CREDS_PATH="$C_TMP_DIR_PATH/$E_CREDS_PATH"
 
 service_is_active=false
+needs_rollback=false
 
 
 ####[ Functions ]#######################################################################
 
+
+####
+# Reverts changes made during the update process if an error or premature exit is
+# detected.
+revert_changes() {
+    [[ $needs_rollback == 1 ]] && return
+
+    if [[ -d $E_BOT_DIR && ! -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
+        echo "${E_WARN}Unable to complete installation"
+        echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
+        mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" \
+            || E_STDERR "Failed to restore '$C_BOT_DIR_OLD'" "$?"
+
+    elif [[ ! -d $E_BOT_DIR && -d $C_BOT_DIR_OLD ]]; then
+        echo "${E_WARN}Unable to complete installation"
+        echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
+        mv "$C_BOT_DIR_OLD" "$E_BOT_DIR" \
+            || E_STDERR "Failed to restore '$E_BOT_DIR'" "$?"
+
+        if [[ -d $C_BOT_DIR_OLD_OLD ]]; then
+            mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" \
+                || E_STDERR \
+                    "Failed to rename '$C_BOT_DIR_OLD_OLD' as '$C_BOT_DIR_OLD'" "" \
+                    "${E_NOTE}Please rename it manually"
+        fi
+
+    elif [[ -d $E_BOT_DIR && -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
+        rm -rf "$C_BOT_DIR_OLD_OLD" \
+            || E_STDERR "Failed to remove '$C_BOT_DIR_OLD_OLD'" "" \
+                "${E_NOTE}Please remove '$C_BOT_DIR_OLD_OLD' manually"
+    fi
+}
 
 ####
 # Cleans up temporary files and directories, and attempts to restore the original
@@ -80,34 +113,10 @@ clean_exit() {
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_TMP_DIR_PATH" ]] && rm -rf "$C_TMP_DIR_PATH" &>/dev/null
 
-    ## Attempt to restore the original $E_BOT_DIR if necessary.
-    {
-        if [[ -d $E_BOT_DIR && ! -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
-            echo "${E_WARN}Unable to complete installation"
-            echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
-            mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" || exit 1
-        elif [[ ! -d $E_BOT_DIR && -d $C_BOT_DIR_OLD ]]; then
-            echo "${E_WARN}Unable to complete installation"
-            echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
-            mv "$C_BOT_DIR_OLD" "$E_BOT_DIR" || exit 1
+    revert_changes
 
-            if [[ -d $C_BOT_DIR_OLD_OLD ]]; then
-                mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" \
-                    || E_STDERR \
-                        "Failed to rename '$C_BOT_DIR_OLD_OLD' as '$C_BOT_DIR_OLD'" \
-                        "" "${E_NOTE}Please rename it manually"
-            fi
-        elif [[ -d $E_BOT_DIR && -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
-            rm -rf "$C_BOT_DIR_OLD_OLD" \
-                || E_STDERR "Failed to remove '$C_BOT_DIR_OLD_OLD'" "" \
-                    "${E_NOTE}Please remove '$C_BOT_DIR_OLD_OLD' manually"
-        fi
-    } || E_STDERR "Failed to restore '$E_BOT_DIR'" "$?" \
-        "${E_NOTE}We will exit completely to prevent data loss"
-
-    if [[ $exit_now == false ]]; then
-        read -rp "${E_NOTE}Press [Enter] to return to the main menu"
-    fi
+    [[ $exit_now == false ]] \
+        && read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
 
     exit "$exit_code"
 }
@@ -327,6 +336,7 @@ if [[ -d $E_BOT_DIR ]]; then
     ) || E_STDERR "An error occurred while copying data to '$C_TMP_BOT_DIR_PATH'" "$?"
 
     echo "${E_INFO}Replacing '$E_BOT_DIR' with '$C_TMP_DIR_PATH/$E_BOT_DIR'..."
+    needs_rollback=true
     (
         if [[ -d $C_BOT_DIR_OLD ]]; then
             mv "$C_BOT_DIR_OLD" "$C_BOT_DIR_OLD_OLD" || exit 5
@@ -341,6 +351,7 @@ if [[ -d $E_BOT_DIR ]]; then
                     "${E_NOTE}Please remove '$C_BOT_DIR_OLD_OLD' manually"
         fi
      ) || E_STDERR "An error occurred while replacing '$E_BOT_DIR'" "$?"
+     needs_rollback=false
 else
     echo "${E_INFO}Moving '$C_TMP_DIR_PATH/$E_BOT_DIR' to '$E_BOT_DIR'..."
     mv "$C_TMP_DIR_PATH/$E_BOT_DIR" "$E_ROOT_DIR" \
