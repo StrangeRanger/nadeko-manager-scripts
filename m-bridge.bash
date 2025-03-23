@@ -53,36 +53,30 @@ export E_SKIP_PREREQ_CHECK="false"
 # Usage Notes:
 #   1. Paths must start from Nadeko's parent directory (e.g., 'nadekobot/...'').
 #   2. Separate files with a space or list them on separate lines.
-#       - Valid:   "nadekobot/creds.yml
+#       - Valid:   "nadekobot/data/creds.yml
 #                   nadekobot/data/bot.yml"
-#       - Valid:   "nadekobot/creds.yml nadekobot/data/bot.yml"
-#       - Invalid: "nadekobot/creds.yml, nadekobot/data/bot.yml"
-#       - Invalid: "nadekobot/creds.yml,nadekobot/data/bot.yml"
+#       - Valid:   "nadekobot/data/creds.yml nadekobot/data/bot.yml"
+#       - Invalid: "nadekobot/data/creds.yml, nadekobot/data/bot.yml"
+#       - Invalid: "nadekobot/data/creds.yml,nadekobot/data/bot.yml"
 #   3. Neither the file name nor its path can contain spaces.
 #
 # Default:
-#   "nadekobot/creds.yml
-#    nadekobot/data/NadekoBot.db
+#   "nadekobot/data/NadekoBot.db
+#    nadekobot/data/NadekoBot.db-shm
+#    nadekobot/data/NadekoBot.db-wal
 #    nadekobot/data/bot.yml
-#    nadekobot/data/gambling.yml
-#    nadekobot/data/games.yml
-#    nadekobot/data/images.yml
-#    nadekobot/data/xp.yml
-#    nadekobot/data/xp_template.json"
-export E_FILES_TO_BACK_UP="nadekobot/creds.yml
-nadekobot/data/NadekoBot.db
+#    nadekobot/data/creds.yml"
+export E_FILES_TO_BACK_UP="nadekobot/data/NadekoBot.db
+nadekobot/data/NadekoBot.db-shm
+nadekobot/data/NadekoBot.db-wal
 nadekobot/data/bot.yml
-nadekobot/data/gambling.yml
-nadekobot/data/games.yml
-nadekobot/data/images.yml
-nadekobot/data/xp.yml
-nadekobot/data/xp_template.json"
+nadekobot/data/creds.yml"
 
 ###
 ### [ Non-configurable Variables ]
 ###
 
-export E_BRIDGE_REVISION=52
+export E_BRIDGE_REVISION=53
 export E_RAW_URL="https://raw.githubusercontent.com/$manager_repo/$manager_branch"
 
 
