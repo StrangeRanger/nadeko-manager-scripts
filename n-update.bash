@@ -263,6 +263,14 @@ fetch_versions() {
     done
 }
 
+set_creds() {
+    if [[ ! -f $C_NEW_CREDS_PATH ]]; then
+        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as" \
+            "'${C_NEW_CREDS_PATH##*/}' to '${C_NEW_CREDS_PATH%/*}'..."
+        cp -f "$C_EXAMPLE_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
+    fi
+}
+
 
 ####[ Trapping Logic ]##################################################################
 
@@ -328,11 +336,7 @@ if [[ -d $E_BOT_DIR ]]; then
             "'${C_NEW_DATA_DIR_PATH}'..."
         cp -rf "$C_CURRENT_DATA_DIR_PATH"/* "$C_NEW_DATA_DIR_PATH" || exit 1
 
-        if [[ ! -f $C_NEW_CREDS_PATH ]]; then
-            echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as" \
-                "'${C_NEW_CREDS_PATH##*/}' to '${C_NEW_CREDS_PATH%/*}'..."
-            cp -f "$C_EXAMPLE_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
-        fi
+        set_creds
     ) || E_STDERR "An error occurred while copying data to '$C_TMP_BOT_DIR_PATH'" "$?"
 
     echo "${E_INFO}Replacing '$E_BOT_DIR' with '$C_TMP_DIR_PATH/$E_BOT_DIR'..."
@@ -350,9 +354,10 @@ if [[ -d $E_BOT_DIR ]]; then
                 || E_STDERR "Failed to remove '$C_BOT_DIR_OLD_OLD'" "" \
                     "${E_NOTE}Please remove '$C_BOT_DIR_OLD_OLD' manually"
         fi
-     ) || E_STDERR "An error occurred while replacing '$E_BOT_DIR'" "$?"
-     needs_rollback=false
+    ) || E_STDERR "An error occurred while replacing '$E_BOT_DIR'" "$?"
+    needs_rollback=false
 else
+    set_creds
     echo "${E_INFO}Moving '$C_TMP_DIR_PATH/$E_BOT_DIR' to '$E_BOT_DIR'..."
     mv "$C_TMP_DIR_PATH/$E_BOT_DIR" "$E_ROOT_DIR" \
         || E_STDERR "Failed to move '${C_TMP_DIR_PATH}' to '$E_BOT_DIR'" "1"
