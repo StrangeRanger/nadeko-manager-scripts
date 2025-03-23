@@ -18,20 +18,20 @@
 ####[ Variables ]#######################################################################
 
 
-C_NADEKOBOT_TMP=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
-readonly C_NADEKOBOT_TMP
+C_TMP_DIR_PATH=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
+readonly C_TMP_DIR_PATH
 readonly C_NADEKO_MAJOR_VERSION="6"
 
-## File paths.
-readonly C_BOT_DIR_TMP="$C_NADEKOBOT_TMP/$E_BOT_DIR"
+## File and directory paths and names.
+readonly C_TMP_BOT_DIR_PATH="$C_TMP_DIR_PATH/$E_BOT_DIR"
 readonly C_BOT_DIR_OLD="$E_BOT_DIR.old"
 readonly C_BOT_DIR_OLD_OLD="$E_BOT_DIR.old.old"
-readonly C_EXAMPLE_CREDS_PATH="$C_BOT_DIR_TMP/data/$E_CREDS_EXAMPLE"
-readonly C_NEW_CREDS_PATH="$C_NADEKOBOT_TMP/$E_CREDS_PATH"
-readonly C_CURRENT_DB_PATH="$E_BOT_DIR/data/NadekoBot.db"
-readonly C_NEW_DB_PATH="$C_BOT_DIR_TMP/data/NadekoBot.db"
-readonly C_CURRENT_DATA_PATH="$E_BOT_DIR/data"
-readonly C_NEW_DATA_PATH="$C_BOT_DIR_TMP/data"
+readonly C_CURRENT_DATA_DIR_PATH="$E_BOT_DIR/data"
+readonly C_NEW_DATA_DIR_PATH="$C_TMP_BOT_DIR_PATH/data"
+readonly C_CURRENT_STRINGS_DIR_PATH="$E_BOT_DIR/strings"
+readonly C_NEW_STRINGS_DIR_PATH="$C_TMP_BOT_DIR_PATH/strings"
+readonly C_EXAMPLE_CREDS_PATH="$C_TMP_BOT_DIR_PATH/data/$E_CREDS_EXAMPLE"
+readonly C_NEW_CREDS_PATH="$C_TMP_DIR_PATH/$E_CREDS_PATH"
 
 service_is_active=false
 
@@ -78,7 +78,7 @@ clean_exit() {
     esac
 
     echo "${E_INFO}Cleaning up..."
-    [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" &>/dev/null
+    [[ -d "$C_TMP_DIR_PATH" ]] && rm -rf "$C_TMP_DIR_PATH" &>/dev/null
 
     ## Attempt to restore the original $E_BOT_DIR if necessary.
     {
@@ -268,8 +268,8 @@ trap 'clean_exit "$?" "true"'  EXIT
 
 
 read -rp "${E_NOTE}We will now set up NadekoBot. Press [Enter] to begin."
-pushd "$C_NADEKOBOT_TMP" >/dev/null \
-    || E_STDERR "Failed to change working directory to '$C_NADEKOBOT_TMP'" "1"
+pushd "$C_TMP_DIR_PATH" >/dev/null \
+    || E_STDERR "Failed to change working directory to '$C_TMP_DIR_PATH'" "1"
 
 if [[ $E_BOT_SERVICE_STATUS == "active" ]]; then
     service_is_active=true
@@ -292,7 +292,6 @@ tar -xzf "$C_ARCHIVE_NAME" -C "$E_BOT_DIR" --strip-components=1 \
     || E_STDERR "Failed to extract '${C_ARCHIVE_NAME}'" "1"
 popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "1"
 
-
 ###
 ### [ Move Credentials, Database, and Other Data ]
 ###
@@ -302,71 +301,51 @@ popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "
 ### previous version if needed.
 ###
 
-(
-    if [[ ! -f $E_CREDS_PATH ]]; then
-        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as" \
-            "'${C_NEW_CREDS_PATH##*/}' to '${C_NEW_CREDS_PATH%/*}'..."
-        cp -f "$C_EXAMPLE_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
-    else
-        echo "${E_INFO}Copying '${C_NEW_CREDS_PATH##*/}' to '${C_NEW_CREDS_PATH%/*}'..."
-        cp -f "$E_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
-    fi
-) || E_STDERR "Failed to copy credentials" "$?"
-
-
 if [[ -d $E_BOT_DIR ]]; then
-    if [[ ! -f $C_CURRENT_DB_PATH ]]; then
-        echo "${E_WARN}'$C_CURRENT_DB_PATH' could not be found"
-    else
-        echo "${E_INFO}Copying '${C_CURRENT_DB_PATH}' to the '${C_NEW_DB_PATH%/*}'..."
-        cp -rT "$C_CURRENT_DB_PATH" "$C_NEW_DB_PATH" \
-            || E_STDERR "Failed to copy database" "1"
-    fi
-
-    echo "${E_INFO}Copying other data to the new version..."
     (
-        ## Temporarily rename the new version's strings and aliases so they won't be
-        ## overwritten.
-        mv -fT "$C_NEW_DATA_PATH"/strings "$C_NEW_DATA_PATH"/strings.new || exit 1
-        mv -f "$C_NEW_DATA_PATH"/aliases.yml "$C_NEW_DATA_PATH"/aliases.new.yml || exit 1
+        ## Copy current data and strings directory into the new one, such that the user
+        ## can easily restore them if needed.
+        echo "${E_INFO}Copying '${C_CURRENT_DATA_DIR_PATH##*/}' as" \
+            "'${C_CURRENT_DATA_DIR_PATH##*/}.old' to '${C_NEW_DATA_DIR_PATH%/*}'..."
+        cp -r "$C_CURRENT_DATA_DIR_PATH" "${C_NEW_DATA_DIR_PATH}.old" || exit 1
+        echo "${E_INFO}Copying '${C_CURRENT_STRINGS_DIR_PATH##*/}' as" \
+            "'${C_CURRENT_STRINGS_DIR_PATH##*/}.old' to '${C_NEW_STRINGS_DIR_PATH%/*}'..."
+        cp -r "$C_CURRENT_STRINGS_DIR_PATH" "${C_NEW_STRINGS_DIR_PATH}.old" || exit 1
 
-        # Copy current data directory into the new one, overwriting matching
-        # files/folders.
-        cp -rT "$C_CURRENT_DATA_PATH" "$C_NEW_DATA_PATH" || exit 1
+        # Copy all the current files in the data directory, into the new one. Since all
+        # the files in the data directory have their own versioning, NadekoBot will
+        # handle any necessary migrations.
+        echo "${E_INFO}Copying contents of '${C_CURRENT_DATA_DIR_PATH##*/}' to" \
+            "'${C_NEW_DATA_DIR_PATH}'..."
+        cp -rf "$C_CURRENT_DATA_DIR_PATH"/* "$C_NEW_DATA_DIR_PATH" || exit 1
 
-        # Remove any old backups of strings and aliases.
-        rm -rf "$C_NEW_DATA_PATH"/strings.old "$C_NEW_DATA_PATH"/aliases.old.yml \
-            2>/dev/null
+        if [[ ! -f $C_NEW_CREDS_PATH ]]; then
+            echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as" \
+                "'${C_NEW_CREDS_PATH##*/}' to '${C_NEW_CREDS_PATH%/*}'..."
+            cp -f "$C_EXAMPLE_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
+        fi
+    ) || E_STDERR "An error occurred while copying data to '$C_TMP_BOT_DIR_PATH'" "$?"
 
-        ## Back up the overwritten strings and aliases before restoring the new ones.
-        mv -fT "$C_NEW_DATA_PATH"/strings "$C_NEW_DATA_PATH"/strings.old || exit 1
-        mv -f "$C_NEW_DATA_PATH"/aliases.yml "$C_NEW_DATA_PATH"/aliases.old.yml || exit 1
-
-        ## Restore the new version's strings and aliases.
-        mv -fT "$C_NEW_DATA_PATH"/strings.new "$C_NEW_DATA_PATH"/strings || exit 1
-        mv -f "$C_NEW_DATA_PATH"/aliases.new.yml "$C_NEW_DATA_PATH"/aliases.yml || exit 1
-    ) || E_STDERR "An error occurred while copying other data" "$?"
-
-    echo "${E_INFO}Replacing '$E_BOT_DIR' with '$C_NADEKOBOT_TMP/$E_BOT_DIR'..."
+    echo "${E_INFO}Replacing '$E_BOT_DIR' with '$C_TMP_DIR_PATH/$E_BOT_DIR'..."
     (
         if [[ -d $C_BOT_DIR_OLD ]]; then
             mv "$C_BOT_DIR_OLD" "$C_BOT_DIR_OLD_OLD" || exit 5
         fi
 
         mv "$E_BOT_DIR" "$C_BOT_DIR_OLD" || exit 5
-        mv "$C_NADEKOBOT_TMP/$E_BOT_DIR" "$E_BOT_DIR" || exit 5
+        mv "$C_TMP_DIR_PATH/$E_BOT_DIR" "$E_BOT_DIR" || exit 5
 
         if [[ -d $C_BOT_DIR_OLD_OLD ]]; then
             rm -rf "$C_BOT_DIR_OLD_OLD" \
                 || E_STDERR "Failed to remove '$C_BOT_DIR_OLD_OLD'" "" \
                     "${E_NOTE}Please remove '$C_BOT_DIR_OLD_OLD' manually"
         fi
-    ) || E_STDERR "An error occurred while replacing '$E_BOT_DIR'" "$?"
+     ) || E_STDERR "An error occurred while replacing '$E_BOT_DIR'" "$?"
 else
-    echo "${E_INFO}Moving '$C_NADEKOBOT_TMP/$E_BOT_DIR' to '$E_BOT_DIR'..."
-    mv "$C_NADEKOBOT_TMP/$E_BOT_DIR" "$E_ROOT_DIR" \
-        || E_STDERR "Failed to move '${C_NADEKOBOT_TMP}' to '$E_BOT_DIR'" "1"
-    rmdir "$C_NADEKOBOT_TMP" &>/dev/null
+    echo "${E_INFO}Moving '$C_TMP_DIR_PATH/$E_BOT_DIR' to '$E_BOT_DIR'..."
+    mv "$C_TMP_DIR_PATH/$E_BOT_DIR" "$E_ROOT_DIR" \
+        || E_STDERR "Failed to move '${C_TMP_DIR_PATH}' to '$E_BOT_DIR'" "1"
+    rmdir "$C_TMP_DIR_PATH" &>/dev/null
 fi
 
 ###
