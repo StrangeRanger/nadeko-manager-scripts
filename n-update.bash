@@ -80,7 +80,7 @@ clean_exit() {
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_NADEKOBOT_TMP" ]] && rm -rf "$C_NADEKOBOT_TMP" &>/dev/null
 
-    ## Attempts to restore the original $E_BOT_DIR if necessary.
+    ## Attempt to restore the original $E_BOT_DIR if necessary.
     {
         if [[ -d $E_BOT_DIR && ! -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
             echo "${E_WARN}Unable to complete installation"
@@ -164,7 +164,8 @@ compare_versions() {
 #   - C_ARCHIVE_URL: The direct URL for downloading the archive.
 #
 # EXITS:
-#   - 1: .......
+#   - 1: If an invalid comparison result is detected.
+#   - 0: If the user declines to continue after selecting a version.
 fetch_versions() {
     local -a available_versions displayable_versions
     local -A version_comparison_map
