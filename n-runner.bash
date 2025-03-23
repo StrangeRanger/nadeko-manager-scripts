@@ -66,7 +66,8 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
 
-    # Remove the exit trap to prevent re-entry after exiting.
+    # Remove the exit and sigint trap to prevent re-entry after exiting and repeated
+    # sigint signals.
     # Remove the other traps, as they are no longer needed.
     trap - EXIT SIGINT SIGHUP SIGTERM
     [[ $use_extra_newline == true ]] && echo ""

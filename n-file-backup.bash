@@ -42,7 +42,9 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     local exit_now=false
 
-    trap - EXIT # Remove the exit trap to prevent re-entry after exiting.
+    # Remove the exit and sigint trap to prevent re-entry after exiting and repeated
+    # sigint signals.
+    trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in

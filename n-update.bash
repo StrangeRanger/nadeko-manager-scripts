@@ -58,7 +58,9 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     local exit_now=false
 
-    trap - EXIT  # Remove the exit trap to prevent re-entry after exiting.
+    # Remove the exit and sigint trap to prevent re-entry after exiting and repeated
+    # sigint signals.
+    trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
     case "$exit_code" in
@@ -314,7 +316,6 @@ popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "
 if [[ -d $E_BOT_DIR ]]; then
     if [[ ! -f $C_CURRENT_DB_PATH ]]; then
         echo "${E_WARN}'$C_CURRENT_DB_PATH' could not be found"
-        echo "${E_NOTE}Skipping copying the database..."
     else
         echo "${E_INFO}Copying '${C_CURRENT_DB_PATH}' to the '${C_NEW_DB_PATH%/*}'..."
         cp -rT "$C_CURRENT_DB_PATH" "$C_NEW_DB_PATH" \
