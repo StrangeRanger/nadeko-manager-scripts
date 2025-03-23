@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - ⚠️ Remove support for NadekoBot v5 in favor of v6.
 - Simplified and improved how NadekoBot release archives are handled and extracted.
+- Improved how the Manager checks if certain steps or actions need to be reverted.
 
 ## [v6.0.0] - 2025-02-16
 
