@@ -153,7 +153,7 @@ compare_versions() {
 }
 
 ####
-# Retrieves all available NadekoBot versions from the GitLab API and prompts the user to
+# Retrieves all available NadekoBot versions from the GitHub API and prompts the user to
 # select one for installation.
 #
 # NEW GLOBALS:
@@ -164,9 +164,9 @@ compare_versions() {
 # EXITS:
 #   - 1: .......
 fetch_versions() {
-    local -a available_versions display_versions
-    local -A cmp_map
-    local cmp_result current_version
+    local -a available_versions displayable_versions
+    local -A version_comparison_map
+    local version_comparison_results current_version
     local IFS='.'
     local api_tag_url="https://api.github.com/repos/nadeko-bot/nadekobot/tags"
     local release_url="https://github.com/nadeko-bot/nadekobot/releases/download"
@@ -174,73 +174,76 @@ fetch_versions() {
     #   This is a jq filter string, not a shell command that needs to be expanded.
     local jq_filter='map(select(.name | startswith($major))) | .[].name'
 
+    ## Retrieve available versions of NadekoBot from the GitHub API.
     mapfile -t available_versions < <(
         curl -sSf "$api_tag_url" \
             | jq -r --arg major "$C_NADEKO_MAJOR_VERSION" "$jq_filter"
     )
 
-    (( ${#available_versions[@]} > 0 )) || E_STDERR "Failed to find any releases" "1"
+    ## Get current version of NadekoBot, if it's installed.
+    if [[ -f $E_ROOT_DIR/$E_BOT_DIR/$E_BOT_EXE ]]; then
+        current_version=$("$E_ROOT_DIR"/"$E_BOT_DIR"/"$E_BOT_EXE" --version)
 
-    if [[ -f $E_BOT_DIR/$E_BOT_EXE ]]; then
-        if ! current_version=$(timeout 5s ./"$E_BOT_DIR"/"$E_BOT_EXE" --version); then
-            echo "${E_WARN}Failed to retrieve the current version of NadekoBot" >&2
+        if [[ ! $current_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "${E_WARN}Unable to determine the current version of NadekoBot"
             current_version=""
         fi
     fi
 
     ## Colorize each version based on its comparison to the current version.
-    for ver in "${available_versions[@]}"; do
-        if [[ -n $current_version && $current_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            cmp_result=$(compare_versions "$ver" "$current_version")
-            cmp_map["$ver"]=$cmp_result  # Save the comparison results for later use.
+    for version in "${available_versions[@]}"; do
+        if [[ -n $current_version ]]; then
+            ## Compare the two versions and save the results for later use.
+            version_comparison_results=$(compare_versions "$version" "$current_version")
+            version_comparison_map["$version"]=$version_comparison_results
 
-            if [[ $cmp_result == "older" ]]; then
-                display_versions+=("${C_RED}$ver${C_NC}")
-            elif [[ $cmp_result == "newer" ]]; then
-                display_versions+=("${C_GREEN}$ver${C_NC}")
-            elif [[ $cmp_result == "equal" ]]; then
-                display_versions+=("${C_BLUE}$ver${C_NC}")
+            if [[ $version_comparison_results == "older" ]]; then
+                displayable_versions+=("${E_RED}$version${E_NC}")
+            elif [[ $version_comparison_results == "newer" ]]; then
+                displayable_versions+=("${E_GREEN}$version${E_NC}")
+            elif [[ $version_comparison_results == "equal" ]]; then
+                displayable_versions+=("${E_BLUE}$version${E_NC}")
             else
-                echo "${C_ERROR}INTERNAL: Invalid comparison result" >&2
+                echo "${E_ERROR}INTERNAL: Invalid comparison result" >&2
                 exit 1
             fi
         else
-            display_versions+=("$ver")
+            displayable_versions+=("$version")
         fi
     done
 
-    echo -e "${C_NOTE}Select version to install:"
-    select version in "${display_versions[@]}"; do
+    echo -e "${E_NOTE}Select version to install:"
+    select version in "${displayable_versions[@]}"; do
         ## Ensure the non-color-coded version is selected/used.
         local version_index=$((REPLY - 1))
         local selected_version="${available_versions[$version_index]}"
 
         if [[ -n $selected_version ]]; then
             if [[ -n $current_version ]]; then
-                local status=${cmp_map["$selected_version"]}
+                local status=${version_comparison_map["$selected_version"]}
 
                 if [[ $status == "older" ]]; then
-                    echo -n "${C_WARN}Downgrading can result in data loss. "
-                    read -r -n 1 -p "Are you sure you want to continue? [y/N]: " confirm
+                    echo -n "${E_WARN}Downgrading can result in data loss. "
+                    read -rp "Are you sure you want to continue? [y/N]: " confirm
                 elif [[ $status == "newer" ]]; then
-                    echo -n "${C_NOTE}You are about to update to a newer version. "
-                    read -r -n 1 -p "Continue? [y/N]: " confirm
+                    echo -n "${E_NOTE}You are about to update to a newer version. "
+                    read -rp "Continue? [y/N]: " confirm
                 elif [[ $status == "equal" ]]; then
-                    echo -n "${C_NOTE}You are about to reinstall the same version. "
+                    echo -n "${E_NOTE}You are about to reinstall the same version. "
                     read -rp "Continue? [y/N]: " confirm
                 else
-                    echo "${C_ERROR}INTERNAL: Invalid comparison result" >&2
+                    echo "${E_ERROR}INTERNAL: Invalid comparison result" >&2
                     exit 1
                 fi
 
-                echo
+                echo ""
                 confirm=${confirm,,}
-                [[ ! $confirm =~ ^y ]] && break
+                [[ ! $confirm =~ ^y ]] && exit 0
             fi
 
-            C_BOT_VERSION="$version"
-            C_ARCHIVE_NAME="nadekobot-v${version}.tar.gz"
-            C_ARCHIVE_URL="$release_url/$version/nadeko-linux-${E_ARCH}.tar.gz"
+            C_BOT_VERSION="$selected_version"
+            C_ARCHIVE_NAME="nadekobot-v${selected_version}.tar.gz"
+            C_ARCHIVE_URL="$release_url/$selected_version/nadeko-linux-${E_ARCH}.tar.gz"
             break
         else
             echo "${E_ERROR}Invalid selection"
