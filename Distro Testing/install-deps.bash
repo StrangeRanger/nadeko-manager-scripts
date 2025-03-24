@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# This script installs necessary dependencies that would otherwise be installed by
-# default on a fresh installation of the supported distributions. The dependencies
-# only include the bare minimum required to run both the bot and the Manager, but aren't
-# installed by the Manager itself.
+# This script installs necessary dependencies that would otherwise be installed by default
+# on a fresh installation of the supported distributions. The dependencies only include the
+# bare minimum required to run both the bot and the Manager, but aren't installed by the
+# Manager itself.
 #
-########################################################################################
+############################################################################################
 
 # Enable strict error handling.
 set -euxo pipefail
@@ -16,15 +16,15 @@ C_PKG_MANAGER="$1"
 if [[ "$C_PKG_MANAGER" = "apt" ]]; then
     apt-get update
     apt-get upgrade -y
-    apt-get install -y --no-install-recommends ca-certificates curl procps sudo \
-        systemd systemd-sysv vim
+    apt-get install -y --no-install-recommends ca-certificates curl procps sudo systemd \
+        systemd-sysv vim
     apt-get autoremove -y
     apt-get clean -y
     rm -rf /var/lib/apt/lists/*
 elif [[ "$C_PKG_MANAGER" = "dnf" ]]; then
     dnf update -y
-    dnf install -y --allowerasing --setopt=install_weak_deps=False \
-        curl libicu findutils ncurses procps-ng python3 sudo systemd vim
+    dnf install -y --allowerasing --setopt=install_weak_deps=False  curl libicu findutils \
+        ncurses procps-ng python3 sudo systemd vim
     dnf clean all
 elif [[ "$C_PKG_MANAGER" = "zypper" ]]; then
     zypper refresh

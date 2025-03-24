@@ -3,13 +3,13 @@
 # m-bridge.bash Update and Configuration Migration Script
 #
 # This script automates the update process for 'm-bridge.bash'. It checks for a newer
-# version of the script (or its legacy counterpart 'linuxAIO'), backs up the current
-# version by renaming it to 'm-bridge.bash.old', and then downloads and installs the
-# latest version. Additionally, it transfers existing configuration settings (such as
-# manager branch and prerequisite checks) from the old version to the new one.
+# version of the script (or its legacy counterpart 'linuxAIO'), backs up the current version
+# by renaming it to 'm-bridge.bash.old', and then downloads and installs the latest version.
+# Additionally, it transfers existing configuration settings (such as manager branch and
+# prerequisite checks) from the old version to the new one.
 #
-########################################################################################
-####[ Functions ]#######################################################################
+############################################################################################
+####[ Functions ]###########################################################################
 
 
 ####
@@ -75,33 +75,30 @@ transfer_bridge_data() {
 #   - 1: Terminates the script after displaying the notification.
 revision_40() {
     echo "${E_WARN}You are using a very old version of the Manager, where it's not" \
-        "possible to automatically transfer configurations to the new"\
-        "'m-bridge.bash'." >&2
+        "possible to automatically transfer configurations to the new 'm-bridge.bash'." >&2
     echo "${E_NOTE}'m-bridge.bash' has replaced 'linuxAIO'"
     echo "${E_IMP}It's highly recommended to back up your current configurations and" \
-        "version of NadekoBot, then re-download NadekoBot using the newest version of" \
-        "the Manager."
+        "of NadekoBot, then re-download NadekoBot using the newest version of the Manager."
     echo "${E_NOTE}The newest version of the Manager can be found at" \
         "https://github.com/StrangeRanger/nadeko-manager-scripts/blob/main/m-bridge.bash"
     exit 1
 }
 
 ####
-# Performs additional checks and modifications for 'm-bridge.bash' revision 45 and
-# earlier, ensuring compatibility with updated structures.
+# Performs additional checks and modifications for 'm-bridge.bash' revision 45 and earlier,
+# ensuring compatibility with updated structures.
 #
 # RETURNS:
 #   - 0: If the function completes successfully or no actions are required.
 revision_45() {
     local additional_changes=false
-    [[ -f $E_BOT_DIR/$E_CREDS_EXAMPLE && -f $E_BOT_DIR/NadekoBot.dll ]] \
-        && return 0
+    [[ -f $E_BOT_DIR/$E_CREDS_EXAMPLE && -f $E_BOT_DIR/NadekoBot.dll ]] && return 0
 
     if [[ -d "$E_BOT_DIR" ]]; then
         additional_changes=true
         echo "${E_WARN}The new version of 'linuxAIO', now called 'm-bridge.bash', has" \
-            "several breaking changes since revision 45 and earlier. They will be" \
-            "handled automatically."
+            "several breaking changes since revision 45 and earlier. They will be handled" \
+            "automatically."
         read -rp "${E_NOTE}Press [Enter] to continue"
 
         echo "${E_INFO}Renaming '$E_BOT_DIR' to '$E_BOT_DIR.rev45.bak'..."
@@ -110,7 +107,7 @@ revision_45() {
         echo "${E_INFO}Copying '$E_BOT_DIR.rev45.bak/output' to '$E_BOT_DIR'..."
         cp -r "$E_BOT_DIR.rev45.bak/output" "$E_BOT_DIR"
 
-        echo "${E_IMP}It is highly recommended to downloaded the newest version of" \
+        echo "${E_IMP}It is highly recommended to download the newest version of" \
             "NadekoBot before continuing."
     fi
 
@@ -151,13 +148,13 @@ revision_47.5() {
 }
 
 
-####[ Trapping Logic ]##################################################################
+####[ Trapping Logic ]######################################################################
 
 
 trap 'revert' SIGINT
 
 
-####[ Main ]############################################################################
+####[ Main ]################################################################################
 
 
 printf "%s" "$E_CLR_LN"  # Clear the "Downloading 'm-bridge.bash'..." message.

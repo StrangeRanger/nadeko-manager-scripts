@@ -1,16 +1,15 @@
 #!/bin/bash
 #
-# This script acts as a bridge between the system running NadekoBot and
-# 'n-main-prep.bash'. To avoid conflicts with Manager updates, this script contains
-# only essential code.
+# This script acts as a bridge between the system running NadekoBot and 'n-main-prep.bash'.
+# To avoid conflicts with Manager updates, this script contains only essential code.
 #
 # README:
-#   The bridge revision ($E_BRIDGE_REVISION) is used to track changes in this script. If
-#   it doesn't match $C_LATEST_BRIDGE_REVISION in 'n-main-prep.bash', the latest version
-#   of 'm-bridge.bash' is downloaded.
+#   The bridge revision ($E_BRIDGE_REVISION) is used to track changes in this script. If it
+#   doesn't match $C_LATEST_BRIDGE_REVISION in 'n-main-prep.bash', the latest version of
+# 'm-bridge.bash' is downloaded.
 #
-########################################################################################
-####[ Variables ]#######################################################################
+############################################################################################
+####[ Variables ]###########################################################################
 
 
 ###
@@ -36,9 +35,8 @@ manager_repo="StrangeRanger/nadeko-manager-scripts"
 # Default: "main"
 manager_branch="main"
 
-# Skip checking if all the prerequisites are installed. By setting this variable to
-# "true", you acknowledge that the Bot and Manager are not guaranteed to work as
-# expected.
+# Skip checking if all the prerequisites are installed. By setting this variable to "true",
+# you acknowledge that the Bot and Manager are not guaranteed to work as expected.
 #
 # Options:
 #   true  = Skip checking for prerequisites
@@ -80,7 +78,7 @@ export E_BRIDGE_REVISION=53
 export E_RAW_URL="https://raw.githubusercontent.com/$manager_repo/$manager_branch"
 
 
-####[ Prepping ]########################################################################
+####[ Prepping ]############################################################################
 
 
 ## Ensure the script is executed from its directory to avoid path issues.
@@ -93,7 +91,7 @@ if [[ ! -f m-bridge.bash ]]; then
 fi
 
 
-####[ Main ]############################################################################
+####[ Main ]################################################################################
 
 
 echo "Downloading the latest manager..."

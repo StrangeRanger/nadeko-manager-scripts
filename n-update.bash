@@ -2,20 +2,21 @@
 #
 # NadekoBot Setup/Update Script
 #
-# This script automates the update process for NadekoBot (major version 5). It stops the
-# NadekoBot service if it is active, retrieves available releases from the GitLab API,
-# and prompts the user to select a version for installation. The script then downloads
-# and extracts the chosen archive, migrates credentials, the database, and other data
-# (backing up custom strings and aliases), and replaces the existing installation with
-# the new version.
+# TODO: Update description based on new changes...
+#
+# This script automates the update process for NadekoBot (major version 6). It stops the
+# NadekoBot service if it is active, retrieves available releases from the GitHub API, and
+# prompts the user to select a version for installation. The script then downloads and extracts
+# the chosen archive, migrates credentials, the database, and other data (backing up custom
+# strings and aliases), and replaces the existing installation with the new version.
 #
 # NOTE:
-#   After each update, any custom modifications to strings and aliases must be
-#   re-applied manually. However, backups of the previous versions are saved as
-#   'strings.old' and 'aliases.old.yml'.
+#   After each update, any custom modifications to strings and aliases must be re-applied
+#   manually. However, backups of the previous versions are saved as 'strings.old' and
+#   'aliases.old.yml'.
 #
-########################################################################################
-####[ Variables ]#######################################################################
+################################################################################################
+####[ Variables ]###############################################################################
 
 
 C_TMP_DIR_PATH=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
@@ -37,12 +38,11 @@ service_is_active=false
 needs_rollback=false
 
 
-####[ Functions ]#######################################################################
+####[ Functions ]###############################################################################
 
 
 ####
-# Reverts changes made during the update process if an error or premature exit is
-# detected.
+# Reverts changes made during the update process if an error or premature exit is detected.
 revert_changes() {
     [[ $needs_rollback == 1 ]] && return
 
@@ -55,13 +55,11 @@ revert_changes() {
     elif [[ ! -d $E_BOT_DIR && -d $C_BOT_DIR_OLD ]]; then
         echo "${E_WARN}Unable to complete installation"
         echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
-        mv "$C_BOT_DIR_OLD" "$E_BOT_DIR" \
-            || E_STDERR "Failed to restore '$E_BOT_DIR'" "$?"
+        mv "$C_BOT_DIR_OLD" "$E_BOT_DIR" || E_STDERR "Failed to restore '$E_BOT_DIR'" "$?"
 
         if [[ -d $C_BOT_DIR_OLD_OLD ]]; then
             mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" \
-                || E_STDERR \
-                    "Failed to rename '$C_BOT_DIR_OLD_OLD' as '$C_BOT_DIR_OLD'" "" \
+                || E_STDERR "Failed to rename '$C_BOT_DIR_OLD_OLD' as '$C_BOT_DIR_OLD'" "" \
                     "${E_NOTE}Please rename it manually"
         fi
 
@@ -73,13 +71,13 @@ revert_changes() {
 }
 
 ####
-# Cleans up temporary files and directories, and attempts to restore the original
-# $E_BOT_DIR if an error or premature exit is detected.
+# Cleans up temporary files and directories, and attempts to restore the original $E_BOT_DIR if
+# an error or premature exit is detected.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#       - The initial exit code passed by the caller. Under certain conditions, it may
-#         be modified to 50 to allow the calling script to continue.
+#       - The initial exit code passed by the caller. Under certain conditions, it may be
+#         modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
 #       - Whether to output an extra newline before the exit message.
 #       - Acceptable values: true, false
@@ -91,8 +89,8 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
     local exit_now=false
 
-    # Remove the exit and sigint trap to prevent re-entry after exiting and repeated
-    # sigint signals.
+    # Remove the exit and sigint trap to prevent re-entry after exiting and repeated sigint
+    # signals.
     trap - EXIT SIGINT
     [[ $use_extra_newline == true ]] && echo ""
 
@@ -115,16 +113,15 @@ clean_exit() {
 
     revert_changes
 
-    [[ $exit_now == false ]] \
-        && read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
+    [[ $exit_now == false ]] && read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
 
     exit "$exit_code"
 }
 
 ####
-# Compare two version strings and determine if one is newer, older, or the same as the
-# other. This is done by splitting the version strings into parts and comparing each
-# part, starting from the major number to the patch number.
+# Compare two version strings and determine if one is newer, older, or the same as the other.
+# This is done by splitting the version strings into parts and comparing each part, starting
+# from the major number to the patch number.
 #
 # PARAMETERS:
 #   - $1: version_a (Required)
@@ -164,8 +161,8 @@ compare_versions() {
 }
 
 ####
-# Retrieves all available NadekoBot versions from the GitHub API and prompts the user to
-# select one for installation.
+# Retrieves all available NadekoBot versions from the GitHub API and prompts the user to select
+# one for installation.
 #
 # NEW GLOBALS:
 #   - C_BOT_VERSION: The selected NadekoBot version to install.
@@ -188,8 +185,7 @@ fetch_versions() {
 
     ## Retrieve available versions of NadekoBot from the GitHub API.
     mapfile -t available_versions < <(
-        curl -sSf "$api_tag_url" \
-            | jq -r --arg major "$C_NADEKO_MAJOR_VERSION" "$jq_filter"
+        curl -sSf "$api_tag_url" | jq -r --arg major "$C_NADEKO_MAJOR_VERSION" "$jq_filter"
     )
 
     ## Get current version of NadekoBot, if it's installed.
@@ -265,14 +261,14 @@ fetch_versions() {
 
 set_creds() {
     if [[ ! -f $C_NEW_CREDS_PATH ]]; then
-        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as" \
-            "'${C_NEW_CREDS_PATH##*/}' to '${C_NEW_CREDS_PATH%/*}'..."
+        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as '${C_NEW_CREDS_PATH##*/}' to" \
+            "'${C_NEW_CREDS_PATH%/*}'..."
         cp -f "$C_EXAMPLE_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
     fi
 }
 
 
-####[ Trapping Logic ]##################################################################
+####[ Trapping Logic ]##########################################################################
 
 
 trap 'clean_exit "129" "true"' SIGHUP
@@ -281,7 +277,7 @@ trap 'clean_exit "143" "true"' SIGTERM
 trap 'clean_exit "$?" "true"'  EXIT
 
 
-####[ Main ]############################################################################
+####[ Main ]####################################################################################
 
 
 read -rp "${E_NOTE}We will now set up NadekoBot. Press [Enter] to begin."
@@ -312,16 +308,15 @@ popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "
 ###
 ### [ Move Credentials, Database, and Other Data ]
 ###
-### Moves the credentials, database, and other NadekoBot data to the new version
-### directory. In case '$E_BOT_DIR' already exists, it is renamed to '$C_BOT_DIR_OLD'
-### (with a further fallback of '$C_BOT_DIR_OLD_OLD'), making it easier to revert to a
-### previous version if needed.
+### Moves the credentials, database, and other NadekoBot data to the new version directory. In
+### case '$E_BOT_DIR' already exists, it is renamed to '$C_BOT_DIR_OLD' (with a further fallback
+### of '$C_BOT_DIR_OLD_OLD'), making it easier to revert to a previous version if needed.
 ###
 
 if [[ -d $E_BOT_DIR ]]; then
     (
-        ## Copy current data and strings directory into the new one, such that the user
-        ## can easily restore them if needed.
+        ## Copy current data and strings directory into the new one, such that the user can
+        ## easily restore them if needed.
         echo "${E_INFO}Copying '${C_CURRENT_DATA_DIR_PATH##*/}' as" \
             "'${C_CURRENT_DATA_DIR_PATH##*/}.old' to '${C_NEW_DATA_DIR_PATH%/*}'..."
         cp -r "$C_CURRENT_DATA_DIR_PATH" "${C_NEW_DATA_DIR_PATH}.old" || exit 1
@@ -372,8 +367,8 @@ echo ""
 echo "${E_SUCCESS}Finished setting up NadekoBot"
 
 if [[ $service_is_active == true ]]; then
-    echo "${E_NOTE}'$E_BOT_SERVICE' was stopped to update NadekoBot and needs to be" \
-        "started using one of the run modes in the manager menu"
+    echo "${E_NOTE}'$E_BOT_SERVICE' was stopped to update NadekoBot and needs to be started" \
+        "using one of the run modes in the manager menu"
 fi
 
 clean_exit 0

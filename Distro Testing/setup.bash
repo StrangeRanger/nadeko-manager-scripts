@@ -2,7 +2,7 @@
 #
 # Download the script to initiate the installation and management of NadekoBot.
 #
-########################################################################################
+############################################################################################
 
 # Enable strict error handling.
 set -euxo pipefail
