@@ -45,6 +45,7 @@
         "rpmkeys",
         "startswith",
         "SVER",
+        "sysv",
         "userdel"
     ]
 }
