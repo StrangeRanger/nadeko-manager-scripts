@@ -150,7 +150,11 @@ revision_47.5() {
 }
 
 ####
+# Prepares the system for upgrading to NadekoBot v6 by moving files and directories to their
+# new locations. Where necessary, remove appropriate files and directories.
 #
+# EXITS:
+#   - 0: If the preparation is successful.
 revision_53() {
     cat <<EOF
 ${E_WARN}NadekoBot v6 Upgrade Preparation ${E_YELLOW}<==${E_NC}
@@ -158,7 +162,7 @@ ${E_WARN}NadekoBot v6 Upgrade Preparation ${E_YELLOW}<==${E_NC}
   ${E_YELLOW}|${E_NC}  If you'd like to continue using NadekoBot v5, modify the value of 'manager_branch' in 'm-bridge.bash' to 'NadekoV5'.
   ${E_YELLOW}|${E_NC}  If you would like to upgrade to NadekoBot v6, type 'yes' EXACTLY as shown below.
   ${E_YELLOW}|${E_NC}  Please note, by typing 'yes', you are not actually upgrading to NadekoBot v6. This is only the preparation step.
-  ${E_YELLOW}|${E_NC}  To complete the upgrade, you will need to download the latest version of NadekoBot using the Manager.
+  ${E_YELLOW}|${E_NC}  To complete the upgrade, you will need to download the latest version of NadekoBot using the Manager menu.
 ${E_WARN}NadekoBot v6 Upgrade Preparation ${E_YELLOW}<==${E_NC}
 EOF
     read -rp "${E_NOTE}Would you like to continue? [yes/N] " answer
