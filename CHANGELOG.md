@@ -8,13 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Colorize the release versions to easily identify the current release, which ones are newer and older compared to the current release.
+- Colorize the release versions to easily identify the current version of NadekoBot and which ones are newer and older.
 
 ### Changed
 
 - ⚠️ Remove support for NadekoBot v5 in favor of v6.
 - Simplified and improved how NadekoBot release archives are handled and extracted.
 - Improved how the Manager checks if certain steps or actions need to be reverted.
+
+### Fixed
+
+- Fixed incorrect usage of sub-shells to ensure proper error handling.
 
 ## [v6.0.0] - 2025-02-16
 
