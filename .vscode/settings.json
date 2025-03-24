@@ -10,6 +10,7 @@
         "ccze",
         "CREDS",
         "devel",
+        "distro",
         "DISTROS",
         "DOCKERHUB",
         "endoflife",
@@ -19,6 +20,7 @@
         "Kwoth",
         "libicu",
         "LINUXAIO",
+        "linuxmint",
         "linuxmintd",
         "localpkg",
         "makecache",
@@ -28,17 +30,21 @@
         "NADEKO",
         "nadekobot",
         "noconfirm",
+        "NOPASSWD",
+        "pacman",
         "paru",
         "pipewire",
         "powertools",
         "PREREQ",
         "prereqs",
+        "procps",
         "rmdeps",
         "rmpfusion",
         "rockylinux",
         "rpmfusion",
         "rpmkeys",
         "startswith",
-        "SVER"
+        "SVER",
+        "userdel"
     ]
 }
