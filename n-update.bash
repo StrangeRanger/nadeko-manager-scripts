@@ -315,15 +315,6 @@ popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "
 
 if [[ -d $E_BOT_DIR ]]; then
     (
-        ## Copy current data and strings directory into the new one, such that the user can
-        ## easily restore them if needed.
-        echo "${E_INFO}Copying '${C_CURRENT_DATA_DIR_PATH##*/}' as" \
-            "'${C_CURRENT_DATA_DIR_PATH##*/}.old' to '${C_NEW_DATA_DIR_PATH%/*}'..."
-        cp -r "$C_CURRENT_DATA_DIR_PATH" "${C_NEW_DATA_DIR_PATH}.old" || exit 1
-        echo "${E_INFO}Copying '${C_CURRENT_STRINGS_DIR_PATH##*/}' as" \
-            "'${C_CURRENT_STRINGS_DIR_PATH##*/}.old' to '${C_NEW_STRINGS_DIR_PATH%/*}'..."
-        cp -r "$C_CURRENT_STRINGS_DIR_PATH" "${C_NEW_STRINGS_DIR_PATH}.old" || exit 1
-
         # Copy all the current files in the data directory, into the new one. Since all
         # the files in the data directory have their own versioning, NadekoBot will
         # handle any necessary migrations.
