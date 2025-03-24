@@ -13,7 +13,7 @@
 
 
 # See the 'README' note at the beginning of 'm-bridge.bash' for details.
-readonly C_LATEST_BRIDGE_REVISION=53
+readonly C_LATEST_BRIDGE_REVISION=54
 
 E_YELLOW="$(printf '\033[1;33m')"
 E_GREEN="$(printf '\033[0;32m')"

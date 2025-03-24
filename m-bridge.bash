@@ -6,7 +6,7 @@
 # README:
 #   The bridge revision ($E_BRIDGE_REVISION) is used to track changes in this script. If it
 #   doesn't match $C_LATEST_BRIDGE_REVISION in 'n-main-prep.bash', the latest version of
-# 'm-bridge.bash' is downloaded.
+#   'm-bridge.bash' is downloaded.
 #
 ############################################################################################
 ####[ Variables ]###########################################################################
@@ -30,7 +30,7 @@ manager_repo="StrangeRanger/nadeko-manager-scripts"
 # Options:
 #   main     = Production-ready (latest stable code)
 #   dev      = Development code (may be unstable)
-#   NadekoV5 = Manager version for NadekoBot v5 (NOT APPLICABLE UNTIL A LATER RELEASE)
+#   NadekoV5 = Manager version for NadekoBot v5
 #
 # Default: "main"
 manager_branch="main"
@@ -44,7 +44,6 @@ manager_branch="main"
 #
 # Default: "false"
 export E_SKIP_PREREQ_CHECK="false"
-
 
 # Files to back up when executing option 7.
 #
@@ -74,7 +73,7 @@ nadekobot/data/creds.yml"
 ### [ Non-configurable Variables ]
 ###
 
-export E_BRIDGE_REVISION=53
+export E_BRIDGE_REVISION=54
 export E_RAW_URL="https://raw.githubusercontent.com/$manager_repo/$manager_branch"
 
 

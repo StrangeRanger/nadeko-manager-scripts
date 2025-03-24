@@ -18,6 +18,8 @@
 # EXITS:
 #   - 1: Terminates the script immediately.
 revert() {
+    exit_code="$1"
+
     if [[ -f m-bridge.bash.old && ! -f m-bridge.bash ]]; then
         echo ""
         echo -n "${E_INFO}Restoring the previous version of 'm-bridge.bash'..."
@@ -25,7 +27,7 @@ revert() {
         chmod +x m-bridge.bash
     fi
 
-    exit 1
+    exit "$exit_code"
 }
 
 ####
@@ -34,7 +36,7 @@ download_bridge() {
     echo "${E_INFO}Downloading latest version of 'm-bridge.bash'..."
     curl -O "$E_RAW_URL"/m-bridge.bash || {
         E_STDERR "Failed to download 'm-bridge.bash'"
-        revert
+        revert "1"
     }
     chmod +x m-bridge.bash
 }
@@ -147,11 +149,52 @@ revision_47.5() {
         || E_STDERR "Failed to update variables in 'm-bridge.bash'" "1"
 }
 
+####
+#
+revision_53() {
+    cat <<EOF
+${E_WARN}NadekoBot v6 Upgrade Preparation ${E_YELLOW}<==${E_NC}
+  ${E_YELLOW}|${E_NC}  You are about to download the latest version of 'm-bridge.bash', which only supports NadekoBot v6.
+  ${E_YELLOW}|${E_NC}  If you'd like to continue using NadekoBot v5, modify the value of 'manager_branch' in 'm-bridge.bash' to 'NadekoV5'.
+  ${E_YELLOW}|${E_NC}  If you would like to upgrade to NadekoBot v6, type 'yes' EXACTLY as shown below.
+  ${E_YELLOW}|${E_NC}  Please note, by typing 'yes', you are not actually upgrading to NadekoBot v6. This is only the preparation step.
+  ${E_YELLOW}|${E_NC}  To complete the upgrade, you will need to download the latest version of NadekoBot using the Manager.
+${E_WARN}NadekoBot v6 Upgrade Preparation ${E_YELLOW}<==${E_NC}
+EOF
+    read -rp "${E_NOTE}Would you like to continue? [yes/N] " answer
+
+    answer=${answer,,}
+    if [[ $answer != "yes" ]]; then
+        echo "${E_WARN}NadekoBot v6 upgrade aborted"
+        revert "0"
+    fi
+
+    echo "${E_INFO}Backing up current version of NadekoBot as '$E_BOT_DIR.v5.bak'..."
+    cp -r "$E_BOT_DIR" "$E_BOT_DIR.v5.bak"
+
+    echo "${E_INFO}Moving 'strings' and 'aliases' to '$E_BOT_DIR'..."
+    mv "$E_BOT_DIR/data/strings" "$E_BOT_DIR/strings"
+    mv "$E_BOT_DIR/data/aliases.yml" "$E_BOT_DIR/strings"
+
+    echo "${E_INFO}Moving 'creds.yml' to '$E_BOT_DIR/data'..."
+    mv "$E_BOT_DIR/creds.yml" "$E_BOT_DIR/data/creds.yml"
+
+    echo "${E_INFO}Removing old files..."
+    rm -rf "$E_BOT_DIR/data/strings.old" 2>/dev/null
+    rm -rf "$E_BOT_DIR/data/aliases.old.yml" 2>/dev/null
+    rm -rf "$E_BOT_DIR/data/last_known_version.txt" 2>/dev/null
+
+    download_bridge
+    transfer_bridge_data
+    echo "${E_IMP}Ensure you execute option 1 in the Manager menu to download v6 of NadekoBot"
+    exit 0
+}
+
 
 ####[ Trapping Logic ]######################################################################
 
 
-trap 'revert' SIGINT
+trap 'revert "130"' SIGINT
 
 
 ####[ Main ]################################################################################
@@ -189,6 +232,8 @@ elif [[ $E_LINUXAIO_REVISION -le 47 && $E_CURRENT_LINUXAIO_REVISION == 47.5 ]]; 
     fi
 
     transfer_bridge_data
+elif (( E_BRIDGE_REVISION <= 53 )); then
+    revision_53
 elif (( E_BRIDGE_REVISION != C_LATEST_BRIDGE_REVISION )); then
     download_bridge
     transfer_bridge_data
