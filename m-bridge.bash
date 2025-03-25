@@ -48,7 +48,7 @@ export E_SKIP_PREREQ_CHECK="false"
 # Files to back up when executing option 7.
 #
 # Usage Notes:
-#   1. Paths must start from Nadeko's parent directory (e.g., 'nadekobot/...'').
+#   1. Paths must start from Nadeko's parent directory (e.g., 'nadekobot/...').
 #   2. Separate files with a space or list them on separate lines.
 #       - Valid:   "nadekobot/data/creds.yml
 #                   nadekobot/data/bot.yml"
