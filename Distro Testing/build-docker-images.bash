@@ -56,8 +56,10 @@ for distro in "${!distros_base[@]}"; do
     echo "Building image: $image_tag"
     echo "  Base image: $base_image"
     echo "  Package manager: $manager"
-    docker build --build-arg BASE_IMAGE="$base_image" \
-        --build-arg PKG_MANAGER="$manager" -t "$image_tag" .
+    docker build \
+        --build-arg BASE_IMAGE="$base_image" \
+        --build-arg PKG_MANAGER="$manager" \
+        -t "$image_tag" .
     echo "Built $image_tag"
 done
 
