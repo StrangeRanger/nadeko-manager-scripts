@@ -11,19 +11,33 @@
 
 readonly C_CURRENT_BACKUP="important-files-backup"
 readonly C_OLD_BACKUP="important-files-backup.old"
-
-C_TMP_BACKUP=$(mktemp -d -p /tmp important-nadeko-files-XXXXXXXXXX)
-readonly C_TMP_BACKUP
-
 # shellcheck disable=SC2206
 #   Left unquoted to allow word splitting for array assignment.
 readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
+C_TMP_BACKUP=$(mktemp -d -p /tmp important-nadeko-files-XXXXXXXXXX)
+readonly C_TMP_BACKUP
 
-# TODO: Impliment needs rollback like in n-update.bash
+needs_rollback=false
 
 
 ####[ Functions ]###########################################################################
 
+
+####
+# Reverts changes made during the update process if an error or premature exit is detected.
+revert_changes() {
+    [[ $needs_rollback == false ]] && return
+
+    if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
+        echo "${E_WARN}Unable to complete backup"
+        echo "${E_INFO}Attempting to restore original backups..."
+        mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
+    elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
+        rm -rf "$C_OLD_BACKUP" \
+            || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
+                "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
+    fi
+}
 
 ####
 # Clean up temporary files and directories, and attempt to restore the original backup files
@@ -66,19 +80,7 @@ clean_exit() {
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_TMP_BACKUP" ]] && rm -rf "$C_TMP_BACKUP" &>/dev/null
 
-    ## Attempt to restore original backups if necessary.
-    (
-        if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
-            echo "${E_WARN}Unable to complete backup"
-            echo "${E_INFO}Attempting to restore original backups..."
-            mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
-        elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
-            rm -rf "$C_OLD_BACKUP" \
-                || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
-                    "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
-        fi
-    ) || E_STDERR "Failed to restore original backup" "$?" \
-        "${E_NOTE}We will exit completely to prevent data loss"
+    revert_changes
 
     if [[ $exit_now == false ]]; then
         read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
@@ -133,6 +135,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
     ## Replace the current backup with the temporary one, backing up the current version in
     ## $C_OLD_BACKUP.
     echo "${E_INFO}Replacing '$C_CURRENT_BACKUP' with '$C_TMP_BACKUP'..."
+    needs_rollback=true
     (
         mv "$C_CURRENT_BACKUP" "$C_OLD_BACKUP" || exit 1
         mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" || exit 1
@@ -140,6 +143,7 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
             || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
                 "${E_NOTE}Please remove '$C_OLD_BACKUP' manually"
      ) || E_STDERR "An error occurred while replacing old backups" "$?"
+     needs_rollback=false
 else
     echo "${E_INFO}Moving '$C_TMP_BACKUP' to '$C_CURRENT_BACKUP'..."
     mv "$C_TMP_BACKUP" "$C_CURRENT_BACKUP" \

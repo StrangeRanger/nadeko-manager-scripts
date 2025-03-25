@@ -43,7 +43,7 @@ needs_rollback=false
 ####
 # Reverts changes made during the update process if an error or premature exit is detected.
 revert_changes() {
-    [[ $needs_rollback == 1 ]] && return
+    [[ $needs_rollback == false ]] && return
 
     if [[ -d $E_BOT_DIR && ! -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
         echo "${E_WARN}Unable to complete installation"
