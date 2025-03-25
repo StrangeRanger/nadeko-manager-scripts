@@ -1,10 +1,11 @@
 # syntax=docker/dockerfile:1
-##############################
+#
 # This Dockerfile is parameterized via build-args.
 # It expects:
-#   - BASE_IMAGE: the base Docker image (e.g. ubuntu:24.04)
-#   - PKG_MANAGER: one of "apt", "dnf", "zypper", or "pacman"
-##############################
+#   - BASE_IMAGE: The base Docker image (e.g. ubuntu:24.04).
+#   - PKG_MANAGER: One of "apt", "dnf", "zypper", or "pacman".
+#
+###############################
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
