@@ -35,7 +35,6 @@ export E_SUCCESS E_WARN E_ERROR E_INFO E_NOTE E_IMP
 
 export E_BOT_DIR="nadekobot"
 export E_ROOT_DIR="$PWD"
-export E_MANAGER_PREP="$E_ROOT_DIR/n-main-prep.bash"
 
 ###
 ### Variables that require extra checks before being set and exported.
