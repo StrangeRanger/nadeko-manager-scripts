@@ -78,8 +78,8 @@ declare -A -r C_MANAGER_PKG_MAPPING=(
 #       - 'python311' is still explicitly installed to ensure the expected version, allowing
 #         a reliable symlink from 'python3' to 'python311'.
 #   - arch: Installing 'yt-dlp' auto-installs the 'python3' package.
-#     NOTE: Installing 'ffmpeg' may attempt to install 'jack2'. If you prefer 'pipewire-jack'
-#     for better PipeWire integration, consider replacing 'jack2' with 'pipewire-jack' in the
+#     NOTE: Installing 'ffmpeg' will also install 'jack2'. If you prefer 'pipewire-jack' for
+#     better PipeWire integration, consider replacing 'jack2' with 'pipewire-jack' in the
 #     package list. More info at https://wiki.archlinux.org/title/JACK_Audio_Connection_Kit.
 declare -A -r C_MUSIC_PKG_MAPPING=(
     ["ubuntu"]="python3 ffmpeg"
@@ -157,7 +157,7 @@ clean_exit() {
     esac
 
     if [[ $exit_now == false ]]; then
-        read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+        read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
     fi
 
     exit "$exit_code"
@@ -238,7 +238,7 @@ install_ccze_arch() {
 
         confirm=${confirm,,}
         if [[ ! $confirm =~ ^y ]]; then
-            echo "${E_RED}==>${E_NC} Installation of 'ccze' and its build tools aborted by user"
+            echo "${E_WARN}Installation of 'ccze' and its build tools aborted by user"
             echo "${E_WARN}'ccze' is required to colorize NadekoBot's logs"
             return 1
         fi

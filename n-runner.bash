@@ -4,12 +4,12 @@
 #
 # This script configures the systemd service for NadekoBot and prepares the runner script
 # (NadekoRun) based on the chosen run mode. Depending on the value of E_RUNNER_CODENAME, it
-# either creates a standard or an auto-restart version of the runner script, writes or updates
-# the service file accordingly, and then starts or restarts the service. Finally, it displays
-# the service logs to provide immediate feedback on the operation.
+# either creates a standard or an auto-restart version of the runner script, writes or
+# updates the service file accordingly, and then starts or restarts the service. Finally, it
+# displays the service logs to provide immediate feedback on the operation.
 #
-################################################################################################
-####[ Global Variables ]########################################################################
+############################################################################################
+####[ Global Variables ]####################################################################
 
 
 ## Determine the action to be performed on the NadekoBot service based on its code name.
@@ -45,7 +45,7 @@ WantedBy=multi-user.target"
 exit_now=false
 
 
-####[ Functions ]###############################################################################
+####[ Functions ]###########################################################################
 
 
 ####
@@ -86,12 +86,15 @@ clean_exit() {
             ;;
     esac
 
-    [[ $exit_now == false ]] && read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
+    if [[ $exit_now == false ]]; then
+        read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
+    fi
+
     exit "$exit_code"
 }
 
 
-####[ Trapping Logic ]##########################################################################
+####[ Trapping Logic ]######################################################################
 
 
 trap 'clean_exit "129" "true"' SIGHUP
@@ -100,7 +103,7 @@ trap 'clean_exit "143" "true"' SIGTERM
 trap 'clean_exit "$?" "true"'  EXIT
 
 
-####[ Main ]####################################################################################
+####[ Main ]################################################################################
 
 
 if [[ -f $E_BOT_SERVICE_PATH ]]; then

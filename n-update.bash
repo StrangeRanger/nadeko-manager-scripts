@@ -6,17 +6,18 @@
 #
 # This script automates the update process for NadekoBot (major version 6). It stops the
 # NadekoBot service if it is active, retrieves available releases from the GitHub API, and
-# prompts the user to select a version for installation. The script then downloads and extracts
-# the chosen archive, migrates credentials, the database, and other data (backing up custom
-# strings and aliases), and replaces the existing installation with the new version.
+# prompts the user to select a version for installation. The script then downloads and
+# extracts the chosen archive, migrates credentials, the database, and other data (backing
+# up custom strings and aliases), and replaces the existing installation with the new
+# version.
 #
 # NOTE:
 #   After each update, any custom modifications to strings and aliases must be re-applied
 #   manually. However, backups of the previous versions are saved as 'strings.old' and
 #   'aliases.old.yml'.
 #
-################################################################################################
-####[ Variables ]###############################################################################
+############################################################################################
+####[ Variables ]###########################################################################
 
 
 C_TMP_DIR_PATH=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
@@ -36,7 +37,7 @@ service_is_active=false
 needs_rollback=false
 
 
-####[ Functions ]###############################################################################
+####[ Functions ]###########################################################################
 
 
 ####
@@ -69,8 +70,8 @@ revert_changes() {
 }
 
 ####
-# Cleans up temporary files and directories, and attempts to restore the original $E_BOT_DIR if
-# an error or premature exit is detected.
+# Cleans up temporary files and directories, and attempts to restore the original $E_BOT_DIR
+# if an error or premature exit is detected.
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
@@ -111,15 +112,17 @@ clean_exit() {
 
     revert_changes
 
-    [[ $exit_now == false ]] && read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
+    if [[ $exit_now == false ]]; then
+        read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
+    fi
 
     exit "$exit_code"
 }
 
 ####
-# Compare two version strings and determine if one is newer, older, or the same as the other.
-# This is done by splitting the version strings into parts and comparing each part, starting
-# from the major number to the patch number.
+# Compare two version strings and determine if one is newer, older, or the same as the
+# other. This is done by splitting the version strings into parts and comparing each part,
+# starting from the major number to the patch number.
 #
 # PARAMETERS:
 #   - $1: version_a (Required)
@@ -159,8 +162,8 @@ compare_versions() {
 }
 
 ####
-# Retrieves all available NadekoBot versions from the GitHub API and prompts the user to select
-# one for installation.
+# Retrieves all available NadekoBot versions from the GitHub API and prompts the user to
+# select one for installation.
 #
 # NEW GLOBALS:
 #   - C_BOT_VERSION: The selected NadekoBot version to install.
@@ -259,14 +262,14 @@ fetch_versions() {
 
 set_creds() {
     if [[ ! -f $C_NEW_CREDS_PATH ]]; then
-        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as '${C_NEW_CREDS_PATH##*/}' to" \
-            "'${C_NEW_CREDS_PATH%/*}'..."
+        echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as '${C_NEW_CREDS_PATH##*/}'" \
+            "to '${C_NEW_CREDS_PATH%/*}'..."
         cp -f "$C_EXAMPLE_CREDS_PATH" "$C_NEW_CREDS_PATH" || exit 1
     fi
 }
 
 
-####[ Trapping Logic ]##########################################################################
+####[ Trapping Logic ]######################################################################
 
 
 trap 'clean_exit "129" "true"' SIGHUP
@@ -275,7 +278,7 @@ trap 'clean_exit "143" "true"' SIGTERM
 trap 'clean_exit "$?" "true"'  EXIT
 
 
-####[ Main ]####################################################################################
+####[ Main ]################################################################################
 
 
 read -rp "${E_NOTE}We will now set up NadekoBot. Press [Enter] to begin."
@@ -306,9 +309,10 @@ popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "
 ###
 ### [ Move Credentials, Database, and Other Data ]
 ###
-### Moves the credentials, database, and other NadekoBot data to the new version directory. In
-### case '$E_BOT_DIR' already exists, it is renamed to '$C_BOT_DIR_OLD' (with a further fallback
-### of '$C_BOT_DIR_OLD_OLD'), making it easier to revert to a previous version if needed.
+### Moves the credentials, database, and other NadekoBot data to the new version directory.
+### In case '$E_BOT_DIR' already exists, it is renamed to '$C_BOT_DIR_OLD' (with a further
+### fallback of '$C_BOT_DIR_OLD_OLD'), making it easier to revert to a previous version if
+### needed.
 ###
 
 if [[ -d $E_BOT_DIR ]]; then
@@ -356,8 +360,8 @@ echo ""
 echo "${E_SUCCESS}Finished setting up NadekoBot"
 
 if [[ $service_is_active == true ]]; then
-    echo "${E_NOTE}'$E_BOT_SERVICE' was stopped to update NadekoBot and needs to be started" \
-        "using one of the run modes in the manager menu"
+    echo "${E_NOTE}'$E_BOT_SERVICE' was stopped to update NadekoBot and needs to be" \
+        "started using one of the run modes in the manager menu"
 fi
 
 clean_exit 0

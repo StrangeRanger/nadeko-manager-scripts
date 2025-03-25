@@ -19,6 +19,8 @@ readonly C_TMP_BACKUP
 #   Left unquoted to allow word splitting for array assignment.
 readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 
+# TODO: Impliment needs rollback like in n-update.bash
+
 
 ####[ Functions ]###########################################################################
 
@@ -79,7 +81,7 @@ clean_exit() {
         "${E_NOTE}We will exit completely to prevent data loss"
 
     if [[ $exit_now == false ]]; then
-        read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+        read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
     fi
 
     exit "$exit_code"
