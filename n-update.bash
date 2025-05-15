@@ -2,19 +2,11 @@
 #
 # NadekoBot Setup/Update Script
 #
-# TODO: Update description based on new changes...
-#
 # This script automates the update process for NadekoBot (major version 6). It stops the
 # NadekoBot service if it is active, retrieves available releases from the GitHub API, and
 # prompts the user to select a version for installation. The script then downloads and
-# extracts the chosen archive, migrates credentials, the database, and other data (backing
-# up custom strings and aliases), and replaces the existing installation with the new
-# version.
-#
-# NOTE:
-#   After each update, any custom modifications to strings and aliases must be re-applied
-#   manually. However, backups of the previous versions are saved as 'strings.old' and
-#   'aliases.old.yml'.
+# extracts the chosen archive, migrates credentials, the database, and other data, then
+# replaces the existing installation with the new version.
 #
 ############################################################################################
 ####[ Variables ]###########################################################################
@@ -41,7 +33,7 @@ needs_rollback=false
 
 
 ####
-# Reverts changes made during the update process if an error or premature exit is detected.
+# Revert changes made during the update process if an error or premature exit is detected.
 revert_changes() {
     [[ $needs_rollback == false ]] && return
 
@@ -70,7 +62,7 @@ revert_changes() {
 }
 
 ####
-# Cleans up temporary files and directories, and attempts to restore the original $E_BOT_DIR
+# Clean up temporary files and directories, and attempts to restore the original $E_BOT_DIR
 # if an error or premature exit is detected.
 #
 # PARAMETERS:
@@ -162,7 +154,7 @@ compare_versions() {
 }
 
 ####
-# Retrieves all available NadekoBot versions from the GitHub API and prompts the user to
+# Retrieve all available NadekoBot versions from the GitHub API and prompts the user to
 # select one for installation.
 #
 # NEW GLOBALS:
@@ -260,6 +252,9 @@ fetch_versions() {
     done
 }
 
+####
+# Set up the credentials for NadekoBot by copying the example credentials file and renaming
+# it, if it doesn't already exist.
 set_creds() {
     if [[ ! -f $C_NEW_CREDS_PATH ]]; then
         echo "${E_INFO}Copying '${C_EXAMPLE_CREDS_PATH##*/}' as '${C_NEW_CREDS_PATH##*/}'" \
