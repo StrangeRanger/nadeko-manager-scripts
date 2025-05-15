@@ -3,13 +3,13 @@
 # NadekoBot Service Runner Configuration Script
 #
 # This script configures the systemd service for NadekoBot and prepares the runner script
-# (NadekoRun) based on the chosen run mode. Depending on the value of E_RUNNER_CODENAME,
-# it either creates a standard or an auto-restart version of the runner script, writes
-# or updates the service file accordingly, and then starts or restarts the service.
-# Finally, it displays the service logs to provide immediate feedback on the operation.
+# (NadekoRun) based on the chosen run mode. Depending on the value of E_RUNNER_CODENAME, it
+# either creates a standard or an auto-restart version of the runner script, writes or
+# updates the service file accordingly, and then starts or restarts the service. Finally, it
+# displays the service logs to provide immediate feedback on the operation.
 #
-########################################################################################
-####[ Global Variables ]################################################################
+############################################################################################
+####[ Global Variables ]####################################################################
 
 
 ## Determine the action to be performed on the NadekoBot service based on its code name.
@@ -45,7 +45,7 @@ WantedBy=multi-user.target"
 exit_now=false
 
 
-####[ Functions ]#######################################################################
+####[ Functions ]###########################################################################
 
 
 ####
@@ -54,8 +54,8 @@ exit_now=false
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#       - The initial exit code passed by the caller. Under certain conditions, it may
-#         be modified to 50 to allow the calling script to continue.
+#       - The initial exit code passed by the caller. Under certain conditions, it may be
+#         modified to 50 to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
 #       - Whether to output an extra newline before the exit message.
 #       - Acceptable values: true, false
@@ -66,7 +66,8 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
 
-    # Remove the exit trap to prevent re-entry after exiting.
+    # Remove the exit and sigint trap to prevent re-entry after exiting and repeated sigint
+    # signals.
     # Remove the other traps, as they are no longer needed.
     trap - EXIT SIGINT SIGHUP SIGTERM
     [[ $use_extra_newline == true ]] && echo ""
@@ -86,14 +87,14 @@ clean_exit() {
     esac
 
     if [[ $exit_now == false ]]; then
-        read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+        read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
     fi
 
     exit "$exit_code"
 }
 
 
-####[ Trapping Logic ]##################################################################
+####[ Trapping Logic ]######################################################################
 
 
 trap 'clean_exit "129" "true"' SIGHUP
@@ -102,7 +103,7 @@ trap 'clean_exit "143" "true"' SIGTERM
 trap 'clean_exit "$?" "true"'  EXIT
 
 
-####[ Main ]############################################################################
+####[ Main ]################################################################################
 
 
 if [[ -f $E_BOT_SERVICE_PATH ]]; then
@@ -133,79 +134,81 @@ else
 fi
 
 if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
-    echo "#!/bin/bash
+    cat << EOF > NadekoRun
+#!/bin/bash
 
-_code_name_=\"NadekoRun\"
-export PATH=\"$E_LOCAL_BIN:$PATH\"
+_code_name_="NadekoRun"
+export PATH="$E_LOCAL_BIN:$PATH"
 
-echo \"[INFO] python3 path: \$(which python3)\"
-echo \"[INFO] python3 version: \$(python3 --version)\"
-echo \"[INFO] yt-dlp path: \$(which yt-dlp)\"
+echo "[INFO] python3 path: $(which python3)"
+echo "[INFO] python3 version: $(python3 --version)"
+echo "[INFO] yt-dlp path: $(which yt-dlp)"
 
-echo \"[INFO] Running NadekoBot in the background\"
-yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+echo "[INFO] Running NadekoBot in the background"
+yt-dlp -U || echo "[ERROR] Failed to update 'yt-dlp'" >&2
 
-echo \"[INFO] Starting NadekoBot...\"
-pushd \"$E_ROOT_DIR/$E_BOT_DIR\" >/dev/null
-./\"$E_BOT_EXE\" || {
-    echo \"[ERROR] Failed to start NadekoBot\" >&2
-    echo \"[INFO] Exiting...\"
+echo "[INFO] Starting NadekoBot..."
+pushd "$E_ROOT_DIR/$E_BOT_DIR" >/dev/null
+./"$E_BOT_EXE" || {
+    echo "[ERROR] Failed to start NadekoBot" >&2
+    echo "[INFO] Exiting..."
     exit 1
 }
 
-echo \"[INFO] Stopping NadekoBot...\"
-popd >/dev/null" > NadekoRun
+echo "[INFO] Stopping NadekoBot..."
+popd >/dev/null
+EOF
 else
-    echo "#!/bin/bash
+    cat << EOF > NadekoRun
+#!/bin/bash
 
-_code_name_=\"NadekoRunAR\"
-export PATH=\"$E_LOCAL_BIN:$PATH\"
+_code_name_="NadekoRunAR"
+export PATH="$E_LOCAL_BIN:$PATH"
 
-echo \"[INFO] python3 path: \$(which python3)\"
-echo \"[INFO] python3 version: \$(python3 --version)\"
-echo \"[INFO] yt-dlp path: \$(which yt-dlp)\"
+echo "[INFO] python3 path: $(which python3)"
+echo "[INFO] python3 version: $(python3 --version)"
+echo "[INFO] yt-dlp path: $(which yt-dlp)"
 
-echo \"[INFO] Running NadekoBot in the background with auto restart\"
-yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
+echo "[INFO] Running NadekoBot in the background with auto restart"
+yt-dlp -U || echo "[ERROR] Failed to update 'yt-dlp'" >&2
 
-echo \"[INFO] Starting NadekoBot...\"
+echo "[INFO] Starting NadekoBot..."
 
 while true; do
     if [[ -d $E_ROOT_DIR/$E_BOT_DIR ]]; then
-        cd \"$E_ROOT_DIR/$E_BOT_DIR\" || {
-            echo \"[ERROR] Failed to change working directory to '$E_ROOT_DIR/$E_BOT_DIR'\" >&2
-            echo \"[INFO] Exiting...\"
+        cd "$E_ROOT_DIR/$E_BOT_DIR" || {
+            echo "[ERROR] Failed to change working directory to '$E_ROOT_DIR/$E_BOT_DIR'" >&2
+            echo "[INFO] Exiting..."
             exit 1
         }
     else
-        echo \"[WARN] '$E_ROOT_DIR/$E_BOT_DIR' doesn't exist\" >&2
-        echo \"[INFO] Exiting...\"
+        echo "[WARN] '$E_ROOT_DIR/$E_BOT_DIR' doesn't exist" >&2
+        echo "[INFO] Exiting..."
         exit 1
     fi
 
-    ./\"$E_BOT_EXE\" || {
-        echo \"[ERROR] An error occurred when trying to start NadekoBot\" >&2
-        echo \"[INFO] Exiting...\"
+    ./"$E_BOT_EXE" || {
+        echo "[ERROR] An error occurred when trying to start NadekoBot" >&2
+        echo "[INFO] Exiting..."
         exit 1
     }
 
-    echo \"[INFO] Waiting 5 seconds...\"
+    echo "[INFO] Waiting 5 seconds..."
     sleep 5
-    yt-dlp -U || echo \"[ERROR] Failed to update 'yt-dlp'\" >&2
-    echo \"[INFO] Restarting NadekoBot...\"
+    yt-dlp -U || echo "[ERROR] Failed to update 'yt-dlp'" >&2
+    echo "[INFO] Restarting NadekoBot..."
 done
 
-echo \"[INFO] Stopping NadekoBot...\"" > NadekoRun
+echo "[INFO] Stopping NadekoBot..."
+EOF
 fi
 
 if [[ $E_BOT_SERVICE_STATUS == "active" ]]; then
     echo "${E_INFO}Restarting '$E_BOT_SERVICE'..."
-    sudo systemctl restart "$E_BOT_SERVICE" \
-        || E_STDERR "Failed to restart '$E_BOT_SERVICE'" "3"
+    sudo systemctl restart "$E_BOT_SERVICE" || E_STDERR "Failed to restart '$E_BOT_SERVICE'" "3"
 else
     echo "${E_INFO}Starting '$E_BOT_SERVICE'..."
-    sudo systemctl start "$E_BOT_SERVICE" \
-        || E_STDERR "Failed to start '$E_BOT_SERVICE'" "3"
+    sudo systemctl start "$E_BOT_SERVICE" || E_STDERR "Failed to start '$E_BOT_SERVICE'" "3"
 fi
 
 trap - SIGINT

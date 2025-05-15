@@ -1,8 +1,8 @@
-# Files used for testing.
+## Files used for testing.
 .secrets
 push.json
 
-# Other files or directories to ignore.
+## Other files or directories to ignore.
 shared/
 TODO.md
 Tested\ Images.md

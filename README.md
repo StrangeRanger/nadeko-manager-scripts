@@ -1,14 +1,14 @@
-# nadeko-manager-scripts
+# Nadeko Manager Scripts
 
 [![Project Tracker](https://img.shields.io/badge/repo%20status-Project%20Tracker-lightgrey)](https://wiki.hthompson.dev/en/project-tracker)
 [![Style Guide](https://img.shields.io/badge/code%20style-Style%20Guide-blueviolet)](https://bsg.hthompson.dev/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/63b063408cea4065a5dbe8e7ba8fdfd2)](https://www.codacy.com/gh/StrangeRanger/nadeko-manager-scripts/dashboard?utm_source=github.com&utm_medium=referral&utm_content=StrangeRanger/nadeko-manager-scripts&utm_campaign=Badge_Grade)
 
-This is the unofficial installer and manager for NadekoBot v5 on Linux.
+This is the unofficial installer and manager for NadekoBot v6 on Linux.
 
 ## Getting Started
 
-### Downloading linuxAIO
+### Download the Bridge Script
 
 The only script that needs to be downloaded to your system is `m-bridge.bash`. To do this, execute the following set of commands:
 
@@ -19,7 +19,7 @@ chmod +x m-bridge.bash
 
 ### Usage
 
-To use the manager, execute the following command: `./m-bridge.bash`
+To use the Manager, execute the following command: `./m-bridge.bash`
 
 If the following command was successfully executed, a menu with the following options (or something very similar) should be displayed:
 
@@ -57,7 +57,6 @@ I've utilized Docker images to test the Manager on various Linux distributions. 
 There are two methods to test the Manager scripts:
 
 1. **Pulling Pre-built Images from Docker Hub**: You can pull the pre-built images for each distribution using the appropriate tags. For detailed instructions on how to run and interact with these images, refer to the [Docker Hub repository](https://hub.docker.com/r/strangeranger/nadeko-manager-testing).
-
 2. **Building Images Locally**: If you prefer to build the images on your machine, you can execute the provided script that builds all of the images locally. Simply run:
 
    ```bash

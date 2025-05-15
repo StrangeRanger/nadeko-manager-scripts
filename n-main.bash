@@ -3,20 +3,16 @@
 # NadekoBot Manager Menu Script
 #
 # This interactive script provides a menu-driven interface for managing the NadekoBot
-# service. It validates system prerequisites (e.g., Python3, ffmpeg, ccze, yt-dlp) and
-# the presence of required credentials, then dynamically enables or disables menu
-# options based on the current system state.
+# service. It validates system prerequisites (e.g., Python3, ffmpeg, ccze, yt-dlp) and the
+# presence of required credentials, then dynamically enables or disables menu options based
+# on the current system state.
 #
-# The script allows you to download NadekoBot, start it (with or without auto-restart),
-# stop the service, view live service logs, install prerequisites, and back up important
+# The script allows you to download NadekoBot, start it (with or without auto-restart), stop
+# the service, view live service logs, install prerequisites, and back up important
 # files—all while handling exit conditions and errors gracefully.
 #
-# Comment Key:
-#   - A.1.: Return to stop further code execution.
-#   - B.1.: Prevent the code from running if the option is disabled.
-#
-########################################################################################
-####[ Global Variables ]################################################################
+############################################################################################
+####[ Global Variables ]####################################################################
 
 
 readonly C_CREDS="creds.yml"
@@ -25,12 +21,12 @@ export E_BOT_SERVICE="nadeko.service"
 export E_BOT_SERVICE_PATH="/etc/systemd/system/$E_BOT_SERVICE"
 export E_BOT_EXE="NadekoBot"
 export E_CREDS_EXAMPLE="creds_example.yml"
-export E_CREDS_PATH="$E_BOT_DIR/$C_CREDS"
+export E_CREDS_PATH="$E_BOT_DIR/data/$C_CREDS"
 export E_LOCAL_BIN="$HOME/.local/bin"
 export E_YT_DLP_PATH="$E_LOCAL_BIN/yt-dlp"
 
 
-####[ Functions ]#######################################################################
+####[ Functions ]###########################################################################
 
 
 ####
@@ -67,8 +63,8 @@ exit_code_actions() {
 # Determine whether the 'token' field in the credentials file is set.
 #
 # NOTE:
-#   This is not a comprehensive check for the validity of the token; it only verifies
-#   that the token field is not empty.
+#   This is not a comprehensive check for the validity of the token; it only verifies that
+#   the token field is not empty.
 #
 # RETURNS:
 #   - 0: If the token is set.
@@ -136,8 +132,8 @@ disabled_reasons() {
 ###
 
 ####
-# Retrieve the current status of NadekoBot's service using systemctl and update the
-# global variable $E_BOT_SERVICE_STATUS accordingly.
+# Retrieve the current status of NadekoBot's service using systemctl and update the global
+# variable $E_BOT_SERVICE_STATUS accordingly.
 #
 # NEW GLOBALS:
 #   - E_BOT_SERVICE_STATUS: The current status of NadekoBot's service.
@@ -161,12 +157,10 @@ E_STOP_SERVICE() {
         echo "${E_INFO}Stopping '$E_BOT_SERVICE'..."
         sudo systemctl stop "$E_BOT_SERVICE" \
             || E_STDERR "Failed to stop '$E_BOT_SERVICE'" "" \
-                "${E_NOTE}You will need to restart '$E_BOT_SERVICE' to apply any updates to NadekoBot"
-        [[ $verbose == true ]] \
-            && echo -e "\n${E_SUCCESS}NadekoBot has been stopped"
+                "${E_NOTE}You'll need to restart '$E_BOT_SERVICE' to apply any updates"
+        [[ $verbose == true ]] && echo -e "\n${E_SUCCESS}NadekoBot has been stopped"
     else
-        [[ $verbose == true ]] \
-            && echo -e "\n${E_NOTE}NadekoBot is not currently running"
+        [[ $verbose == true ]] && echo -e "\n${E_NOTE}NadekoBot is not currently running"
     fi
 }
 export -f E_STOP_SERVICE
@@ -232,14 +226,14 @@ E_WATCH_SERVICE_LOGS() {
 export -f E_WATCH_SERVICE_LOGS
 
 
-####[ Trapping Logic ]##################################################################
+####[ Trapping Logic ]######################################################################
 
 
 trap 'exit_code_actions "129"' SIGHUP
 trap 'exit_code_actions "143"' SIGTERM
 
 
-####[ Main ]############################################################################
+####[ Main ]################################################################################
 
 
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
@@ -249,36 +243,29 @@ while true; do
     ###
     ### [ Temporary Variables ]
     ###
-    ### These variables are modified within the while loop and must be reset each time
-    ### the loop begins.
+    ### These variables are modified within the while loop and must be reset each time the
+    ### loop begins.
     ###
 
-    ## Disabled option text.
     disabled_option_message=" (Execute option to display the reason it's disabled)"
     disabled_service_message=" (Disabled until NadekoBot is running)"
-    ## Option 1.
     option_one_disabled=false
     option_one_text="1. Download NadekoBot"
-    ## Options 2 and 3.
     options_two_three_disabled=false
     option_two_text="2. Run NadekoBot in the background"
     option_three_text="3. Run NadekoBot in the background with auto restart"
-    ## Option 4.
     option_four_disabled=false
     option_four_text="4. Stop NadekoBot"
-    ## Option 5.
     option_five_disabled=false
     option_five_text="5. Display '$E_BOT_SERVICE' logs in follow mode"
-    ## Option 7.
     option_seven_disabled=false
     option_seven_text="7. Back up important files"
 
     ###
     ### [ Variable Checks ]
     ###
-    ### These checks reassess the status or existence of certain services or programs
-    ### (e.g., ccze, yt_dlp) each time the loop restarts, as their availability might
-    ### change.
+    ### These checks reassess the status or existence of certain services or programs (e.g.,
+    ### ccze, yt_dlp) each time the loop restarts, as their availability might change.
     ###
 
     if [[ -f "$E_YT_DLP_PATH" ]] || command -v yt-dlp &>/dev/null; then
@@ -303,9 +290,8 @@ while true; do
         option_one_text="${E_GREY}${option_one_text}${disabled_option_message}${E_NC}"
     fi
 
-    ## Disable options 2, 3, 4, and 5 if any of the required tools are missing, the
-    ## required directories/files do not exist, or NadekoBot's credentials token is not
-    ## set.
+    ## Disable options 2, 3, 4, and 5 if any of the required tools are missing, the required
+    ## directories/files do not exist, or NadekoBot's credentials token is not set.
     if [[ $option_one_disabled == true || ! -f $E_CREDS_PATH ]] || ! is_token_set; then
         options_two_three_disabled=true
         option_two_text="${E_GREY}${option_two_text}${disabled_option_message}${E_NC}"
@@ -346,8 +332,7 @@ while true; do
         elif grep -q '_code_name_="NadekoRun"' NadekoRun; then
             option_two_text="${option_two_text}${run_mode_status}"
         fi
-    ## If 'NadekoRun' does not exist, options 2 and 3 remain enabled, but 4 and 5 are
-    ## disabled.
+    ## If 'NadekoRun' does not exist, options 2 and 3 remain enabled, but 4 and 5 are disabled.
     else
         option_four_disabled=true
         option_four_text="${E_GREY}${option_four_text}${disabled_service_message}${E_NC}"
@@ -366,7 +351,6 @@ while true; do
     read -r choice
     case "$choice" in
         1)
-            ## B.1.
             if [[ $option_one_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option 1 is currently disabled" >&2
@@ -382,7 +366,6 @@ while true; do
             clear -x
             ;;
         2|3)
-            ## B.1.
             if [[ $options_two_three_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option $choice is currently disabled" >&2
@@ -397,12 +380,11 @@ while true; do
 
             if [[ $choice == 2 ]]; then
                 export E_RUNNER_CODENAME="NadekoRun"
-                printf "%sWe will now run NadekoBot in the background. " "$E_NOTE"
+                printf "%sWe will run NadekoBot in the background. " "$E_NOTE"
 
             else
                 export E_RUNNER_CODENAME="NadekoRunAR"
-                echo -n "${E_NOTE}We will now run NadekoBot in the background with" \
-                    "auto restart. "
+                echo -n "${E_NOTE}We will run NadekoBot in the background with auto restart. "
             fi
 
             (
@@ -419,7 +401,6 @@ while true; do
             clear -x
             ;;
         4)
-            ## B.1.
             if [[ $option_four_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option 4 is currently disabled" >&2
@@ -434,7 +415,6 @@ while true; do
             clear -x
             ;;
         5)
-            ## B.1.
             if [[ $option_five_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option 5 is currently disabled" >&2
@@ -453,7 +433,6 @@ while true; do
             clear -x
             ;;
         7)
-            ## B.1.
             if [[ $option_seven_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option 7 is currently disabled" >&2

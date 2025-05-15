@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Download the script to initiate the installation and management of NadekoBot.
+# Download the script that initiates the installation and management of NadekoBot.
 #
-########################################################################################
+############################################################################################
 
 # Enable strict error handling.
 set -euxo pipefail
