@@ -93,15 +93,6 @@ clean_exit() {
     exit "$exit_code"
 }
 
-####
-# Download and execute the main Manager script, then call 'clean_exit' with the exit code
-# returned by the script.
-execute_main_script() {
-    E_DOWNLOAD_SCRIPT "n-main.bash" "true"
-    ./n-main.bash
-    clean_exit "$?"
-}
-
 ###
 ### [ Functions to be Exported ]
 ###
@@ -191,4 +182,6 @@ if [[ $(ps -p 1 -o comm=) != "systemd" ]]; then
     exit 1
 fi
 
-execute_main_script
+E_DOWNLOAD_SCRIPT "n-main.bash" "true"
+./n-main.bash
+clean_exit "$?"
