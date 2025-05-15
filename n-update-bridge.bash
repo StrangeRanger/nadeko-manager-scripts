@@ -156,7 +156,7 @@ revision_47.5() {
 # EXITS:
 #   - 0: If the preparation is successful.
 revision_53() {
-    cat <<EOF
+    cat << EOF
 ${E_WARN}NadekoBot v6 Upgrade Preparation ${E_YELLOW}<==${E_NC}
   ${E_YELLOW}|${E_NC}  You are about to download the latest version of 'm-bridge.bash', which only supports NadekoBot v6.
   ${E_YELLOW}|${E_NC}  If you'd like to continue using NadekoBot v5, modify the value of 'manager_branch' in 'm-bridge.bash' to 'NadekoV5'.
