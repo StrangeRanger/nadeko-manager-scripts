@@ -2,21 +2,17 @@
 #
 # NadekoBot Manager Menu Script
 #
-# This interactive script provides a menu-driven interface for managing the NadekoBot service.
-# It validates system prerequisites (e.g., Python3, ffmpeg, ccze, yt-dlp) and the presence of
-# required credentials, then dynamically enables or disables menu options based on the current
-# system state.
+# This interactive script provides a menu-driven interface for managing the NadekoBot
+# service. It validates system prerequisites (e.g., Python3, ffmpeg, ccze, yt-dlp) and the
+# presence of required credentials, then dynamically enables or disables menu options based
+# on the current system state.
 #
-# The script allows you to download NadekoBot, start it (with or without auto-restart), stop the
-# service, view live service logs, install prerequisites, and back up important files—all while
-# handling exit conditions and errors gracefully.
+# The script allows you to download NadekoBot, start it (with or without auto-restart), stop
+# the service, view live service logs, install prerequisites, and back up important
+# files—all while handling exit conditions and errors gracefully.
 #
-# Comment Key:
-#   - A.1.: Return to stop further code execution.
-#   - B.1.: Prevent the code from running if the option is disabled.
-#
-################################################################################################
-####[ Global Variables ]########################################################################
+############################################################################################
+####[ Global Variables ]####################################################################
 
 
 readonly C_CREDS="creds.yml"
@@ -30,7 +26,7 @@ export E_LOCAL_BIN="$HOME/.local/bin"
 export E_YT_DLP_PATH="$E_LOCAL_BIN/yt-dlp"
 
 
-####[ Functions ]###############################################################################
+####[ Functions ]###########################################################################
 
 
 ####
@@ -67,8 +63,8 @@ exit_code_actions() {
 # Determine whether the 'token' field in the credentials file is set.
 #
 # NOTE:
-#   This is not a comprehensive check for the validity of the token; it only verifies that the
-#   token field is not empty.
+#   This is not a comprehensive check for the validity of the token; it only verifies that
+#   the token field is not empty.
 #
 # RETURNS:
 #   - 0: If the token is set.
@@ -192,8 +188,8 @@ E_FOLLOW_SERVICE_LOGS() {
 export -f E_FOLLOW_SERVICE_LOGS
 
 ####
-# Provide contextual information when displaying NadekoBot's service logs, indicating whether
-# the logs are viewed from a runner script or directly from the main Manager.
+# Provide contextual information when displaying NadekoBot's service logs, indicating
+# whether the logs are viewed from a runner script or directly from the main Manager.
 #
 # PARAMETERS:
 #   - $1: log_type (Required)
@@ -221,8 +217,8 @@ E_WATCH_SERVICE_LOGS() {
     E_FOLLOW_SERVICE_LOGS
 
     if [[ $log_type == "runner" ]]; then
-        echo "${E_NOTE}Please check the logs above to make sure that there aren't any errors." \
-            "If there are, resolve whatever issue is causing them."
+        echo "${E_NOTE}Please check the logs above to make sure that there aren't any" \
+            "errors. If there are, resolve whatever issue is causing them."
     fi
 
     read -rp "${E_NOTE}Press [Enter] to return to the main menu"
@@ -230,14 +226,14 @@ E_WATCH_SERVICE_LOGS() {
 export -f E_WATCH_SERVICE_LOGS
 
 
-####[ Trapping Logic ]##########################################################################
+####[ Trapping Logic ]######################################################################
 
 
 trap 'exit_code_actions "129"' SIGHUP
 trap 'exit_code_actions "143"' SIGTERM
 
 
-####[ Main ]####################################################################################
+####[ Main ]################################################################################
 
 
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
@@ -247,27 +243,21 @@ while true; do
     ###
     ### [ Temporary Variables ]
     ###
-    ### These variables are modified within the while loop and must be reset each time the loop
-    ### begins.
+    ### These variables are modified within the while loop and must be reset each time the
+    ### loop begins.
     ###
 
-    ## Disabled option text.
     disabled_option_message=" (Execute option to display the reason it's disabled)"
     disabled_service_message=" (Disabled until NadekoBot is running)"
-    ## Option 1.
     option_one_disabled=false
     option_one_text="1. Download NadekoBot"
-    ## Options 2 and 3.
     options_two_three_disabled=false
     option_two_text="2. Run NadekoBot in the background"
     option_three_text="3. Run NadekoBot in the background with auto restart"
-    ## Option 4.
     option_four_disabled=false
     option_four_text="4. Stop NadekoBot"
-    ## Option 5.
     option_five_disabled=false
     option_five_text="5. Display '$E_BOT_SERVICE' logs in follow mode"
-    ## Option 7.
     option_seven_disabled=false
     option_seven_text="7. Back up important files"
 
@@ -361,7 +351,6 @@ while true; do
     read -r choice
     case "$choice" in
         1)
-            ## B.1.
             if [[ $option_one_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option 1 is currently disabled" >&2
@@ -377,7 +366,6 @@ while true; do
             clear -x
             ;;
         2|3)
-            ## B.1.
             if [[ $options_two_three_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option $choice is currently disabled" >&2
@@ -413,7 +401,6 @@ while true; do
             clear -x
             ;;
         4)
-            ## B.1.
             if [[ $option_four_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option 4 is currently disabled" >&2
@@ -428,7 +415,6 @@ while true; do
             clear -x
             ;;
         5)
-            ## B.1.
             if [[ $option_five_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option 5 is currently disabled" >&2
@@ -447,7 +433,6 @@ while true; do
             clear -x
             ;;
         7)
-            ## B.1.
             if [[ $option_seven_disabled == true ]]; then
                 clear -x
                 echo "${E_ERROR}Option 7 is currently disabled" >&2
