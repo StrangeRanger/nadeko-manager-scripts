@@ -7,6 +7,10 @@
 
 Nadeko Manager Scripts is a collection of Bash scripts designed to simplify the installation, management, and maintenance of [NadekoBot](https://github.com/nadeko-bot/nadekobot) v6 on Linux systems. This unofficial toolset provides an easy-to-use, menu-driven interface for downloading, running, updating, and backing up NadekoBot, as well as managing prerequisites and service logs. Whether you’re setting up NadekoBot for the first time or maintaining an existing installation, these scripts aim to streamline the process across a wide range of supported Linux distributions.
 
+## Demo
+
+[![asciicast](https://asciinema.hthompson.dev/a/3.svg)](https://asciinema.hthompson.dev/a/3)
+
 ## Getting Started
 
 ### Download the Bridge Script
