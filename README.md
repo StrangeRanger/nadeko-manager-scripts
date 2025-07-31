@@ -1,10 +1,11 @@
 # Nadeko Manager Scripts
 
-[![Project Tracker](https://img.shields.io/badge/repo%20status-Project%20Tracker-lightgrey)](https://wiki.hthompson.dev/en/project-tracker)
+[![Project Tracker](https://img.shields.io/badge/repo%20status-Project%20Tracker-lightgrey)](https://hthompson.dev/project-tracker#project-297718786)
+[![GitHub License](https://img.shields.io/github/license/StrangeRanger/nadeko-manager-scripts)](LICENSE)
 [![Style Guide](https://img.shields.io/badge/code%20style-Style%20Guide-blueviolet)](https://bsg.hthompson.dev/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/63b063408cea4065a5dbe8e7ba8fdfd2)](https://www.codacy.com/gh/StrangeRanger/nadeko-manager-scripts/dashboard?utm_source=github.com&utm_medium=referral&utm_content=StrangeRanger/nadeko-manager-scripts&utm_campaign=Badge_Grade)
 
-This is the unofficial installer and manager for NadekoBot v6 on Linux.
+Nadeko Manager Scripts is a collection of Bash scripts designed to simplify the installation, management, and maintenance of [NadekoBot](https://github.com/nadeko-bot/nadekobot) v6 on Linux systems. This unofficial toolset provides an easy-to-use, menu-driven interface for downloading, running, updating, and backing up NadekoBot, as well as managing prerequisites and service logs. Whether you’re setting up NadekoBot for the first time or maintaining an existing installation, these scripts aim to streamline the process across a wide range of supported Linux distributions.
 
 ## Getting Started
 
