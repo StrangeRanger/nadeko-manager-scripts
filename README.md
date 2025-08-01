@@ -13,7 +13,7 @@ Nadeko Manager Scripts is a collection of Bash scripts designed to simplify the 
 
 ## Getting Started
 
-### Download the Bridge Script
+### Setup
 
 The only script that needs to be downloaded to your system is `m-bridge.bash`. To do this, execute the following set of commands:
 
@@ -26,7 +26,7 @@ chmod +x m-bridge.bash
 
 To use the Manager, execute the following command: `./m-bridge.bash`
 
-If the following command was successfully executed, a menu with the following options (or something very similar) should be displayed:
+If the command was successfully executed, a menu with the following options (or something very similar) should be displayed:
 
 ```txt
 1. Download NadekoBot
