@@ -168,7 +168,7 @@ For more information on how to interact with and run the images, see the instruc
 
 ## Support
 
-For questions, suggestions, or bug reports, please open an issue on [GitHub](https://github.com/StrangeRanger/mass-git/issues).
+For questions, suggestions, or bug reports, please open an issue on [GitHub](https://github.com/StrangeRanger/nadeko-manager-scripts/issues).
 
 ## License
 
