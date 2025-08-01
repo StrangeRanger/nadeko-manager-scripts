@@ -1,11 +1,24 @@
 # Nadeko Manager Scripts
 
 [![Project Tracker](https://img.shields.io/badge/repo%20status-Project%20Tracker-lightgrey)](https://hthompson.dev/project-tracker#project-297718786)
-[![GitHub License](https://img.shields.io/github/license/StrangeRanger/nadeko-manager-scripts)](LICENSE)
 [![Style Guide](https://img.shields.io/badge/code%20style-Style%20Guide-blueviolet)](https://bsg.hthompson.dev/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/63b063408cea4065a5dbe8e7ba8fdfd2)](https://www.codacy.com/gh/StrangeRanger/nadeko-manager-scripts/dashboard?utm_source=github.com&utm_medium=referral&utm_content=StrangeRanger/nadeko-manager-scripts&utm_campaign=Badge_Grade)
 
 Nadeko Manager Scripts is a collection of Bash scripts designed to simplify the installation, management, and maintenance of [NadekoBot](https://github.com/nadeko-bot/nadekobot) v6 on Linux systems. This unofficial toolset provides an easy-to-use, menu-driven interface for downloading, running, updating, and backing up NadekoBot, as well as managing prerequisites and service logs. Whether you’re setting up NadekoBot for the first time or maintaining an existing installation, these scripts aim to streamline the process across a wide range of supported Linux distributions.
+
+<details>
+<summary><strong>Table of Contents</strong></summary>
+
+- [Nadeko Manager Scripts](#nadeko-manager-scripts)
+  - [Demo](#demo)
+  - [Getting Started](#getting-started)
+    - [Setup](#setup)
+  - [Usage](#usage)
+  - [Supported Distributions](#supported-distributions)
+  - [Testing](#testing)
+  - [License](#license)
+
+</details>
 
 ## Demo
 
@@ -15,14 +28,14 @@ Nadeko Manager Scripts is a collection of Bash scripts designed to simplify the 
 
 ### Setup
 
-The only script that needs to be downloaded to your system is `m-bridge.bash`. To do this, execute the following set of commands:
+The only script that needs to be downloaded to your system is `m-bridge.bash`. To do this, execute the following commands:
 
 ```bash
 curl -O https://raw.githubusercontent.com/StrangeRanger/nadeko-manager-scripts/main/m-bridge.bash
 chmod +x m-bridge.bash
 ```
 
-### Usage
+## Usage
 
 To use the Manager, execute the following command: `./m-bridge.bash`
 
@@ -39,7 +52,7 @@ If the command was successfully executed, a menu with the following options (or 
 8. Exit
 ```
 
-## Officially Supported Distributions
+## Supported Distributions
 
 The following is a list of all the Linux distributions that the Manager has been tested and are officially support on:
 
@@ -72,3 +85,7 @@ There are two methods to test the Manager scripts:
    This script will construct the Docker images for all supported Linux distributions. Once the build process completes, you can run the images using the same instructions as for the pre-built versions.
 
 For more information on how to interact with and run the images, see the instructions on the [Docker Hub repository](https://hub.docker.com/r/strangeranger/nadeko-manager-testing).
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
