@@ -79,23 +79,23 @@ You can customize the behavior of the Nadeko Manager by editing a few variables 
 
 #### Configurable Variables
 
-- **manager_repo**: The GitHub repository to fetch manager scripts from.
+- **manager_repo**: The GitHub repository to fetch manager scripts from
   - Default: `"StrangeRanger/nadeko-manager-scripts"`
 
-- **manager_branch**: The branch to use when downloading scripts.
+- **manager_branch**: The branch to use when downloading scripts
   - Options:
     - `main` (stable, recommended)
     - `dev` (development, may be unstable)
     - `NadekoV5` (for NadekoBot v5)
   - Default: `"main"`
 
-- **E_SKIP_PREREQ_CHECK**: Skip the prerequisites check if set to `"true"`.
+- **E_SKIP_PREREQ_CHECK**: Skip the prerequisites check if set to `"true"`
   - Options:
     - `true`: Skip checking for required packages (not recommended unless you know what you’re doing)
     - `false`: Check for prerequisites (recommended)
   - Default: `"false"`
 
-- **E_FILES_TO_BACK_UP**: List of files to back up when using the backup option.
+- **E_FILES_TO_BACK_UP**: List of files to back up when using the backup option
   - Paths must start from Nadeko's parent directory (e.g., `nadekobot/data/creds.yml`)
   - Separate multiple files with spaces or newlines
   - Do not use commas or paths with spaces
@@ -137,10 +137,10 @@ If successful, you'll see a menu with the following options:
 
 ## Uninstallation
 
-To completely remove the Nadeko Manager Scripts and related files from your system:
-
 > [!IMPORTANT]
 > Only remove the `nadekobot` directory and backup folders if you are certain you no longer need your bot data or backups.
+
+To completely remove the Nadeko Manager Scripts and related files from your system, follow the below steps.
 
 ### Step 1: Stop and Remove the Service
 ```bash
