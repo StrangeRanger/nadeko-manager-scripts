@@ -24,7 +24,7 @@ Nadeko Manager Scripts is a collection of Bash scripts that automates the comple
     - [Step 3: Remove NadekoBot Data (Optional)](#step-3-remove-nadekobot-data-optional)
   - [Supported Distributions](#supported-distributions)
   - [Testing](#testing)
-  - [Support](#support)
+  - [Support and Issues](#support-and-issues)
   - [License](#license)
 
 </details>
@@ -53,13 +53,13 @@ Nadeko Manager Scripts is a collection of Bash scripts that automates the comple
 Most prerequisites for running the Nadeko Manager Scripts are handled automatically by the `n-prereqs.bash` script, but you will need the following minimum requirements:
 
 **System Requirements:**
-- **Bash** 4.0 or higher
-- **curl** (for downloading scripts)
-- **systemd** (required for service management)
-- **64-bit Linux system** (32-bit systems are not supported)
+- **Bash**: Version 4.0 or higher
+- **curl**: For downloading scripts
+- **systemd**: Required for service management
+- **64-bit Linux system**: 32-bit systems are not supported
 
 **Permissions:**
-- Root or sudo access (required for installing packages and managing systemd services)
+- **Root or sudo access**: Required for installing packages and managing systemd services
 
 ### Download and Setup
 
@@ -198,9 +198,9 @@ The Manager has been tested across multiple Linux distributions using Docker con
 
   Once built, you can run the images using the same instructions provided in the [Docker Hub repository](https://hub.docker.com/r/strangeranger/nadeko-manager-testing).
 
-## Support
+## Support and Issues
 
-For questions, suggestions, or bug reports, please open an issue on [GitHub](https://github.com/StrangeRanger/nadeko-manager-scripts/issues).
+Please use [GitHub Issues](https://github.com/StrangeRanger/dotfiles/issues) for bug reports and feature requests.
 
 ## License
 
