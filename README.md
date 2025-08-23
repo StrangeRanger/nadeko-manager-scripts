@@ -24,7 +24,7 @@ Nadeko Manager Scripts is a collection of Bash scripts that automates the comple
     - [Step 3: Remove NadekoBot Data (Optional)](#step-3-remove-nadekobot-data-optional)
   - [Supported Distributions](#supported-distributions)
   - [Testing](#testing)
-  - [Support](#support)
+  - [Support and Issues](#support-and-issues)
   - [License](#license)
 
 </details>
@@ -53,13 +53,13 @@ Nadeko Manager Scripts is a collection of Bash scripts that automates the comple
 Most prerequisites for running the Nadeko Manager Scripts are handled automatically by the `n-prereqs.bash` script, but you will need the following minimum requirements:
 
 **System Requirements:**
-- **Bash** 4.0 or higher
-- **curl** (for downloading scripts)
-- **systemd** (required for service management)
-- **64-bit Linux system** (32-bit systems are not supported)
+- **Bash**: Version 4.0 or higher
+- **curl**: For downloading scripts
+- **systemd**: Required for service management
+- **64-bit Linux system**: 32-bit systems are not supported
 
 **Permissions:**
-- Root or sudo access (required for installing packages and managing systemd services)
+- **Root or sudo access**: Required for installing packages and managing systemd services
 
 ### Download and Setup
 
@@ -169,17 +169,17 @@ rm -rf nadekobot nadekobot.old
 
 The following is a list of all the Linux distributions that the Manager has been tested and are officially supported on:
 
-| Distro/OS           | Version Number | End of Life                       | EOL Information                                                                                                                                                                                        |
-| ------------------- | -------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Ubuntu              | 24.04<br>22.04 | April 25, 2029<br>April 01, 2027  | [endoflife.date](https://endoflife.date/ubuntu)<br>[ubuntu.com](https://ubuntu.com/about/release-cycle)                                                                                                |
-| Linux Mint          | 22<br>21       | April 30, 2029<br>April 30, 2027  | [endoflife.date](https://endoflife.date/linuxmint)<br>[linuxmint.com](https://linuxmint.com/download_all.php)                                                                                          |
-| Debian              | 12             | June 10, 2026                     | [endoflife.date](https://endoflife.date/debian)<br>[wiki.debian.org](https://wiki.debian.org/DebianReleases)                                                                                           |
-| Fedora              | 41<br>40       | November 19, 2025<br>May 28, 2025 | [endoflife.date](https://endoflife.date/fedora)<br>[docs.fedoraproject.org](https://docs.fedoraproject.org/en-US/releases/lifecycle/)<br>[fedorapeople.org](https://fedorapeople.org/groups/schedule/) |
-| Alma Linux          | 9<br>8         | May 31, 2032<br>March 01, 2029    | [endoflife.date](https://endoflife.date/almalinux)<br>[wiki.almalinux.org](https://wiki.almalinux.org/release-notes/)                                                                                  |
-| Rocky Linux         | 9<br>8         | May 31, 2032<br>May 31, 2029      | [endoflife.date](https://endoflife.date/rockylinux)<br>[wiki.rockylinux.org](https://wiki.rockylinux.org/rocky/version/)                                                                               |
-| OpenSuse Leap       | 15.6           | December 31, 2025                 | [endoflife.date](https://endoflife.date/opensuse)<br>[en.opensuse.org](https://en.opensuse.org/Lifetime)                                                                                               |
-| OpenSuse Tumbleweed | Rolling        | N/A                               | N/A                                                                                                                                                                                                    |
-| Arch Linux          | Rolling        | N/A                               | N/A                                                                                                                                                                                                    |
+| Distro/OS | Version Number | End of Life | EOL Information |
+| --------- | -------------- | ----------- | --------------- |
+| Ubuntu | 24.04<br>22.04 | April 25, 2029<br>April 01, 2027 | [endoflife.date](https://endoflife.date/ubuntu)<br>[ubuntu.com](https://ubuntu.com/about/release-cycle) |
+| Linux Mint | 22<br>21 | April 30, 2029<br>April 30, 2027 | [endoflife.date](https://endoflife.date/linuxmint)<br>[linuxmint.com](https://linuxmint.com/download_all.php) |
+| Debian | 12 | June 10, 2026 | [endoflife.date](https://endoflife.date/debian)<br>[wiki.debian.org](https://wiki.debian.org/DebianReleases) |
+| Fedora | 41<br>40 | November 19, 2025<br>May 28, 2025 | [endoflife.date](https://endoflife.date/fedora)<br>[docs.fedoraproject.org](https://docs.fedoraproject.org/en-US/releases/lifecycle/)<br>[fedorapeople.org](https://fedorapeople.org/groups/schedule/) |
+| Alma Linux | 9<br>8 | May 31, 2032<br>March 01, 2029 | [endoflife.date](https://endoflife.date/almalinux)<br>[wiki.almalinux.org](https://wiki.almalinux.org/release-notes/) |
+| Rocky Linux | 9<br>8 | May 31, 2032<br>May 31, 2029 | [endoflife.date](https://endoflife.date/rockylinux)<br>[wiki.rockylinux.org](https://wiki.rockylinux.org/rocky/version/) |
+| OpenSuse Leap | 15.6 | December 31, 2025 | [endoflife.date](https://endoflife.date/opensuse)<br>[en.opensuse.org](https://en.opensuse.org/Lifetime) |
+| OpenSuse Tumbleweed | Rolling | N/A | N/A |
+| Arch Linux | Rolling | N/A | N/A |
 
 ## Testing
 
@@ -198,9 +198,9 @@ The Manager has been tested across multiple Linux distributions using Docker con
 
   Once built, you can run the images using the same instructions provided in the [Docker Hub repository](https://hub.docker.com/r/strangeranger/nadeko-manager-testing).
 
-## Support
+## Support and Issues
 
-For questions, suggestions, or bug reports, please open an issue on [GitHub](https://github.com/StrangeRanger/nadeko-manager-scripts/issues).
+Please use [GitHub Issues](https://github.com/StrangeRanger/nadeko-manager-scripts/issues) for bug reports and feature requests.
 
 ## License
 
