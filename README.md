@@ -200,7 +200,7 @@ The Manager has been tested across multiple Linux distributions using Docker con
 
 ## Support and Issues
 
-Please use [GitHub Issues](https://github.com/StrangeRanger/dotfiles/issues) for bug reports and feature requests.
+Please use [GitHub Issues](https://github.com/StrangeRanger/nadeko-manager-scripts/issues) for bug reports and feature requests.
 
 ## License
 
