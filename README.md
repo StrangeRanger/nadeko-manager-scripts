@@ -130,10 +130,10 @@ If successful, you'll see a menu with the following options:
 ```
 
 **First-time setup:**
-1. Start with option **6** to install prerequisites
-2. Use option **1** to download NadekoBot
-3. Configure your bot credentials (see [NadekoBot documentation](https://nadekobot.readthedocs.io/en/latest/creds-guide/))
-4. Use option **2** or **3** to start your bot
+1. Start with option **6** to install prerequisites.
+2. Use option **1** to download NadekoBot.
+3. Configure your bot credentials (see [NadekoBot documentation](https://nadekobot.readthedocs.io/en/latest/creds-guide/)).
+4. Use option **2** or **3** to start your bot.
 
 ## Uninstallation
 
