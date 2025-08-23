@@ -169,17 +169,17 @@ rm -rf nadekobot nadekobot.old
 
 The following is a list of all the Linux distributions that the Manager has been tested and are officially supported on:
 
-| Distro/OS           | Version Number | End of Life                       | EOL Information                                                                                                                                                                                        |
-| ------------------- | -------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Ubuntu              | 24.04<br>22.04 | April 25, 2029<br>April 01, 2027  | [endoflife.date](https://endoflife.date/ubuntu)<br>[ubuntu.com](https://ubuntu.com/about/release-cycle)                                                                                                |
-| Linux Mint          | 22<br>21       | April 30, 2029<br>April 30, 2027  | [endoflife.date](https://endoflife.date/linuxmint)<br>[linuxmint.com](https://linuxmint.com/download_all.php)                                                                                          |
-| Debian              | 12             | June 10, 2026                     | [endoflife.date](https://endoflife.date/debian)<br>[wiki.debian.org](https://wiki.debian.org/DebianReleases)                                                                                           |
-| Fedora              | 41<br>40       | November 19, 2025<br>May 28, 2025 | [endoflife.date](https://endoflife.date/fedora)<br>[docs.fedoraproject.org](https://docs.fedoraproject.org/en-US/releases/lifecycle/)<br>[fedorapeople.org](https://fedorapeople.org/groups/schedule/) |
-| Alma Linux          | 9<br>8         | May 31, 2032<br>March 01, 2029    | [endoflife.date](https://endoflife.date/almalinux)<br>[wiki.almalinux.org](https://wiki.almalinux.org/release-notes/)                                                                                  |
-| Rocky Linux         | 9<br>8         | May 31, 2032<br>May 31, 2029      | [endoflife.date](https://endoflife.date/rockylinux)<br>[wiki.rockylinux.org](https://wiki.rockylinux.org/rocky/version/)                                                                               |
-| OpenSuse Leap       | 15.6           | December 31, 2025                 | [endoflife.date](https://endoflife.date/opensuse)<br>[en.opensuse.org](https://en.opensuse.org/Lifetime)                                                                                               |
-| OpenSuse Tumbleweed | Rolling        | N/A                               | N/A                                                                                                                                                                                                    |
-| Arch Linux          | Rolling        | N/A                               | N/A                                                                                                                                                                                                    |
+| Distro/OS | Version Number | End of Life | EOL Information |
+| --------- | -------------- | ----------- | --------------- |
+| Ubuntu | 24.04<br>22.04 | April 25, 2029<br>April 01, 2027 | [endoflife.date](https://endoflife.date/ubuntu)<br>[ubuntu.com](https://ubuntu.com/about/release-cycle) |
+| Linux Mint | 22<br>21 | April 30, 2029<br>April 30, 2027 | [endoflife.date](https://endoflife.date/linuxmint)<br>[linuxmint.com](https://linuxmint.com/download_all.php) |
+| Debian | 12 | June 10, 2026 | [endoflife.date](https://endoflife.date/debian)<br>[wiki.debian.org](https://wiki.debian.org/DebianReleases) |
+| Fedora | 41<br>40 | November 19, 2025<br>May 28, 2025 | [endoflife.date](https://endoflife.date/fedora)<br>[docs.fedoraproject.org](https://docs.fedoraproject.org/en-US/releases/lifecycle/)<br>[fedorapeople.org](https://fedorapeople.org/groups/schedule/) |
+| Alma Linux | 9<br>8 | May 31, 2032<br>March 01, 2029 | [endoflife.date](https://endoflife.date/almalinux)<br>[wiki.almalinux.org](https://wiki.almalinux.org/release-notes/) |
+| Rocky Linux | 9<br>8 | May 31, 2032<br>May 31, 2029 | [endoflife.date](https://endoflife.date/rockylinux)<br>[wiki.rockylinux.org](https://wiki.rockylinux.org/rocky/version/) |
+| OpenSuse Leap | 15.6 | December 31, 2025 | [endoflife.date](https://endoflife.date/opensuse)<br>[en.opensuse.org](https://en.opensuse.org/Lifetime) |
+| OpenSuse Tumbleweed | Rolling | N/A | N/A |
+| Arch Linux | Rolling | N/A | N/A |
 
 ## Testing
 
