@@ -2,6 +2,8 @@ name: Build and Push Multiple Docker Images
 
 on:
   push:
+    branches:
+      - main
     paths:
       - ".github/workflows/docker-publish.yml"
       - "Distro Testing/Dockerfile"
@@ -11,6 +13,13 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'  # Runs every Sunday at 00:00 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-push:
@@ -56,6 +65,9 @@ jobs:
       - name: Build and Push Docker Image for ${{ matrix.distro.name }}
         uses: docker/build-push-action@v6
         with:
+          push: true
+          sbom: true
+          provenance: mode=max
           context: "Distro Testing"
           file: "Distro Testing/Dockerfile"
           build-args: |
@@ -63,6 +75,5 @@ jobs:
             PKG_MANAGER=${{ matrix.distro.pkg }}
           platforms: ${{ (matrix.distro.name == 'arch' || matrix.distro.name == 'linuxmint-22' || matrix.distro.name == 'linuxmint-21') && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
           tags: strangeranger/nadeko-manager-testing:${{ matrix.distro.name }}
-          push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
