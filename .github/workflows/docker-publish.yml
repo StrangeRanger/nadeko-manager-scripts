@@ -2,6 +2,8 @@ name: Build and Push Multiple Docker Images
 
 on:
   push:
+    branches:
+      - main
     paths:
       - ".github/workflows/docker-publish.yml"
       - "Distro Testing/Dockerfile"
@@ -12,28 +14,62 @@ on:
   schedule:
     - cron: '0 0 * * 0'  # Runs every Sunday at 00:00 UTC
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        distro: [
-          { name: "ubuntu-24.04", base: "ubuntu:24.04", pkg: "apt" },
-          { name: "ubuntu-22.04", base: "ubuntu:22.04", pkg: "apt" },
-          { name: "debian-12",    base: "debian:12",    pkg: "apt" },
-          { name: "linuxmint-22", base: "linuxmintd/mint22.1-amd64", pkg: "apt" },
-          { name: "linuxmint-21", base: "linuxmintd/mint21.3-amd64", pkg: "apt" },
-          { name: "fedora-41",    base: "fedora:41",    pkg: "dnf" },
-          { name: "fedora-40",    base: "fedora:40",    pkg: "dnf" },
-          { name: "almalinux-9",  base: "almalinux:9",  pkg: "dnf" },
-          { name: "almalinux-8",  base: "almalinux:8",  pkg: "dnf" },
-          { name: "rocky-9",      base: "rockylinux:9", pkg: "dnf" },
-          { name: "rocky-8",      base: "rockylinux:8", pkg: "dnf" },
-          { name: "opensuse-leap-15.6", base: "opensuse/leap:15.6", pkg: "zypper" },
-          { name: "opensuse-tumbleweed", base: "opensuse/tumbleweed", pkg: "zypper" },
-          { name: "arch",         base: "archlinux:latest", pkg: "pacman" }
-        ]
+        include:
+          - name: "ubuntu-24.04"
+            base: "ubuntu:24.04"
+            pkg: "apt"
+          - name: "ubuntu-22.04"
+            base: "ubuntu:22.04"
+            pkg: "apt"
+          - name: "debian-12"
+            base: "debian:12"
+            pkg: "apt"
+          - name: "linuxmint-22"
+            base: "linuxmintd/mint22.1-amd64"
+            pkg: "apt"
+          - name: "linuxmint-21"
+            base: "linuxmintd/mint21.3-amd64"
+            pkg: "apt"
+          - name: "fedora-41"
+            base: "fedora:41"
+            pkg: "dnf"
+          - name: "fedora-40"
+            base: "fedora:40"
+            pkg: "dnf"
+          - name: "almalinux-9"
+            base: "almalinux:9"
+            pkg: "dnf"
+          - name: "almalinux-8"
+            base: "almalinux:8"
+            pkg: "dnf"
+          - name: "rocky-9"
+            base: "rockylinux:9"
+            pkg: "dnf"
+          - name: "rocky-8"
+            base: "rockylinux:8"
+            pkg: "dnf"
+          - name: "opensuse-leap-15.6"
+            base: "opensuse/leap:15.6"
+            pkg: "zypper"
+          - name: "opensuse-tumbleweed"
+            base: "opensuse/tumbleweed"
+            pkg: "zypper"
+          - name: "arch"
+            base: "archlinux:latest"
+            pkg: "pacman"
 
     steps:
       - name: Checkout repository
@@ -53,16 +89,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and Push Docker Image for ${{ matrix.distro.name }}
+      - name: Build and Push Docker Image for ${{ matrix.name }}
         uses: docker/build-push-action@v6
         with:
+          push: true
+          sbom: true
+          provenance: mode=max
           context: "Distro Testing"
           file: "Distro Testing/Dockerfile"
           build-args: |
-            BASE_IMAGE=${{ matrix.distro.base }}
-            PKG_MANAGER=${{ matrix.distro.pkg }}
-          platforms: ${{ (matrix.distro.name == 'arch' || matrix.distro.name == 'linuxmint-22' || matrix.distro.name == 'linuxmint-21') && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
-          tags: strangeranger/nadeko-manager-testing:${{ matrix.distro.name }}
-          push: true
+            BASE_IMAGE=${{ matrix.base }}
+            PKG_MANAGER=${{ matrix.pkg }}
+          platforms: ${{ (matrix.name == 'arch' || matrix.name == 'linuxmint-22' || matrix.name == 'linuxmint-21') && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
+          tags: strangeranger/nadeko-manager-testing:${{ matrix.name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
