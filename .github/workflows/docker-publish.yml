@@ -17,6 +17,8 @@ on:
 permissions:
   contents: read
 
+# Prevent multiple runs from building/pushing at the same time for the same ref (branch). 
+# If a new commit lands, cancel the in-progress run and build the newest commit instead.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -93,14 +95,18 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
           push: true
+          # Attaches an SBOM attestation (software bill of materials). (Supply-chain metadata)
           sbom: true
+          # Attaches a SLSA provenance attestation (how this image was built). (Supply-chain metadata)
           provenance: mode=max
-          context: "Distro Testing"
-          file: "Distro Testing/Dockerfile"
+          context: "{{defaultContext}}:Distro Testing"
+          file: "Dockerfile"
           build-args: |
             BASE_IMAGE=${{ matrix.base }}
             PKG_MANAGER=${{ matrix.pkg }}
           platforms: ${{ (matrix.name == 'arch' || matrix.name == 'linuxmint-22' || matrix.name == 'linuxmint-21') && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
-          tags: strangeranger/nadeko-manager-testing:${{ matrix.name }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/nadeko-manager-testing:${{ matrix.name }}
+          labels: org.opencontainers.image.source=${{ github.repository }}
+          ## The `scope=` keeps amd64 and arm64 caches from colliding with each other.
+          cache-from: type=gha,scope=nms-${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=nms-${{ matrix.name }}
