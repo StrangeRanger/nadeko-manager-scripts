@@ -31,7 +31,7 @@ Nadeko Manager Scripts is a collection of Bash scripts that automates the comple
 
 ## Demo
 
-[![asciicast](https://asciinema.hthompson.dev/a/3.svg)](https://asciinema.hthompson.dev/a/3)
+[![asciicast](https://asciinema.org/a/827092.svg)](https://asciinema.org/a/827092)
 
 ## Features
 
