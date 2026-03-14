@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [v6.2.0] - 2026-03-14
+
+⚠️ This release removes support for NadekoBot v6 in favor of v7. ⚠️
+
+### Changed 
+
+- ⚠️ Remove support for NadekoBot v6 in favor of v7.
+- Ensures the libs from the latest release of NadekoBot are used instead of overwriting them with the ones from the last installed version.
+
 ## [v6.1.0] - 2025-05-15
 
 ⚠️ This release removes support for NadekoBot v5 in favor of v6. ⚠️
@@ -450,7 +459,8 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
     - CentOS: 7
 - The option to run NadekoBot with auto-update.
 
-[unreleased]: https://github.com/StrangeRanger/nadeko-manager-scripts/compare/v6.1.0...HEAD
+[unreleased]: https://github.com/StrangeRanger/nadeko-manager-scripts/compare/v6.2.0...HEAD
+[v6.2.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v6.2.0
 [v6.1.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v6.1.0
 [v6.0.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v6.0.0
 [v5.0.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v5.0.0
