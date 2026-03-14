@@ -4,7 +4,7 @@
 [![Style Guide](https://img.shields.io/badge/code%20style-Style%20Guide-blueviolet)](https://bsg.hthompson.dev/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/63b063408cea4065a5dbe8e7ba8fdfd2)](https://www.codacy.com/gh/StrangeRanger/nadeko-manager-scripts/dashboard?utm_source=github.com&utm_medium=referral&utm_content=StrangeRanger/nadeko-manager-scripts&utm_campaign=Badge_Grade)
 
-Nadeko Manager Scripts is a collection of Bash scripts that automates the complete lifecycle management of [NadekoBot](https://github.com/nadeko-bot/nadekobot) v6 on Linux systems. Designed for both beginners and experienced users, it eliminates the complexity of manual bot setup and maintenance through a simple, interactive interface.
+Nadeko Manager Scripts is a collection of Bash scripts that automates the complete lifecycle management of [NadekoBot](https://github.com/nadeko-bot/nadekobot) v7 on Linux systems. Designed for both beginners and experienced users, it eliminates the complexity of manual bot setup and maintenance through a simple, interactive interface.
 
 <details>
 <summary><strong>Table of Contents</strong></summary>
@@ -86,6 +86,7 @@ You can customize the behavior of the Nadeko Manager by editing a few variables 
   - Options:
     - `main` (stable, recommended)
     - `dev` (development, may be unstable)
+    - `NadekoV6` (for NadekoBot v6)
     - `NadekoV5` (for NadekoBot v5)
   - Default: `"main"`
 
