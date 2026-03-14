@@ -14,7 +14,7 @@
 
 C_TMP_DIR_PATH=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
 readonly C_TMP_DIR_PATH
-readonly C_NADEKO_MAJOR_VERSION="6"
+readonly C_NADEKO_MAJOR_VERSION="7"
 
 ## File and directory paths and names.
 readonly C_TMP_BOT_DIR_PATH="$C_TMP_DIR_PATH/$E_BOT_DIR"
