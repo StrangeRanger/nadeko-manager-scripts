@@ -14,7 +14,7 @@
 
 C_TMP_DIR_PATH=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
 readonly C_TMP_DIR_PATH
-readonly C_NADEKO_MAJOR_VERSION="6"
+readonly C_NADEKO_MAJOR_VERSION="7"
 
 ## File and directory paths and names.
 readonly C_TMP_BOT_DIR_PATH="$C_TMP_DIR_PATH/$E_BOT_DIR"
@@ -312,12 +312,16 @@ popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "
 
 if [[ -d $E_BOT_DIR ]]; then
     (
-        # Copy all the current files in the data directory, into the new one. Since all
-        # the files in the data directory have their own versioning, NadekoBot will
-        # handle any necessary migrations.
+        # Copy all the current files in the data directory, into the new one, while
+        # preserving the 'lib' directory from the new version. Since all the files in the
+        # data directory have their own versioning, NadekoBot will handle any other
+        # necessary migrations.
         echo "${E_INFO}Copying contents of '${C_CURRENT_DATA_DIR_PATH##*/}' to" \
             "'${C_NEW_DATA_DIR_PATH}'..."
+        mv "$C_NEW_DATA_DIR_PATH"/lib "$C_NEW_DATA_DIR_PATH"/lib.new || exit 1
         cp -rf "$C_CURRENT_DATA_DIR_PATH"/* "$C_NEW_DATA_DIR_PATH" || exit 1
+        rm -rf "${C_NEW_DATA_DIR_PATH:?}/lib" || exit 1
+        mv "$C_NEW_DATA_DIR_PATH"/lib.new "$C_NEW_DATA_DIR_PATH"/lib || exit 1
 
         set_creds
     ) || E_STDERR "An error occurred while copying data to '$C_TMP_BOT_DIR_PATH'" "$?"
