@@ -98,8 +98,10 @@ You can customize the behavior of the Nadeko Manager by editing a few variables 
 
 - **E_FILES_TO_BACK_UP**: List of files to back up when using the backup option
   - Paths must start from Nadeko's parent directory (e.g., `nadekobot/data/creds.yml`)
-  - Separate multiple files with spaces or newlines
-  - Do not use commas or paths with spaces
+  - Prefer one path per line
+  - Newline-separated entries support paths with spaces
+  - Space-separated entries are still supported for backward compatibility when paths do not contain spaces
+  - Do not use commas
   - Default files:
     ```
     nadekobot/data/NadekoBot.db

@@ -11,18 +11,28 @@
 
 readonly C_CURRENT_BACKUP="important-files-backup"
 readonly C_OLD_BACKUP="important-files-backup.old"
-# shellcheck disable=SC2206,SC2153
-#   SC2206: Left unquoted to allow word splitting for array assignment.
-#   SC2153: $E_FILES_TO_BACK_UP is defined in 'm-bridge.bash'.
-readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 C_TMP_BACKUP=$(mktemp -d -p /tmp important-nadeko-files-XXXXXXXXXX)
 readonly C_TMP_BACKUP
 
 needs_rollback=false
 
+# shellcheck disable=SC2153
+#   $E_FILES_TO_BACK_UP is defined in 'm-bridge.bash'.
+if [[ $E_FILES_TO_BACK_UP == *$'\n'* ]]; then
+    mapfile -t C_FILES_TO_BACK_UP <<< "$E_FILES_TO_BACK_UP"
+else
+    # shellcheck disable=SC2206
+    #   Fall back to historical space-delimited parsing when no newlines are present.
+    C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
+fi
+readonly C_FILES_TO_BACK_UP
+
 
 ####[ Functions ]###########################################################################
 
+
+# Load shared helper functions.
+. ./n-shared.bash || E_STDERR "Failed to load shared manager helpers" "1"
 
 ####
 # Reverts changes made during the update process if an error or premature exit is detected.
@@ -57,37 +67,15 @@ revert_changes() {
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-    local exit_now=false
 
-    # Remove the exit and sigint trap to prevent re-entry after exiting and repeated sigint
-    # signals.
-    trap - EXIT SIGINT
+    E_PREP_MENU_EXIT "$exit_code" "0 5"
     [[ $use_extra_newline == true ]] && echo ""
-
-    case "$exit_code" in
-        0|5) ;;
-        1)
-            exit_code=50
-            ;;
-        130)
-            echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
-            exit_code=50
-            ;;
-        *)
-            exit_now=true
-            ;;
-    esac
-
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_TMP_BACKUP" ]] && rm -rf "$C_TMP_BACKUP" &>/dev/null
 
     revert_changes
 
-    if [[ $exit_now == false ]]; then
-        read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
-    fi
-
-    exit "$exit_code"
+    E_FINISH_MENU_EXIT "EXIT SIGINT"
 }
 
 
@@ -104,6 +92,7 @@ trap 'clean_exit "$?" "true"'  EXIT
 
 
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
+
 echo "${E_NOTE}We will now back up the following files:"
 for file in "${C_FILES_TO_BACK_UP[@]}";
     do echo "  ${E_CYAN}|${E_NC}  $file"
