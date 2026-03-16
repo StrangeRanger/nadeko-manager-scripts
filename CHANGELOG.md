@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [v6.2.1] - 2026-03-15
+
+### Changed
+
+- Improved internal script structure by moving shared exit-handling logic into a new `n-shared.bash` helper.
+- Clarified script headers, comments, and configuration documentation across the Manager scripts.
+- Updated `E_FILES_TO_BACK_UP` documentation to prefer one path per line while keeping the previous space-delimited format for backward compatibility.
+
+### Fixed
+
+- Hardened Manager script downloads so failed HTTP requests do not leave behind executable error pages.
+- Improved exit handling to preserve signal messaging order and prevent cleanup traps from re-entering while cleanup is already in progress.
+- Fixed NadekoBot service status checks so `inactive` is handled correctly without requiring `sudo`.
+- Improved backup file parsing to support newline-delimited paths, including paths with spaces.
+- Prevent repeated `yt-dlp` update checks during NadekoBot auto-restart loops.
+
 ## [v6.2.0] - 2026-03-14
 
 ⚠️ This release removes support for NadekoBot v6 in favor of v7. ⚠️
@@ -459,7 +475,8 @@ Version 2.1.0 of the Nadeko Bash Scripts is a complete rewrite of the previous B
     - CentOS: 7
 - The option to run NadekoBot with auto-update.
 
-[unreleased]: https://github.com/StrangeRanger/nadeko-manager-scripts/compare/v6.2.0...HEAD
+[unreleased]: https://github.com/StrangeRanger/nadeko-manager-scripts/compare/v6.2.1...HEAD
+[v6.2.1]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v6.2.1
 [v6.2.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v6.2.0
 [v6.1.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v6.1.0
 [v6.0.0]: https://github.com/StrangeRanger/nadeko-manager-scripts/releases/tag/v6.0.0
