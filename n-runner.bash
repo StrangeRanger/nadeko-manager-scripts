@@ -197,7 +197,6 @@ while true; do
 
     echo "[INFO] Waiting 5 seconds..."
     sleep 5
-    yt-dlp -U || echo "[ERROR] Failed to update 'yt-dlp'" >&2
     echo "[INFO] Restarting NadekoBot..."
 done
 

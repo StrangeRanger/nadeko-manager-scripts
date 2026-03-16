@@ -110,8 +110,9 @@ E_DOWNLOAD_SCRIPT() {
 
     [[ $should_print == true ]] && printf "%sDownloading '%s'..." "${E_INFO}" "$script_name"
 
-    curl -O -s "$E_RAW_URL"/"$script_name"
-    chmod +x "$script_name"
+    curl -fsSL -o "$script_name" "$E_RAW_URL/$script_name" \
+        || E_STDERR "Failed to download '$script_name'" "1"
+    chmod +x "$script_name" || E_STDERR "Failed to make '$script_name' executable" "1"
 }
 export -f E_DOWNLOAD_SCRIPT
 
