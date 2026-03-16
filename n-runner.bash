@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# NadekoBot Service Runner Configuration Script
+# NadekoBot Manager — Service Runner Configuration Script
 #
 # This script configures the systemd service for NadekoBot and prepares the runner script
-# (NadekoRun) based on the chosen run mode. Depending on the value of E_RUNNER_CODENAME, it
+# (NadekoRun) based on the chosen run mode. Depending on the value of $E_RUNNER_CODENAME, it
 # either creates a standard or an auto-restart version of the runner script, writes or
 # updates the service file accordingly, and then starts or restarts the service. Finally, it
 # displays the service logs to provide immediate feedback on the operation.
@@ -12,7 +12,7 @@
 ####[ Global Variables ]####################################################################
 
 
-C_BOT_SERVICE_PATH="/etc/systemd/system/$E_BOT_SERVICE"
+readonly C_BOT_SERVICE_PATH="/etc/systemd/system/$E_BOT_SERVICE"
 
 ## Determine the action to be performed on the NadekoBot service based on its code name.
 if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then

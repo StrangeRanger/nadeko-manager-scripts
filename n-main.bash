@@ -225,6 +225,8 @@ trap 'exit_code_actions "143"' SIGTERM
 ####[ Main ]################################################################################
 
 
+# shellcheck disable=SC2153
+#   $E_ROOT_DIR is set in the main prep script and is used by multiple Manager scripts.
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 printf "%sWelcome to the NadekoBot Manager menu\n\n" "$E_CLR_LN"
 
@@ -254,7 +256,7 @@ while true; do
     ### [ Variable Checks ]
     ###
     ### These checks reassess the status or existence of certain services or programs (e.g.,
-    ### ccze, yt_dlp) each time the loop restarts, as their availability might change.
+    ### yt_dlp) each time the loop restarts, as their availability or status might change.
     ###
 
     if [[ -f "$E_YT_DLP_PATH" ]] || command -v yt-dlp &>/dev/null; then
@@ -297,7 +299,7 @@ while true; do
         fi
     ## If 'NadekoRun' exists, options 2 and 3 remain enabled.
     elif [[ -f NadekoRun ]]; then
-        ## If NadekoBot's service is running, options 4 and 5 remain enabled; otherwise,
+        ## If NadekoBot's service is running, options 4 and 5 remain enabled, otherwise,
         ## disable them.
         if [[ $E_BOT_SERVICE_STATUS == "active" ]]; then
             run_mode_status=" ${E_GREEN}(Running in this mode)${E_NC}"

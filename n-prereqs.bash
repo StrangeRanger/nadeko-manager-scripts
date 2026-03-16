@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# NadekoBot Prerequisites Installer Script
+# NadekoBot Manager — Prerequisites Installer Script
 #
 # This script automates the installation of NadekoBot's prerequisites on supported Linux
 # distributions. It detects the system's OS and version, validates compatibility against a
@@ -98,26 +98,6 @@ declare -A -r C_MUSIC_PKG_MAPPING=(
 
 
 ####
-# Identify the system's distribution and version number.
-#
-# NEW GLOBALS:
-#   - C_DISTRO: The distribution name (or kernel name if '/etc/os-release' is absent).
-#   - C_VER: The full distribution version (or kernel version when falling back).
-#   - C_SVER: The major version number extracted from $C_VER.
-detect_sys_info() {
-    if [[ -f /etc/os-release ]]; then
-        . /etc/os-release
-        C_DISTRO="$ID"
-        C_VER="$VERSION_ID"  # Format: x.y.z...
-        C_SVER=${C_VER%%.*}  # Major version: x
-    else
-        C_DISTRO=$(uname -s)
-        C_VER=$(uname -r)
-        C_SVER=${C_VER%%.*}
-    fi
-}
-
-####
 # Display an exit message based on the provided exit code, and exit the script with the
 # specified code.
 #
@@ -161,19 +141,6 @@ clean_exit() {
     fi
 
     exit "$exit_code"
-}
-
-####
-# Display a message indicating that the current OS is unsupported for the automatic
-# installation of NadekoBot's prerequisites.
-#
-# EXITS:
-#   - 4: The current OS is unsupported.
-unsupported() {
-    echo "${E_ERROR}The Manager does not support the automatic installation and setup of" \
-        "NadekoBot's prerequisites for your OS" >&2
-    read -rp "${E_NOTE}Press [Enter] to return to the main menu"
-    exit 4
 }
 
 ####
@@ -411,7 +378,17 @@ trap 'clean_exit "$?"'  EXIT
 printf "%sWe will now install NadekoBot's prerequisites. " "$E_NOTE"
 read -rp "Press [Enter] to continue."
 
-detect_sys_info
+if [[ -f /etc/os-release ]]; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    C_DISTRO="$ID"
+    C_VER="$VERSION_ID"  # Format: x.y.z...
+    C_SVER=${C_VER%%.*}  # Major version: x
+else
+    C_DISTRO=$(uname -s)
+    C_VER=$(uname -r)
+    C_SVER=${C_VER%%.*}
+fi
 
 for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
     if [[ $version == "$C_VER" || $version == "$C_SVER" || $version == "any" ]]; then
@@ -426,4 +403,7 @@ for version in ${C_SUPPORTED_DISTROS[$C_DISTRO]}; do
     fi
 done
 
-unsupported
+echo "${E_ERROR}The Manager does not support the automatic installation and setup of" \
+    "NadekoBot's prerequisites for your OS" >&2
+read -rp "${E_NOTE}Press [Enter] to return to the main menu"
+exit 4
