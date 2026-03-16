@@ -50,13 +50,15 @@ export E_SKIP_PREREQ_CHECK="false"
 #
 # Usage Notes:
 #   1. Paths must start from Nadeko's parent directory (e.g., 'nadekobot/...').
-#   2. Separate files with a space or list them on separate lines.
+#   2. Prefer listing one path per line.
+#       - This supports file names and paths that contain spaces.
+#       - Space-separated values are still supported for backward compatibility when paths do
+#         not contain spaces.
 #       - Valid:   "nadekobot/data/creds.yml
 #                   nadekobot/data/bot.yml"
 #       - Valid:   "nadekobot/data/creds.yml nadekobot/data/bot.yml"
 #       - Invalid: "nadekobot/data/creds.yml, nadekobot/data/bot.yml"
 #       - Invalid: "nadekobot/data/creds.yml,nadekobot/data/bot.yml"
-#   3. Neither the file name nor its path can contain spaces.
 #
 # Default:
 #   "nadekobot/data/NadekoBot.db

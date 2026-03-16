@@ -32,6 +32,9 @@ needs_rollback=false
 ####[ Functions ]###########################################################################
 
 
+# Load shared helper functions.
+. ./n-shared.bash || E_STDERR "Failed to load shared manager helpers" "1"
+
 ####
 # Revert changes made during the update process if an error or premature exit is detected.
 revert_changes() {
@@ -78,37 +81,16 @@ revert_changes() {
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
-    local exit_now=false
 
-    # Remove the exit and sigint trap to prevent re-entry after exiting and repeated sigint
-    # signals.
-    trap - EXIT SIGINT
+    E_PREP_MENU_EXIT "$exit_code" "0 5"
+    E_CLEAR_MENU_TRAPS
     [[ $use_extra_newline == true ]] && echo ""
-
-    case "$exit_code" in
-        0|5) ;;
-        1)
-            exit_code=50
-            ;;
-        130)
-            echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
-            exit_code=50
-            ;;
-        *)
-            exit_now=true
-            ;;
-    esac
-
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_TMP_DIR_PATH" ]] && rm -rf "$C_TMP_DIR_PATH" &>/dev/null
 
     revert_changes
 
-    if [[ $exit_now == false ]]; then
-        read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
-    fi
-
-    exit "$exit_code"
+    E_FINISH_MENU_EXIT
 }
 
 ####

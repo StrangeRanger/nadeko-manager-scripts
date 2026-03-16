@@ -35,10 +35,6 @@ export E_SUCCESS E_WARN E_ERROR E_INFO E_NOTE E_IMP
 
 export E_ROOT_DIR="$PWD"
 
-###
-### Variables that require extra checks before being set and exported.
-###
-
 case $(uname -m) in
     x86_64)  C_BITS="64"; export E_ARCH="x64" ;;
     aarch64) C_BITS="64"; export E_ARCH="arm64" ;;
@@ -68,7 +64,7 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
     local manager_files=("n-main-prep.bash" "n-main.bash" "n-update.bash" "n-runner.bash"
-        "n-file-backup.bash" "n-prereqs.bash" "n-update-bridge.bash")
+        "n-file-backup.bash" "n-prereqs.bash" "n-update-bridge.bash" "n-shared.bash")
 
     trap - EXIT  # Remove the exit trap to prevent re-entry after exiting.
     [[ $use_extra_newline == true ]] && echo ""
@@ -110,8 +106,9 @@ E_DOWNLOAD_SCRIPT() {
 
     [[ $should_print == true ]] && printf "%sDownloading '%s'..." "${E_INFO}" "$script_name"
 
-    curl -O -s "$E_RAW_URL"/"$script_name"
-    chmod +x "$script_name"
+    curl -fsSL -o "$script_name" "$E_RAW_URL/$script_name" \
+        || E_STDERR "Failed to download '$script_name'" "1"
+    chmod +x "$script_name" || E_STDERR "Failed to make '$script_name' executable" "1"
 }
 export -f E_DOWNLOAD_SCRIPT
 
@@ -180,6 +177,7 @@ if [[ $(ps -p 1 -o comm=) != "systemd" ]]; then
     exit 1
 fi
 
+E_DOWNLOAD_SCRIPT "n-shared.bash"
 E_DOWNLOAD_SCRIPT "n-main.bash" "true"
 ./n-main.bash
 clean_exit "$?"

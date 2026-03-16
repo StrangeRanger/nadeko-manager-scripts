@@ -50,6 +50,9 @@ exit_now=false
 ####[ Functions ]###########################################################################
 
 
+# Load shared helper functions.
+. ./n-shared.bash || E_STDERR "Failed to load shared manager helpers" "1"
+
 ####
 # Display an exit message based on the provided exit code, and exit the script with the
 # specified code.
@@ -68,31 +71,10 @@ clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
 
-    # Remove the exit and sigint trap to prevent re-entry after exiting and repeated sigint
-    # signals.
-    # Remove the other traps, as they are no longer needed.
-    trap - EXIT SIGINT SIGHUP SIGTERM
+    E_PREP_MENU_EXIT "$exit_code" "0 3" "$exit_now"
+    E_CLEAR_MENU_TRAPS
     [[ $use_extra_newline == true ]] && echo ""
-
-    case "$exit_code" in
-        0|3) ;;
-        1)
-            exit_code=50
-            ;;
-        130)
-            echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
-            exit_code=50
-            ;;
-        *)
-            exit_now=true
-            ;;
-    esac
-
-    if [[ $exit_now == false ]]; then
-        read -rp "${E_NOTE}Press [Enter] to return to the Manager menu"
-    fi
-
-    exit "$exit_code"
+    E_FINISH_MENU_EXIT
 }
 
 
@@ -197,7 +179,6 @@ while true; do
 
     echo "[INFO] Waiting 5 seconds..."
     sleep 5
-    yt-dlp -U || echo "[ERROR] Failed to update 'yt-dlp'" >&2
     echo "[INFO] Restarting NadekoBot..."
 done
 
