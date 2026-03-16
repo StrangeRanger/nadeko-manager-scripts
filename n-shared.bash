@@ -47,23 +47,30 @@ E_PREP_MENU_EXIT() {
 }
 
 ####
-# Exit a manager child script after cleanup has already been performed.
+# Clear traps before cleanup starts to avoid re-entering a cleanup handler while it is
+# already running.
 #
 # PARAMETERS:
 #   - $1: trap_signals (Optional, Default: "EXIT SIGINT SIGHUP SIGTERM")
-#   - $2: prompt_message (Optional)
+E_CLEAR_MENU_TRAPS() {
+    local trap_signals="${1:-EXIT SIGINT SIGHUP SIGTERM}"
+    local -a trap_signal_array
+    local IFS=' '
+
+    read -r -a trap_signal_array <<< "$trap_signals"
+    trap - "${trap_signal_array[@]}"
+}
+
+####
+# Exit a manager child script after cleanup has already been performed.
+#
+# PARAMETERS:
+#   - $1: prompt_message (Optional)
 #
 # EXITS:
 #   - $C_MENU_EXIT_CODE: The normalized exit code.
 E_FINISH_MENU_EXIT() {
-    local trap_signals="${1:-EXIT SIGINT SIGHUP SIGTERM}"
-    local prompt_message="${2:-${E_NOTE}Press [Enter] to return to the Manager menu}"
-    local -a trap_signal_array
-    local IFS=' '
-
-    # Remove traps to prevent re-entry after cleanup.
-    read -r -a trap_signal_array <<< "$trap_signals"
-    trap - "${trap_signal_array[@]}"
+    local prompt_message="${1:-${E_NOTE}Press [Enter] to return to the Manager menu}"
 
     if [[ $C_MENU_EXIT_NOW == false ]]; then
         read -rp "$prompt_message"

@@ -69,13 +69,14 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
 
     E_PREP_MENU_EXIT "$exit_code" "0 5"
+    E_CLEAR_MENU_TRAPS
     [[ $use_extra_newline == true ]] && echo ""
     echo "${E_INFO}Cleaning up..."
     [[ -d "$C_TMP_BACKUP" ]] && rm -rf "$C_TMP_BACKUP" &>/dev/null
 
     revert_changes
 
-    E_FINISH_MENU_EXIT "EXIT SIGINT"
+    E_FINISH_MENU_EXIT
 }
 
 

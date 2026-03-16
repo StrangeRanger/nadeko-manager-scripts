@@ -119,6 +119,7 @@ clean_exit() {
     local use_extra_newline="${2:-false}"
 
     E_PREP_MENU_EXIT "$exit_code" "0 5"
+    E_CLEAR_MENU_TRAPS
     [[ $use_extra_newline == true ]] && echo ""
     E_FINISH_MENU_EXIT
 }
