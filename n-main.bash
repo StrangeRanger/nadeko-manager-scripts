@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# NadekoBot Manager Menu Script
+# NadekoBot Manager — Menu Script
 #
 # This interactive script provides a menu-driven interface for managing the NadekoBot
-# service. It validates system prerequisites (e.g., Python3, ffmpeg, ccze, yt-dlp) and the
-# presence of required credentials, then dynamically enables or disables menu options based
-# on the current system state.
+# service. It validates prerequisites (e.g., Python3, ffmpeg, ccze, yt-dlp) and the presence
+# of required credentials, then dynamically enables or disables menu options based on the
+# current system state.
 #
 # The script allows you to download NadekoBot, start it (with or without auto-restart), stop
 # the service, view live service logs, install prerequisites, and back up important
@@ -17,8 +17,8 @@
 
 readonly C_CREDS="creds.yml"
 
+export E_BOT_DIR="nadekobot"
 export E_BOT_SERVICE="nadeko.service"
-export E_BOT_SERVICE_PATH="/etc/systemd/system/$E_BOT_SERVICE"
 export E_BOT_EXE="NadekoBot"
 export E_CREDS_EXAMPLE="creds_example.yml"
 export E_CREDS_PATH="$E_BOT_DIR/data/$C_CREDS"
@@ -42,7 +42,7 @@ export E_YT_DLP_PATH="$E_LOCAL_BIN/yt-dlp"
 #   - $1: exit_code (Required)
 #
 # RETURNS:
-#   - 0: If the exit code is one of 3, 4, 5, or 50, allowing the script to continue.
+#   - 0: If the exit code is one of 3, 4, 5, or 50, allow the script to continue.
 #
 # EXITS:
 #   - $exit_code: The exit code provided by the caller.
@@ -68,7 +68,7 @@ exit_code_actions() {
 #
 # RETURNS:
 #   - 0: If the token is set.
-#   - 1: If the token is not set.
+#   - 1: If the token is NOT set.
 is_token_set() {
     if grep -Eq '^token: '\'\''' "$E_CREDS_PATH"; then
         return 1
@@ -100,7 +100,7 @@ disabled_reasons() {
                 echo "${E_NOTE}    Use option 1 to download NadekoBot"
                 echo ""
             elif [[ ! -f $E_CREDS_PATH ]]; then
-                echo "${E_NOTE}  The '$C_CREDS' could not be found"
+                echo "${E_NOTE}  The '$C_CREDS' file could not be found"
                 echo "${E_NOTE}    Refer to the following guide for help:" \
                     "https://nadekobot.readthedocs.io/en/latest/creds-guide/"
                 echo ""
@@ -130,17 +130,6 @@ disabled_reasons() {
 ###
 ### [ Functions to be Exported ]
 ###
-
-####
-# Retrieve the current status of NadekoBot's service using systemctl and update the global
-# variable $E_BOT_SERVICE_STATUS accordingly.
-#
-# NEW GLOBALS:
-#   - E_BOT_SERVICE_STATUS: The current status of NadekoBot's service.
-E_GET_SERVICE_STATUS() {
-    E_BOT_SERVICE_STATUS=$(sudo systemctl is-active "$E_BOT_SERVICE")
-}
-export -f E_GET_SERVICE_STATUS
 
 ####
 # Halt NadekoBot's service if it is currently running, and optionally output a message
@@ -236,6 +225,8 @@ trap 'exit_code_actions "143"' SIGTERM
 ####[ Main ]################################################################################
 
 
+# shellcheck disable=SC2153
+#   $E_ROOT_DIR is set in the main prep script and is used by multiple Manager scripts.
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 printf "%sWelcome to the NadekoBot Manager menu\n\n" "$E_CLR_LN"
 
@@ -265,7 +256,7 @@ while true; do
     ### [ Variable Checks ]
     ###
     ### These checks reassess the status or existence of certain services or programs (e.g.,
-    ### ccze, yt_dlp) each time the loop restarts, as their availability might change.
+    ### yt_dlp) each time the loop restarts, as their availability or status might change.
     ###
 
     if [[ -f "$E_YT_DLP_PATH" ]] || command -v yt-dlp &>/dev/null; then
@@ -274,7 +265,7 @@ while true; do
         yt_dlp_installed=false
     fi
 
-    E_GET_SERVICE_STATUS
+    E_BOT_SERVICE_STATUS=$(sudo systemctl is-active "$E_BOT_SERVICE")
 
     ###
     ### [ Main Continued ]
@@ -308,7 +299,7 @@ while true; do
         fi
     ## If 'NadekoRun' exists, options 2 and 3 remain enabled.
     elif [[ -f NadekoRun ]]; then
-        ## If NadekoBot's service is running, options 4 and 5 remain enabled; otherwise,
+        ## If NadekoBot's service is running, options 4 and 5 remain enabled, otherwise,
         ## disable them.
         if [[ $E_BOT_SERVICE_STATUS == "active" ]]; then
             run_mode_status=" ${E_GREEN}(Running in this mode)${E_NC}"

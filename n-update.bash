@@ -1,15 +1,15 @@
 #!/bin/bash
 #
-# NadekoBot Setup/Update Script
+# NadekoBot Manager — Setup/Update Script
 #
-# This script automates the update process for NadekoBot (major version 6). It stops the
+# This script automates the update process for NadekoBot (major version 7). It stops the
 # NadekoBot service if it is active, retrieves available releases from the GitHub API, and
 # prompts the user to select a version for installation. The script then downloads and
 # extracts the chosen archive, migrates credentials, the database, and other data, then
 # replaces the existing installation with the new version.
 #
 ############################################################################################
-####[ Variables ]###########################################################################
+####[ Global Variables ]####################################################################
 
 
 C_TMP_DIR_PATH=$(mktemp -d -p /tmp nadekobot-XXXXXXXXXX)
@@ -62,7 +62,7 @@ revert_changes() {
 }
 
 ####
-# Clean up temporary files and directories, and attempts to restore the original $E_BOT_DIR
+# Clean up temporary files and directories, and attempt to restore the original $E_BOT_DIR
 # if an error or premature exit is detected.
 #
 # PARAMETERS:
@@ -154,8 +154,8 @@ compare_versions() {
 }
 
 ####
-# Retrieve all available NadekoBot versions from the GitHub API and prompts the user to
-# select one for installation.
+# Retrieve all available NadekoBot versions, given $C_NADEKO_MAJOR_VERSION, from the GitHub
+# API and prompts the user to select one for installation.
 #
 # NEW GLOBALS:
 #   - C_BOT_VERSION: The selected NadekoBot version to install.
@@ -183,7 +183,7 @@ fetch_versions() {
 
     ## Get current version of NadekoBot, if it's installed.
     if [[ -f $E_ROOT_DIR/$E_BOT_DIR/$E_BOT_EXE ]]; then
-        current_version=$("$E_ROOT_DIR"/"$E_BOT_DIR"/"$E_BOT_EXE" --version)
+        current_version=$("$E_ROOT_DIR/$E_BOT_DIR/$E_BOT_EXE" --version)
 
         if [[ ! $current_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "${E_WARN}Unable to determine the current version of NadekoBot"
@@ -302,9 +302,9 @@ tar -xzf "$C_ARCHIVE_NAME" -C "$E_BOT_DIR" --strip-components=1 \
 popd >/dev/null || E_STDERR "Failed to change directory back to '$E_ROOT_DIR'" "1"
 
 ###
-### [ Move Credentials, Database, and Other Data ]
+### [ Move Data ]
 ###
-### Moves the credentials, database, and other NadekoBot data to the new version directory.
+### Move the credentials, database, and other NadekoBot data to the new version's directory.
 ### In case '$E_BOT_DIR' already exists, it is renamed to '$C_BOT_DIR_OLD' (with a further
 ### fallback of '$C_BOT_DIR_OLD_OLD'), making it easier to revert to a previous version if
 ### needed.
@@ -318,10 +318,14 @@ if [[ -d $E_BOT_DIR ]]; then
         # necessary migrations.
         echo "${E_INFO}Copying contents of '${C_CURRENT_DATA_DIR_PATH##*/}' to" \
             "'${C_NEW_DATA_DIR_PATH}'..."
-        mv "$C_NEW_DATA_DIR_PATH"/lib "$C_NEW_DATA_DIR_PATH"/lib.new || exit 1
-        cp -rf "$C_CURRENT_DATA_DIR_PATH"/* "$C_NEW_DATA_DIR_PATH" || exit 1
-        rm -rf "${C_NEW_DATA_DIR_PATH:?}/lib" || exit 1
-        mv "$C_NEW_DATA_DIR_PATH"/lib.new "$C_NEW_DATA_DIR_PATH"/lib || exit 1
+        if [[ -d "$C_NEW_DATA_DIR_PATH/lib" ]]; then
+            mv "$C_NEW_DATA_DIR_PATH"/lib "$C_NEW_DATA_DIR_PATH"/lib.new || exit 1
+            cp -rf "$C_CURRENT_DATA_DIR_PATH"/* "$C_NEW_DATA_DIR_PATH" || exit 1
+            rm -rf "${C_NEW_DATA_DIR_PATH:?}/lib" || exit 1
+            mv "$C_NEW_DATA_DIR_PATH"/lib.new "$C_NEW_DATA_DIR_PATH"/lib || exit 1
+        else
+            cp -rf "$C_CURRENT_DATA_DIR_PATH"/* "$C_NEW_DATA_DIR_PATH" || exit 1
+        fi
 
         set_creds
     ) || E_STDERR "An error occurred while copying data to '$C_TMP_BOT_DIR_PATH'" "$?"

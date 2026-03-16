@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# NadekoBot Manager Bridge Script
+# NadekoBot Manager — Bridge Script
 #
 # This script acts as a bootstrapper for the NadekoBot Manager. It performs environment
 # validation (ensuring a 64-bit system and systemd are present), checks for bridge updates,
-# and downloads the main Manager script from a remote source. After setting up global
-# variables and performing initial checks, it executes the main Manager script and ensures
-# proper cleanup on exit.
+# and downloads the main Manager script from GitHub. After setting up global variables and
+# performing initial checks, it executes the main Manager script and ensures a clean exit by
+# performing necessary cleanup tasks.
 #
 ############################################################################################
 ####[ Exported and Global Variables ]#######################################################
@@ -15,14 +15,14 @@
 # See the 'README' note at the beginning of 'm-bridge.bash' for details.
 readonly C_LATEST_BRIDGE_REVISION=55
 
-E_YELLOW="$(printf '\033[1;33m')"
-E_GREEN="$(printf '\033[0;32m')"
-E_BLUE="$(printf '\033[0;34m')"
-E_CYAN="$(printf '\033[0;36m')"
-E_RED="$(printf '\033[1;31m')"
-E_NC="$(printf '\033[0m')"
-E_GREY="$(printf '\033[0;90m')"
-E_CLR_LN="$(printf '\r\033[K')"
+E_YELLOW=$'\033[1;33m'
+E_GREEN=$'\033[0;32m'
+E_BLUE=$'\033[0;34m'
+E_CYAN=$'\033[0;36m'
+E_RED=$'\033[1;31m'
+E_NC=$'\033[0m'
+E_GREY=$'\033[0;90m'
+E_CLR_LN=$'\r\033[K'
 export E_YELLOW E_GREEN E_BLUE E_CYAN E_RED E_NC E_GREY E_CLR_LN
 
 E_SUCCESS="${E_GREEN}==>${E_NC} "
@@ -33,7 +33,6 @@ E_NOTE="${E_CYAN}==>${E_NC} "
 E_IMP="${E_CYAN}IMPORTANT:${E_NC} "
 export E_SUCCESS E_WARN E_ERROR E_INFO E_NOTE E_IMP
 
-export E_BOT_DIR="nadekobot"
 export E_ROOT_DIR="$PWD"
 
 ###
@@ -98,8 +97,7 @@ clean_exit() {
 ###
 
 ####
-# Download the specified script from the remote location defined by $E_RAW_URL and grant it
-# executable permissions.
+# Download the specified script from $E_RAW_URL and grant it execute permissions.
 #
 # PARAMETERS:
 #   - $1: script_name (Required)

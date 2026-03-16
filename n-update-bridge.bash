@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# m-bridge.bash Update and Configuration Migration Script
+# NadekoBot Manager — m-bridge.bash Update and Configuration Migration Script
 #
 # This script automates the update process for 'm-bridge.bash'. It checks for a newer
 # version of the script (or its legacy counterpart 'linuxAIO'), backs up the current version
@@ -13,7 +13,7 @@
 
 
 ####
-# Reverts changes made to 'm-bridge.bash' if the script is interrupted or fails.
+# Revert changes made to 'm-bridge.bash' if the script is interrupted or fails.
 #
 # EXITS:
 #   - 1: Terminates the script immediately.
@@ -31,7 +31,7 @@ revert() {
 }
 
 ####
-# Downloads the latest 'm-bridge.bash' from $E_RAW_URL and makes it executable.
+# Download the latest 'm-bridge.bash' from $E_RAW_URL and make it executable.
 download_bridge() {
     echo "${E_INFO}Downloading latest version of 'm-bridge.bash'..."
     curl -O "$E_RAW_URL"/m-bridge.bash || {
@@ -42,7 +42,7 @@ download_bridge() {
 }
 
 ####
-# Transfers configuration settings from the old 'm-bridge.bash' to the new version.
+# Transfer configuration settings from the old 'm-bridge.bash' to the new version.
 transfer_bridge_data() {
     local manager_branch
     local manager_branch_found
@@ -69,7 +69,7 @@ transfer_bridge_data() {
 }
 
 ####
-# Notifies the user that the current Manager version (revision 40 or earlier) is very
+# Notify the user that the current Manager version (revision 40 or earlier) is very
 # outdated and does not support the automatic transfer of configurations to the new
 # 'm-bridge.bash'.
 #
@@ -87,7 +87,7 @@ revision_40() {
 }
 
 ####
-# Performs additional checks and modifications for 'm-bridge.bash' revision 45 and earlier,
+# Perform additional checks and modifications for 'm-bridge.bash' revision 45 and earlier,
 # ensuring compatibility with updated structures.
 #
 # RETURNS:
@@ -113,11 +113,11 @@ revision_45() {
             "NadekoBot before continuing."
     fi
 
-    revision_47.5 "$additional_changes"
+    revision_47_5 "$additional_changes"
 }
 
 ####
-# Updates variable names in 'm-bridge.bash.old' to match the new naming conventions.
+# Update variable names in 'm-bridge.bash.old' to match the new naming conventions.
 #
 # PARAMETERS:
 #   - $1: additional_changes (Optional, Default: false)
@@ -126,7 +126,7 @@ revision_45() {
 #
 # EXITS:
 #   - 1: If the function fails to update the variables in 'm-bridge.bash'.
-revision_47.5() {
+revision_47_5() {
     local additional_changes="${1:-false}"
 
     if [[ $additional_changes == true ]]; then
@@ -232,7 +232,7 @@ elif [[ $E_LINUXAIO_REVISION -le 47 && $E_CURRENT_LINUXAIO_REVISION == 47.5 ]]; 
     if (( E_LINUXAIO_REVISION <= 45 )); then
         revision_45
     else
-        revision_47.5
+        revision_47_5
     fi
 
     transfer_bridge_data

@@ -10,10 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ⚠️ This release removes support for NadekoBot v6 in favor of v7. ⚠️
 
-### Changed 
+### Changed
 
 - ⚠️ Remove support for NadekoBot v6 in favor of v7.
-- Ensures the libs from the latest release of NadekoBot are used instead of overwriting them with the ones from the last installed version.
+- Ensures the `lib` directory from the latest NadekoBot release is used instead of being overwritten by the one from the last installed version.
 
 ## [v6.1.0] - 2025-05-15
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# NadekoBot Service Runner Configuration Script
+# NadekoBot Manager — Service Runner Configuration Script
 #
 # This script configures the systemd service for NadekoBot and prepares the runner script
-# (NadekoRun) based on the chosen run mode. Depending on the value of E_RUNNER_CODENAME, it
+# (NadekoRun) based on the chosen run mode. Depending on the value of $E_RUNNER_CODENAME, it
 # either creates a standard or an auto-restart version of the runner script, writes or
 # updates the service file accordingly, and then starts or restarts the service. Finally, it
 # displays the service logs to provide immediate feedback on the operation.
@@ -11,6 +11,8 @@
 ############################################################################################
 ####[ Global Variables ]####################################################################
 
+
+readonly C_BOT_SERVICE_PATH="/etc/systemd/system/$E_BOT_SERVICE"
 
 ## Determine the action to be performed on the NadekoBot service based on its code name.
 if [[ $E_RUNNER_CODENAME == "NadekoRun" ]]; then
@@ -106,7 +108,7 @@ trap 'clean_exit "$?" "true"'  EXIT
 ####[ Main ]################################################################################
 
 
-if [[ -f $E_BOT_SERVICE_PATH ]]; then
+if [[ -f $C_BOT_SERVICE_PATH ]]; then
     echo "${E_INFO}Updating '$E_BOT_SERVICE'..."
 else
     echo "${E_INFO}Creating '$E_BOT_SERVICE'..."
@@ -114,7 +116,7 @@ fi
 
 # shellcheck disable=SC2015
 #   E_STDERR should be executed if either command fails.
-echo "$C_BOT_SERVICE_CONTENT" | sudo tee "$E_BOT_SERVICE_PATH" &>/dev/null \
+echo "$C_BOT_SERVICE_CONTENT" | sudo tee "$C_BOT_SERVICE_PATH" &>/dev/null \
     && sudo systemctl daemon-reload \
     || E_STDERR "Failed to create '$E_BOT_SERVICE'" "3" \
         "${E_NOTE}This service must exist for NadekoBot to work"

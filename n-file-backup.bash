@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Important Files Backup Script
+# NadekoBot Manager — Important Files Backup Script
 #
 # This script creates a backup of user-designated important files, as specified by the
 # $E_FILES_TO_BACK_UP variable defined in 'm-bridge.bash'.
@@ -11,8 +11,9 @@
 
 readonly C_CURRENT_BACKUP="important-files-backup"
 readonly C_OLD_BACKUP="important-files-backup.old"
-# shellcheck disable=SC2206
-#   Left unquoted to allow word splitting for array assignment.
+# shellcheck disable=SC2206,SC2153
+#   SC2206: Left unquoted to allow word splitting for array assignment.
+#   SC2153: $E_FILES_TO_BACK_UP is defined in 'm-bridge.bash'.
 readonly C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
 C_TMP_BACKUP=$(mktemp -d -p /tmp important-nadeko-files-XXXXXXXXXX)
 readonly C_TMP_BACKUP
@@ -105,7 +106,7 @@ trap 'clean_exit "$?" "true"'  EXIT
 cd "$E_ROOT_DIR" || E_STDERR "Failed to change working directory to '$E_ROOT_DIR'" "1"
 echo "${E_NOTE}We will now back up the following files:"
 for file in "${C_FILES_TO_BACK_UP[@]}";
-    do echo "  ${E_CYAN}|${E_NC}    $file"
+    do echo "  ${E_CYAN}|${E_NC}  $file"
 done
 read -rp "${E_NOTE}Press [Enter] to continue"
 
