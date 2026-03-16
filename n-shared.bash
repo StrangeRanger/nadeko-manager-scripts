@@ -59,7 +59,7 @@ E_FINISH_MENU_EXIT() {
     local trap_signals="${1:-EXIT SIGINT SIGHUP SIGTERM}"
     local prompt_message="${2:-${E_NOTE}Press [Enter] to return to the Manager menu}"
     local -a trap_signal_array
-    local IFS=$' \t\n'
+    local IFS=' '
 
     # Remove traps to prevent re-entry after cleanup.
     read -r -a trap_signal_array <<< "$trap_signals"
