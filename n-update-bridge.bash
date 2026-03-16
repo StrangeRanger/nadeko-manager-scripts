@@ -31,7 +31,7 @@ revert() {
 }
 
 ####
-# Download the latest 'm-bridge.bash' from $E_RAW_URL and makes it executable.
+# Download the latest 'm-bridge.bash' from $E_RAW_URL and make it executable.
 download_bridge() {
     echo "${E_INFO}Downloading latest version of 'm-bridge.bash'..."
     curl -O "$E_RAW_URL"/m-bridge.bash || {
