@@ -265,7 +265,8 @@ while true; do
         yt_dlp_installed=false
     fi
 
-    E_BOT_SERVICE_STATUS=$(systemctl is-active "$E_BOT_SERVICE" 2>/dev/null || echo "unknown")
+    E_BOT_SERVICE_STATUS=$(systemctl is-active "$E_BOT_SERVICE" 2>/dev/null || true)
+    [[ -z $E_BOT_SERVICE_STATUS ]] && E_BOT_SERVICE_STATUS="unknown"
 
     ###
     ### [ Main Continued ]
