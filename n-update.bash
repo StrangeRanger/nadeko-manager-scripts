@@ -262,12 +262,12 @@ read -rp "${E_NOTE}We will now set up NadekoBot. Press [Enter] to begin."
 pushd "$C_TMP_DIR_PATH" >/dev/null \
     || E_STDERR "Failed to change working directory to '$C_TMP_DIR_PATH'" "1"
 
+fetch_versions
+
 if [[ $E_BOT_SERVICE_STATUS == "active" ]]; then
     service_is_active=true
     E_STOP_SERVICE
 fi
-
-fetch_versions
 
 ###
 ### [ Download NadekoBot Archive ]
