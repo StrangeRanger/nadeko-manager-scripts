@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Refactored `n-update-bridge.bash` to remove outdated and complex migration paths for very old `m-bridge.bash` and `linuxAIO` revisions. Instead, it introduces a clear `manual_update_required` flow for legacy scripts that are too old for automatic migration, reducing overall script complexity.
 - Simplified service log handling by folding the live journal-following logic into `E_WATCH_SERVICE_LOGS`, removing an unnecessary exported helper function.
 - Renamed internal `E_PREP_MENU_EXIT` variables to better describe their purpose and clarified the shared return-prompt state used by menu child scripts.
+- Changed `E_FILES_TO_BACK_UP` parsing to only support newline-separated entries. Space-separated backup file lists are no longer supported.
 
 ### Fixed
 

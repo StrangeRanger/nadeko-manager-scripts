@@ -18,13 +18,7 @@ needs_rollback=false
 
 # shellcheck disable=SC2153
 #   $E_FILES_TO_BACK_UP is defined in 'm-bridge.bash'.
-if [[ $E_FILES_TO_BACK_UP == *$'\n'* ]]; then
-    mapfile -t C_FILES_TO_BACK_UP <<< "$E_FILES_TO_BACK_UP"
-else
-    # shellcheck disable=SC2206
-    #   Fall back to historical space-delimited parsing when no newlines are present.
-    C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
-fi
+mapfile -t C_FILES_TO_BACK_UP <<< "$E_FILES_TO_BACK_UP"
 readonly C_FILES_TO_BACK_UP
 
 
@@ -36,6 +30,10 @@ readonly C_FILES_TO_BACK_UP
 
 ####
 # Reverts changes made during the update process if an error or premature exit is detected.
+#
+# EXITS:
+#   - 1: The script failed to revert changes, which can leave the Manager in an unstable
+#        state. In this case, manual intervention is required.
 revert_changes() {
     [[ $needs_rollback == false ]] && return
 
