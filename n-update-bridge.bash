@@ -14,6 +14,9 @@
 
 ####
 # Revert changes made to 'm-bridge.bash' if the script is interrupted or fails.
+#
+# PARAMETERS:
+#  - $1: exit_code (Required)
 revert() {
     exit_code="$1"
 
@@ -67,6 +70,10 @@ transfer_bridge_data() {
 
 ####
 # Determine whether the bridge is too old for automatic migration.
+#
+# RETURNS:
+#   - 0: Manual update is required.
+#   - 1: Automatic migration can proceed.
 requires_manual_update() {
     [[ -n ${E_LINUXAIO_REVISION:-} ]] && return 0
     [[ -z ${E_BRIDGE_REVISION:-} ]] && return 0
@@ -77,6 +84,9 @@ requires_manual_update() {
 ####
 # Notify the user that their bridge is too old for automatic migration and provide
 # instructions for manual updating.
+#
+# EXITS:
+#   - 1:
 manual_update_required() {
     echo "${E_WARN}This Manager version is too old to update automatically." >&2
 

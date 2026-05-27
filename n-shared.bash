@@ -12,14 +12,19 @@
 # Normalize common manager child-script exit behavior so callers can preserve their own
 # output and cleanup order.
 #
+# PARAMETERS:
+#   - $1: raw_exit_code (Required)
+#   - $2: allowed_codes (Optional, Default: "")
+#      - A space-separated list of exit codes that should still return to the menu.
+#   - $3: skip_return_prompt (Optional, Default: false)
+#      - Whether to skip prompting before exiting.
+#
 # NEW GLOBALS:
 #   - C_MENU_EXIT_CODE: The normalized exit code.
 #   - C_SKIP_RETURN_PROMPT: Whether to skip the return-to-menu prompt.
 E_PREP_MENU_EXIT() {
     local raw_exit_code="$1"
-    # Space-separated list of exit codes that should still return to the menu.
     local menu_return_codes="${2:-}"
-    # Whether to skip prompting before exiting.
     local skip_return_prompt="${3:-false}"
 
     C_MENU_EXIT_CODE="$raw_exit_code"

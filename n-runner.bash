@@ -60,13 +60,10 @@ exit_now=false
 # PARAMETERS:
 #   - $1: exit_code (Required)
 #       - The initial exit code passed by the caller. Under certain conditions, it may be
-#         modified to 50 to allow the calling script to continue.
+#         modified to 50 by 'E_PREP_MENU_EXIT' to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
 #       - Whether to output an extra newline before the exit message.
 #       - Acceptable values: true, false
-#
-# EXITS:
-#   - $exit_code: The final exit code.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"
