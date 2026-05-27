@@ -32,15 +32,17 @@ readonly C_FILES_TO_BACK_UP
 # Reverts changes made during the update process if an error or premature exit is detected.
 #
 # EXITS:
-#   - 1: The script failed to revert changes, which can leave the Manager in an unstable
-#        state. In this case, manual intervention is required.
+#   - 1: The script failed to revert changes. In this case, manual intervention is required.
 revert_changes() {
     [[ $needs_rollback == false ]] && return
 
     if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
         echo "${E_WARN}Unable to complete backup"
         echo "${E_INFO}Attempting to restore original backups..."
-        mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
+        mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || {
+            E_STDERR "Failed to restore original backups" "1" \
+                "${E_NOTE}Please restore the backup from '$C_OLD_BACKUP' manually"
+        }
     elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
         rm -rf "$C_OLD_BACKUP" \
             || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \

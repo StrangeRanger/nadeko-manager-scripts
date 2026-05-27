@@ -64,11 +64,11 @@ E_FINISH_MENU_EXIT() {
     local prompt_message="${1:-${E_NOTE}Press [Enter] to return to the Manager menu}"
 
     if [[ -z ${C_MENU_EXIT_CODE:-} ]]; then
-        echo "${C_WARN}INTERNAL: C_MENU_EXIT_CODE is not set. Defaulting to 0."
+        echo "${C_ERROR}INTERNAL: C_MENU_EXIT_CODE is not set. Defaulting to 0." >&2
         C_MENU_EXIT_CODE=0
     fi
 
-    if [[ ${C_SKIP_RETURN_PROMPT:-} == false ]]; then
+    if [[ ${C_SKIP_RETURN_PROMPT:-false} == false ]]; then
         read -rp "$prompt_message"
     fi
 

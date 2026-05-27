@@ -86,8 +86,6 @@ You can customize the behavior of the Nadeko Manager by editing a few variables 
   - Options:
     - `main` (stable, recommended)
     - `dev` (development, may be unstable)
-    - `NadekoV6` (for NadekoBot v6)
-    - `NadekoV5` (for NadekoBot v5)
   - Default: `"main"`
 
 - **E_SKIP_PREREQ_CHECK**: Skip the prerequisites check if set to `"true"`
