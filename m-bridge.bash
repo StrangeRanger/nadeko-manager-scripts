@@ -30,8 +30,6 @@ manager_repo="StrangeRanger/nadeko-manager-scripts"
 # Options:
 #   main     = Production-ready (latest stable code)
 #   dev      = Development code (may be unstable)
-#   NadekoV6 = Manager version for NadekoBot v6
-#   NadekoV5 = Manager version for NadekoBot v5
 #
 # Default: "main"
 manager_branch="main"
