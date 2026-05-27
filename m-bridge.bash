@@ -30,8 +30,6 @@ manager_repo="StrangeRanger/nadeko-manager-scripts"
 # Options:
 #   main     = Production-ready (latest stable code)
 #   dev      = Development code (may be unstable)
-#   NadekoV6 = Manager version for NadekoBot v6
-#   NadekoV5 = Manager version for NadekoBot v5
 #
 # Default: "main"
 manager_branch="main"
@@ -50,13 +48,11 @@ export E_SKIP_PREREQ_CHECK="false"
 #
 # Usage Notes:
 #   1. Paths must start from Nadeko's parent directory (e.g., 'nadekobot/...').
-#   2. Prefer listing one path per line.
+#   2. List one path per line.
 #       - This supports file names and paths that contain spaces.
-#       - Space-separated values are still supported for backward compatibility when paths do
-#         not contain spaces.
 #       - Valid:   "nadekobot/data/creds.yml
 #                   nadekobot/data/bot.yml"
-#       - Valid:   "nadekobot/data/creds.yml nadekobot/data/bot.yml"
+#       - Invalid: "nadekobot/data/creds.yml nadekobot/data/bot.yml"
 #       - Invalid: "nadekobot/data/creds.yml, nadekobot/data/bot.yml"
 #       - Invalid: "nadekobot/data/creds.yml,nadekobot/data/bot.yml"
 #
@@ -76,7 +72,7 @@ nadekobot/data/creds.yml"
 ### [ Non-configurable Variables ]
 ###
 
-export E_BRIDGE_REVISION=55
+export E_BRIDGE_REVISION=56
 export E_RAW_URL="https://raw.githubusercontent.com/$manager_repo/$manager_branch"
 
 

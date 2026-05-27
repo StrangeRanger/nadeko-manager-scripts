@@ -86,8 +86,6 @@ You can customize the behavior of the Nadeko Manager by editing a few variables 
   - Options:
     - `main` (stable, recommended)
     - `dev` (development, may be unstable)
-    - `NadekoV6` (for NadekoBot v6)
-    - `NadekoV5` (for NadekoBot v5)
   - Default: `"main"`
 
 - **E_SKIP_PREREQ_CHECK**: Skip the prerequisites check if set to `"true"`
@@ -98,9 +96,9 @@ You can customize the behavior of the Nadeko Manager by editing a few variables 
 
 - **E_FILES_TO_BACK_UP**: List of files to back up when using the backup option
   - Paths must start from Nadeko's parent directory (e.g., `nadekobot/data/creds.yml`)
-  - Prefer one path per line
-  - Newline-separated entries support paths with spaces
-  - Space-separated entries are still supported for backward compatibility when paths do not contain spaces
+  - List one path per line
+  - Paths with spaces are supported
+  - Space-separated entries are not supported
   - Do not use commas
   - Default files:
     ```

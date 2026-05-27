@@ -155,30 +155,8 @@ E_STOP_SERVICE() {
 export -f E_STOP_SERVICE
 
 ####
-# Display real-time logs from NadekoBot's service by following its journal entries.
-E_FOLLOW_SERVICE_LOGS() {
-    local journal_pid
-
-    if command -v ccze &>/dev/null; then
-        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
-        journal_pid=$!
-    else
-        echo "${E_WARN}The 'ccze' command is not installed; logs will not be colorized"
-        echo ""
-        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" &
-        journal_pid=$!
-    fi
-
-    read -r
-
-    kill "$journal_pid"
-    wait "$journal_pid" 2>/dev/null
-}
-export -f E_FOLLOW_SERVICE_LOGS
-
-####
-# Provide contextual information when displaying NadekoBot's service logs, indicating
-# whether the logs are viewed from a runner script or directly from the main Manager.
+# Display NadekoBot service logs with context-specific messaging for either the runner
+# script or the main Manager menu.
 #
 # PARAMETERS:
 #   - $1: log_type (Required)
@@ -191,6 +169,7 @@ export -f E_FOLLOW_SERVICE_LOGS
 #   - 2: If an invalid parameter is provided.
 E_WATCH_SERVICE_LOGS() {
     local log_type="$1"
+    local journal_pid
 
     if [[ $log_type == "runner" ]]; then
         echo "${E_INFO}Displaying '$E_BOT_SERVICE' startup logs, live..."
@@ -203,7 +182,19 @@ E_WATCH_SERVICE_LOGS() {
     echo "${E_NOTE}Press [Enter] to stop watching the logs"
     echo ""
 
-    E_FOLLOW_SERVICE_LOGS
+    if command -v ccze &>/dev/null; then
+        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
+        journal_pid=$!
+    else
+        echo "${E_WARN}The 'ccze' command is not installed; logs will not be colorized"
+        echo ""
+        sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" &
+        journal_pid=$!
+    fi
+
+    read -r
+    kill "$journal_pid"
+    wait "$journal_pid" 2>/dev/null
 
     if [[ $log_type == "runner" ]]; then
         echo "${E_NOTE}Please check the logs above to make sure that there aren't any" \

@@ -18,13 +18,7 @@ needs_rollback=false
 
 # shellcheck disable=SC2153
 #   $E_FILES_TO_BACK_UP is defined in 'm-bridge.bash'.
-if [[ $E_FILES_TO_BACK_UP == *$'\n'* ]]; then
-    mapfile -t C_FILES_TO_BACK_UP <<< "$E_FILES_TO_BACK_UP"
-else
-    # shellcheck disable=SC2206
-    #   Fall back to historical space-delimited parsing when no newlines are present.
-    C_FILES_TO_BACK_UP=($E_FILES_TO_BACK_UP)
-fi
+mapfile -t C_FILES_TO_BACK_UP <<< "$E_FILES_TO_BACK_UP"
 readonly C_FILES_TO_BACK_UP
 
 
@@ -36,13 +30,19 @@ readonly C_FILES_TO_BACK_UP
 
 ####
 # Reverts changes made during the update process if an error or premature exit is detected.
+#
+# EXITS:
+#   - 1: The script failed to revert changes. In this case, manual intervention is required.
 revert_changes() {
     [[ $needs_rollback == false ]] && return
 
     if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
         echo "${E_WARN}Unable to complete backup"
         echo "${E_INFO}Attempting to restore original backups..."
-        mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || exit 1
+        mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || {
+            E_STDERR "Failed to restore original backups" "1" \
+                "${E_NOTE}Please restore the backup from '$C_OLD_BACKUP' manually"
+        }
     elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
         rm -rf "$C_OLD_BACKUP" \
             || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
@@ -57,13 +57,10 @@ revert_changes() {
 # PARAMETERS:
 #   - $1: exit_code (Required)
 #       - The initial exit code passed by the caller. Under certain conditions, it may be
-#         modified to 50 to allow the calling script to continue.
+#         modified to 50 by 'E_PREP_MENU_EXIT' to allow the calling script to continue.
 #   - $2: use_extra_newline (Optional, Default: false)
 #       - Whether to output an extra newline before the exit message.
 #       - Acceptable values: true, false
-#
-# EXITS:
-#   - $exit_code: The final exit code.
 clean_exit() {
     local exit_code="$1"
     local use_extra_newline="${2:-false}"

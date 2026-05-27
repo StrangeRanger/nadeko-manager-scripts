@@ -13,7 +13,7 @@
 
 
 # See the 'README' note at the beginning of 'm-bridge.bash' for details.
-readonly C_LATEST_BRIDGE_REVISION=55
+readonly C_LATEST_BRIDGE_REVISION=56
 
 E_YELLOW=$'\033[1;33m'
 E_GREEN=$'\033[0;32m'
@@ -53,7 +53,6 @@ esac
 #
 # PARAMETERS:
 #   - $1: exit_code (Required)
-#       - The exit status code with which the script should terminate.
 #   - $2: use_extra_newline (Optional, Default: false)
 #       - Whether to output an extra newline before the exit message.
 #       - Acceptable values: true, false
