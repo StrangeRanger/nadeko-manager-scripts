@@ -58,13 +58,13 @@ transfer_bridge_data() {
     if (( manager_branch_found == 0 )); then
         sed -i "s/^manager_branch=.*/$manager_branch/" m-bridge.bash
     else
-        echo "${E_WARN}Failed to find 'manager_branch' in 'm-bridge.bash.old'"
+        echo "${E_WARN}Failed to find 'manager_branch' in 'm-bridge.bash.old'" >&2
     fi
 
     if (( skip_prereq_check_found == 0 )); then
         sed -i "s/^export E_SKIP_PREREQ_CHECK=.*/$skip_prereq_check/" m-bridge.bash
     else
-        echo "${E_WARN}Failed to find 'E_SKIP_PREREQ_CHECK' in 'm-bridge.bash.old'"
+        echo "${E_WARN}Failed to find 'E_SKIP_PREREQ_CHECK' in 'm-bridge.bash.old'" >&2
     fi
 }
 
@@ -122,7 +122,7 @@ EOF
 
     answer=${answer,,}
     if [[ $answer != "yes" ]]; then
-        echo "${E_WARN}NadekoBot v7 upgrade aborted"
+        echo "${E_WARN}NadekoBot v7 upgrade aborted" >&2
         revert "0"
     fi
 

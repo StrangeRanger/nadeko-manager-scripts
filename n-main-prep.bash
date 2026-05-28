@@ -70,10 +70,10 @@ clean_exit() {
 
     case "$exit_code" in
         0|1) echo "" ;;
-        129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
-        130) echo -e "\n${E_WARN}User interrupt detected (SIGINT)" ;;
-        143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" ;;
-        *)   echo -e "\n${E_WARN}Exiting with status code: $exit_code" ;;
+        129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" >&2 ;;
+        130) echo -e "\n${E_WARN}User interrupt detected (SIGINT)" >&2 ;;
+        143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" >&2 ;;
+        *)   echo -e "\n${E_WARN}Exiting with status code: $exit_code" >&2 ;;
     esac
 
     echo "${E_INFO}Cleaning up..."
@@ -152,7 +152,7 @@ trap 'clean_exit "$?" "true"' EXIT
 if [[ $E_BRIDGE_REVISION != "$C_LATEST_BRIDGE_REVISION" ]]; then
     export E_LATEST_BRIDGE_REVISION="$C_LATEST_BRIDGE_REVISION"
 
-    echo "${E_WARN}You are using an older version of 'm-bridge.bash'"
+    echo "${E_WARN}You are using an older version of 'm-bridge.bash'" >&2
     E_DOWNLOAD_SCRIPT "n-update-bridge.bash" "true"
     ./n-update-bridge.bash
     clean_exit 0
