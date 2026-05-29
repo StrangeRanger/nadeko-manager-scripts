@@ -108,8 +108,6 @@ for file in "${C_FILES_TO_BACK_UP[@]}"; do
 done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
-    ## If a current backup exists, copy its files to the temporary backup, appending ".old"
-    ## to mark them as previous versions.
     echo "${E_INFO}Copying previously backed up files into '$C_TMP_BACKUP'..."
     for file in "$C_CURRENT_BACKUP"/*; do
         basefile="${file##*/}"
@@ -121,8 +119,6 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
         fi
     done
 
-    ## Replace the current backup with the temporary one, backing up the current version in
-    ## $C_OLD_BACKUP.
     echo "${E_INFO}Replacing '$C_CURRENT_BACKUP' with '$C_TMP_BACKUP'..."
     needs_rollback=true
     (
