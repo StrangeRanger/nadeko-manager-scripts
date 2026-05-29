@@ -29,11 +29,10 @@ manager_repo="StrangeRanger/nadeko-manager-scripts"
 #
 # Options:
 #   main     = Production-ready (latest stable code)
-#   dev      = Development code (may be unstable)
-#   NadekoV5 = Manager version for NadekoBot v5
+#   NadekoV6 = Manager version for NadekoBot v6
 #
-# Default: "main"
-manager_branch="main"
+# Default: "NadekoV6"
+manager_branch="NadekoV6"
 
 # Skip checking if all the prerequisites are installed. By setting this variable to "true",
 # you acknowledge that the Bot and Manager are not guaranteed to work as expected.
