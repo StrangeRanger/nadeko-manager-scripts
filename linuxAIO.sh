@@ -38,11 +38,10 @@ installer_repo="StrangeRanger/NadekoBot-BashScript"
 # The branch of $installer_repo that the installer will download its scripts from.
 #
 # Options:
-#   master = Production ready code (the latest stable code)
-#   dev    = Non-production ready code (has the possibility of breaking something)
+#   NadekoV3 = The branch containing the latest code for NadekoBot v3
 #
-# Default: "master"
-installer_branch="master"
+# Default: "NadekoV3"
+installer_branch="NadekoV3"
 
 # The branch/tag, of NadekoBot's official repo, that the installer will download the bot
 # from.
