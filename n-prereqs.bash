@@ -185,7 +185,7 @@ install_ccze_arch() {
         if [[ ! $confirm =~ ^y ]]; then
             echo "${E_WARN}Installation of 'ccze' and its build tools aborted by user" >&2
             echo "${E_WARN}'ccze' is required to colorize NadekoBot's logs" >&2
-            return 1
+            return
         fi
 
         echo "${E_INFO}Installing necessary build tools..."
@@ -219,7 +219,7 @@ install_ccze_arch() {
 #       - A list of other packages required by the Manager.
 #
 # EXITS:
-#   - $?: If any of the installation steps fail.
+#   - Non-zero exit code: If any of the installation steps fail.
 install_prereqs() {
     local install_cmd="$1"
     local update_cmd="$2"
