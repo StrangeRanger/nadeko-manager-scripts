@@ -174,12 +174,12 @@ The following is a list of all the Linux distributions that the Manager has been
 | --------- | -------------- | ----------- | --------------- |
 | Ubuntu | 24.04<br>22.04 | April 25, 2029<br>April 01, 2027 | [endoflife.date](https://endoflife.date/ubuntu)<br>[ubuntu.com](https://ubuntu.com/about/release-cycle) |
 | Linux Mint | 22<br>21 | April 30, 2029<br>April 30, 2027 | [endoflife.date](https://endoflife.date/linuxmint)<br>[linuxmint.com](https://linuxmint.com/download_all.php) |
-| Debian | 13<br>12 | August 09, 2028<br>June 10, 2026 | [endoflife.date](https://endoflife.date/debian)<br>[wiki.debian.org](https://wiki.debian.org/DebianReleases) |
-| Fedora | 44<br>43 | June 2, 2027<br>Dec 9, 2026 | [endoflife.date](https://endoflife.date/fedora)<br>[docs.fedoraproject.org](https://docs.fedoraproject.org/en-US/releases/lifecycle/)<br>[fedorapeople.org](https://fedorapeople.org/groups/schedule/) |
-| Alma Linux | 10<br>9<br>8 | May 31, 2035<br>May 31, 2032<br>May 31, 2029 | [endoflife.date](https://endoflife.date/almalinux)<br>[wiki.almalinux.org](https://wiki.almalinux.org/release-notes/) |
-| Rocky Linux | 10<br>9<br>8 | May 31, 2035<br>May 31, 2032<br>May 31, 2029 | [endoflife.date](https://endoflife.date/rocky-linux)<br>[wiki.rockylinux.org](https://wiki.rockylinux.org/rocky/version/) |
-| openSUSE Leap | 16.0 | October 31, 2027 | [openSUSE Roadmap](https://en.opensuse.org/openSUSE:Roadmap)<br>[endoflife.date](https://endoflife.date/opensuse) |
-| openSUSE Tumbleweed | Rolling | N/A | N/A |
+| Debian | 12 | June 10, 2026 | [endoflife.date](https://endoflife.date/debian)<br>[wiki.debian.org](https://wiki.debian.org/DebianReleases) |
+| Fedora | 41<br>40 | November 19, 2025<br>May 28, 2025 | [endoflife.date](https://endoflife.date/fedora)<br>[docs.fedoraproject.org](https://docs.fedoraproject.org/en-US/releases/lifecycle/)<br>[fedorapeople.org](https://fedorapeople.org/groups/schedule/) |
+| Alma Linux | 9<br>8 | May 31, 2032<br>March 01, 2029 | [endoflife.date](https://endoflife.date/almalinux)<br>[wiki.almalinux.org](https://wiki.almalinux.org/release-notes/) |
+| Rocky Linux | 9<br>8 | May 31, 2032<br>May 31, 2029 | [endoflife.date](https://endoflife.date/rockylinux)<br>[wiki.rockylinux.org](https://wiki.rockylinux.org/rocky/version/) |
+| OpenSuse Leap | 15.6 | December 31, 2025 | [endoflife.date](https://endoflife.date/opensuse)<br>[en.opensuse.org](https://en.opensuse.org/Lifetime) |
+| OpenSuse Tumbleweed | Rolling | N/A | N/A |
 | Arch Linux | Rolling | N/A | N/A |
 
 ## Testing
