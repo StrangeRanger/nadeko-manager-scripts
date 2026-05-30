@@ -18,12 +18,12 @@
 
 declare -A -r C_SUPPORTED_DISTROS=(
     ["ubuntu"]="22.04 24.04"
-    ["debian"]="12 13"
+    ["debian"]="12"
     ["linuxmint"]="21 22"
-    ["fedora"]="43 44"
-    ["almalinux"]="8 9 10"
-    ["rocky"]="8 9 10"
-    ["opensuse-leap"]="16"
+    ["fedora"]="40 41"
+    ["almalinux"]="8 9"
+    ["rocky"]="8 9"
+    ["opensuse-leap"]="15.6"
     ["opensuse-tumbleweed"]="any"
     ["arch"]="any"
 )
