@@ -18,12 +18,12 @@
 
 declare -A -r C_SUPPORTED_DISTROS=(
     ["ubuntu"]="22.04 24.04"
-    ["debian"]="12"
+    ["debian"]="12 13"
     ["linuxmint"]="21 22"
-    ["fedora"]="40 41"
-    ["almalinux"]="8 9"
-    ["rocky"]="8 9"
-    ["opensuse-leap"]="15.6"
+    ["fedora"]="43 44"
+    ["almalinux"]="8 9 10"
+    ["rocky"]="8 9 10"
+    ["opensuse-leap"]="16"
     ["opensuse-tumbleweed"]="any"
     ["arch"]="any"
 )
@@ -176,15 +176,15 @@ install_ccze_arch() {
     else
         local ccze_tmp_dir="/tmp/ccze"
 
-        echo "${E_WARN}AUR helper not found, continuing with manual installation..."
+        echo "${E_WARN}AUR helper not found, continuing with manual installation..." >&2
         echo "${E_NOTE}We need to install additional build tools and clone the AUR package"
         echo "${E_NOTE}  'base-devel' and 'git' will be installed"
         read -rp "${E_NOTE}Would you like to continue? [y/N] " confirm
 
         confirm=${confirm,,}
         if [[ ! $confirm =~ ^y ]]; then
-            echo "${E_WARN}Installation of 'ccze' and its build tools aborted by user"
-            echo "${E_WARN}'ccze' is required to colorize NadekoBot's logs"
+            echo "${E_WARN}Installation of 'ccze' and its build tools aborted by user" >&2
+            echo "${E_WARN}'ccze' is required to colorize NadekoBot's logs" >&2
             return 1
         fi
 
@@ -240,7 +240,7 @@ install_prereqs() {
     #   We want to expand the package lists into individual arguments.
     {
         if [[ -z $update_cmd ]]; then
-            echo "${E_WARN}No update command provided, skipping package list update..."
+            echo "${E_WARN}No update command provided, skipping package list update..." >&2
         else
             echo "${E_INFO}Updating package lists..."
             $update_cmd || E_STDERR "Failed to update package lists" "$?"

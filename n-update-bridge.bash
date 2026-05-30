@@ -16,14 +16,15 @@
 # Revert changes made to 'm-bridge.bash' if the script is interrupted or fails.
 #
 # PARAMETERS:
-#  - $1: exit_code (Required)
+#   - $1: exit_code (Required)
 revert() {
     exit_code="$1"
 
     if [[ -f m-bridge.bash.old && ! -f m-bridge.bash ]]; then
         echo ""
         echo -n "${E_INFO}Restoring the previous version of 'm-bridge.bash'..."
-        mv m-bridge.bash.old m-bridge.bash
+        mv m-bridge.bash.old m-bridge.bash \
+            || E_STDERR "Failed to restore 'm-bridge.bash'" "1"
         chmod +x m-bridge.bash
     fi
 
@@ -58,13 +59,13 @@ transfer_bridge_data() {
     if (( manager_branch_found == 0 )); then
         sed -i "s/^manager_branch=.*/$manager_branch/" m-bridge.bash
     else
-        echo "${E_WARN}Failed to find 'manager_branch' in 'm-bridge.bash.old'"
+        echo "${E_WARN}Failed to find 'manager_branch' in 'm-bridge.bash.old'" >&2
     fi
 
     if (( skip_prereq_check_found == 0 )); then
         sed -i "s/^export E_SKIP_PREREQ_CHECK=.*/$skip_prereq_check/" m-bridge.bash
     else
-        echo "${E_WARN}Failed to find 'E_SKIP_PREREQ_CHECK' in 'm-bridge.bash.old'"
+        echo "${E_WARN}Failed to find 'E_SKIP_PREREQ_CHECK' in 'm-bridge.bash.old'" >&2
     fi
 }
 
@@ -86,22 +87,24 @@ requires_manual_update() {
 # instructions for manual updating.
 #
 # EXITS:
-#   - 1:
+#   - 1: Exits to allow user to perform the manual update.
 manual_update_required() {
     echo "${E_WARN}This Manager version is too old to update automatically." >&2
 
     if [[ -n ${E_LINUXAIO_REVISION:-} ]]; then
         echo "${E_NOTE}Detected legacy 'linuxAIO' revision '$E_LINUXAIO_REVISION'"
+    elif [[ -n ${E_BRIDGE_REVISION:-} ]]; then
+        echo "${E_NOTE}Detected 'm-bridge.bash' revision '$E_BRIDGE_REVISION'"
     else
-        echo "${E_NOTE}Unable to detect a supported 'm-bridge.bash' revision"
+        E_STDERR "INTERNAL: Unable to determine the current 'm-bridge.bash' revision" "1"
     fi
 
     echo "${E_IMP}Back up your current configuration, then manually download the newest" \
         "'m-bridge.bash'"
     echo "${E_NOTE}The newest version can be found at" \
         "https://github.com/StrangeRanger/nadeko-manager-scripts/blob/main/m-bridge.bash"
-    echo "${E_NOTE}After downloading it, reapply any settings you still need from your old" \
-        "bridge script"
+    echo "${E_NOTE}After downloading it, reapply any settings you still need from your" \
+        "old bridge script"
     exit 1
 }
 
@@ -122,10 +125,11 @@ EOF
 
     answer=${answer,,}
     if [[ $answer != "yes" ]]; then
-        echo "${E_WARN}NadekoBot v7 upgrade aborted"
+        echo "${E_WARN}NadekoBot v7 upgrade aborted" >&2
         revert "0"
     fi
 
+    ## TODO: Improve error handling...
     echo "${E_INFO}Backing up current version of NadekoBot as '$E_BOT_DIR.v5.bak'..."
     cp -r "$E_BOT_DIR" "$E_BOT_DIR.v5.bak"
 

@@ -41,13 +41,13 @@ revert_changes() {
     [[ $needs_rollback == false ]] && return
 
     if [[ -d $E_BOT_DIR && ! -d $C_BOT_DIR_OLD && -d $C_BOT_DIR_OLD_OLD ]]; then
-        echo "${E_WARN}Unable to complete installation"
+        echo "${E_WARN}Unable to complete installation" >&2
         echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
         mv "$C_BOT_DIR_OLD_OLD" "$C_BOT_DIR_OLD" \
             || E_STDERR "Failed to restore '$C_BOT_DIR_OLD'" "$?"
 
     elif [[ ! -d $E_BOT_DIR && -d $C_BOT_DIR_OLD ]]; then
-        echo "${E_WARN}Unable to complete installation"
+        echo "${E_WARN}Unable to complete installation" >&2
         echo "${E_INFO}Attempting to restore original version of '$E_BOT_DIR'..."
         mv "$C_BOT_DIR_OLD" "$E_BOT_DIR" || E_STDERR "Failed to restore '$E_BOT_DIR'" "$?"
 
@@ -165,7 +165,7 @@ fetch_versions() {
         current_version=$("$E_ROOT_DIR/$E_BOT_DIR/$E_BOT_EXE" --version)
 
         if [[ ! $current_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "${E_WARN}Unable to determine the current version of NadekoBot"
+            echo "${E_WARN}Unable to determine the current version of NadekoBot" >&2
             current_version=""
         fi
     fi
@@ -203,7 +203,7 @@ fetch_versions() {
                 local status=${version_comparison_map["$selected_version"]}
 
                 if [[ $status == "older" ]]; then
-                    echo -n "${E_WARN}Downgrading can result in data loss. "
+                    echo -n "${E_WARN}Downgrading can result in data loss. " >&2
                     read -rp "Are you sure you want to continue? [y/N]: " confirm
                 elif [[ $status == "newer" ]]; then
                     echo -n "${E_NOTE}You are about to update to a newer version. "

@@ -37,12 +37,11 @@ revert_changes() {
     [[ $needs_rollback == false ]] && return
 
     if [[ ! -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
-        echo "${E_WARN}Unable to complete backup"
+        echo "${E_WARN}Unable to complete backup" >&2
         echo "${E_INFO}Attempting to restore original backups..."
-        mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" || {
-            E_STDERR "Failed to restore original backups" "1" \
+        mv "$C_OLD_BACKUP" "$C_CURRENT_BACKUP" \
+            || E_STDERR "Failed to restore original backups" "1" \
                 "${E_NOTE}Please restore the backup from '$C_OLD_BACKUP' manually"
-        }
     elif [[ -d $C_CURRENT_BACKUP && -d $C_OLD_BACKUP ]]; then
         rm -rf "$C_OLD_BACKUP" \
             || E_STDERR "Failed to remove '$C_OLD_BACKUP'" "" \
@@ -67,12 +66,14 @@ clean_exit() {
 
     E_PREP_MENU_EXIT "$exit_code" "0 5"
     E_CLEAR_MENU_TRAPS
+
     [[ $use_extra_newline == true ]] && echo ""
-    echo "${E_INFO}Cleaning up..."
-    [[ -d "$C_TMP_BACKUP" ]] && rm -rf "$C_TMP_BACKUP" &>/dev/null
+    if [[ -d "$C_TMP_BACKUP" ]]; then
+        echo "${E_INFO}Cleaning up..."
+        rm -rf "$C_TMP_BACKUP" &>/dev/null
+    fi
 
     revert_changes
-
     E_FINISH_MENU_EXIT
 }
 
@@ -102,13 +103,11 @@ for file in "${C_FILES_TO_BACK_UP[@]}"; do
     if [[ -f $file ]]; then
         cp -f "$file" "$C_TMP_BACKUP" || E_STDERR "Failed to back up '$file'" "1"
     else
-        echo "${E_WARN}'$file' could not be found"
+        echo "${E_WARN}'$file' could not be found" >&2
     fi
 done
 
 if [[ -d $C_CURRENT_BACKUP ]]; then
-    ## If a current backup exists, copy its files to the temporary backup appending ".old"
-    ## to mark them as previous versions.
     echo "${E_INFO}Copying previously backed up files into '$C_TMP_BACKUP'..."
     for file in "$C_CURRENT_BACKUP"/*; do
         basefile="${file##*/}"
@@ -120,8 +119,6 @@ if [[ -d $C_CURRENT_BACKUP ]]; then
         fi
     done
 
-    ## Replace the current backup with the temporary one, backing up the current version in
-    ## $C_OLD_BACKUP.
     echo "${E_INFO}Replacing '$C_CURRENT_BACKUP' with '$C_TMP_BACKUP'..."
     needs_rollback=true
     (

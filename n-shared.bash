@@ -35,7 +35,7 @@ E_PREP_MENU_EXIT() {
             C_MENU_EXIT_CODE=50
             ;;
         130)
-            echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
+            echo -e "\n${E_WARN}User interrupt detected (SIGINT)" >&2
             C_MENU_EXIT_CODE=50
             ;;
         *)
@@ -49,6 +49,10 @@ E_PREP_MENU_EXIT() {
 ####
 # Clear traps before cleanup starts to avoid re-entering a cleanup handler while it is
 # already running.
+#
+# PARAMETERS:
+#   - $1: trap_signals (Optional, Default: "EXIT SIGINT SIGHUP SIGTERM")
+#       - A space-separated list of signals for which to clear traps.
 E_CLEAR_MENU_TRAPS() {
     local trap_signals="${1:-EXIT SIGINT SIGHUP SIGTERM}"
     local -a trap_signal_array

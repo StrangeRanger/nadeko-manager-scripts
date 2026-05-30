@@ -51,9 +51,9 @@ exit_code_actions() {
 
     case "$exit_code" in
         3|4|5|50) return 0 ;;
-        129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" ;;
+        129) echo -e "\n${E_WARN}Hangup signal detected (SIGHUP)" >&2 ;;
         130) ;;  # SIGINT is handled elsewhere; no message is printed here.
-        143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" ;;
+        143) echo -e "\n${E_WARN}Termination signal detected (SIGTERM)" >&2 ;;
     esac
 
     exit "$exit_code"
@@ -186,7 +186,7 @@ E_WATCH_SERVICE_LOGS() {
         sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" | ccze -A &
         journal_pid=$!
     else
-        echo "${E_WARN}The 'ccze' command is not installed; logs will not be colorized"
+        echo "${E_WARN}The 'ccze' command is not installed; logs will not be colorized" >&2
         echo ""
         sudo journalctl --no-hostname -f -u "$E_BOT_SERVICE" &
         journal_pid=$!
@@ -375,7 +375,7 @@ while true; do
                 read -rp "Press [Enter] to begin."
             ) || {
                 echo ""
-                echo -e "\n${E_WARN}User interrupt detected (SIGINT)"
+                echo -e "\n${E_WARN}User interrupt detected (SIGINT)" >&2
                 read -rp "${E_NOTE}Press [Enter] to return to the main menu"
                 clear -x
                 continue
