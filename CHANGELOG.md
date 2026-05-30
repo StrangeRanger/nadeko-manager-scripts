@@ -8,17 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 > [!CAUTION]
 > Automatic bridge migration is no longer supported for legacy `linuxAIO` installs or `m-bridge.bash` revisions older than 48. Users on those versions must manually download the latest `m-bridge.bash`, then reapply any needed settings from their old bridge script. This removes outdated migration code while keeping automatic updates available for supported `m-bridge.bash` revisions.
->
-> Several supported distributions have been added and removed, so please check the list of supported distributions in the README to ensure your distribution is still supported.
-
-### Added
-
-- ⚠️ Added automatic prerequisite installation support and Docker test images for:
-    - Debian 13
-    - AlmaLinux 10
-    - Rocky Linux 10
-    - openSUSE Leap 16
-    - Fedora 44 and 43
 
 ### Changed
 
@@ -31,13 +20,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Fixed the prompt in `revision_53` of `n-update-bridge.bash` to correctly refer to NadekoBot v7 for future upgrades.
 - Added a fallback in `E_FINISH_MENU_EXIT` for cases where the normalized menu exit code was not prepared before finishing cleanup.
-
-### Removed
-
-- ⚠️ Removed automatic prerequisite installation support and Docker test images for:
-    - Fedora 40
-    - Fedora 41
-    - openSUSE Leap 15.6
 
 ## [v6.2.1] - 2026-03-15
 
